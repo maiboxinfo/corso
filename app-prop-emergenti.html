@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Proprietà Emergenti nell'Intelligenza Artificiale — Guida Editoriale Interattiva</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Google esterni per tipografia editoriale -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#1C1C1C',
+            cream: '#FAF6EE',
+            paper: '#F2EAD9',
+            primary: {
+              DEFAULT: '#7C1D3F',
+              dark: '#5A1530',
+              light: '#9E2852'
+            },
+            accent: '#8C5D00',
+            status: {
+              progress: '#0047AB',
+              warning: '#B0004A',
+              success: '#005C36'
+            },
+            surface: '#F4F4F6'
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --ink: #1C1C1C;
+      --cream: #FAF6EE;
+      --paper: #F2EAD9;
+      --primary: #7C1D3F;
+      --primary-dark: #5A1530;
+      --accent: #8C5D00;
+      --status-progress: #0047AB;
+      --status-warning: #B0004A;
+      --status-success: #005C36;
+      --surface: #F4F4F6;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* Texture Carta Editoriale */
+    .paper-texture {
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(124, 29, 63, 0.02) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(140, 93, 0, 0.03) 0%, transparent 40%);
+    }
+
+    /* Focus visibile ad alto contrasto per accessibilità WCAG AAA */
+    a:focus-visible, 
+    button:focus-visible, 
+    input:focus-visible, 
+    select:focus-visible, 
+    textarea:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 2px #ffffff;
+    }
+
+    /* Card Flip 3D accessibile */
+    .flip-card {
+      perspective: 1000px;
+    }
+    .flip-card-inner {
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Preferenze di riduzione del movimento (Motion-reduced) */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .flip-card-inner {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col paper-texture">
+
+  <!-- Link per il salto rapido agli screen reader -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-primary focus:text-white font-bold">
+    Salta direttamente al contenuto principale
+  </a>
+
+  <!-- Barra di avanzamento lettura in cima -->
+  <div class="fixed top-0 left-0 w-full h-1.5 bg-paper z-50" aria-hidden="true">
+    <div id="readProgressBar" class="h-full bg-primary transition-all duration-150 w-0"></div>
+  </div>
+
+  <!-- Header Sticky Navigation -->
+  <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur-md border-b border-paper shadow-sm transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 group">
+        <span class="w-8 h-8 rounded bg-primary text-white font-serif font-bold flex items-center justify-center text-lg shadow-sm" aria-hidden="true">
+          É
+        </span>
+        <span class="font-serif font-bold text-lg sm:text-xl text-ink tracking-tight group-hover:text-primary transition-colors">
+          Didattica Editoriale
+        </span>
+      </a>
+
+      <!-- Menu Navigazione Desktop -->
+      <nav aria-label="Navigazione principale" class="hidden md:flex items-center gap-6 text-sm font-semibold">
+        <a href="#contesto" class="nav-item text-ink hover:text-primary px-2 py-1 rounded transition-colors" data-section="contesto">1. Concetto</a>
+        <a href="#simulatore" class="nav-item text-ink hover:text-primary px-2 py-1 rounded transition-colors" data-section="simulatore">2. Scala & Simulatore</a>
+        <a href="#confronto" class="nav-item text-ink hover:text-primary px-2 py-1 rounded transition-colors" data-section="confronto">3. Confronto</a>
+        <a href="#strumento" class="nav-item text-ink hover:text-primary px-2 py-1 rounded transition-colors" data-section="strumento">4. Laboratorio Prompt</a>
+        <a href="#sintesi" class="nav-item text-ink hover:text-primary px-2 py-1 rounded transition-colors" data-section="sintesi">5. Sintesi</a>
+      </nav>
+
+      <!-- Pulsante Menu Mobile -->
+      <button id="mobileMenuBtn" type="button" 
+              class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-ink hover:bg-paper focus:outline-none min-w-[44px] min-h-[44px]"
+              aria-expanded="false" aria-controls="mobileMenu" aria-label="Apri o chiudi il menu di navigazione">
+        <svg id="menuIconOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="menuIconClose" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Pannello Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-cream border-b border-paper px-4 pt-2 pb-4 space-y-2">
+      <a href="#contesto" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-semibold text-ink hover:bg-paper">1. Concetto e Analogia</a>
+      <a href="#simulatore" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-semibold text-ink hover:bg-paper">2. Simulatore di Scala</a>
+      <a href="#confronto" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-semibold text-ink hover:bg-paper">3. Logica vs Emergenza</a>
+      <a href="#strumento" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-semibold text-ink hover:bg-paper">4. Laboratorio Prompt</a>
+      <a href="#sintesi" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-semibold text-ink hover:bg-paper">5. Sintesi Copiabile</a>
+    </div>
+  </header>
+
+  <!-- Contenuto Principale -->
+  <main id="main-content" class="flex-grow">
+
+    <!-- HERO SECTION -->
+    <section class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center border-b border-paper">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper border border-stone-300 text-xs font-bold uppercase tracking-wider text-ink mb-6">
+        <span aria-hidden="true">🧠</span>
+        <span>Modulo Didattico Interattivo</span>
+      </div>
+      
+      <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-ink leading-tight mb-6 tracking-tight">
+        Dalla Scala all'Inosservato: Le <span class="text-primary italic">Proprietà Emergenti</span> nell'IA
+      </h1>
+
+      <p class="text-lg sm:text-xl text-stone-700 max-w-2xl mx-auto mb-8 font-sans font-normal leading-relaxed">
+        Come miliardi di operazioni matematiche elementari danno origine spontanea a capacità di ragionamento, traduzione e risoluzione di problemi senza essere state programmate direttamente.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#simulatore" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-primary text-white font-semibold shadow-md hover:bg-primary-dark transition-colors min-w-[44px] min-h-[44px]">
+          <span aria-hidden="true">⚙️</span>
+          <span>Sperimenta il Simulatore</span>
+        </a>
+        <a href="#contesto" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-paper text-ink font-semibold border border-stone-300 hover:bg-stone-200 transition-colors min-w-[44px] min-h-[44px]">
+          <span aria-hidden="true">📚</span>
+          <span>Leggi la Spiegazione</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEZIONE 1: CONCETTO ED ESEMPI -->
+    <section id="contesto" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-paper">
+      <div class="max-w-3xl mb-10">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Sezione 1 — Principi Fondamentali</p>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mb-4">Che cos'è una "Proprietà Emergente"?</h2>
+        <p class="text-base sm:text-lg text-stone-700">
+          Una proprietà emergente è un comportamento o una caratteristica che <strong>non esiste nelle singole parti elementari</strong> di un sistema, ma appare spontaneamente quando un numero elevatissimo di tali parti interagisce secondo precise regole di scala.
+        </p>
+      </div>
+
+      <!-- Grid Flip Cards Accessibili -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        
+        <!-- Card 1 -->
+        <div class="flip-card h-64 w-full" id="card-1">
+          <button type="button" 
+                  class="flip-card-inner w-full h-full rounded-xl bg-surface border border-stone-300 p-6 text-left shadow-sm hover:border-primary transition-all focus:outline-none"
+                  aria-expanded="false" 
+                  onclick="toggleCard('card-1')">
+            <div class="flip-card-front absolute inset-0 p-6 flex flex-col justify-between bg-white rounded-xl">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-2xl" aria-hidden="true">💧</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-stone-500 bg-paper px-2 py-1 rounded">Natura & Fisica</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-ink mb-2">L'Acqua e la "Bagnatura"</h3>
+                <p class="text-sm text-stone-600">Una singola molecola d'acqua ($H_2O$) non è "bagnata". Da dove nasce la sensazione di bagnato?</p>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-bold text-primary">
+                <span aria-hidden="true">🔄</span>
+                <span>Premere o cliccare per scoprire la spiegazione</span>
+              </div>
+            </div>
+
+            <div class="flip-card-back absolute inset-0 p-6 flex flex-col justify-between bg-primary text-white rounded-xl">
+              <div>
+                <div class="flex items-center justify-between mb-2 border-b border-primary-light pb-2">
+                  <span class="font-bold text-sm">💡 Meccanismo Emergente</span>
+                  <span class="text-xs bg-primary-dark px-2 py-0.5 rounded">Spiegazione</span>
+                </div>
+                <p class="text-sm sm:text-base leading-relaxed text-stone-100">
+                  La "bagnatura" è una proprietà emergente che nasce solo quando miliardi di molecole di $H_2O$ interagiscono tramite legami a idrogeno e tensione superficiale. La molecola isolata possiede solo massa e polarità.
+                </p>
+              </div>
+              <div class="text-xs text-stone-200">
+                <span aria-hidden="true">⬅️</span> Ruota di nuovo
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="flip-card h-64 w-full" id="card-2">
+          <button type="button" 
+                  class="flip-card-inner w-full h-full rounded-xl bg-surface border border-stone-300 p-6 text-left shadow-sm hover:border-primary transition-all focus:outline-none"
+                  aria-expanded="false" 
+                  onclick="toggleCard('card-2')">
+            <div class="flip-card-front absolute inset-0 p-6 flex flex-col justify-between bg-white rounded-xl">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-2xl" aria-hidden="true">🐜</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-stone-500 bg-paper px-2 py-1 rounded">Biologia</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-ink mb-2">La Colonia di Formiche</h3>
+                <p class="text-sm text-stone-600">Una singola formica segue riflessi elementari. Come nasce l'architettura complessa del formicaio?</p>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-bold text-primary">
+                <span aria-hidden="true">🔄</span>
+                <span>Premere o cliccare per scoprire la spiegazione</span>
+              </div>
+            </div>
+
+            <div class="flip-card-back absolute inset-0 p-6 flex flex-col justify-between bg-primary text-white rounded-xl">
+              <div>
+                <div class="flex items-center justify-between mb-2 border-b border-primary-light pb-2">
+                  <span class="font-bold text-sm">💡 Meccanismo Emergente</span>
+                  <span class="text-xs bg-primary-dark px-2 py-0.5 rounded">Spiegazione</span>
+                </div>
+                <p class="text-sm sm:text-base leading-relaxed text-stone-100">
+                  Nessuna singola formica possiede la mappa globale del nido. L'architettura e la logistica alimentare emergono dalla segnalazione reciproca tramite feromoni tra migliaia di individui.
+                </p>
+              </div>
+              <div class="text-xs text-stone-200">
+                <span aria-hidden="true">⬅️</span> Ruota di nuovo
+              </div>
+            </div>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="bg-paper p-4 sm:p-6 rounded-xl border border-stone-300">
+        <h4 class="font-serif font-bold text-ink text-lg mb-2 flex items-center gap-2">
+          <span aria-hidden="true">📌</span>
+          <span>Il parallelo con i Modelli Linguistici (LLM)</span>
+        </h4>
+        <p class="text-sm sm:text-base text-stone-800 leading-relaxed">
+          In una rete neurale artificiale, i singoli componenti sono <strong>operazioni aritmetiche elementari</strong> (moltiplicazioni tra matrici e somme pesate). Quando si scala la rete portandola da pochi milioni a centinaia di miliardi di parametri, compaiono abilità non esplicitamente programmate: risoluzione di problemi logici passo-passo, comprensione di sfumature di contesto e scrittura autonoma di codice informatico.
+        </p>
+      </div>
+    </section>
+
+    <!-- SEZIONE 2: DIMOSTRAZIONE INTERATTIVA (SIMULATORE DI SCALA) -->
+    <section id="simulatore" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-paper bg-white/50">
+      <div class="max-w-3xl mb-8">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Sezione 2 — Dimostrazione Operativa</p>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mb-3">Simulatore della Scala dei Parametri</h2>
+        <p class="text-base text-stone-700">
+          Modifica il numero dei parametri della rete neurale (da 100 Milioni a 100 Miliardi+) per osservare come e quando si manifestano le capacità emergenti.
+        </p>
+      </div>
+
+      <!-- Controlli del Simulatore -->
+      <div class="bg-cream p-6 rounded-xl border border-stone-300 mb-8 shadow-sm">
+        <label for="scaleSlider" class="block font-bold text-ink mb-2 text-sm sm:text-base">
+          Seleziona la Scala del Modello (Numero di Parametri):
+        </label>
+        
+        <div class="flex items-center gap-4 mb-6">
+          <input type="range" id="scaleSlider" min="1" max="4" step="1" value="1" 
+                 class="w-full h-3 bg-stone-300 rounded-lg appearance-none cursor-pointer accent-primary focus:outline-none"
+                 aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-valuetext="100 Milioni di Parametri (Modello Compatto)">
+          <span id="scaleValueDisplay" class="font-mono font-bold text-primary text-lg sm:text-xl min-w-[140px] text-right">
+            100M Parametri
+          </span>
+        </div>
+
+        <!-- Indicatori Chip Selezionabili -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-bold">
+          <button type="button" onclick="setSliderValue(1)" id="chip-1" class="p-2 rounded border border-stone-300 bg-white text-ink hover:bg-stone-100 min-h-[44px]" aria-pressed="true">
+            100M (Micro)
+          </button>
+          <button type="button" onclick="setSliderValue(2)" id="chip-2" class="p-2 rounded border border-stone-300 bg-white text-ink hover:bg-stone-100 min-h-[44px]" aria-pressed="false">
+            1B (Piccolo)
+          </button>
+          <button type="button" onclick="setSliderValue(3)" id="chip-3" class="p-2 rounded border border-stone-300 bg-white text-ink hover:bg-stone-100 min-h-[44px]" aria-pressed="false">
+            10B (Medio)
+          </button>
+          <button type="button" onclick="setSliderValue(4)" id="chip-4" class="p-2 rounded border border-stone-300 bg-white text-ink hover:bg-stone-100 min-h-[44px]" aria-pressed="false">
+            100B+ (Massivo)
+          </button>
+        </div>
+      </div>
+
+      <!-- Diagramma Nativo SVG con tripla ridondanza (Colore + Forma + Icona + Etichetta) -->
+      <div class="bg-white p-6 rounded-xl border border-stone-300 shadow-sm mb-6">
+        <h3 class="font-serif font-bold text-ink text-lg mb-4 flex items-center justify-between">
+          <span>Stato delle Capacità Osservabili</span>
+          <span class="text-xs font-sans font-normal text-stone-500">Aggiornamento in tempo reale</span>
+        </h3>
+
+        <svg role="img" aria-labelledby="svgTitle svgDesc" class="w-full h-auto min-h-[220px]" viewBox="0 0 600 200">
+          <title id="svgTitle">Grafico della soglia di emergenza in funzione della scala dei parametri</title>
+          <desc id="svgDesc">Mostra tre abilità: Sintassi Base, Traduzione Avanzata e Ragionamento Logico Multi-step, evidenziando il loro stato con combinazione di forma, colore, icona ed etichetta.</desc>
+
+          <!-- Griglia di Sfondo -->
+          <line x1="50" y1="30" x2="580" y2="30" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="50" y1="90" x2="580" y2="90" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="50" y1="150" x2="580" y2="150" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="4"/>
+
+          <!-- Traccia 1: Grammatica e Sintassi -->
+          <g id="cap-1-group">
+            <text x="60" y="25" font-family="Inter" font-size="12" font-weight="600" fill="#1C1C1C">1. Sintassi e Grammatica Base</text>
+            <rect id="rect-cap-1" x="320" y="10" width="160" height="26" rx="4" fill="#005C36"/>
+            <text id="text-cap-1" x="330" y="27" font-family="Inter" font-size="11" font-weight="bold" fill="#FFFFFF">✅ Completato</text>
+          </g>
+
+          <!-- Traccia 2: Traduzione Contestuale -->
+          <g id="cap-2-group">
+            <text x="60" y="85" font-family="Inter" font-size="12" font-weight="600" fill="#1C1C1C">2. Traduzione Contestuale Avanzata</text>
+            <rect id="rect-cap-2" x="320" y="70" width="160" height="26" rx="4" fill="#B0004A"/>
+            <text id="text-cap-2" x="330" y="87" font-family="Inter" font-size="11" font-weight="bold" fill="#FFFFFF">⚠️ Non Raggiunto</text>
+          </g>
+
+          <!-- Traccia 3: Ragionamento Multi-step -->
+          <g id="cap-3-group">
+            <text x="60" y="145" font-family="Inter" font-size="12" font-weight="600" fill="#1C1C1C">3. Ragionamento Logico Multi-step</text>
+            <rect id="rect-cap-3" x="320" y="130" width="160" height="26" rx="4" fill="#B0004A"/>
+            <text id="text-cap-3" x="330" y="147" font-family="Inter" font-size="11" font-weight="bold" fill="#FFFFFF">⚠️ Non Raggiunto</text>
+          </g>
+        </svg>
+
+        <!-- Versione Testuale Alternativa Obbligatoria (WCAG AAA) -->
+        <div class="mt-4 pt-4 border-t border-stone-200">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Tabella Accessibile dello Stato Attuale</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <caption class="sr-only">Stato delle capacità del modello in base al livello selezionato</caption>
+              <thead>
+                <tr class="border-b border-stone-300 bg-paper">
+                  <th scope="col" class="p-2 font-bold text-ink">Capacità</th>
+                  <th scope="col" class="p-2 font-bold text-ink">Stato Attuale</th>
+                  <th scope="col" class="p-2 font-bold text-ink">Soglia Minima Richiesta</th>
+                </tr>
+              </thead>
+              <tbody id="tableSimBody">
+                <!-- Popolato da JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annuncio Screen Reader Live -->
+      <div id="simLiveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true">
+        Selezionata scala 100M parametri. Capacità sintattiche attive.
+      </div>
+    </section>
+
+    <!-- SEZIONE 3: CONFRONTO STRUTTURATO -->
+    <section id="confronto" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-paper">
+      <div class="max-w-3xl mb-8">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Sezione 3 — Analisi Comparativa</p>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mb-3">Programmazione Tradizionale vs Emergenza da LLM</h2>
+        <p class="text-base text-stone-700">
+          Usa il selettore per confrontare come viene affrontato e risolto un problema complesso nei due paradigmi informatici.
+        </p>
+      </div>
+
+      <!-- Toggle di Controllo con tripla ridondanza -->
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex p-1.5 bg-paper rounded-xl border border-stone-300" role="tablist" aria-label="Selettore del paradigma">
+          <button type="button" id="tab-tradizionale" role="tab" aria-selected="true" aria-controls="panel-tradizionale"
+                  onclick="switchTab('tradizionale')"
+                  class="px-5 py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px] bg-primary text-white shadow-sm">
+            ⚙️ Programmazione Tradizionale (Regole Cablate)
+          </button>
+          <button type="button" id="tab-emergente" role="tab" aria-selected="false" aria-controls="panel-emergente"
+                  onclick="switchTab('emergente')"
+                  class="px-5 py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px] text-ink hover:bg-stone-200">
+            ✨ Modello Emergente (Apprendimento da Scala)
+          </button>
+        </div>
+      </div>
+
+      <!-- Pannello 1: Tradizionale -->
+      <div id="panel-tradizionale" role="tabpanel" aria-labelledby="tab-tradizionale" class="bg-white p-6 sm:p-8 rounded-xl border border-stone-300 shadow-sm">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full bg-slate-200 text-slate-800 text-xs font-bold uppercase" aria-hidden="true">Deterministico</span>
+          <h3 class="font-serif text-xl font-bold text-ink">Istruzioni Esplicite e Regole Condizionali (If / Else)</h3>
+        </div>
+        <p class="text-stone-700 text-sm sm:text-base leading-relaxed mb-4">
+          Nel codice tradizionale, ogni singolo caso d'uso e vincolo deve essere previsto e scritto a mano da uno sviluppatore umano. Se l'input non rispetta esattamente la regola codificata, il programma restituisce un errore.
+        </p>
+        <div class="bg-ink text-cyan-300 font-mono text-xs sm:text-sm p-4 rounded-lg overflow-x-auto">
+          <code>
+            // Esempio di logica rigida cablata<br>
+            if (testo.contains("mela") &amp;&amp; azione == "regala") {<br>
+            &nbsp;&nbsp;risultato = calcolaSottrazione(totale, quantita);<br>
+            } else {<br>
+            &nbsp;&nbsp;throw new ErroreContestoNonPrevisto();<br>
+            }
+          </code>
+        </div>
+      </div>
+
+      <!-- Pannello 2: Emergente -->
+      <div id="panel-emergente" role="tabpanel" aria-labelledby="tab-emergente" class="hidden bg-white p-6 sm:p-8 rounded-xl border border-stone-300 shadow-sm">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase" aria-hidden="true">Probabilistico &amp; Adattivo</span>
+          <h3 class="font-serif text-xl font-bold text-ink">Riconoscimento di Pattern e Ragionamento Implicito</h3>
+        </div>
+        <p class="text-stone-700 text-sm sm:text-base leading-relaxed mb-4">
+          Il modello non contiene istruzioni rigide scritte a mano. Avendo assimilato miliardi di pattern sintattici e concettuali, deduce la sequenza logica di risoluzione per analogia sul contesto fornito.
+        </p>
+        <div class="bg-paper border border-stone-300 text-ink font-mono text-xs sm:text-sm p-4 rounded-lg">
+          <p class="font-bold text-primary mb-1">🧠 Calcolo Interno Emergente:</p>
+          <p class="text-stone-700">"Anna ha 3 mele. Ne regala 1 a Marco. Quante ne rimangono ad Anna?"</p>
+          <p class="text-stone-800 mt-2 font-semibold">→ Risposta: 2 (Deducendo l'operazione di riduzione dal significato di 'regala')</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEZIONE 4: LABORATORIO PROMPT (CHAIN-OF-THOUGHT) -->
+    <section id="strumento" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-paper bg-white/50">
+      <div class="max-w-3xl mb-8">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Sezione 4 — Strumento Operativo</p>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mb-3">Laboratorio: Sollecitare l'Emergenza (CoT)</h2>
+        <p class="text-base text-stone-700">
+          Le proprietà emergenti nei modelli avanzati possono essere attivate mediante particolari strutture di prompt engineering. Genera un prompt con tecnica <em>Chain-of-Thought</em> (Catena di Pensiero).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Form Controlli -->
+        <div class="bg-cream p-6 rounded-xl border border-stone-300 shadow-sm space-y-4">
+          <h3 class="font-serif font-bold text-lg text-ink">Configura il tuo Prompt</h3>
+
+          <div>
+            <label for="promptDomain" class="block text-sm font-bold text-ink mb-1">
+              Ambito del Problema:
+            </label>
+            <select id="promptDomain" onchange="generatePrompt()" class="w-full p-2.5 rounded-lg border border-stone-300 bg-white text-ink text-sm focus:outline-none">
+              <option value="math">Problema di Logica / Matematica</option>
+              <option value="legal">Analisi di un Caso Giuridico / Normativo</option>
+              <option value="code">Debugging di un Algoritmo</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="promptStrategy" class="block text-sm font-bold text-ink mb-1">
+              Strategia di Attivazione:
+            </label>
+            <select id="promptStrategy" onchange="generatePrompt()" class="w-full p-2.5 rounded-lg border border-stone-300 bg-white text-ink text-sm focus:outline-none">
+              <option value="direct">Zero-Shot Diretto (Senza stimolo logico)</option>
+              <option value="cot" selected>Chain-of-Thought ("Pensiamo passo dopo passo")</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="promptInputText" class="block text-sm font-bold text-ink mb-1">
+              Quesito o Scenario Principale:
+            </label>
+            <textarea id="promptInputText" rows="3" oninput="generatePrompt()" 
+                      class="w-full p-2.5 rounded-lg border border-stone-300 bg-white text-ink text-sm focus:outline-none" 
+                      placeholder="Inserisci la domanda o lo scenario di test..."></textarea>
+          </div>
+        </div>
+
+        <!-- Output Generato Copiabile -->
+        <div class="bg-stone-900 text-stone-100 p-6 rounded-xl border border-stone-800 shadow-md flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3 border-b border-stone-700 pb-2">
+              <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Anteprima Prompt Generato</span>
+              <span class="text-xs text-stone-400">Pronto all'uso</span>
+            </div>
+            
+            <div id="promptOutputArea" class="font-mono text-xs sm:text-sm text-cyan-200 whitespace-pre-wrap leading-relaxed min-h-[140px] mb-4" aria-live="polite">
+              <!-- Generato via JS -->
+            </div>
+          </div>
+
+          <button type="button" onclick="copyPromptToClipboard()" 
+                  class="w-full py-3 px-4 rounded-lg bg-primary hover:bg-primary-dark text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 min-h-[44px]">
+            <span aria-hidden="true">📋</span>
+            <span>Copia Prompt negli Appunti</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SEZIONE 5: SINTESI E SCHEDA COPIABILE -->
+    <section id="sintesi" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div class="max-w-3xl mb-8">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Sezione 5 — Sintesi e Chiusura</p>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mb-3">Punti Chiave da Ricordare</h2>
+        <p class="text-base text-stone-700">
+          Un quadro sinottico per consolidare la comprensione del fenomeno dell'emergenza nei sistemi di intelligenza artificiale.
+        </p>
+      </div>
+
+      <!-- Checklist delle Idee Chiave -->
+      <div class="bg-paper p-6 sm:p-8 rounded-xl border border-stone-300 mb-8 space-y-4">
+        <div class="flex items-start gap-3">
+          <span class="text-xl shrink-0" aria-hidden="true">✅</span>
+          <div>
+            <h3 class="font-bold text-ink text-base">La Scala delle Dimensioni (Scaling Law)</h3>
+            <p class="text-sm text-stone-700">Le capacità emergenti non crescono solo in modo lineare, ma manifestano "salti di resa" oltre precise soglie di parametri e quantità di dati usati nell'addestramento.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-xl shrink-0" aria-hidden="true">⚠️</span>
+          <div>
+            <h3 class="font-bold text-ink text-base">Attenzione: Emergenza non significa Coscienza</h3>
+            <p class="text-sm text-stone-700">Risolvere problemi complessi non implica intenzione o sensibilità soggettiva: il sistema sta eseguendo una complessa approssimazione statistica su scala massiva.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-xl shrink-0" aria-hidden="true">⏳</span>
+          <div>
+            <h3 class="font-bold text-ink text-base">Ricerca in Corso (Interpretabilità Meccanicistica)</h3>
+            <p class="text-sm text-stone-700">I ricercatori sviluppano tecniche di "mappatura dei circuiti" per ricostruire e comprendere l'origine esatta delle capacità emerse nella rete neurale.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Box Scheda Riassuntiva Copiabile -->
+      <div class="bg-white p-6 rounded-xl border border-stone-300 shadow-sm">
+        <h3 class="font-serif font-bold text-ink text-lg mb-3">Scheda Sintetica del Modulo</h3>
+        <textarea id="summaryText" readonly rows="5" class="w-full p-3 font-mono text-xs sm:text-sm bg-surface rounded-lg border border-stone-300 text-stone-800 mb-4 focus:outline-none">
+=== DISPENSA: LE PROPRIETÀ EMERGENTI NELL'IA ===
+1. DEFINIZIONE: Caratteristiche non presenti nei singoli componenti elementari, ma che compaiono al crescere della scala del sistema.
+2. MECCANISMO: Miliardi di parametri + addestramento su dati estesi = capacità spontanea di ragionamento contestuale.
+3. TECNICA CHIAVE: Il ragionamento passo-passo (Chain-of-Thought) attiva e guida i circuiti logici del modello.
+4. AVVERTENZA: L'alta prestazione pratica non implica coscienza o comprensione umana soggettiva.
+=================================================</textarea>
+        
+        <button type="button" onclick="copySummaryToClipboard()" 
+                class="px-5 py-2.5 rounded-lg bg-paper border border-stone-300 hover:bg-stone-200 text-ink font-bold text-sm transition-colors flex items-center gap-2 min-h-[44px]">
+          <span aria-hidden="true">📋</span>
+          <span>Copia Scheda Riassuntiva</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Editoriale -->
+  <footer class="bg-ink text-stone-300 py-10 px-4 sm:px-6 lg:px-8 border-t border-stone-800 mt-auto">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs sm:text-sm">
+      <div>
+        <p class="font-serif font-bold text-stone-100 text-base mb-1">Didattica Editoriale Accessibile</p>
+        <p class="text-stone-400">In conformità con le Linee Guida WCAG 2.1 Livello AAA.</p>
+      </div>
+      <div class="text-stone-400 text-center md:text-right">
+        <p>Zero Placeholder · Segregazione delle Informazioni Garantita</p>
+        <p class="mt-1">Nessuna informazione critica affidata al solo colore.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Contenitore Toast notifiche accessibili (aria-live) -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- SCRIPT LOGICA E INTERAZIONI VANILLA JS -->
+  <script>
+    // 1. Barra Avanzamento Lettura & Scroll Spy
+    window.addEventListener('scroll', function() {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      const progressBar = document.getElementById('readProgressBar');
+      if (progressBar) {
+        progressBar.style.width = scrolled + '%';
+      }
+
+      updateScrollSpy();
+    });
+
+    // 2. Menu Mobile
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIconOpen = document.getElementById('menuIconOpen');
+    const menuIconClose = document.getElementById('menuIconClose');
+
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', function() {
+        const expanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+        mobileMenuBtn.setAttribute('aria-expanded', !expanded);
+        mobileMenu.classList.toggle('hidden');
+        menuIconOpen.classList.toggle('hidden');
+        menuIconClose.classList.toggle('hidden');
+      });
+    }
+
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (mobileMenu) {
+          mobileMenu.classList.add('hidden');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          menuIconOpen.classList.remove('hidden');
+          menuIconClose.classList.add('hidden');
+        }
+      });
+    });
+
+    // 3. Scroll Spy per Navigazione
+    function updateScrollSpy() {
+      const sections = document.querySelectorAll('section[id]');
+      const scrollPosition = window.scrollY + 200;
+
+      sections.forEach(section => {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        const id = section.getAttribute('id');
+        const navLink = document.querySelector(`.nav-item[data-section="${id}"]`);
+
+        if (scrollPosition >= top && scrollPosition < top + height) {
+          document.querySelectorAll('.nav-item').forEach(l => {
+            l.classList.remove('text-primary', 'font-bold', 'bg-paper');
+            l.removeAttribute('aria-current');
+          });
+          if (navLink) {
+            navLink.classList.add('text-primary', 'font-bold', 'bg-paper');
+            navLink.setAttribute('aria-current', 'page');
+          }
+        }
+      });
+    }
+
+    // 4. Flip Card Accessibile
+    function toggleCard(cardId) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      
+      const isFlipped = card.classList.contains('flipped');
+      card.classList.toggle('flipped');
+
+      const button = card.querySelector('button');
+      if (button) {
+        button.setAttribute('aria-expanded', !isFlipped);
+      }
+    }
+
+    // 5. Simulatore di Scala Parametri
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValueDisplay = document.getElementById('scaleValueDisplay');
+    const simLiveAnnouncer = document.getElementById('simLiveAnnouncer');
+
+    const scaleData = {
+      1: {
+        title: '100M Parametri',
+        cap1: { text: '✅ Completato', bg: '#005C36' },
+        cap2: { text: '⚠️ Non Raggiunto', bg: '#B0004A' },
+        cap3: { text: '⚠️ Non Raggiunto', bg: '#B0004A' },
+        announcement: 'Selezionati 100M parametri. Attiva solo la capacità sintattica base.'
+      },
+      2: {
+        title: '1B Parametri',
+        cap1: { text: '✅ Completato', bg: '#005C36' },
+        cap2: { text: '⏳ In Corso', bg: '#0047AB' },
+        cap3: { text: '⚠️ Non Raggiunto', bg: '#B0004A' },
+        announcement: 'Selezionato 1 Miliardo di parametri. Traduzione contestuale parzialmente emersa.'
+      },
+      3: {
+        title: '10B Parametri',
+        cap1: { text: '✅ Completato', bg: '#005C36' },
+        cap2: { text: '✅ Completato', bg: '#005C36' },
+        cap3: { text: '⏳ In Corso', bg: '#0047AB' },
+        announcement: 'Selezionati 10 Miliardi di parametri. Sintassi e traduzione avanzata completate.'
+      },
+      4: {
+        title: '100B+ Parametri',
+        cap1: { text: '✅ Completato', bg: '#005C36' },
+        cap2: { text: '✅ Completato', bg: '#005C36' },
+        cap3: { text: '✅ Emerso Spontaneamente', bg: '#005C36' },
+        announcement: 'Selezionati oltre 100 Miliardi di parametri. Emerso il ragionamento logico multi-passaggio!'
+      }
+    };
+
+    if (scaleSlider) {
+      scaleSlider.addEventListener('input', function() {
+        updateSimulatorUI(parseInt(this.value));
+      });
+    }
+
+    function setSliderValue(val) {
+      if (scaleSlider) {
+        scaleSlider.value = val;
+        updateSimulatorUI(val);
+      }
+    }
+
+    function updateSimulatorUI(val) {
+      const data = scaleData[val];
+      if (!data) return;
+
+      scaleValueDisplay.textContent = data.title;
+      scaleSlider.setAttribute('aria-valuenow', val);
+      scaleSlider.setAttribute('aria-valuetext', `${data.title}`);
+
+      [1, 2, 3, 4].forEach(i => {
+        const chip = document.getElementById(`chip-${i}`);
+        if (chip) {
+          const isSelected = i === val;
+          chip.setAttribute('aria-pressed', isSelected);
+          if (isSelected) {
+            chip.className = "p-2 rounded border-2 border-primary bg-primary text-white font-bold min-h-[44px]";
+          } else {
+            chip.className = "p-2 rounded border border-stone-300 bg-white text-ink hover:bg-stone-100 min-h-[44px]";
+          }
+        }
+      });
+
+      const rect1 = document.getElementById('rect-cap-1');
+      const text1 = document.getElementById('text-cap-1');
+      const rect2 = document.getElementById('rect-cap-2');
+      const text2 = document.getElementById('text-cap-2');
+      const rect3 = document.getElementById('rect-cap-3');
+      const text3 = document.getElementById('text-cap-3');
+
+      if (rect1 && text1) {
+        rect1.setAttribute('fill', data.cap1.bg);
+        text1.textContent = data.cap1.text;
+      }
+      if (rect2 && text2) {
+        rect2.setAttribute('fill', data.cap2.bg);
+        text2.textContent = data.cap2.text;
+      }
+      if (rect3 && text3) {
+        rect3.setAttribute('fill', data.cap3.bg);
+        text3.textContent = data.cap3.text;
+      }
+
+      const tableBody = document.getElementById('tableSimBody');
+      if (tableBody) {
+        tableBody.innerHTML = `
+          <tr class="border-b border-stone-200">
+            <td class="p-2 font-medium">1. Sintassi Base</td>
+            <td class="p-2 font-bold">${data.cap1.text}</td>
+            <td class="p-2 text-stone-600">100M Parametri</td>
+          </tr>
+          <tr class="border-b border-stone-200">
+            <td class="p-2 font-medium">2. Traduzione Avanzata</td>
+            <td class="p-2 font-bold">${data.cap2.text}</td>
+            <td class="p-2 text-stone-600">10B Parametri</td>
+          </tr>
+          <tr>
+            <td class="p-2 font-medium">3. Ragionamento Logico (CoT)</td>
+            <td class="p-2 font-bold">${data.cap3.text}</td>
+            <td class="p-2 text-stone-600">100B+ Parametri</td>
+          </tr>
+        `;
+      }
+
+      if (simLiveAnnouncer) {
+        simLiveAnnouncer.textContent = data.announcement;
+      }
+    }
+
+    // Initial load
+    updateSimulatorUI(1);
+
+    // 6. Switch Tab Paradigmi
+    function switchTab(tabType) {
+      const tabTrad = document.getElementById('tab-tradizionale');
+      const tabEmerg = document.getElementById('tab-emergente');
+      const panelTrad = document.getElementById('panel-tradizionale');
+      const panelEmerg = document.getElementById('panel-emergente');
+
+      if (tabType === 'tradizionale') {
+        tabTrad.setAttribute('aria-selected', 'true');
+        tabTrad.className = "px-5 py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px] bg-primary text-white shadow-sm";
+        tabEmerg.setAttribute('aria-selected', 'false');
+        tabEmerg.className = "px-5 py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px] text-ink hover:bg-stone-200";
+
+        panelTrad.classList.remove('hidden');
+        panelEmerg.classList.add('hidden');
+      } else {
+        tabEmerg.setAttribute('aria-selected', 'true');
+        tabEmerg.className = "px-5 py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px] bg-primary text-white shadow-sm";
+        tabTrad.setAttribute('aria-selected', 'false');
+        tabTrad.className = "px-5 py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px] text-ink hover:bg-stone-200";
+
+        panelEmerg.classList.remove('hidden');
+        panelTrad.classList.add('hidden');
+      }
+    }
+
+    // 7. Generatore di Prompt CoT
+    function generatePrompt() {
+      const strategy = document.getElementById('promptStrategy').value;
+      const userText = document.getElementById('promptInputText').value.trim() || "[Inserisci il problema da analizzare]";
+      const outputArea = document.getElementById('promptOutputArea');
+
+      let result = "";
+
+      if (strategy === 'cot') {
+        result += "Sei un sistema esperto analitico.\n";
+        result += "Per favore, NON fornire subito la risposta finale.\n";
+        result += "Procedi passo dopo passo secondo questa struttura:\n";
+        result += "1. Identifica i dati e i vincoli del problema.\n";
+        result += "2. Scomponi il quesito in sotto-problemi elementari.\n";
+        result += "3. Risolvi ogni sotto-problema in sequenza logica.\n";
+        result += "4. Concludi sintetizzando la risposta finale.\n\n";
+        result += "QUESITO:\n" + userText;
+      } else {
+        result += "Rispondi direttamente al seguente quesito nel modo più sintetico possibile:\n\n";
+        result += "QUESITO:\n" + userText;
+      }
+
+      if (outputArea) {
+        outputArea.textContent = result;
+      }
+    }
+
+    generatePrompt();
+
+    // 8. Clipboard e Toast
+    function copyPromptToClipboard() {
+      const promptText = document.getElementById('promptOutputArea').textContent;
+      executeCopy(promptText, "✅ Completato: Prompt copiato negli appunti!");
+    }
+
+    function copySummaryToClipboard() {
+      const summaryText = document.getElementById('summaryText').value;
+      executeCopy(summaryText, "✅ Completato: Scheda riassuntiva copiata!");
+    }
+
+    function executeCopy(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg, "success");
+        }).catch(() => {
+          fallbackCopy(text, successMsg);
+        });
+      } else {
+        fallbackCopy(text, successMsg);
+      }
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg, "success");
+      } catch (err) {
+        showToast("⚠️ Attenzione: Impossibile copiare automaticamente", "warning");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // Toast a tripla ridondanza
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      let bgColor = "bg-status-success";
+      if (type === 'warning') bgColor = "bg-status-warning";
+      if (type === 'progress') bgColor = "bg-status-progress";
+
+      toast.className = `p-4 rounded-lg text-white font-bold text-sm shadow-lg ${bgColor} transition-all transform translate-y-2 opacity-0 flex items-center gap-2 pointer-events-auto`;
+      toast.innerHTML = `<span>${message}</span>`;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

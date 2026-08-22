@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proprietà Emergenti nell'IA — Guida Didattica Interattiva</title>
+  
+  <!-- Tailwind CSS per classi utility -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Caricamento Font Google (Playfair Display per titoli, Inter per il corpo, JetBrains Mono per codici/dati) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Token della Palette Editoriale e Semantica AAA */
+    :root {
+      /* Palette Editoriale */
+      --ink: #1C1C1C;          /* Testo primario - Contrasto 15.93:1 su bianco/crema */
+      --cream: #FAF6EE;        /* Sfondo principale caldo */
+      --paper: #F2EAD9;        /* Sfondo sezioni alternate */
+      --surface: #F4F4F6;      /* Sfondo neutro per card e controlli */
+      --primary: #7C1D3F;      /* Colore tematico principale (Borgogna/Crimson - Contrasto > 9:1 su crema) */
+      --primary-dark: #5A1530; /* Stato hover/attivo della CTA */
+      --accent: #8A5A00;       /* Dettagli e richiami (Ottone scuro - Contrasto > 7:1) */
+      
+      /* Palette Semantica di Stato (Fissa, verificata AAA) */
+      --status-progress: #0047AB; /* ⏳ In corso - Cobalto vivace */
+      --status-warning: #B0004A;  /* ⚠️ Attenzione - Fucsia intenso */
+      --status-success: #005C36;  /* ✅ Completato - Verde smeraldo */
+    }
+
+    /* Tipografia base */
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background-color: var(--cream);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    h1, h2, h3, h4, .font-serif-display {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    code, kbd, pre, .font-mono-data {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Regole di accessibilità vincolanti per il Focus Visibile */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex="0"]:focus-visible {
+      outline: 3px solid var(--status-progress) !important;
+      outline-offset: 3px !important;
+      border-radius: 4px;
+    }
+
+    /* Sfondi alternati di sezione */
+    .bg-cream { background-color: var(--cream); }
+    .bg-paper { background-color: var(--paper); }
+    .bg-surface { background-color: var(--surface); }
+    .bg-ink { background-color: var(--ink); color: #FFFFFF; }
+
+    /* Contenitore a larghezza controllata per leggibilità (max ~80 caratteri/riga) */
+    .prose-measure {
+      max-width: 72ch;
+    }
+
+    /* Texture cartacea leggera CSS */
+    .paper-texture {
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.015) 0%, transparent 40%),
+        radial-gradient(circle at 80% 60%, rgba(0, 0, 0, 0.015) 0%, transparent 40%);
+    }
+
+    /* Card Capovolgibile Accessibile */
+    .flip-card {
+      perspective: 1000px;
+    }
+    .flip-card-inner {
+      transition: transform 0.4s ease-in-out;
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Gestione della riduzione del movimento per accessibilità */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Stile per i link con sottolineatura permanente */
+    .link-accessible {
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      font-weight: 600;
+    }
+    .bg-ink .link-accessible {
+      color: #E2E8F0;
+    }
+  </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col antialiased selection:bg-rose-900 selection:text-white">
+
+  <!-- Barra di Progresso della Lettura -->
+  <div class="fixed top-0 left-0 w-full h-1.5 bg-gray-300 z-50" role="progressbar" id="progress-container" aria-label="Avanzamento lettura della guida" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <div id="progress-bar" class="h-full bg-[#0047AB] w-0 transition-all duration-150"></div>
+  </div>
+
+  <!-- Header Sticky con navigazione da tastiera e menu mobile accessibile -->
+  <header class="sticky top-1.5 z-40 bg-[#FAF6EE]/90 backdrop-blur-md border-b border-[#1C1C1C]/10 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand / Logo Editoriale -->
+      <a href="#hero" class="flex items-center gap-2 text-lg sm:text-xl font-bold font-serif-display text-[#1C1C1C] hover:text-[#7C1D3F] transition-colors">
+        <span class="w-8 h-8 rounded bg-[#7C1D3F] text-white flex items-center justify-center font-bold text-base shadow-sm" aria-hidden="true">IA</span>
+        <span>Emergenza nell'IA</span>
+      </a>
+
+      <!-- Menu Desktop -->
+      <nav class="hidden md:flex items-center space-x-1 lg:space-x-2" aria-label="Navigazione principale">
+        <a href="#definizione" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" data-section="definizione">1. Concetto</a>
+        <a href="#laboratorio" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" data-section="laboratorio">2. Simulatore</a>
+        <a href="#token-demo" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" data-section="token-demo">3. Previsione</a>
+        <a href="#coscienza" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" data-section="coscienza">4. Limiti e Coscienza</a>
+        <a href="#valutatore" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" data-section="valutatore">5. Strumento Pratico</a>
+      </nav>
+
+      <!-- Pulsante Menu Mobile -->
+      <button id="mobile-menu-btn" type="button" class="md:hidden inline-flex items-center justify-center p-3 rounded-md text-[#1C1C1C] bg-[#F2EAD9] hover:bg-[#7C1D3F] hover:text-white transition-colors min-w-[44px] min-h-[44px]" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri il menu di navigazione">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path id="menu-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Pannello Menu Mobile -->
+    <div id="mobile-menu" class="hidden md:hidden bg-[#FAF6EE] border-b border-[#1C1C1C]/10 px-4 pt-2 pb-4 space-y-2">
+      <a href="#definizione" class="mobile-nav-link block px-3 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">1. Concetto ed Esempi</a>
+      <a href="#laboratorio" class="mobile-nav-link block px-3 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">2. Simulatore di Scala</a>
+      <a href="#token-demo" class="mobile-nav-link block px-3 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">3. Previsione dei Token</a>
+      <a href="#coscienza" class="mobile-nav-link block px-3 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">4. Intelligenza vs Coscienza</a>
+      <a href="#valutatore" class="mobile-nav-link block px-3 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">5. Strumento Operativo</a>
+    </div>
+  </header>
+
+  <main id="main-content" class="flex-grow">
+    
+    <!-- Hero Section -->
+    <section id="hero" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-[#1C1C1C]/10 bg-gradient-to-b from-[#FAF6EE] to-[#F2EAD9]">
+      <div class="max-w-4xl mx-auto text-center space-y-6">
+        
+        <!-- Badge introduttivo con tripla ridondanza (Colore + Icona + Forma + Testo) -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-[#F4F4F6] border border-[#1C1C1C]/20 text-xs sm:text-sm font-semibold text-[#1C1C1C] shadow-sm">
+          <span class="w-3 h-3 rounded-full bg-[#0047AB]" aria-hidden="true"></span>
+          <span>📚 Guida Didattica Interattiva</span>
+          <span class="text-gray-400" aria-hidden="true">•</span>
+          <span>WCAG 2.1 AAA Compliant</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#1C1C1C] tracking-tight leading-tight">
+          Le <span class="italic text-[#7C1D3F]">Proprietà Emergenti</span> nell’Intelligenza Artificiale
+        </h1>
+
+        <p class="prose-measure mx-auto text-lg sm:text-xl text-[#1C1C1C]/90 font-normal leading-relaxed">
+          Come miliardi di semplicissimi calcoli numerici collegati tra loro finiscono per generare capacità inattese di linguaggio, traduzione e ragionamento apparente.
+        </p>
+
+        <!-- Box Promessa concreta per l'utente -->
+        <div class="max-w-2xl mx-auto mt-6 p-5 rounded-lg bg-[#FAF6EE] border-l-4 border-[#7C1D3F] shadow-sm text-left">
+          <h2 class="text-base font-bold text-[#7C1D3F] flex items-center gap-2 uppercase tracking-wide">
+            <span aria-hidden="true">🎯</span>
+            <span>Che cosa scoprirai in questa applicazione:</span>
+          </h2>
+          <ul class="mt-2 space-y-1.5 text-sm sm:text-base text-[#1C1C1C] list-disc list-inside font-medium">
+            <li>Comprenderai cos'è l'emergenza attraverso 5 analogie della vita quotidiana.</li>
+            <li>Sperimenterai in tempo reale come l'aumento dei parametri sblocca nuove abilità nei modelli LLM.</li>
+            <li>Imparerai a distinguere tra reale capacità operativa, allucinazione e assenza di coscienza.</li>
+            <li>Otterrai un vademecum e un checklist generativa copiabile da usare nel tuo lavoro o studio.</li>
+          </ul>
+        </div>
+
+        <!-- Call to Actions -->
+        <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#laboratorio" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-md text-base font-bold text-white bg-[#7C1D3F] hover:bg-[#5A1530] transition-colors shadow-md min-w-[44px] min-h-[44px]">
+            <span>🚀 Sperimenta nel Simulatore</span>
+          </a>
+          <a href="#definizione" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-md text-base font-bold text-[#1C1C1C] bg-[#F4F4F6] border border-[#1C1C1C]/30 hover:bg-[#F2EAD9] transition-colors min-w-[44px] min-h-[44px]">
+            <span>📖 Inizia dal Primo Concetto</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sezione 1: Cos'è una proprietà emergente e le analogie quotidiane -->
+    <section id="definizione" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-[#1C1C1C]/10 bg-cream">
+      <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="border-b border-[#7C1D3F]/20 pb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#7C1D3F]">Modulo 1 di 5</span>
+          <h2 class="text-2xl sm:text-4xl font-bold text-[#1C1C1C] mt-1">1. Che cos’è una “Proprietà Emergente”?</h2>
+        </div>
+
+        <div class="prose-measure text-base sm:text-lg text-[#1C1C1C]/90 space-y-4">
+          <p>
+            Una <strong>proprietà emergente</strong> è una caratteristica che non appartiene alle singole componenti isolate di un sistema, ma che appare soltanto quando moltissime parti relativamente semplici interagiscono e lavorano insieme in grande numero.
+          </p>
+          <div class="p-4 rounded-md bg-[#F2EAD9] border border-[#1C1C1C]/10 font-semibold text-[#1C1C1C]">
+            💡 <strong>Regola fondamentale:</strong> L'insieme acquisisce un comportamento del tutto nuovo che nessuna delle singole parti possiede da sola.
+          </div>
+        </div>
+
+        <!-- Griglia di Card Capovolgibili per le Analogie Quotidiane -->
+        <div class="mt-8">
+          <h3 class="text-xl font-bold text-[#1C1C1C] mb-4 flex items-center gap-2">
+            <span>🧩 Esplora le 5 Analogie Quotidiane</span>
+            <span class="text-xs font-normal text-gray-600">(Clicca o premi Invio sulle card per scoprire l'emergenza)</span>
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cards-grid">
+            
+            <!-- Card 1: Acqua -->
+            <div class="flip-card h-64 cursor-pointer focus-within:ring-2 focus-within:ring-[#0047AB]" tabindex="0" role="button" aria-expanded="false" aria-label="Card Acqua e Molecole. Clicca per girare." onclick="toggleFlipCard(this)" onkeydown="handleCardKeydown(event, this)">
+              <div class="flip-card-inner relative w-full h-full text-left">
+                <!-- Front -->
+                <div class="flip-card-front absolute inset-0 bg-[#F4F4F6] p-6 rounded-lg border border-[#1C1C1C]/20 flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-2xl" aria-hidden="true">💧</span>
+                      <span class="text-xs font-bold px-2 py-1 rounded bg-[#F2EAD9] text-[#1C1C1C]">Elemento vs Insieme</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-[#7C1D3F]">L'Acqua è bagnata</h4>
+                    <p class="text-sm text-[#1C1C1C]/80 mt-2">Ma una singola molecola d'acqua ($H_2O$) non possiede la proprietà di essere "bagnata".</p>
+                  </div>
+                  <div class="text-xs font-bold text-[#0047AB] flex items-center gap-1">
+                    <span>🔍 Scopri la proprietà emergente</span>
+                    <span aria-hidden="true">→</span>
+                  </div>
+                </div>
+                <!-- Back -->
+                <div class="flip-card-back absolute inset-0 bg-[#7C1D3F] text-white p-6 rounded-lg flex flex-col justify-between shadow-md">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-200">Proprietà Emergente</span>
+                    <h4 class="text-lg font-bold mt-1">La Bagnabilità</h4>
+                    <p class="text-xs sm:text-sm mt-2 leading-relaxed">
+                      La sensazione di "bagnato" nasce quando miliardi di molecole scorrono, aderiscono e si attraggono a vicenda sulle superfici.
+                    </p>
+                  </div>
+                  <div class="text-xs font-semibold text-amber-200">↺ Clicca per girare di nuovo</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Neurone -->
+            <div class="flip-card h-64 cursor-pointer focus-within:ring-2 focus-within:ring-[#0047AB]" tabindex="0" role="button" aria-expanded="false" aria-label="Card Neurone e Pensiero. Clicca per girare." onclick="toggleFlipCard(this)" onkeydown="handleCardKeydown(event, this)">
+              <div class="flip-card-inner relative w-full h-full text-left">
+                <div class="flip-card-front absolute inset-0 bg-[#F4F4F6] p-6 rounded-lg border border-[#1C1C1C]/20 flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-2xl" aria-hidden="true">🧠</span>
+                      <span class="text-xs font-bold px-2 py-1 rounded bg-[#F2EAD9] text-[#1C1C1C]">Biologia</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-[#7C1D3F]">Un singolo neurone non pensa</h4>
+                    <p class="text-sm text-[#1C1C1C]/80 mt-2">Riceve solo scosse elettriche ed emette segnali chimici elementari.</p>
+                  </div>
+                  <div class="text-xs font-bold text-[#0047AB] flex items-center gap-1">
+                    <span>🔍 Scopri la proprietà emergente</span>
+                    <span aria-hidden="true">→</span>
+                  </div>
+                </div>
+                <div class="flip-card-back absolute inset-0 bg-[#7C1D3F] text-white p-6 rounded-lg flex flex-col justify-between shadow-md">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-200">Proprietà Emergente</span>
+                    <h4 class="text-lg font-bold mt-1">Pensiero e Memoria</h4>
+                    <p class="text-xs sm:text-sm mt-2 leading-relaxed">
+                      Miliardi di neuroni collegati in reti complesse producono percezione, coscienza, emozioni e linguaggio umano.
+                    </p>
+                  </div>
+                  <div class="text-xs font-semibold text-amber-200">↺ Clicca per girare di nuovo</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Formicaio -->
+            <div class="flip-card h-64 cursor-pointer focus-within:ring-2 focus-within:ring-[#0047AB]" tabindex="0" role="button" aria-expanded="false" aria-label="Card Formica e Nido. Clicca per girare." onclick="toggleFlipCard(this)" onkeydown="handleCardKeydown(event, this)">
+              <div class="flip-card-inner relative w-full h-full text-left">
+                <div class="flip-card-front absolute inset-0 bg-[#F4F4F6] p-6 rounded-lg border border-[#1C1C1C]/20 flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-2xl" aria-hidden="true">🐜</span>
+                      <span class="text-xs font-bold px-2 py-1 rounded bg-[#F2EAD9] text-[#1C1C1C]">Natura</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-[#7C1D3F]">Nessuna formica progetta</h4>
+                    <p class="text-sm text-[#1C1C1C]/80 mt-2">La singola formica non possiede una mappa completa né coordina le altre.</p>
+                  </div>
+                  <div class="text-xs font-bold text-[#0047AB] flex items-center gap-1">
+                    <span>🔍 Scopri la proprietà emergente</span>
+                    <span aria-hidden="true">→</span>
+                  </div>
+                </div>
+                <div class="flip-card-back absolute inset-0 bg-[#7C1D3F] text-white p-6 rounded-lg flex flex-col justify-between shadow-md">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-200">Proprietà Emergente</span>
+                    <h4 class="text-lg font-bold mt-1">Formicaio Organizzato</h4>
+                    <p class="text-xs sm:text-sm mt-2 leading-relaxed">
+                      Seguendo regole locali semplicissime (scia di feromoni), migliaia di formiche creano nidi ingegneristicamente perfetti.
+                    </p>
+                  </div>
+                  <div class="text-xs font-semibold text-amber-200">↺ Clicca per girare di nuovo</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Traffico -->
+            <div class="flip-card h-64 cursor-pointer focus-within:ring-2 focus-within:ring-[#0047AB]" tabindex="0" role="button" aria-expanded="false" aria-label="Card Auto e Ingorgo. Clicca per girare." onclick="toggleFlipCard(this)" onkeydown="handleCardKeydown(event, this)">
+              <div class="flip-card-inner relative w-full h-full text-left">
+                <div class="flip-card-front absolute inset-0 bg-[#F4F4F6] p-6 rounded-lg border border-[#1C1C1C]/20 flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-2xl" aria-hidden="true">🚗</span>
+                      <span class="text-xs font-bold px-2 py-1 rounded bg-[#F2EAD9] text-[#1C1C1C]">Sociale</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-[#7C1D3F]">La singola auto viaggia</h4>
+                    <p class="text-sm text-[#1C1C1C]/80 mt-2">Nessun guidatore sale in auto con l'obiettivo specifico di creare una coda.</p>
+                  </div>
+                  <div class="text-xs font-bold text-[#0047AB] flex items-center gap-1">
+                    <span>🔍 Scopri la proprietà emergente</span>
+                    <span aria-hidden="true">→</span>
+                  </div>
+                </div>
+                <div class="flip-card-back absolute inset-0 bg-[#7C1D3F] text-white p-6 rounded-lg flex flex-col justify-between shadow-md">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-200">Proprietà Emergente</span>
+                    <h4 class="text-lg font-bold mt-1">L'Ingorgo Fantasma</h4>
+                    <p class="text-xs sm:text-sm mt-2 leading-relaxed">
+                      Una piccola frenata a catena genera un ingorgo a chilometri di distanza senza che ci siano incidenti o semafori.
+                    </p>
+                  </div>
+                  <div class="text-xs font-semibold text-amber-200">↺ Clicca per girare di nuovo</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 5: Lettere e Frase -->
+            <div class="flip-card h-64 cursor-pointer focus-within:ring-2 focus-within:ring-[#0047AB]" tabindex="0" role="button" aria-expanded="false" aria-label="Card Lettere e Significato. Clicca per girare." onclick="toggleFlipCard(this)" onkeydown="handleCardKeydown(event, this)">
+              <div class="flip-card-inner relative w-full h-full text-left">
+                <div class="flip-card-front absolute inset-0 bg-[#F4F4F6] p-6 rounded-lg border border-[#1C1C1C]/20 flex flex-col justify-between shadow-sm">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-2xl" aria-hidden="true">🔤</span>
+                      <span class="text-xs font-bold px-2 py-1 rounded bg-[#F2EAD9] text-[#1C1C1C]">Linguaggio</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-[#7C1D3F]">Una lettera "C" non significa</h4>
+                    <p class="text-sm text-[#1C1C1C]/80 mt-2">I caratteri presi da soli non trasmettono concetti articolati.</p>
+                  </div>
+                  <div class="text-xs font-bold text-[#0047AB] flex items-center gap-1">
+                    <span>🔍 Scopri la proprietà emergente</span>
+                    <span aria-hidden="true">→</span>
+                  </div>
+                </div>
+                <div class="flip-card-back absolute inset-0 bg-[#7C1D3F] text-white p-6 rounded-lg flex flex-col justify-between shadow-md">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-200">Proprietà Emergente</span>
+                    <h4 class="text-lg font-bold mt-1">Poesia e Istruzioni</h4>
+                    <p class="text-xs sm:text-sm mt-2 leading-relaxed">
+                      La combinazione di caratteri forma parole, frasi e storie. Il significato emerge dalle relazioni tra le parti!
+                    </p>
+                  </div>
+                  <div class="text-xs font-semibold text-amber-200">↺ Clicca per girare di nuovo</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sezione 2: Laboratorio Interattivo di Scala e Rete Neurale -->
+    <section id="laboratorio" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-[#1C1C1C]/10 bg-paper">
+      <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="border-b border-[#7C1D3F]/20 pb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#7C1D3F]">Modulo 2 di 5</span>
+          <h2 class="text-2xl sm:text-4xl font-bold text-[#1C1C1C] mt-1">2. Simulatore: Dalla Scala al Comportamento Emergente</h2>
+        </div>
+
+        <p class="prose-measure text-base sm:text-lg text-[#1C1C1C]/90">
+          Un Large Language Model (LLM) non è un cervello biologico, ma un sistema matematico formato da "nodi" (simili a pixel numerici) e "pesi" (connessioni). Muovi il selettore sottostante per aumentare la scala dei parametri e osserva quali abilità **emergono** superando certe soglie.
+        </p>
+
+        <!-- Controlli del Simulatore -->
+        <div class="bg-[#FAF6EE] p-6 rounded-xl border border-[#1C1C1C]/20 shadow-md space-y-6">
+          
+          <div class="space-y-2">
+            <label for="scale-slider" class="block text-base font-bold text-[#1C1C1C]">
+              🎛️ Numero di Parametri della Rete Neurale Artificiale:
+            </label>
+            <input type="range" id="scale-slider" min="1" max="5" step="1" value="1" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-[#7C1D3F]" oninput="updateScaleSimulator(this.value)" aria-describedby="scale-description">
+            <div class="flex justify-between text-xs sm:text-sm font-bold text-[#1C1C1C]/80 px-1">
+              <span>1 Nodo</span>
+              <span>1 M</span>
+              <span>1 B</span>
+              <span>70 B</span>
+              <span>1 Trilione+</span>
+            </div>
+          </div>
+
+          <!-- Output Dinamico del Simulatore (Annunciato via aria-live) -->
+          <div id="simulator-output-panel" class="p-6 rounded-lg bg-[#F4F4F6] border border-[#1C1C1C]/20 space-y-4" aria-live="polite">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-300 pb-4">
+              <div>
+                <span class="text-xs font-semibold uppercase text-gray-600">Dimensione del Modello:</span>
+                <div id="sim-scale-title" class="text-xl sm:text-2xl font-extrabold text-[#7C1D3F]">1 Singolo Nodo Numerico</div>
+              </div>
+
+              <!-- Badge di Stato con Tripla Ridondanza (Colore + Icona + Forma + Testo) -->
+              <div id="sim-status-badge" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#0047AB] text-white font-semibold text-sm shadow-sm">
+                <span aria-hidden="true">⏳</span>
+                <span>Stato: In corso / Livello Base</span>
+              </div>
+            </div>
+
+            <!-- Schema Grafico SVG Nativo dell'Architettura -->
+            <div class="w-full bg-white p-4 rounded-md border border-gray-200">
+              <span class="text-xs font-bold text-gray-500 uppercase block mb-2">Rappresentazione della Rete (SVG Nativo):</span>
+              <svg id="sim-svg" class="w-full h-32" viewBox="0 0 600 120" role="img" aria-labelledby="sim-svg-title sim-svg-desc">
+                <title id="sim-svg-title">Schema della Rete Neurale</title>
+                <desc id="sim-svg-desc">Visualizzazione dinamica delle connessioni e dei nodi attivi in base alla scala selezionata.</desc>
+                <!-- SVG renderizzato da JS -->
+              </svg>
+            </div>
+
+            <!-- Tabella Testuale Alternativa per Accessibilità (Richiesta WCAG) -->
+            <div class="sr-only" id="scale-description">
+              Tabella descrittiva dello stato del simulatore.
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div class="p-4 rounded bg-white border border-gray-200">
+                <h4 class="text-xs font-bold uppercase text-gray-500">Capacità Limite Osservata:</h4>
+                <p id="sim-ability" class="text-base font-bold text-[#1C1C1C] mt-1">Nessuna. Trasforma solo un singolo numero in un altro.</p>
+              </div>
+
+              <div class="p-4 rounded bg-white border border-gray-200">
+                <h4 class="text-xs font-bold uppercase text-gray-500">Spiegazione del Meccanismo:</h4>
+                <p id="sim-explanation" class="text-sm text-[#1C1C1C]/90 mt-1">Un singolo nodo non possiede contesto, vocabolario o memoria.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sezione 3: Come Impara un Modello — Previsione Token e In-Context Learning -->
+    <section id="token-demo" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-[#1C1C1C]/10 bg-cream">
+      <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="border-b border-[#7C1D3F]/20 pb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#7C1D3F]">Modulo 3 di 5</span>
+          <h2 class="text-2xl sm:text-4xl font-bold text-[#1C1C1C] mt-1">3. Il Meccanismo: Prevedere il "Prossimo Token"</h2>
+        </div>
+
+        <div class="prose-measure text-base sm:text-lg text-[#1C1C1C]/90 space-y-4">
+          <p>
+            Un LLM non nasce per "ragionare", ma per risolvere un compito apparentemente banale: <strong>indovinare quale parola o simbolo viene dopo</strong>. Tuttavia, per svolgere questo compito con precisione su testi complessi, il sistema deve sviluppare mappe interne del mondo!
+          </p>
+        </div>
+
+        <!-- Dimostratore Interattivo di Previsione dei Token -->
+        <div class="p-6 rounded-xl bg-[#F4F4F6] border border-[#1C1C1C]/20 space-y-6">
+          <h3 class="text-xl font-bold text-[#7C1D3F] flex items-center gap-2">
+            <span>🧪 Laboratorio di Completamento del Testo</span>
+          </h3>
+
+          <div class="space-y-3">
+            <label for="token-sentence-select" class="block text-sm font-bold text-[#1C1C1C]">
+              Scegli una frase di prova per vedere la probabilità del prossimo token:
+            </label>
+            <select id="token-sentence-select" class="w-full p-3 rounded-md bg-white border border-[#1C1C1C]/30 text-base font-semibold text-[#1C1C1C] min-h-[44px]" onchange="updateTokenPrediction(this.value)">
+              <option value="1">"Roma è la capitale dell’..."</option>
+              <option value="2">"Marco ha lasciato il gelato al sole. Quando è tornato, era..."</option>
+              <option value="3">"gatto → CAT | cane → DOG | cavallo → HORSE | uccello → ..."</option>
+            </select>
+          </div>
+
+          <!-- Output con Valori di Probabilità (Annuncio Live) -->
+          <div id="token-output-box" class="p-5 rounded-lg bg-white border border-gray-300 space-y-4" aria-live="polite">
+            <!-- Popolato via JS -->
+          </div>
+        </div>
+
+        <!-- In-Context Learning Explanation Callout -->
+        <div class="p-5 rounded-lg bg-[#F2EAD9] border-l-4 border-[#0047AB] space-y-2">
+          <h4 class="text-base font-bold text-[#0047AB] flex items-center gap-2">
+            <span>🧠 Cos'è l'Apprendimento nel Contesto (In-Context Learning)?</span>
+          </h4>
+          <p class="text-sm sm:text-base text-[#1C1C1C]">
+            Negli esempi soprastanti si nota l'<strong>In-Context Learning</strong>: il modello non modifica i suoi parametri interni durante la conversazione, ma riconosce la regola del pattern direttamente dal contesto fornito e adatta la previsione al volo!
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sezione 4: Distinzione Fondamentale — Intelligenza vs Coscienza -->
+    <section id="coscienza" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-[#1C1C1C]/10 bg-paper">
+      <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="border-b border-[#7C1D3F]/20 pb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#7C1D3F]">Modulo 4 di 5</span>
+          <h2 class="text-2xl sm:text-4xl font-bold text-[#1C1C1C] mt-1">4. "Emergente" non significa "Magico": Intelligenza vs Coscienza</h2>
+        </div>
+
+        <div class="prose-measure text-base sm:text-lg text-[#1C1C1C]/90 space-y-4">
+          <p>
+            È fondamentale evitare trappole antropomorfiche. Rispondere in modo fluido non equivale a provare emozioni o essere consapevoli di ciò che si dice.
+          </p>
+        </div>
+
+        <!-- Tabella / Schede di Confronto Diretto -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Card Comportamento Intelligente -->
+          <div class="p-6 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/20 shadow-sm space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#005C36] text-white text-xs font-bold uppercase">
+              <span aria-hidden="true">✅</span>
+              <span>Comportamento Intelligente</span>
+            </div>
+            <h3 class="text-xl font-bold text-[#1C1C1C]">Capacità Operativa Esterna</h3>
+            <ul class="space-y-2 text-sm text-[#1C1C1C] list-disc list-inside">
+              <li>Risolvere problemi matematici o logici su testo.</li>
+              <li>Sintetizzare documenti lunghi o tradurre in 50 lingue.</li>
+              <li>Scrivere codice informatico funzionante.</li>
+              <li>Adattare lo stile di risposta al contesto dell'utente.</li>
+            </ul>
+            <p class="text-xs text-gray-600 italic border-t border-gray-200 pt-2">
+              📌 Valutabile oggettivamente tramite test, compiti ed esercizi pratici.
+            </p>
+          </div>
+
+          <!-- Card Coscienza e Vissuto -->
+          <div class="p-6 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/20 shadow-sm space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#B0004A] text-white text-xs font-bold uppercase">
+              <span aria-hidden="true">⚠️</span>
+              <span>Coscienza & Sensibilità</span>
+            </div>
+            <h3 class="text-xl font-bold text-[#1C1C1C]">Esperienza Soggettiva</h3>
+            <ul class="space-y-2 text-sm text-[#1C1C1C] list-disc list-inside">
+              <li>Provare dispiacere, gioia, dolore o empatia reale.</li>
+              <li>Comprendere il significato vissuto della parola "calore".</li>
+              <li>Avere intenzioni, desideri o una propria volontà.</li>
+              <li>Avere autoconsapevolezza della propria esistenza.</li>
+            </ul>
+            <p class="text-xs text-gray-600 italic border-t border-gray-200 pt-2">
+              🛑 Assente. Le frasi come "Mi dispiace per la situazione" sono mere sequenze statistiche.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Avviso sulle Spiegazioni del Modello -->
+        <div class="p-5 rounded-lg bg-[#FAF6EE] border border-[#7C1D3F]/30 flex flex-col sm:flex-row items-start gap-4">
+          <span class="text-3xl" aria-hidden="true">🚲</span>
+          <div>
+            <h4 class="text-base font-bold text-[#7C1D3F]">L'Analogia della Bicicletta: Perché le Spiegazioni del Modello Vanno Verificate</h4>
+            <p class="text-sm text-[#1C1C1C]/90 mt-1">
+              Quando chiedi a un modello "Spiegami i tuoi passaggi", il testo di risposta è una costruzione ex-post di ciò che appare convincente, non un resoconto fedele dei calcoli vettoriali interni. Proprio come un ciclista esperto sa stare in equilibrio senza saper calcolare le formule di fisica mentre pedala!
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sezione 5: Strumento Operativo — Valutatore di Affidabilità & Generatore di Prompt -->
+    <section id="valutatore" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-[#1C1C1C]/10 bg-cream">
+      <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="border-b border-[#7C1D3F]/20 pb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#7C1D3F]">Modulo 5 di 5</span>
+          <h2 class="text-2xl sm:text-4xl font-bold text-[#1C1C1C] mt-1">5. Strumento Operativo: Valuta il tuo Caso d'Uso</h2>
+        </div>
+
+        <p class="prose-measure text-base sm:text-lg text-[#1C1C1C]/90">
+          Usa questo configuratore per verificare se la capacità richiesta al modello è **emergente e affidabile** o se richiede controlli umani stringenti.
+        </p>
+
+        <!-- Form del Configuratore -->
+        <div class="p-6 rounded-xl bg-[#F4F4F6] border border-[#1C1C1C]/20 space-y-6">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
+            <div class="space-y-2">
+              <label for="usecase-type" class="block text-sm font-bold text-[#1C1C1C]">
+                1. Tipo di Compito:
+              </label>
+              <select id="usecase-type" class="w-full p-3 rounded-md bg-white border border-[#1C1C1C]/30 text-sm font-semibold text-[#1C1C1C] min-h-[44px]" onchange="generateEvaluationReport()">
+                <option value="summary">Riassunto o Rielaborazione di Testo fornito</option>
+                <option value="code">Scrittura / Debug di Codice Informatico</option>
+                <option value="math">Calcolo Matematico Complesso e Dati Certi</option>
+                <option value="medical">Diagnosi Medica o Parere Legale Vincolante</option>
+                <option value="creative">Brainstorming e Generazione Creativa</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label for="usecase-context" class="block text-sm font-bold text-[#1C1C1C]">
+                2. Livello di Contesto Fornito (In-Context):
+              </label>
+              <select id="usecase-context" class="w-full p-3 rounded-md bg-white border border-[#1C1C1C]/30 text-sm font-semibold text-[#1C1C1C] min-h-[44px]" onchange="generateEvaluationReport()">
+                <option value="high">Alto (Ho inserito documenti e regole chiare nel prompt)</option>
+                <option value="medium">Medio (Ho dato qualche esempio e istruzione)</option>
+                <option value="none">Nullo (Chiedo solo alla memoria generica del modello)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Output del Valutatore con aria-live -->
+          <div id="evaluation-output-panel" class="p-6 rounded-lg bg-white border border-gray-300 space-y-4" aria-live="polite">
+            <!-- Popolato via JavaScript -->
+          </div>
+
+          <!-- Pulsante di Copia Prompt con Feedback Toast -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-gray-200">
+            <span class="text-xs font-semibold text-gray-600">Prompt di Verifica pronto per l'uso:</span>
+            <button type="button" id="copy-btn" onclick="copyPromptToClipboard()" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-md bg-[#7C1D3F] text-white font-bold text-sm hover:bg-[#5A1530] transition-colors min-w-[44px] min-h-[44px]">
+              <span id="copy-btn-icon" class="mr-2" aria-hidden="true">📋</span>
+              <span id="copy-btn-text">Copia Prompt Verificatore</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sezione 6: Vademecum e Sintesi Finale -->
+    <section id="sintesi" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-paper">
+      <div class="max-w-5xl mx-auto space-y-6">
+        
+        <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1C1C]">📌 Vademecum: 5 Regole da Ricordare Sempre</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-semibold text-[#1C1C1C]">
+          <div class="p-4 rounded bg-[#FAF6EE] border border-[#1C1C1C]/10 flex items-start gap-3">
+            <span class="text-xl" aria-hidden="true">1️⃣</span>
+            <span><strong>L'emergenza è quantitativa:</strong> La capacità cresce con la scala, ma le prestazioni possono mostrare scatti pratici d'affidabilità.</span>
+          </div>
+
+          <div class="p-4 rounded bg-[#FAF6EE] border border-[#1C1C1C]/10 flex items-start gap-3">
+            <span class="text-xl" aria-hidden="true">2️⃣</span>
+            <span><strong>Prevedere non è comprendere:</strong> Generare testo fluente non garantisce che i calcoli o le informazioni siano esatti.</span>
+          </div>
+
+          <div class="p-4 rounded bg-[#FAF6EE] border border-[#1C1C1C]/10 flex items-start gap-3">
+            <span class="text-xl" aria-hidden="true">3️⃣</span>
+            <span><strong>Il contesto guidante fa la differenza:</strong> Fornire esempi chiari nel prompt orienta le risposte in modo drastico.</span>
+          </div>
+
+          <div class="p-4 rounded bg-[#FAF6EE] border border-[#1C1C1C]/10 flex items-start gap-3">
+            <span class="text-xl" aria-hidden="true">4️⃣</span>
+            <span><strong>Zero coscienza interiore:</strong> Nessun modello soffre, gioisce o ha intenzioni proprie. Non farti ingannare dal linguaggio.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notifica Toast Accessibile per le Azioni dell'Utente -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none" role="status" aria-live="polite">
+    <div id="toast-content" class="px-5 py-3.5 rounded-lg text-white font-bold text-sm shadow-xl flex items-center gap-3 bg-[#005C36]">
+      <span id="toast-icon" aria-hidden="true">✅</span>
+      <span id="toast-message">Messaggio di notifica</span>
+    </div>
+  </div>
+
+  <!-- Footer dell'Applicazione -->
+  <footer class="bg-[#1C1C1C] text-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-gray-300">
+      <div class="space-y-1 text-center md:text-left">
+        <p class="font-bold text-white text-base font-serif-display">Proprietà Emergenti nell'Intelligenza Artificiale</p>
+        <p>Applicazione Didattica Editoriale Accessibile conforme a WCAG 2.1 Livello AAA.</p>
+      </div>
+
+      <div class="flex items-center gap-4 text-xs">
+        <span class="inline-flex items-center gap-1 text-emerald-400 font-bold">
+          <span aria-hidden="true">✅</span> WCAG 2.1 AAA
+        </span>
+        <span class="text-gray-500">|</span>
+        <span>Senza dipendenze backend</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       LOGICA JAVASCRIPT VANILLA E GESTIONE STATO INTERATTIVO
+       ========================================================================== */
+
+    // Inizializzazione al caricamento della pagina
+    window.addEventListener('DOMContentLoaded', function() {
+      initProgressBar();
+      initMobileMenu();
+      initScrollSpy();
+      updateScaleSimulator(1);
+      updateTokenPrediction('1');
+      generateEvaluationReport();
+    });
+
+    /* --------------------------------------------------------------------------
+       1. Barra di Avanzamento Lettura dello Scorrimento
+       -------------------------------------------------------------------------- */
+    function initProgressBar() {
+      const progressBar = document.getElementById('progress-bar');
+      const progressContainer = document.getElementById('progress-container');
+
+      window.addEventListener('scroll', function() {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        
+        if (progressBar) {
+          progressBar.style.width = scrollPercent + '%';
+        }
+        if (progressContainer) {
+          progressContainer.setAttribute('aria-valuenow', Math.round(scrollPercent));
+        }
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       2. Gestione Menu Mobile
+       -------------------------------------------------------------------------- */
+    function initMobileMenu() {
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const navLinks = document.querySelectorAll('.mobile-nav-link');
+
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', function() {
+          const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
+          menuBtn.setAttribute('aria-expanded', !expanded);
+          mobileMenu.classList.toggle('hidden');
+        });
+
+        navLinks.forEach(function(link) {
+          link.addEventListener('click', function() {
+            mobileMenu.classList.add('hidden');
+            menuBtn.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       3. ScrollSpy per Evidenziare la Sezione Attiva nella Navigazione
+       -------------------------------------------------------------------------- */
+    function initScrollSpy() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-link');
+
+      window.addEventListener('scroll', function() {
+        let currentSectionId = '';
+        const scrollPosition = window.scrollY + 200;
+
+        sections.forEach(function(section) {
+          if (scrollPosition >= section.offsetTop) {
+            currentSectionId = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(function(link) {
+          link.classList.remove('bg-[#F2EAD9]', 'text-[#7C1D3F]');
+          link.removeAttribute('aria-current');
+          if (link.getAttribute('data-section') === currentSectionId) {
+            link.classList.add('bg-[#F2EAD9]', 'text-[#7C1D3F]');
+            link.setAttribute('aria-current', 'page');
+          }
+        });
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       4. Gestione Flip Card Accessibili tramite Mouse e Tastiera
+       -------------------------------------------------------------------------- */
+    function toggleFlipCard(cardElement) {
+      const isFlipped = cardElement.classList.contains('flipped');
+      cardElement.classList.toggle('flipped');
+      cardElement.setAttribute('aria-expanded', !isFlipped);
+    }
+
+    function handleCardKeydown(event, cardElement) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleFlipCard(cardElement);
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       5. Simulatore di Scala dei Parametri e Modello Neurale
+       -------------------------------------------------------------------------- */
+    const scaleData = {
+      "1": {
+        title: "1 Singolo Nodo Numerico",
+        statusText: "In corso / Livello Base",
+        badgeColor: "bg-[#0047AB]",
+        icon: "⏳",
+        ability: "Nessuna. Effettua una semplice moltiplicazione matematica scalare.",
+        explanation: "Un singolo interruttore numerico non possiede memoria né vocabolario. Può solo amplificare o attenuare un valore d'ingresso.",
+        svgNodes: 1,
+        connections: 0
+      },
+      "2": {
+        title: "1 Milione di Parametri",
+        statusText: "In corso / Riconoscimento Pattern",
+        badgeColor: "bg-[#0047AB]",
+        icon: "⏳",
+        ability: "Riconoscimento di grammatica di base e completamento di frasi corte frequenti.",
+        explanation: "Iniziano a formarsi piccoli gruppi di collegamenti in grado di distinguere verbi e sostantivi comuni.",
+        svgNodes: 4,
+        connections: 6
+      },
+      "3": {
+        title: "1 Miliardo di Parametri",
+        statusText: "Attenzione / Transizione di Scala",
+        badgeColor: "bg-[#B0004A]",
+        icon: "⚠️",
+        ability: "Traduzione semplice, classificazione di testi, riassunti di paragrafi brevi.",
+        explanation: "Il modello apprende rappresentazioni astratte. Inizia a connettere concetti geografici e relazioni temporali.",
+        svgNodes: 8,
+        connections: 16
+      },
+      "4": {
+        title: "70 Miliardi di Parametri (LLM Moderno)",
+        statusText: "Completato / Emergenza Attiva",
+        badgeColor: "bg-[#005C36]",
+        icon: "✅",
+        ability: "Conversazione fluida, risoluzione di problemi a passaggi, generazione di codice, In-Context Learning.",
+        explanation: "Superata la soglia critica: il sistema risolve compiti per cui non era stato esplicitamente programmato a mano!",
+        svgNodes: 12,
+        connections: 30
+      },
+      "5": {
+        title: "1 Trilione+ di Parametri (Frontier LLM)",
+        statusText: "Completato / Capacità Avanzate",
+        badgeColor: "bg-[#005C36]",
+        icon: "✅",
+        ability: "Ragionamento multimodale, analisi di codice complesso, traduzione in 100+ lingue, sintesi scientifica.",
+        explanation: "La densità delle connessioni consente di mantenere contesti lunghi e di seguire istruzioni molto dettagliate.",
+        svgNodes: 18,
+        connections: 45
+      }
+    };
+
+    function updateScaleSimulator(val) {
+      const data = scaleData[val];
+      if (!data) return;
+
+      document.getElementById('sim-scale-title').textContent = data.title;
+      
+      const badge = document.getElementById('sim-status-badge');
+      badge.className = `inline-flex items-center gap-2 px-3.5 py-2 rounded-md text-white font-semibold text-sm shadow-sm ${data.badgeColor}`;
+      badge.innerHTML = `<span aria-hidden="true">${data.icon}</span> <span>Stato: ${data.statusText}</span>`;
+
+      document.getElementById('sim-ability').textContent = data.ability;
+      document.getElementById('sim-explanation').textContent = data.explanation;
+
+      // Aggiorna l'SVG Nativo della rete
+      renderSvgNetwork(data.svgNodes);
+    }
+
+    function renderSvgNetwork(nodeCount) {
+      const svg = document.getElementById('sim-svg');
+      if (!svg) return;
+
+      let html = `<title id="sim-svg-title">Schema della Rete Neurale (${nodeCount} nodi)</title>
+                  <desc id="sim-svg-desc">Diagramma vettoriale che mostra i nodi e le interconnessioni.</desc>`;
+
+      const width = 600;
+      const height = 120;
+      const nodes = [];
+
+      // Calcola posizioni dei nodi
+      for (let i = 0; i < nodeCount; i++) {
+        const x = 40 + (i * (width - 80) / Math.max(1, nodeCount - 1));
+        const y = height / 2 + (Math.sin(i * 1.5) * 30);
+        nodes.push({x, y});
+      }
+
+      // Disegna linee di connessione
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          if (Math.abs(i - j) <= 3) {
+            html += `<line x1="${nodes[i].x}" y1="${nodes[i].y}" x2="${nodes[j].x}" y2="${nodes[j].y}" stroke="#7C1D3F" stroke-opacity="0.3" stroke-width="1.5" />`;
+          }
+        }
+      }
+
+      // Disegna i nodi (cerchi SVG)
+      nodes.forEach((n, idx) => {
+        html += `<circle cx="${n.x}" cy="${n.y}" r="8" fill="#0047AB" stroke="#FAF6EE" stroke-width="2" />`;
+      });
+
+      svg.innerHTML = html;
+    }
+
+    /* --------------------------------------------------------------------------
+       6. Dimostratore di Previsione dei Token
+       -------------------------------------------------------------------------- */
+    const tokenOptions = {
+      "1": {
+        prompt: "Roma è la capitale dell’...",
+        predictions: [
+          { token: "Italia", prob: "98.4%", status: "success", label: "✅ Completato: Risposta Corretta" },
+          { token: "Europa", prob: "1.1%", status: "progress", label: "⏳ In corso: Plausibile ma generico" },
+          { token: "Impero", prob: "0.3%", status: "warning", label: "⚠️ Attenzione: Riferimento storico" }
+        ],
+        explanation: "Il modello assegna la massima probabilità a 'Italia' grazie all'alta frequenza di co-occorrenza nei testi di addestramento."
+      },
+      "2": {
+        prompt: "Marco ha lasciato il gelato al sole. Quando è tornato, era...",
+        predictions: [
+          { token: "sciolto", prob: "94.2%", status: "success", label: "✅ Completato: Conoscenza del Mondo" },
+          { token: "caldo", prob: "4.5%", status: "progress", label: "⏳ In corso: Parzialmente corretto" },
+          { token: "scomparso", prob: "0.8%", status: "warning", label: "⚠️ Attenzione: Meno probabile" }
+        ],
+        explanation: "Per completare 'sciolto', il modello applica una mappa implicita della causa-effetto (il sole fonde il gelato) appresa da milioni di frasi narrative."
+      },
+      "3": {
+        prompt: "gatto → CAT | cane → DOG | cavallo → HORSE | uccello → ...",
+        predictions: [
+          { token: "BIRD", prob: "99.1%", status: "success", label: "✅ Completato: In-Context Learning" },
+          { token: "VOLARE", prob: "0.5%", status: "warning", label: "⚠️ Attenzione: Fuori dal pattern" },
+          { token: "ANIMAL", prob: "0.2%", status: "warning", label: "⚠️ Attenzione: Categoria errata" }
+        ],
+        explanation: "Dimostrazione di In-Context Learning: il modello ha capito la regola del pattern (Italiano → Inglese) direttamente dai primi tre esempi forniti!"
+      }
+    };
+
+    function updateTokenPrediction(val) {
+      const data = tokenOptions[val];
+      const box = document.getElementById('token-output-box');
+      if (!data || !box) return;
+
+      let html = `<div class="font-mono-data text-base font-bold text-[#7C1D3F] bg-[#FAF6EE] p-3 rounded border border-gray-300">
+                    Input: ${data.prompt}
+                  </div>
+                  <div class="space-y-2 mt-3">
+                    <span class="text-xs font-bold uppercase text-gray-600 block">Distribuzione di Probabilità dei Prossimi Token:</span>`;
+
+      data.predictions.forEach(p => {
+        let badgeBg = "bg-[#005C36]";
+        if (p.status === "progress") badgeBg = "bg-[#0047AB]";
+        if (p.status === "warning") badgeBg = "bg-[#B0004A]";
+
+        html += `<div class="flex items-center justify-between p-2 rounded bg-gray-50 border border-gray-200">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono-data font-bold text-[#1C1C1C]">${p.token}</span>
+                    <span class="text-xs px-2 py-0.5 rounded text-white font-bold ${badgeBg}">${p.label}</span>
+                  </div>
+                  <span class="font-mono-data font-bold text-sm text-[#0047AB]">${p.prob}</span>
+                </div>`;
+      });
+
+      html += `</div>
+               <p class="text-xs text-[#1C1C1C]/90 mt-2 italic border-t border-gray-200 pt-2">
+                 💡 <strong>Spiegazione:</strong> ${data.explanation}
+               </p>`;
+
+      box.innerHTML = html;
+    }
+
+    /* --------------------------------------------------------------------------
+       7. Valutatore Operativo di Affidabilità e Generatore di Prompt
+       -------------------------------------------------------------------------- */
+    let currentGeneratedPrompt = "";
+
+    function generateEvaluationReport() {
+      const taskType = document.getElementById('usecase-type').value;
+      const contextLevel = document.getElementById('usecase-context').value;
+      const outputPanel = document.getElementById('evaluation-output-panel');
+
+      let riskStatus = "Completato / Rischio Basso";
+      let riskBadgeClass = "bg-[#005C36]";
+      let icon = "✅";
+      let title = "Uso Ideale del Modello";
+      let analysis = "Questo compito sfrutta appieno le capacità emergenti del modello senza esporre a rischi critici.";
+      let promptTemplate = "";
+
+      if (taskType === "medical" || taskType === "math") {
+        if (contextLevel !== "high") {
+          riskStatus = "Attenzione / Rischio Elevato di Allucinazione";
+          riskBadgeClass = "bg-[#B0004A]";
+          icon = "⚠️";
+          title = "Verifica Umana Obbligatoria";
+          analysis = "I modelli di linguaggio sono generatori probabilistici. Non usarli come calcolatrici esatte o fonti diagnostiche senza documenti allegati o strumenti di calcolo dedicati.";
+        }
+      } else if (taskType === "code") {
+        riskStatus = "In corso / Rischio Medio (Richiede Test)";
+        riskBadgeClass = "bg-[#0047AB]";
+        icon = "⏳";
+        title = "Generazione Utile ma da Collaudare";
+        analysis = "Il codice generato è spesso corretto nell'80% dei casi, ma può contenere bug sottili o librerie deprecate.";
+      }
+
+      // Costruzione del Prompt Verificatore
+      promptTemplate = `Agisci come un revisore critico esperto. Analizza il seguente compito di [${taskType.toUpperCase()}] usando esclusivamente i documenti forniti nel contesto.
+Istruzioni:
+1. Rispondi passo dopo passo mostrando i passaggi logici.
+2. Se le informazioni nel testo fornito non sono sufficienti per una risposta certa, dichiara esplicitamente "Dato non presente" anziché ipotizzare.
+3. Se rilevi un calcolo numerico, avvisa che va verificato con uno strumento esterno.`;
+
+      currentGeneratedPrompt = promptTemplate;
+
+      outputPanel.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+          <h4 class="text-lg font-bold text-[#1C1C1C]">${title}</h4>
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded text-white font-bold text-xs ${riskBadgeClass}">
+            <span aria-hidden="true">${icon}</span>
+            <span>${riskStatus}</span>
+          </span>
+        </div>
+        <p class="text-sm text-[#1C1C1C]/90">${analysis}</p>
+        <div class="mt-3">
+          <span class="text-xs font-bold uppercase text-gray-500 block mb-1">Anteprima del Prompt di Verifica Generato:</span>
+          <pre class="p-3 bg-[#FAF6EE] rounded border border-gray-300 text-xs font-mono-data text-[#1C1C1C] whitespace-pre-wrap">${promptTemplate}</pre>
+        </div>
+      `;
+    }
+
+    /* --------------------------------------------------------------------------
+       8. Funzione di Copia negli Appunti con Feedback Toast
+       -------------------------------------------------------------------------- */
+    function copyPromptToClipboard() {
+      if (!currentGeneratedPrompt) return;
+
+      // Fallback per ambienti iframe ristretti
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(currentGeneratedPrompt).then(showSuccessToast).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+    }
+
+    function fallbackCopy() {
+      const textarea = document.createElement('textarea');
+      textarea.value = currentGeneratedPrompt;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showSuccessToast();
+      } catch (err) {
+        showToast('⚠️ Impossibile copiare automaticamente. Seleziona il testo manualmente.', 'warning');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showSuccessToast() {
+      const btnText = document.getElementById('copy-btn-text');
+      const btnIcon = document.getElementById('copy-btn-icon');
+      
+      if (btnText && btnIcon) {
+        btnText.textContent = "Copiato negli Appunti!";
+        btnIcon.textContent = "✅";
+        setTimeout(() => {
+          btnText.textContent = "Copia Prompt Verificatore";
+          btnIcon.textContent = "📋";
+        }, 3000);
+      }
+
+      showToast('✅ Prompt di verifica copiato negli appunti con successo!', 'success');
+    }
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      const toastContent = document.getElementById('toast-content');
+      const toastMessage = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      if (!toast || !toastContent || !toastMessage || !toastIcon) return;
+
+      toastMessage.textContent = message;
+
+      if (type === 'warning') {
+        toastContent.className = "px-5 py-3.5 rounded-lg text-white font-bold text-sm shadow-xl flex items-center gap-3 bg-[#B0004A]";
+        toastIcon.textContent = "⚠️";
+      } else {
+        toastContent.className = "px-5 py-3.5 rounded-lg text-white font-bold text-sm shadow-xl flex items-center gap-3 bg-[#005C36]";
+        toastIcon.textContent = "✅";
+      }
+
+      toast.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

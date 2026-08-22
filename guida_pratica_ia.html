@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA a Scuola — Guida Pratica per Studenti (MIM)</title>
+  <style>
+    :root {
+      /* Colori primari */
+      --color-hero: #0E47CB;
+      --color-outline: #1A1A4E;
+      --color-primary: #2F54EB;
+
+      /* Accenti */
+      --color-accent-yellow: #F5A623;
+      --color-accent-teal: #3DD9C5;
+      --color-accent-coral: #E84545;
+
+      /* Sfondi */
+      --color-bg: #FFFFFF;
+      --color-bg-soft: #F4F5F7;
+
+      /* Testo */
+      --color-text: #1A1A2E;
+
+      /* Ombre piatte (15% più scuro, no blur) */
+      --shadow-flat: 2px 2px 0 rgba(26,26,78,0.15);
+      --shadow-flat-hover: 4px 4px 0 rgba(26,26,78,0.2);
+
+      /* Tratto */
+      --stroke-width: 2.5px;
+      --radius-base: 12px;
+      --radius-sm: 8px;
+    }
+
+    /* Reset e stili base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header e Navigazione */
+    .app-header {
+      background: var(--color-bg);
+      border-bottom: var(--stroke-width) solid var(--color-outline);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 0 rgba(26,26,78,0.05);
+    }
+
+    .app-header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--color-text);
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      background: var(--color-accent-yellow);
+      color: var(--color-outline);
+      border: var(--stroke-width) solid var(--color-outline);
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .app-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      color: var(--color-text);
+      text-decoration: none;
+      padding: 0.5rem 0.85rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: var(--radius-sm);
+      border: var(--stroke-width) solid transparent;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-btn:hover, .nav-btn:focus-visible {
+      border-color: var(--color-outline);
+      background: var(--color-bg-soft);
+      outline: none;
+    }
+
+    .nav-btn.active {
+      background: var(--color-hero);
+      color: #FFFFFF;
+      border-color: var(--color-outline);
+      box-shadow: var(--shadow-flat);
+    }
+
+    /* Container principale */
+    .app-main {
+      min-height: calc(100vh - 160px);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Modulo Hero Istituzionale */
+    .hero {
+      background: var(--color-hero);
+      color: #FFFFFF;
+      padding: 3rem 2rem;
+      border-radius: var(--radius-base);
+      border: var(--stroke-width) solid var(--color-outline);
+      box-shadow: 4px 4px 0 var(--color-outline);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 868px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 2rem 1.5rem;
+        text-align: center;
+      }
+      .hero-illustration {
+        justify-self: center;
+      }
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--color-accent-teal);
+      color: var(--color-outline);
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      border: var(--stroke-width) solid var(--color-outline);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin-bottom: 1.5rem;
+      max-width: 650px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* Pulsanti Istituzionali */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      padding: 0.75rem 1.4rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-flat);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      text-decoration: none;
+      user-select: none;
+      background: #FFFFFF;
+      color: var(--color-text);
+    }
+
+    .btn:hover, .btn:focus-visible {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-flat-hover);
+      outline: 2px solid var(--color-outline);
+    }
+
+    .btn:active {
+      transform: translate(0, 0);
+      box-shadow: 1px 1px 0 rgba(26,26,78,0.15);
+    }
+
+    .btn-primary { background: var(--color-primary); color: #FFFFFF; }
+    .btn-accent-yellow { background: var(--color-accent-yellow); color: var(--color-outline); }
+    .btn-accent-teal { background: var(--color-accent-teal); color: var(--color-outline); }
+    .btn-accent-coral { background: var(--color-accent-coral); color: #FFFFFF; }
+
+    /* Card standard */
+    .card {
+      background: var(--color-bg);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      box-shadow: var(--shadow-flat);
+      padding: 1.5rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-flat-hover);
+    }
+
+    .card-soft {
+      background: var(--color-bg-soft);
+    }
+
+    /* Griglie responsive */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Sezione Titolo */
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: #4A4A68;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Copilota & Regola Finale Boxes */
+    .copilota-box {
+      background: var(--color-bg-soft);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-flat);
+    }
+
+    .copilota-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+      background: #FFFFFF;
+      padding: 1.2rem;
+      border-radius: var(--radius-sm);
+      border: var(--stroke-width) solid var(--color-outline);
+    }
+
+    .copilota-step {
+      text-align: center;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .copilota-step-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-soft);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: 50%;
+    }
+
+    .copilota-arrow {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+
+    /* Semaforo Component */
+    .semaforo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: var(--stroke-width) solid var(--color-outline);
+      text-transform: uppercase;
+    }
+
+    .semaforo-verde { background: var(--color-accent-teal); color: var(--color-outline); }
+    .semaforo-giallo { background: var(--color-accent-yellow); color: var(--color-outline); }
+    .semaforo-rosso { background: var(--color-accent-coral); color: #FFFFFF; }
+
+    /* Card Prompt */
+    .prompt-card {
+      background: #FFFFFF;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      box-shadow: var(--shadow-flat);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .prompt-card-header {
+      background: var(--color-bg-soft);
+      padding: 1rem 1.25rem;
+      border-bottom: var(--stroke-width) solid var(--color-outline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .prompt-num {
+      background: var(--color-primary);
+      color: #FFFFFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: var(--stroke-width) solid var(--color-outline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .prompt-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--color-text);
+      flex: 1;
+    }
+
+    .prompt-card-body {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .prompt-box {
+      background: var(--color-bg-soft);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.88rem;
+      color: var(--color-text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      position: relative;
+    }
+
+    .prompt-action-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+      pt: 0.5rem;
+    }
+
+    /* Modal e Drawers per personalizzazione */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26, 26, 78, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background: #FFFFFF;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      box-shadow: 6px 6px 0 var(--color-outline);
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: var(--stroke-width) solid var(--color-outline);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: var(--color-bg-soft);
+      color: var(--color-text);
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      background: #FFFFFF;
+      box-shadow: var(--shadow-flat);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--color-accent-teal);
+      color: var(--color-outline);
+      border: var(--stroke-width) solid var(--color-outline);
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-flat);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: slideIn 0.2s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Tag filtri */
+    .filter-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.85rem;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: 20px;
+      background: #FFFFFF;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn.active {
+      background: var(--color-primary);
+      color: #FFFFFF;
+      box-shadow: var(--shadow-flat);
+    }
+
+    /* Footer */
+    .app-footer {
+      background: var(--color-bg-soft);
+      border-top: var(--stroke-width) solid var(--color-outline);
+      padding: 2rem 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .app-footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .badge-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .timeline-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      align-items: flex-start;
+    }
+
+    .timeline-num {
+      background: var(--color-accent-yellow);
+      color: var(--color-outline);
+      border: var(--stroke-width) solid var(--color-outline);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header-container">
+      <a href="#" class="brand-logo">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <rect x="2" y="2" width="28" height="28" rx="8" fill="#0E47CB" stroke="#1A1A4E" stroke-width="2.5"/>
+          <path d="M10 16L14 20L22 12" stroke="#3DD9C5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>IA A SCUOLA</span>
+        <span class="brand-badge">Linee Guida MIM 2025</span>
+      </a>
+
+      <nav class="app-nav" id="mainNav">
+        <a href="#home" class="nav-btn active" data-route="home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Home
+        </a>
+        <a href="#prompts" class="nav-btn" data-route="prompts">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          25 Prompt Pratici
+        </a>
+        <a href="#generator" class="nav-btn" data-route="generator">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          Generatore Prompt
+        </a>
+        <a href="#semaforo" class="nav-btn" data-route="semaforo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Semaforo IA
+        </a>
+        <a href="#dichiarazione" class="nav-btn" data-route="dichiarazione">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Log Registro
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main id="app" class="app-main"></main>
+
+  <!-- Container Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Modal Personalizzazione Prompt -->
+  <div class="modal-overlay" id="customModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalTitle" style="font-weight: 800; color: var(--color-text);">Personalizza il Prompt</h3>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <div id="modalBody">
+        <!-- Generato dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Istituzionale -->
+  <footer class="app-footer">
+    <div class="app-footer-container">
+      <div>
+        <p><strong>IA A SCUOLA</strong> — Guida pratica per studenti</p>
+        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem;">Basato sulle Linee guida del Ministero dell'Istruzione e del Merito (MIM)</p>
+      </div>
+      <div>
+        <p>&copy; 2026 — Rispettiamo l'Etica dell'Apprendimento</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Database dei 25 Prompt e Regole MIM
+    const PROMPTS_DATA = [
+      {
+        id: 1,
+        title: "Definire l'obiettivo di studio",
+        cat: "strategia",
+        description: "Chiarisci cosa vuoi imparare prima di iniziare ad usare l'IA.",
+        prompt: "Sto studiando [MATERIA/ARGOMENTO].\n\nIl mio obiettivo è riuscire a [OBIETTIVO].\n\nIl mio livello è [CLASSE/LIVELLO].\n\nAiutami a trasformare questo obiettivo in 3-5 risultati concreti che dovrei essere in grado di raggiungere alla fine dello studio.\n\nNon svolgere il lavoro al posto mio.",
+        fields: ["MATERIA/ARGOMENTO", "OBIETTIVO", "CLASSE/LIVELLO"]
+      },
+      {
+        id: 2,
+        title: "Chiedere una spiegazione (Tutor)",
+        cat: "spiegazioni",
+        description: "Usa l'IA per capire concetti complessi invece di chiedere una semplice definizione.",
+        prompt: "Sono uno studente di [CLASSE/LIVELLO] e sto studiando [ARGOMENTO].\n\nNon ho capito bene [CONCETTO].\n\nSpiegamelo:\n1. con parole semplici;\n2. passo per passo;\n3. con un esempio concreto;\n4. indicando un errore tipico che potrei commettere.\n\nAlla fine fammi 3 domande per verificare se ho capito.\n\nNon darmi subito le risposte alle domande.",
+        fields: ["CLASSE/LIVELLO", "ARGOMENTO", "CONCETTO"]
+      },
+      {
+        id: 3,
+        title: "Scomporre un problema",
+        cat: "strategia",
+        description: "Dividi un problema complesso in passaggi logici gestibili.",
+        prompt: "Devo affrontare questo problema:\n\n[INCOLLA IL PROBLEMA]\n\nNon risolverlo direttamente.\n\nAiutami a scomporlo in passaggi logici.\n\nPer ogni passaggio indicami:\n- cosa devo capire;\n- quale domanda devo pormi;\n- quale informazione mi serve;\n- quale errore dovrei evitare.\n\nAspetta che provi io prima di mostrarmi il passaggio successivo.",
+        fields: ["INCOLLA IL PROBLEMA"]
+      },
+      {
+        id: 4,
+        title: "Tutor socratico",
+        cat: "spiegazioni",
+        description: "Impara attraverso un dialogo a domande e risposte graduali.",
+        prompt: "Agisci come un tutor di [MATERIA].\n\nDevo imparare [ARGOMENTO].\n\nFammi una domanda alla volta.\n\nNon darmi la soluzione prima che abbia provato a rispondere.\n\nDopo ogni mia risposta:\n1. dimmi cosa è corretto;\n2. individua eventuali errori;\n3. spiegami cosa devo migliorare;\n4. fammi una nuova domanda adeguata al mio livello.\n\nSe non so rispondere, dammi prima un piccolo indizio.",
+        fields: ["MATERIA", "ARGOMENTO"]
+      },
+      {
+        id: 5,
+        title: "Allenarsi con gli esercizi",
+        cat: "esercitazione",
+        description: "Genera 8 esercizi a difficoltà progressiva senza soluzioni immediate.",
+        prompt: "Sto studiando [ARGOMENTO] a livello [LIVELLO].\n\nCreami 8 esercizi progressivi:\n- 2 facili;\n- 3 intermedi;\n- 2 difficili;\n- 1 di livello avanzato.\n\nNon mostrarmi subito le soluzioni.\n\nFammi svolgere un esercizio alla volta.\n\nQuando rispondo, correggimi spiegando il procedimento, non limitarti a dirmi se è giusto o sbagliato.",
+        fields: ["ARGOMENTO", "LIVELLO"]
+      },
+      {
+        id: 6,
+        title: "Verificare una risposta dell'IA",
+        cat: "verifica",
+        description: "Individua punti critici e possibili allucinazioni da verificare.",
+        prompt: "Analizza la risposta che hai appena dato.\n\nIndividua tutte le affermazioni che potrebbero richiedere una verifica esterna.\n\nPer ciascuna indicami:\n- l'affermazione;\n- perché è importante verificarla;\n- quale tipo di fonte sarebbe più affidabile.\n\nNon considerare automaticamente corretta la tua risposta precedente.",
+        fields: []
+      },
+      {
+        id: 7,
+        title: "Valutare una fonte online",
+        cat: "verifica",
+        description: "Analisi critica dell'affidabilità di una fonte di ricerca.",
+        prompt: "Devo usare questa fonte per una ricerca scolastica:\n\n[INCOLLA TESTO / INDICA FONTE]\n\nAiutami a valutarla considerando:\n- autore;\n- ente o organizzazione;\n- data;\n- presenza di fonti;\n- possibile finalità;\n- eventuali interessi o bias;\n- differenza tra fatti e opinioni.\n\nNon dichiarare che la fonte è affidabile solo perché sembra autorevole.\n\nIndicami anche cosa dovrei verificare autonomamente.",
+        fields: ["INCOLLA TESTO / INDICA FONTE"]
+      },
+      {
+        id: 8,
+        title: "Cercare informazioni senza fidarsi cieche",
+        cat: "verifica",
+        description: "Orientarsi in una ricerca distinguendo fatti noti e punti controversi.",
+        prompt: "Sto facendo una ricerca su [ARGOMENTO].\n\nIndicami quali sono i principali aspetti che dovrei approfondire.\n\nPer ogni aspetto suggerisci:\n- quali domande dovrei farmi;\n- quali parole chiave potrei cercare;\n- quali tipi di fonti sarebbero più affidabili.\n\nDistingui chiaramente tra:\n- informazioni che conosci;\n- informazioni che dovrei verificare;\n- eventuali punti controversi.",
+        fields: ["ARGOMENTO"]
+      },
+      {
+        id: 9,
+        title: "Trasformare un testo in domande",
+        cat: "studio",
+        description: "Crea concetti, domande di comprensione e collegamenti da un testo.",
+        prompt: "Ecco il materiale che devo studiare:\n\n[INCOLLA TESTO]\n\nNon farmi un semplice riassunto.\n\nTrasformalo in:\n1. 10 concetti fondamentali;\n2. 10 domande di comprensione;\n3. 5 domande più difficili che richiedano ragionamento;\n4. 5 possibili collegamenti con altri argomenti.\n\nNon inventare informazioni che non sono presenti nel testo.\nSegnala ciò che richiederebbe un approfondimento esterno.",
+        fields: ["INCOLLA TESTO"]
+      },
+      {
+        id: 10,
+        title: "Creare una mappa concettuale",
+        cat: "studio",
+        description: "Struttura gerarchica di relazioni, cause, conseguenze ed esempi.",
+        prompt: "Sto studiando:\n\n[ARGOMENTO]\n\nOrganizza le informazioni in una struttura gerarchica:\n\nCONCETTO PRINCIPALE\n→ concetto secondario\n→ spiegazione\n→ esempio\n→ collegamento\n\nEvidenzia:\n- cause;\n- conseguenze;\n- differenze;\n- relazioni;\n- parole chiave.\n\nNon aggiungere informazioni non presenti nel materiale senza segnalarle.",
+        fields: ["ARGOMENTO"]
+      },
+      {
+        id: 11,
+        title: "Scrivere una scaletta (senza far scrivere l'IA)",
+        cat: "strategia",
+        description: "Usa l'IA per preparare la struttura di un testo senza farle scrivere il contenuto.",
+        prompt: "Devo realizzare un elaborato su:\n\n[ARGOMENTO]\n\nIl mio livello è [LIVELLO].\n\nAiutami a costruire una scaletta.\n\nProponi:\n- introduzione;\n- 3-5 nuclei centrali;\n- possibili collegamenti;\n- conclusione.\n\nPer ogni sezione indicami cosa dovrei cercare o ragionare.\n\nNon scrivere l'elaborato completo.",
+        fields: ["ARGOMENTO", "LIVELLO"]
+      },
+      {
+        id: 12,
+        title: "Migliorare una propria bozza",
+        cat: "esercitazione",
+        description: "L'IA come revisore critico della tua scrittura personale.",
+        prompt: "Questa è una mia bozza:\n\n[INCOLLA LA TUA BOZZA]\n\nNon riscriverla.\n\nAnalizzala e indicami:\n1. cosa funziona;\n2. cosa non è chiaro;\n3. quali argomentazioni sono deboli;\n4. quali passaggi dovrei approfondire;\n5. eventuali errori;\n6. quali modifiche potrei fare.\n\nVoglio correggere personalmente il testo.",
+        fields: ["INCOLLA LA TUA BOZZA"]
+      },
+      {
+        id: 13,
+        title: "Capire i propri errori",
+        cat: "esercitazione",
+        description: "Individua esattamente dove hai sbagliato in un esercizio.",
+        prompt: "Ho svolto questo esercizio:\n\n[ESERCIZIO]\n\nLa mia risposta è:\n\n[MIA RISPOSTA]\n\nNon darmi immediatamente la soluzione.\n\nIndividua il primo punto in cui il mio ragionamento diventa errato e spiegami perché.\n\nPoi dammi un suggerimento per correggere autonomamente il procedimento.",
+        fields: ["ESERCIZIO", "MIA RISPOSTA"]
+      },
+      {
+        id: 14,
+        title: "Fare un test su se stessi",
+        cat: "esercitazione",
+        description: "Mettiti alla prova con domande variegate per valutare la tua preparazione.",
+        prompt: "Devo verificare quanto ho realmente imparato su [ARGOMENTO].\n\nFammi un test di [NUMERO] domande.\n\nAlterna:\n- domande a risposta breve;\n- vero/falso;\n- applicazione;\n- domande di ragionamento.\n\nNon mostrarmi le risposte.\n\nAlla fine valuta la mia preparazione e indicami quali argomenti devo ripassare.",
+        fields: ["ARGOMENTO", "NUMERO"]
+      },
+      {
+        id: 15,
+        title: "Prepararsi a un'interrogazione",
+        cat: "esercitazione",
+        description: "Simulazione d'esame orale con valutazione progressiva.",
+        prompt: "Devo prepararmi per un'interrogazione di [MATERIA] sull'argomento [ARGOMENTO].\n\nFai l'insegnante.\n\nFammi una domanda alla volta, aumentando gradualmente la difficoltà.\n\nDopo ogni risposta:\n- valuta la correttezza;\n- segnala eventuali lacune;\n- chiedimi di approfondire quando necessario.\n\nAlla fine dammi una valutazione dei miei punti forti e degli argomenti che devo ripassare.",
+        fields: ["MATERIA", "ARGOMENTO"]
+      },
+      {
+        id: 16,
+        title: "Creare collegamenti interdisciplinari",
+        cat: "studio",
+        description: "Scopri relazioni solide e sensate tra diverse materie di studio.",
+        prompt: "Sto studiando [ARGOMENTO] in [MATERIA].\n\nAiutami a trovare collegamenti possibili con:\n- [MATERIA 1];\n- [MATERIA 2];\n- [MATERIA 3].\n\nPer ogni collegamento:\n1. spiegami perché esiste;\n2. indicami quali concetti devo conoscere;\n3. distingui tra collegamenti solidi e collegamenti forzati.\n\nNon inventare collegamenti solo per crearne di più.",
+        fields: ["ARGOMENTO", "MATERIA", "MATERIA 1", "MATERIA 2", "MATERIA 3"]
+      },
+      {
+        id: 17,
+        title: "Confrontare due concetti",
+        cat: "studio",
+        description: "Tabella comparativa dettagliata con domande di verifica.",
+        prompt: "Devo capire la differenza tra [CONCETTO A] e [CONCETTO B].\n\nConfrontali in una tabella considerando:\n- definizione;\n- caratteristiche;\n- cause;\n- conseguenze;\n- esempio;\n- differenze principali.\n\nAlla fine fammi 5 domande per verificare se so distinguerli.",
+        fields: ["CONCETTO A", "CONCETTO B"]
+      },
+      {
+        id: 18,
+        title: "Adattare il livello di difficoltà",
+        cat: "spiegazioni",
+        description: "Semplifica o approfondisci una spiegazione in base alla tua classe.",
+        prompt: "Spiegami [ARGOMENTO] come a uno studente di [LIVELLO].\n\nUsa un linguaggio semplice ma non eliminare i concetti importanti.\n\nSe utilizzi un termine tecnico, spiegalo subito con parole comuni.",
+        fields: ["ARGOMENTO", "LIVELLO"]
+      },
+      {
+        id: 19,
+        title: "Proteggere i dati personali",
+        cat: "privacy",
+        description: "Regola fondamentale: rimuovi nomi, date e dati personali prima di inviare.",
+        prompt: "Uno studente ha scritto questo testo:\n\n[TESTO SENZA DATI PERSONALI]\n\nPuoi aiutarmi a individuare i problemi?",
+        fields: ["TESTO SENZA DATI PERSONALI"]
+      },
+      {
+        id: 20,
+        title: "Dati e contenuti di altre persone",
+        cat: "privacy",
+        description: "Verifica l'autorizzazione prima di condividere materiale di altri.",
+        prompt: "Prima di caricare foto, documenti o messaggi altrui, chiediti: Ho il diritto di condividerlo? È necessario? Posso anonimizzarlo?",
+        fields: []
+      },
+      {
+        id: 21,
+        title: "Controllare le regole del docente",
+        cat: "privacy",
+        description: "Analizza la consegna scolastica per individuare dove l'IA è consentita.",
+        prompt: "Questa è la consegna del mio docente:\n\n[INCOLLA CONSEGNA]\n\nAiutami a individuare:\n- cosa devo fare personalmente;\n- quali strumenti posso eventualmente usare;\n- quali parti richiedono un mio ragionamento;\n- quali aspetti dovrei chiedere al docente prima di utilizzare l'IA.\n\nNon presumere che l'uso dell'IA sia consentito: basati esclusivamente sulle informazioni presenti nella consegna.",
+        fields: ["INCOLLA CONSEGNA"]
+      },
+      {
+        id: 22,
+        title: "Dichiarare l'uso dell'IA",
+        cat: "privacy",
+        description: "Struttura da consegnare al docente per trasparenza sull'uso dell'IA.",
+        prompt: "📅 DATA: [DATA]\n🤖 STRUMENTO: [STRUMENTO]\n🎯 PER COSA L'HO USATO: [ATTIVITÀ]\n🧠 COSA HO FATTO IO: [ATTIVITÀ PERSONALMENTE SVOLTE]\n🔎 COSA HO VERIFICATO: [FONTI / CONTROLLI]\n✍️ COSA HO MODIFICATO: [MODIFICHE]",
+        fields: ["DATA", "STRUMENTO", "ATTIVITÀ", "ATTIVITÀ PERSONALMENTE SVOLTE", "FONTI / CONTROLLI", "MODIFICHE"]
+      },
+      {
+        id: 23,
+        title: "Quando non devi delegare",
+        cat: "privacy",
+        description: "Attività in cui il processo personale è insostituibile.",
+        prompt: "Se devi dimostrare di saper risolvere, scrivere, argomentare, ragionare, ricordare o analizzare: prima prova da solo, poi usa l'IA con la domanda: 'Dove sto sbagliando?'",
+        fields: []
+      },
+      {
+        id: 24,
+        title: "Il Prompt Universale per studiare",
+        cat: "strategia",
+        description: "Il modello completo definitivo consigliato dalle Linee Guida MIM.",
+        prompt: "Sono uno studente di [CLASSE/LIVELLO] e sto studiando [MATERIA/ARGOMENTO].\n\nIl mio obiettivo è [OBIETTIVO].\n\nMi trovo in difficoltà soprattutto su [DIFFICOLTÀ].\n\nVoglio usare l'IA come supporto allo studio, non per sostituire il mio lavoro.\n\nAiutami quindi a:\n1. capire i concetti;\n2. individuare eventuali lacune;\n3. esercitarmi;\n4. ricevere feedback;\n5. verificare ciò che ho imparato.\n\nNon darmi direttamente le risposte quando posso arrivarci ragionando.\n\nFammi domande, dammi suggerimenti progressivi e spiegami gli errori.\n\nSegnala chiaramente le informazioni che dovrei verificare su fonti esterne.",
+        fields: ["CLASSE/LIVELLO", "MATERIA/ARGOMENTO", "OBIETTIVO", "DIFFICOLTÀ"]
+      },
+      {
+        id: 25,
+        title: "La Regola Finale di Autocontrollo",
+        cat: "verifica",
+        description: "Checklist rapida prima di usare qualunque output fornito dall'IA.",
+        prompt: "Prima di usare una risposta dell'IA, chiediti:\n🧠 LA CAPISCO?\n🔎 L'HO VERIFICATA?\n✍️ SO SPIEGARLA CON PAROLE MIE?\n🏫 È CONSENTITO USARLA?\n🔐 HO PROTETTO I DATI?",
+        fields: []
+      }
+    ];
+
+    // Funzioni Utilità Clipboard e Toast
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast("Prompt copiato negli appunti! 🚀");
+      } catch (err) {
+        showToast("Errore durante la copia.");
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Helper creazione elementi DOM
+    function el(tag, className, html) {
+      const e = document.createElement(tag);
+      if (className) e.className = className;
+      if (html) e.innerHTML = html;
+      return e;
+    }
+
+    // Router Vanilla SPA
+    const routes = {
+      'home': renderHome,
+      'prompts': renderPrompts,
+      'generator': renderGenerator,
+      'semaforo': renderSemaforo,
+      'dichiarazione': renderDichiarazione
+    };
+
+    function router() {
+      const hash = location.hash.replace('#', '') || 'home';
+      const renderFn = routes[hash] || renderHome;
+
+      // Aggiorna navigazione
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.route === hash) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      const app = document.getElementById('app');
+      app.innerHTML = '';
+      app.appendChild(renderFn());
+      window.scrollTo(0, 0);
+    }
+
+    window.addEventListener('hashchange', router);
+    window.addEventListener('DOMContentLoaded', router);
+
+    // 1. RENDER HOME VIEW
+    function renderHome() {
+      const container = el('div', 'home-view');
+
+      // Hero Section
+      const hero = el('section', 'hero', `
+        <div>
+          <span class="hero-tag">Linee Guida Ufficiali MIM 2025</span>
+          <h1>L'IA deve aiutarti a imparare, non imparare al posto tuo.</h1>
+          <p>Trasforma le indicazioni del Ministero dell'Istruzione e del Merito in azioni concrete, prompt copiabili e strumenti di autocontrollo per il tuo studio.</p>
+          <div class="hero-cta-group">
+            <a href="#prompts" class="btn btn-accent-yellow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Esplora i 25 Prompt
+            </a>
+            <a href="#generator" class="btn btn-accent-teal">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Crea Prompt Universale
+            </a>
+          </div>
+        </div>
+        <div class="hero-illustration">
+          <svg width="280" height="240" viewBox="0 0 280 240" fill="none">
+            <!-- Sfondo illustrativo -->
+            <rect x="10" y="10" width="260" height="220" rx="16" fill="#0E47CB" stroke="#1A1A4E" stroke-width="2.5"/>
+            <!-- Avatar Studente -->
+            <circle cx="90" cy="90" r="32" fill="#FAD0C4" stroke="#1A1A4E" stroke-width="2.5"/>
+            <path d="M60 160 C60 125, 120 125, 120 160 Z" fill="#2F54EB" stroke="#1A1A4E" stroke-width="2.5"/>
+            <!-- Capelli e viso -->
+            <path d="M68 80 C68 60, 112 60, 112 80 C105 70, 75 70, 68 80 Z" fill="#1A1A4E"/>
+            <circle cx="82" cy="88" r="3" fill="#1A1A4E"/>
+            <circle cx="98" cy="88" r="3" fill="#1A1A4E"/>
+            <path d="M86 98 Q90 102 94 98" stroke="#1A1A4E" stroke-width="2" stroke-linecap="round"/>
+            
+            <!-- Avatar IA Copilota -->
+            <rect x="160" y="50" width="80" height="70" rx="12" fill="#3DD9C5" stroke="#1A1A4E" stroke-width="2.5"/>
+            <circle cx="182" cy="80" r="6" fill="#1A1A4E"/>
+            <circle cx="218" cy="80" r="6" fill="#1A1A4E"/>
+            <line x1="185" y1="98" x2="215" y2="98" stroke="#1A1A4E" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="200" y1="30" x2="200" y2="50" stroke="#1A1A4E" stroke-width="2.5"/>
+            <circle cx="200" cy="26" r="5" fill="#F5A623" stroke="#1A1A4E" stroke-width="2.5"/>
+
+            <!-- Connessione/Frecce -->
+            <path d="M130 110 Q145 90 155 100" stroke="#F5A623" stroke-width="3" stroke-dasharray="4 4"/>
+          </svg>
+        </div>
+      `);
+      container.appendChild(hero);
+
+      // Schema Copilota Section
+      const copilota = el('section', 'copilota-box', `
+        <h2 class="section-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2F54EB" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
+          Il Modello Copilota dell'IA
+        </h2>
+        <p class="section-subtitle">L'Intelligenza Artificiale suggerisce ed esercita. Tu decidi, verifichi e impari.</p>
+
+        <div class="copilota-flow">
+          <div class="copilota-step">
+            <div class="copilota-step-icon" style="background: #E8F0FE;">🤖</div>
+            <strong style="display:block; font-size: 0.95rem;">1. IA Suggerisce</strong>
+            <span style="font-size:0.8rem; color:#666;">Spiega, esercita, aiuta</span>
+          </div>
+          <span class="copilota-arrow">➔</span>
+          <div class="copilota-step">
+            <div class="copilota-step-icon" style="background: #FEF3D6;">🧠</div>
+            <strong style="display:block; font-size: 0.95rem;">2. Tu Ragioni</strong>
+            <span style="font-size:0.8rem; color:#666;">Decidi, verifichi, correggi</span>
+          </div>
+          <span class="copilota-arrow">➔</span>
+          <div class="copilota-step">
+            <div class="copilota-step-icon" style="background: #E6F8F5;">🎯</div>
+            <strong style="display:block; font-size: 0.95rem;">3. Competenza Vera</strong>
+            <span style="font-size:0.8rem; color:#666;">Imparato per davvero!</span>
+          </div>
+        </div>
+      `);
+      container.appendChild(copilota);
+
+      // Ciclo dell'Apprendimento & Regole in Griglia
+      const mainGrid = el('div', 'grid-2');
+
+      // Card Ciclo Completo
+      const cicloCard = el('div', 'card', `
+        <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--color-hero); font-weight: 800;">
+          🔄 Il Ciclo Completo dell'Apprendimento
+        </h3>
+        <div class="timeline-step">
+          <div class="timeline-num">1</div>
+          <div><strong>OBIETTIVO & STUDIO:</strong> Definisci cosa devi imparare prima di aprire l'IA.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-num">2</div>
+          <div><strong>IA COME TUTOR:</strong> Poni domande, chiedi di scomporre problemi o spiegare passaggi.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-num">3</div>
+          <div><strong>PROVO IO & VERIFICO:</strong> Rispondi prima di vedere soluzioni e controlla le fonti.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-num">4</div>
+          <div><strong>TESTO & IMPARO:</strong> Svolgi un autotest e consolida la preparazione personale.</div>
+        </div>
+      `);
+
+      // Card 10 Regole da Salvare
+      const regoleCard = el('div', 'card card-soft', `
+        <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--color-outline); font-weight: 800;">
+          ⭐ 10 Regole d'Oro da Salvare
+        </h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; font-weight: 600;">
+          <li>🧠 <strong>01.</strong> Prima prova tu personalmente.</li>
+          <li>🤖 <strong>02.</strong> Usa l'IA come tutor, mai come sostituto.</li>
+          <li>🔎 <strong>03.</strong> Verifica sempre le informazioni importanti.</li>
+          <li>📚 <strong>04.</strong> Controlla sempre le fonti originali.</li>
+          <li>💬 <strong>05.</strong> Chiedi spiegazioni e feedback, non solo risposte.</li>
+          <li>🧩 <strong>06.</strong> Usa l'IA per scomporre problemi complessi.</li>
+          <li>✍️ <strong>07.</strong> Rielabora sempre con parole tue.</li>
+          <li>🏫 <strong>08.</strong> Rispetta le regole del docente e della scuola.</li>
+          <li>🔐 <strong>09.</strong> Proteggi i tuoi dati personali e di altri.</li>
+          <li>🎯 <strong>10.</strong> L'obiettivo è aver imparato, non la risposta.</li>
+        </ul>
+      `);
+
+      mainGrid.appendChild(cicloCard);
+      mainGrid.appendChild(regoleCard);
+      container.appendChild(mainGrid);
+
+      return container;
+    }
+
+    // 2. RENDER PROMPTS VIEW (Guida Pratica 25 Prompt)
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    function renderPrompts() {
+      const container = el('div', 'prompts-view');
+
+      const headerDiv = el('div', '', `
+        <h2 class="section-title">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          25 Prompt Pratici Copiabili
+        </h2>
+        <p class="section-subtitle">Scegli la categoria, personalizza i campi ed incolla nella tua IA preferita.</p>
+      `);
+      container.appendChild(headerDiv);
+
+      // Bar Ricerca e Filtri
+      const filterSection = el('div', '');
+      
+      const searchInput = el('input', 'form-input search-bar');
+      searchInput.placeholder = "🔍 Cerca prompt o argomento (es. tutor, fonti, verifica, esercizi)...";
+      searchInput.value = searchQuery;
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.toLowerCase();
+        updatePromptsGrid();
+      });
+      filterSection.appendChild(searchInput);
+
+      const filterTags = el('div', 'filter-tags', `
+        <button class="filter-btn ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">Tutti (25)</button>
+        <button class="filter-btn ${currentCategory === 'strategia' ? 'active' : ''}" data-cat="strategia">🎯 Strategia & Obiettivi</button>
+        <button class="filter-btn ${currentCategory === 'spiegazioni' ? 'active' : ''}" data-cat="spiegazioni">📚 Spiegazioni & Tutor</button>
+        <button class="filter-btn ${currentCategory === 'esercitazione' ? 'active' : ''}" data-cat="esercitazione">🧪 Esercizi & Test</button>
+        <button class="filter-btn ${currentCategory === 'verifica' ? 'active' : ''}" data-cat="verifica">🔎 Verifica & Fonti</button>
+        <button class="filter-btn ${currentCategory === 'studio' ? 'active' : ''}" data-cat="studio">🗺️ Mappe & Studio</button>
+        <button class="filter-btn ${currentCategory === 'privacy' ? 'active' : ''}" data-cat="privacy">🔐 Privacy & Regole</button>
+      `);
+
+      filterTags.addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+          filterTags.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          currentCategory = e.target.dataset.cat;
+          updatePromptsGrid();
+        }
+      });
+
+      filterSection.appendChild(filterTags);
+      container.appendChild(filterSection);
+
+      // Grid dei Prompt
+      const grid = el('div', 'grid-2', '');
+      grid.id = 'promptsGrid';
+      container.appendChild(grid);
+
+      function updatePromptsGrid() {
+        grid.innerHTML = '';
+        const filtered = PROMPTS_DATA.filter(p => {
+          const matchCat = currentCategory === 'all' || p.cat === currentCategory;
+          const matchSearch = p.title.toLowerCase().includes(searchQuery) || 
+                              p.description.toLowerCase().includes(searchQuery) ||
+                              p.prompt.toLowerCase().includes(searchQuery);
+          return matchCat && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Nessun prompt trovato per questa ricerca.</div>`;
+          return;
+        }
+
+        filtered.forEach(item => {
+          const card = el('div', 'prompt-card');
+          card.innerHTML = `
+            <div class="prompt-card-header">
+              <div class="prompt-num">${item.id}</div>
+              <div class="prompt-title">${item.title}</div>
+            </div>
+            <div class="prompt-card-body">
+              <p style="font-size: 0.9rem; color: #4A4A68;">${item.description}</p>
+              <div class="prompt-box">${item.prompt}</div>
+              <div class="prompt-action-bar">
+                <button class="btn btn-primary" style="flex:1;" onclick="copyToClipboard(\`${item.prompt.replace(/`/g, '\\`')}\`)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copia Prompt
+                </button>
+                ${item.fields.length > 0 ? `
+                  <button class="btn btn-accent-yellow" onclick="openCustomizeModal(${item.id})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Personalizza
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      setTimeout(updatePromptsGrid, 0);
+
+      return container;
+    }
+
+    // Modal di personalizzazione Prompt
+    window.openCustomizeModal = function(id) {
+      const item = PROMPTS_DATA.find(p => p.id === id);
+      if (!item) return;
+
+      const modal = document.getElementById('customModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+
+      title.innerText = `Personalizza: ${item.title}`;
+      body.innerHTML = '';
+
+      const form = el('form');
+      form.addEventListener('submit', (e) => e.preventDefault());
+
+      item.fields.forEach(field => {
+        const group = el('div', 'form-group');
+        group.innerHTML = `
+          <label class="form-label">${field}</label>
+          <input type="text" class="form-input modal-field-input" data-field="${field}" placeholder="Inserisci ${field.toLowerCase()}...">
+        `;
+        form.appendChild(group);
+      });
+
+      const previewBox = el('div', 'prompt-box');
+      previewBox.style.marginTop = '1rem';
+      previewBox.innerText = item.prompt;
+
+      function updatePreview() {
+        let text = item.prompt;
+        form.querySelectorAll('.modal-field-input').forEach(input => {
+          const f = input.dataset.field;
+          const val = input.value.trim() || `[${f}]`;
+          text = text.replaceAll(`[${f}]`, val);
+        });
+        previewBox.innerText = text;
+      }
+
+      form.addEventListener('input', updatePreview);
+
+      const copyCustomBtn = el('button', 'btn btn-accent-teal', 'Copia Prompt Personalizzato');
+      copyCustomBtn.style.marginTop = '1rem';
+      copyCustomBtn.style.width = '100%';
+      copyCustomBtn.onclick = () => {
+        copyToClipboard(previewBox.innerText);
+        modal.classList.remove('open');
+      };
+
+      body.appendChild(form);
+      body.appendChild(previewBox);
+      body.appendChild(copyCustomBtn);
+
+      modal.classList.add('open');
+    };
+
+    document.getElementById('modalCloseBtn').onclick = () => {
+      document.getElementById('customModal').classList.remove('open');
+    };
+
+    // 3. RENDER GENERATOR VIEW (Generatore di Prompt Universale - Regola 24)
+    function renderGenerator() {
+      const container = el('div', 'generator-view');
+
+      const title = el('div', '', `
+        <h2 class="section-title">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          Generatore del "Prompt Universale" per Studiare
+        </h2>
+        <p class="section-subtitle">Compila i tuoi dati di studio e genera automaticamente il prompt ideale conforme alle regole MIM.</p>
+      `);
+      container.appendChild(title);
+
+      const layout = el('div', 'grid-2');
+
+      const formCard = el('div', 'card');
+      formCard.innerHTML = `
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 800; color: var(--color-primary);">1. I tuoi dati di studio</h3>
+        <div class="form-group">
+          <label class="form-label">Classe / Livello scolastico</label>
+          <input type="text" id="genLivello" class="form-input" placeholder="es. Terza Superiore, 2° Media...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Materia / Argomento</label>
+          <input type="text" id="genMateria" class="form-input" placeholder="es. Fisica / Le Leggi di Keplero...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Il tuo obiettivo principale</label>
+          <input type="text" id="genObiettivo" class="form-input" placeholder="es. Capire le formule ed applicarle agli esercizi...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Qual è la tua difficoltà principale?</label>
+          <input type="text" id="genDifficolta" class="form-input" placeholder="es. Non riesco a ricordare i passaggi algebrici...">
+        </div>
+      `;
+
+      const previewCard = el('div', 'card card-soft');
+      previewCard.innerHTML = `
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 800; color: var(--color-hero);">2. Il tuo Prompt Pronto</h3>
+        <div class="prompt-box" id="universalPromptPreview" style="min-height: 280px;">
+          Caricamento in corso...
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="genCopyBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copia Prompt Universale
+        </button>
+      `;
+
+      layout.appendChild(formCard);
+      layout.appendChild(previewCard);
+      container.appendChild(layout);
+
+      function updateUniversalPrompt() {
+        const livello = document.getElementById('genLivello').value.trim() || '[CLASSE/LIVELLO]';
+        const materia = document.getElementById('genMateria').value.trim() || '[MATERIA/ARGOMENTO]';
+        const obiettivo = document.getElementById('genObiettivo').value.trim() || '[OBIETTIVO]';
+        const difficolta = document.getElementById('genDifficolta').value.trim() || '[DIFFICOLTÀ]';
+
+        const promptText = `Sono uno studente di ${livello} e sto studiando ${materia}.
+
+Il mio obiettivo è ${obiettivo}.
+
+Mi trovo in difficoltà soprattutto su ${difficolta}.
+
+Voglio usare l'IA come supporto allo studio, non per sostituire il mio lavoro.
+
+Aiutami quindi a:
+1. capire i concetti;
+2. individuare eventuali lacune;
+3. esercitarmi;
+4. ricevere feedback;
+5. verificare ciò che ho imparato.
+
+Non darmi direttamente le risposte quando posso arrivarci ragionando.
+
+Fammi domande, dammi suggerimenti progressivi e spiegami gli errori.
+
+Segnala chiaramente le informazioni che dovrei verificare su fonti esterne.`;
+
+        document.getElementById('universalPromptPreview').innerText = promptText;
+      }
+
+      setTimeout(() => {
+        ['genLivello', 'genMateria', 'genObiettivo', 'genDifficolta'].forEach(id => {
+          document.getElementById(id).addEventListener('input', updateUniversalPrompt);
+        });
+        document.getElementById('genCopyBtn').onclick = () => {
+          copyToClipboard(document.getElementById('universalPromptPreview').innerText);
+        };
+        updateUniversalPrompt();
+      }, 0);
+
+      return container;
+    }
+
+    // 4. RENDER SEMAFORO VIEW
+    function renderSemaforo() {
+      const container = el('div', 'semaforo-view');
+
+      const title = el('div', '', `
+        <h2 class="section-title">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Il Semaforo dell'IA Scolastica
+        </h2>
+        <p class="section-subtitle">Scopri subito cosa puoi fare liberamente, cosa devi controllare e cosa è severamente vietato.</p>
+      `);
+      container.appendChild(title);
+
+      const semaforoGrid = el('div', 'grid-3');
+
+      // Verde
+      const verde = el('div', 'card', `
+        <div style="margin-bottom: 1rem;">
+          <span class="semaforo-badge semaforo-verde">🟢 VERDE — Falla lavorare con te</span>
+        </div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.95rem;">
+          <li>📚 <strong>Spiegazioni:</strong> "Spiegami questo concetto e poi interrogami."</li>
+          <li>🧠 <strong>Esempi:</strong> "Fammi un esempio e poi chiedimi di crearne uno io."</li>
+          <li>🔍 <strong>Feedback:</strong> "Individua i punti deboli della mia risposta."</li>
+          <li>🧩 <strong>Problem Solving:</strong> "Aiutami a trovare il primo passaggio."</li>
+          <li>📝 <strong>Revisione:</strong> "Non riscrivere: indicami cosa devo migliorare."</li>
+        </ul>
+      `);
+
+      // Giallo
+      const giallo = el('div', 'card', `
+        <div style="margin-bottom: 1rem;">
+          <span class="semaforo-badge semaforo-giallo">🟡 GIALLO — Controlla sempre</span>
+        </div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.95rem;">
+          <li>🌐 <strong>Fatti e Date:</strong> Verificali con fonti esterne affidabili.</li>
+          <li>📝 <strong>Riassunti:</strong> Verifica che l'IA non abbia inventato dettagli.</li>
+          <li>📚 <strong>Citazioni:</strong> Controlla sempre la fonte originale.</li>
+          <li>✍️ <strong>Correzione:</strong> Chiedi di spiegare l'errore prima di applicare la correzione.</li>
+        </ul>
+      `);
+
+      // Rosso
+      const rosso = el('div', 'card', `
+        <div style="margin-bottom: 1rem;">
+          <span class="semaforo-badge semaforo-rosso">🔴 ROSSO — Non far fare il tuo lavoro</span>
+        </div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.95rem;">
+          <li>❌ <strong>Compito intero:</strong> "Fai il compito completo."</li>
+          <li>❌ <strong>Relazione pronta:</strong> "Scrivi un testo che posso consegnare."</li>
+          <li>❌ <strong>Copiare soluzioni:</strong> "Rispondi senza spiegazioni."</li>
+          <li>❌ <strong>Inganno:</strong> "Fammi sembrare che l'abbia scritto io."</li>
+        </ul>
+      `);
+
+      semaforoGrid.appendChild(verde);
+      semaforoGrid.appendChild(giallo);
+      semaforoGrid.appendChild(rosso);
+      container.appendChild(semaforoGrid);
+
+      return container;
+    }
+
+    // 5. RENDER DICHIARAZIONE VIEW (Tool Regola 22)
+    function renderDichiarazione() {
+      const container = el('div', 'dichiarazione-view');
+
+      const title = el('div', '', `
+        <h2 class="section-title">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Registro per la Trasparenza dell'Uso dell'IA
+        </h2>
+        <p class="section-subtitle">Compila questo modulo ogni volta che usi l'IA per un compito, per consegnarlo o mostrarlo al docente (Regola 22).</p>
+      `);
+      container.appendChild(title);
+
+      const layout = el('div', 'grid-2');
+
+      const form = el('div', 'card');
+      form.innerHTML = `
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 800; color: var(--color-primary);">Modulo di Dichiarazione</h3>
+        <div class="form-group">
+          <label class="form-label">Data</label>
+          <input type="date" id="logData" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Strumento IA Usato</label>
+          <input type="text" id="logStrumento" class="form-input" placeholder="es. ChatGPT, Claude, Gemini...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Per cosa l'hai usato?</label>
+          <input type="text" id="logAttivita" class="form-input" placeholder="es. Generare una scaletta per la ricerca di storia...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cosa hai fatto tu personalmente?</label>
+          <textarea id="logPersonale" class="form-textarea" rows="2" placeholder="es. Ho letto 3 articoli di enciclopedia e scritto la bozza finale..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cosa hai verificato su fonti esterne?</label>
+          <textarea id="logVerifica" class="form-textarea" rows="2" placeholder="es. Ho verificato le date storiche sul libro di testo..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cosa hai modificato rispetto all'output IA?</label>
+          <textarea id="logModificato" class="form-textarea" rows="2" placeholder="es. Ho riscritto l'introduzione e corretto 2 errori..."></textarea>
+        </div>
+      `;
+
+      const preview = el('div', 'card card-soft');
+      preview.innerHTML = `
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 800; color: var(--color-hero);">Scontrino di Trasparenza</h3>
+        <div class="prompt-box" id="logPreviewText" style="min-height: 260px;"></div>
+        <button class="btn btn-accent-teal" style="width: 100%; margin-top: 1rem;" id="logCopyBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copia Dichiarazione per il Docente
+        </button>
+      `;
+
+      layout.appendChild(form);
+      layout.appendChild(preview);
+      container.appendChild(layout);
+
+      function updateLogText() {
+        const d = document.getElementById('logData').value || new Date().toISOString().split('T')[0];
+        const s = document.getElementById('logStrumento').value.trim() || '[STRUMENTO]';
+        const a = document.getElementById('logAttivita').value.trim() || '[ATTIVITÀ]';
+        const p = document.getElementById('logPersonale').value.trim() || '[ATTIVITÀ SVOLTE PERSONALMENTE]';
+        const v = document.getElementById('logVerifica').value.trim() || '[FONTI / CONTROLLI]';
+        const m = document.getElementById('logModificato').value.trim() || '[MODIFICHE]';
+
+        const text = `📅 DATA:
+${d}
+
+🤖 STRUMENTO:
+${s}
+
+🎯 PER COSA L'HO USATO:
+${a}
+
+🧠 COSA HO FATTO IO:
+${p}
+
+🔎 COSA HO VERIFICATO:
+${v}
+
+✍️ COSA HO MODIFICATO:
+${m}`;
+
+        document.getElementById('logPreviewText').innerText = text;
+      }
+
+      setTimeout(() => {
+        document.getElementById('logData').valueAsDate = new Date();
+        ['logData', 'logStrumento', 'logAttivita', 'logPersonale', 'logVerifica', 'logModificato'].forEach(id => {
+          document.getElementById(id).addEventListener('input', updateLogText);
+        });
+        document.getElementById('logCopyBtn').onclick = () => {
+          copyToClipboard(document.getElementById('logPreviewText').innerText);
+        };
+        updateLogText();
+      }, 0);
+
+      return container;
+    }
+  </script>
+</body>
+</html>
