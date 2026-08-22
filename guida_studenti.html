@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida Pratica ai Prompt per Studenti — 14-17 Anni</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#0E47CB',
+                        navy: '#1A1A4E',
+                        accentBlue: '#2F54EB',
+                        accentYellow: '#F5A623',
+                        accentTeal: '#3DD9C5',
+                        accentCoral: '#E84545',
+                        lightBg: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F5F7;
+            color: #1A1A4E;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Hard Flat Outline Shadows */
+        .flat-card {
+            background-color: #FFFFFF;
+            border: 2px solid #1A1A4E;
+            box-shadow: 4px 4px 0px #1A1A4E;
+            border-radius: 12px;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .flat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px #1A1A4E;
+        }
+
+        .flat-btn {
+            border: 2px solid #1A1A4E;
+            box-shadow: 3px 3px 0px #1A1A4E;
+            font-weight: 700;
+            transition: all 0.1s ease;
+        }
+
+        .flat-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #1A1A4E;
+        }
+
+        .flat-input {
+            border: 2px solid #1A1A4E;
+            box-shadow: 2px 2px 0px #1A1A4E;
+            outline: none;
+        }
+
+        .flat-input:focus {
+            box-shadow: 3px 3px 0px #2F54EB;
+        }
+
+        .prompt-box {
+            background-color: #F4F5F7;
+            border: 2px solid #1A1A4E;
+            border-radius: 10px;
+        }
+
+        /* Active Tag Pill Highlight */
+        .chip-active {
+            background-color: #1A1A4E !important;
+            color: #FFFFFF !important;
+            border-color: #1A1A4E !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4F5F7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1A1A4E;
+            border-radius: 4px;
+        }
+
+        /* Toast Popup */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="flat-card bg-accentTeal text-navy font-bold px-4 py-3 flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toast-msg">Copiato negli appunti!</span>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-brand text-white border-b-4 border-navy sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-accentYellow border-2 border-navy rounded-xl flex items-center justify-center font-black text-navy text-xl shadow-[2px_2px_0px_#1A1A4E]">
+                    IA
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold leading-tight tracking-tight">Guida Pratica ai Prompt per Studenti</h1>
+                    <p class="text-xs text-blue-100 font-medium">Scuole Superiori (14–17 anni) — Imparare ad imparare con l'IA</p>
+                </div>
+            </div>
+
+            <!-- Header Quick Stats / Actions -->
+            <div class="flex items-center space-x-2">
+                <button onclick="openWizardModal()" class="flat-btn bg-accentYellow text-navy px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 shadow-sm hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Trova in 2 Clic</span>
+                </button>
+                <button onclick="filterCategory('fav')" class="flat-btn bg-white text-navy px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5">
+                    <i class="fa-solid fa-star text-accentYellow"></i>
+                    <span>Preferiti (<span id="fav-count">0</span>)</span>
+                </button>
+                <a href="#metodo-5-passi" class="flat-btn bg-accentTeal text-navy px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span class="hidden sm:inline">Metodo 5 Passi</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner & Streamlined Finder -->
+    <section class="bg-brand text-white border-b-4 border-navy py-8 px-4 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center space-x-2 bg-navy px-3 py-1 rounded-full text-accentYellow text-xs font-bold border border-white/20">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Selezione Intelligente Prompt per Studenti (14–17 Anni)</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black leading-tight">
+                        Trova subito il prompt perfetto per studiare.
+                    </h2>
+                    <p class="text-xs sm:text-sm text-blue-100 font-medium">
+                        Scegli il tuo obiettivo di studio o la materia per isolare in un attimo il modello giusto.
+                    </p>
+                </div>
+
+                <!-- Wizard CTA Banner Box -->
+                <button onclick="openWizardModal()" class="w-full md:w-auto flat-card bg-accentYellow text-navy p-4 rounded-xl flex items-center justify-between gap-4 hover:scale-102 transition-transform cursor-pointer">
+                    <div class="text-left space-y-0.5">
+                        <span class="text-[10px] uppercase font-black tracking-wider text-navy/80">Procedura Guidata Rapida</span>
+                        <h4 class="text-sm font-black text-navy flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles text-brand"></i>
+                            Non sai quale prompt scegliere?
+                        </h4>
+                        <p class="text-[11px] font-semibold text-navy/90">Usa il Selettore in 2 Clic →</p>
+                    </div>
+                    <div class="w-10 h-10 bg-white border-2 border-navy rounded-lg flex items-center justify-center font-black text-navy text-lg shrink-0">
+                        ⚡
+                    </div>
+                </button>
+            </div>
+
+            <!-- Unified Control Panel: Search & Subject Selector -->
+            <div class="bg-white p-3 rounded-2xl border-3 border-navy shadow-[4px_4px_0px_#1A1A4E] grid grid-cols-1 md:grid-cols-12 gap-2 text-navy">
+                <!-- Search Bar -->
+                <div class="md:col-span-7 relative">
+                    <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Cerca argomento o parola chiave (es. equazioni, riassunto, SQL...)" class="w-full flat-input py-2.5 pl-10 pr-3 rounded-xl text-xs font-semibold placeholder-gray-500 bg-lightBg">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-navy text-sm"></i>
+                </div>
+
+                <!-- Subject Dropdown -->
+                <div class="md:col-span-5 relative">
+                    <select id="subjectSelect" onchange="handleSubjectSelect()" class="w-full flat-input py-2.5 px-3 rounded-xl text-xs font-bold bg-lightBg appearance-none cursor-pointer pr-8">
+                        <option value="all">📚 Tutte le Materie</option>
+                        <option value="informatica">💻 Informatica & Coding</option>
+                        <option value="matematica">📐 Matematica</option>
+                        <option value="fisica">⚛️ Fisica</option>
+                        <option value="chimica">🧪 Chimica</option>
+                        <option value="biologia">🧬 Biologia</option>
+                        <option value="scienze_terra">🌍 Scienze della Terra</option>
+                        <option value="storia">📜 Storia</option>
+                        <option value="filosofia">🏛️ Filosofia</option>
+                        <option value="italiano">✍️ Italiano & Scrittura</option>
+                        <option value="letteratura">📚 Letteratura</option>
+                        <option value="lingue">🌐 Lingue Straniere</option>
+                        <option value="classiche">🏛️ Latino & Greco</option>
+                        <option value="diritto">⚖️ Diritto ed Economia</option>
+                        <option value="arte">🎨 Storia dell'Arte</option>
+                        <option value="civica">🇮🇹 Educazione Civica</option>
+                        <option value="generale">💡 Generale / Studio</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-3 top-3 text-navy text-xs pointer-events-none"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Intent Chips Bar ("Cosa vuoi fare oggi?") -->
+    <nav class="bg-white border-b-2 border-navy py-3 px-4 sticky top-[68px] z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <div class="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-gray-500">
+                <span>🎯 Scegli per Obiettivo di Studio:</span>
+                <button onclick="resetFilters()" class="text-accentCoral hover:underline text-[10px] font-bold">Mostra Tutti</button>
+            </div>
+
+            <div class="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar text-xs font-bold" id="intentChipsBar">
+                <button onclick="filterIntent('all')" id="chip-intent-all" class="intent-chip flat-btn chip-active px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    Tutti gli Obiettivi
+                </button>
+                <button onclick="filterIntent('spiegazione')" id="chip-intent-spiegazione" class="intent-chip flat-btn bg-white text-navy px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    💡 Capire / Spiegazioni
+                </button>
+                <button onclick="filterIntent('quiz')" id="chip-intent-quiz" class="intent-chip flat-btn bg-white text-navy px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    ❓ Quiz & Interrogazioni
+                </button>
+                <button onclick="filterIntent('esercitazione')" id="chip-intent-esercitazione" class="intent-chip flat-btn bg-white text-navy px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    ✏️ Risolvere Esercizi
+                </button>
+                <button onclick="filterIntent('appunti')" id="chip-intent-appunti" class="intent-chip flat-btn bg-white text-navy px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    📝 Appunti & Schemi
+                </button>
+                <button onclick="filterIntent('coding')" id="chip-intent-coding" class="intent-chip flat-btn bg-white text-navy px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    💻 Coding & IT
+                </button>
+            </div>
+
+            <!-- Active Filter Badge -->
+            <div id="activeFilterBadge" class="hidden flex items-center justify-between bg-lightBg px-3 py-1.5 rounded-xl border border-navy text-[11px] font-extrabold text-navy">
+                <div class="flex items-center space-x-1.5">
+                    <i class="fa-solid fa-filter text-brand"></i>
+                    <span id="activeFilterText">Filtro Attivo</span>
+                </div>
+                <button onclick="resetFilters()" class="text-accentCoral font-bold text-xs hover:underline flex items-center space-x-1">
+                    <span>Azzera Filtri</span>
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamically Rendered Cards via JS -->
+        </div>
+
+        <!-- No Results Fallback -->
+        <div id="noResults" class="hidden text-center py-16 space-y-3">
+            <i class="fa-solid fa-ghost text-4xl text-navy"></i>
+            <h3 class="text-lg font-extrabold text-navy">Nessun prompt trovato</h3>
+            <p class="text-xs text-gray-600 font-medium">Riprova con un'altra parola chiave o seleziona un'altra materia.</p>
+            <button onclick="resetFilters()" class="flat-btn bg-accentTeal text-navy px-4 py-2 rounded-xl text-xs">Azzera filtri</button>
+        </div>
+
+        <!-- 5-Step Method Section -->
+        <section id="metodo-5-passi" class="mt-16 bg-white flat-card p-6 sm:p-8 space-y-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-accentCoral text-white rounded-xl border-2 border-navy flex items-center justify-center text-lg font-black shadow-[2px_2px_0px_#1A1A4E]">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-navy">34. Il Metodo in 5 Passi per Studiare con l'IA</h2>
+                    <p class="text-xs text-gray-600 font-semibold">Segui questa sequenza ogni volta che usi ChatGPT per preparare verifiche e interrogazioni</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="p-4 bg-lightBg rounded-xl border-2 border-navy space-y-2">
+                    <span class="inline-block bg-accentYellow text-navy text-[10px] font-black px-2 py-0.5 rounded border border-navy">PASSO 1</span>
+                    <h3 class="font-extrabold text-xs text-navy">1. Prova da solo</h3>
+                    <p class="text-[11px] text-gray-700 font-medium leading-relaxed">Sforzati prima di comprendere o risolvere l'esercizio con i tuoi libri e appunti.</p>
+                </div>
+                <div class="p-4 bg-lightBg rounded-xl border-2 border-navy space-y-2">
+                    <span class="inline-block bg-accentTeal text-navy text-[10px] font-black px-2 py-0.5 rounded border border-navy">PASSO 2</span>
+                    <h3 class="font-extrabold text-xs text-navy">2. Chiedi aiuto</h3>
+                    <p class="text-[11px] text-gray-700 font-medium leading-relaxed">Se sei bloccato, formula un prompt preciso con Ruolo ("Agisci come tutor...") e Contesto.</p>
+                </div>
+                <div class="p-4 bg-lightBg rounded-xl border-2 border-navy space-y-2">
+                    <span class="inline-block bg-accentCoral text-white text-[10px] font-black px-2 py-0.5 rounded border border-navy">PASSO 3</span>
+                    <h3 class="font-extrabold text-xs text-navy">3. Ragiona</h3>
+                    <p class="text-[11px] text-gray-700 font-medium leading-relaxed">Non copiare a occhi chiusi. Chiediti: "Ho capito davvero la spiegazione fornita?"</p>
+                </div>
+                <div class="p-4 bg-lightBg rounded-xl border-2 border-navy space-y-2">
+                    <span class="inline-block bg-accentBlue text-white text-[10px] font-black px-2 py-0.5 rounded border border-navy">PASSO 4</span>
+                    <h3 class="font-extrabold text-xs text-navy">4. Verifica</h3>
+                    <p class="text-[11px] text-gray-700 font-medium leading-relaxed">Confronta le date, le formule e i dati con il manuale di testo della scuola.</p>
+                </div>
+                <div class="p-4 bg-lightBg rounded-xl border-2 border-navy space-y-2">
+                    <span class="inline-block bg-navy text-white text-[10px] font-black px-2 py-0.5 rounded border border-navy">PASSO 5</span>
+                    <h3 class="font-extrabold text-xs text-navy">5. Rielabora</h3>
+                    <p class="text-[11px] text-gray-700 font-medium leading-relaxed">Spiega l'argomento a voce alta con parole tue o fai il test finale generato dall'IA.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Customizer Modal -->
+    <div id="modalCustomizer" class="fixed inset-0 bg-navy/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white flat-card w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b-2 border-navy pb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-accentYellow rounded-full border border-navy"></span>
+                    <h3 class="font-extrabold text-sm text-navy" id="modalTitle">Personalizza il tuo Prompt</h3>
+                </div>
+                <button onclick="closeModal()" class="text-navy hover:text-accentCoral font-black text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-gray-600 font-medium">Compila i campi qui sotto per generare un prompt preciso per la tua materia e il tuo argomento:</p>
+
+            <div id="modalFields" class="space-y-3">
+                <!-- Dynamic Input Fields Rendered Here -->
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <label class="text-[10px] font-extrabold uppercase tracking-wider text-navy">Anteprima Prompt Generato:</label>
+                <div class="p-3 bg-lightBg rounded-xl border-2 border-navy">
+                    <p id="modalPreview" class="text-xs font-mono font-semibold text-navy leading-relaxed"></p>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeModal()" class="flat-btn bg-gray-200 text-navy px-4 py-2 rounded-xl text-xs">Annulla</button>
+                <button onclick="copyModalPrompt()" class="flat-btn bg-accentTeal text-navy px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copia Prompt Pronto</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-CLICK WIZARD MODAL -->
+    <div id="modalWizard" class="fixed inset-0 bg-navy/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white flat-card w-full max-w-xl p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b-2 border-navy pb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-accentYellow rounded-full border border-navy"></span>
+                    <h3 class="font-black text-sm text-navy">⚡ Trova il Prompt Giusto in 2 Clic</h3>
+                </div>
+                <button onclick="closeWizardModal()" class="text-navy hover:text-accentCoral font-black text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Step 1: Goal -->
+                <div class="space-y-2">
+                    <label class="text-[11px] font-black uppercase text-navy block">1. Cosa vuoi fare?</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="wizardGoals">
+                        <button onclick="selectWizardGoal('spiegazione', this)" class="wiz-goal-btn flat-btn bg-lightBg text-navy text-xs py-2 px-3 rounded-xl text-left font-bold border-2 border-navy hover:bg-brand hover:text-white">
+                            💡 Capire un argomento
+                        </button>
+                        <button onclick="selectWizardGoal('quiz', this)" class="wiz-goal-btn flat-btn bg-lightBg text-navy text-xs py-2 px-3 rounded-xl text-left font-bold border-2 border-navy hover:bg-brand hover:text-white">
+                            ❓ Mettimi alla prova
+                        </button>
+                        <button onclick="selectWizardGoal('esercitazione', this)" class="wiz-goal-btn flat-btn bg-lightBg text-navy text-xs py-2 px-3 rounded-xl text-left font-bold border-2 border-navy hover:bg-brand hover:text-white">
+                            ✏️ Aiuto per esercizi
+                        </button>
+                        <button onclick="selectWizardGoal('appunti', this)" class="wiz-goal-btn flat-btn bg-lightBg text-navy text-xs py-2 px-3 rounded-xl text-left font-bold border-2 border-navy hover:bg-brand hover:text-white">
+                            📝 Riassumi appunti
+                        </button>
+                        <button onclick="selectWizardGoal('coding', this)" class="wiz-goal-btn flat-btn bg-lightBg text-navy text-xs py-2 px-3 rounded-xl text-left font-bold border-2 border-navy hover:bg-brand hover:text-white">
+                            💻 Programmare / IT
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Subject -->
+                <div class="space-y-2">
+                    <label class="text-[11px] font-black uppercase text-navy block">2. Per quale materia?</label>
+                    <select id="wizardSubject" class="w-full flat-input py-2.5 px-3 rounded-xl text-xs font-bold bg-lightBg">
+                        <option value="all">📚 Tutte le Materie</option>
+                        <option value="informatica">💻 Informatica & Coding</option>
+                        <option value="matematica">📐 Matematica</option>
+                        <option value="fisica">⚛️ Fisica</option>
+                        <option value="chimica">🧪 Chimica</option>
+                        <option value="biologia">🧬 Biologia</option>
+                        <option value="storia">📜 Storia</option>
+                        <option value="filosofia">🏛️ Filosofia</option>
+                        <option value="italiano">✍️ Italiano & Scrittura</option>
+                        <option value="lingue">🌐 Lingue Straniere</option>
+                        <option value="classiche">🏛️ Latino & Greco</option>
+                        <option value="diritto">⚖️ Diritto ed Economia</option>
+                        <option value="arte">🎨 Storia dell'Arte</option>
+                        <option value="generale">💡 Studio Generale</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-3 border-t-2 border-navy">
+                <button onclick="closeWizardModal()" class="flat-btn bg-gray-200 text-navy px-4 py-2 rounded-xl text-xs">Annulla</button>
+                <button onclick="applyWizard()" class="flat-btn bg-accentTeal text-navy px-5 py-2 rounded-xl text-xs flex items-center space-x-1.5 font-extrabold">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Mostra Prompt Selezionati</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-navy text-white border-t-4 border-navy py-8 px-4 mt-16 text-center">
+        <div class="max-w-7xl mx-auto space-y-3">
+            <div class="flex justify-center items-center space-x-2">
+                <span class="w-3 h-3 bg-accentYellow rounded-full"></span>
+                <span class="font-extrabold text-sm uppercase tracking-wider">Guida Pratica ai Prompt per Studenti</span>
+            </div>
+            <p class="text-xs text-gray-300 font-medium max-w-xl mx-auto leading-relaxed">
+                Promuoviamo un uso consapevole, autonomo ed etico delle tecnologie di Intelligenza Artificiale per l'apprendimento e lo studio personale nelle Scuole Superiori.
+            </p>
+            <p class="text-[11px] text-gray-400 font-semibold">© Guida di Studio Interattiva — Stile Flat Design Outline</p>
+        </div>
+    </footer>
+
+    <script>
+        const sectionsData = [
+            {
+                id: 1,
+                title: "1. Che cos'è un prompt?",
+                category: "fondamenti",
+                subject: "generale",
+                intent: "spiegazione",
+                badge: "Concetti Base",
+                description: "Un prompt è la richiesta che invii all'IA. Con ruolo e contesto ottieni spiegazioni perfette per le superiori.",
+                content: `
+                    <p class="text-xs text-gray-700 font-medium mb-3">Aggiungere un <strong>ruolo</strong> (es. tutor per le superiori) e un <strong>contesto</strong> (es. 15 anni, preparazione verifica) trasforma una risposta generica in uno strumento di studio mirato.</p>
+                    <div class="space-y-3">
+                        <div class="prompt-card p-3 rounded-xl bg-lightBg border-2 border-navy">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-accentCoral">Senza ruolo né contesto (Generico)</span>
+                                <button onclick="copyText('Spiegami la fotosintesi in modo semplice.')" class="flat-btn bg-white text-navy text-[10px] px-2 py-0.5 rounded">Copia</button>
+                            </div>
+                            <p class="text-xs font-mono text-navy font-semibold">Spiegami la fotosintesi in modo semplice.</p>
+                        </div>
+                        <div class="prompt-card p-3 rounded-xl bg-lightBg border-2 border-navy">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-brand">Con Ruolo e Contesto (Migliore per 14-17 anni)</span>
+                                <button onclick="copyText('Agisci come tutor scientifico per un ragazzo di 15 anni. Sto studiando la fotosintesi per le superiori. Spiegamela in modo chiaro con un esempio della vita quotidiana e fammi 3 domande per verificare se ho capito.')" class="flat-btn bg-accentTeal text-navy text-[10px] px-2 py-0.5 rounded">Copia</button>
+                            </div>
+                            <p class="text-xs font-mono text-navy font-semibold">Agisci come tutor scientifico per un ragazzo di 15 anni. Sto studiando la fotosintesi per le superiori. Spiegamela in modo chiaro con un esempio della vita quotidiana e fammi 3 domande per verificare se ho capito.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 2,
+                title: "2. Usa l'IA per imparare, non per sostituirti",
+                category: "fondamenti",
+                subject: "generale",
+                intent: "spiegazione",
+                badge: "Regola Chiave",
+                description: "Chiedi all'IA di fare da coach, non da esecutore passivo.",
+                content: `
+                    <p class="text-xs text-gray-700 font-medium mb-3">L'obiettivo delle superiori è sviluppare pensiero critico ed autonomia. Chiedere la soluzione pronta non ti aiuta durante le verifiche in classe.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div class="p-3 bg-red-50 rounded-xl border-2 border-navy">
+                            <span class="text-[10px] font-bold text-red-700 uppercase">❌ Sconsigliato:</span>
+                            <p class="text-xs font-mono font-bold text-navy mt-1">"Risolvi questo problema e dammi la soluzione."</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-xl border-2 border-navy">
+                            <span class="text-[10px] font-bold text-green-700 uppercase">✓ Efficace:</span>
+                            <p class="text-xs font-mono font-bold text-navy mt-1">"Agisci come docente guida per un ragazzo di 15 anni. Mi sono bloccato in questo passaggio. Dammi un indizio senza dare la soluzione."</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 3,
+                title: "3. Il prompt 'base' con Ruolo & Contesto",
+                category: "fondamenti",
+                subject: "generale",
+                intent: "spiegazione",
+                badge: "Template Jolly",
+                description: "Modello versatile pronto per qualsiasi materia delle scuole superiori.",
+                prompts: [
+                    {
+                        title: "Modello Jolly (14-17 anni)",
+                        text: "Agisci come un tutor scolastico esperto e coinvolgente per ragazzi delle superiori. Sono uno studente di [ETA] anni e sto studiando [ARGOMENTO]. Devo [OBIETTIVO]. Spiegamelo in modo chiaro con un esempio pratico. Alla fine fammi 3 domande di verifica.",
+                        fields: ["ETA", "ARGOMENTO", "OBIETTIVO"]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "4. Se non capisci un argomento",
+                category: "studio",
+                subject: "generale",
+                intent: "spiegazione",
+                badge: "Comprensione",
+                description: "Prompt per cambiare prospettiva quando un concetto non ti entra in testa.",
+                prompts: [
+                    {
+                        title: "Spiegazione Semplice e Chiara",
+                        text: "Agisci come tutor per studenti di 15 anni. Spiegami [ARGOMENTO] con linguaggio semplice e privo di gergo complesso. Usa un esempio concreto.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Passo per Passo Guidato",
+                        text: "Agisci come professore delle superiori. Spiegami [ARGOMENTO] un passaggio alla volta. Fermati dopo ogni punto e chiedimi se è chiaro prima di proseguire.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "5. Se vuoi controllare se hai davvero capito",
+                category: "studio",
+                subject: "generale",
+                intent: "quiz",
+                badge: "Autovalutazione",
+                description: "Verifica attiva della memoria e della comprensione prima di un test.",
+                prompts: [
+                    {
+                        title: "Domande una alla volta",
+                        text: "Agisci come docente di scuola superiore. Devo verificare la mia preparazione su [ARGOMENTO]. Fammi 5 domande brevi, una alla volta. Attendi la mia risposta prima di fare la successiva.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "6. Se vuoi fare un test di verifica",
+                category: "studio",
+                subject: "generale",
+                intent: "quiz",
+                badge: "Quiz e Test",
+                description: "Test attivi per fissare i concetti e correggere subito le lacune.",
+                prompts: [
+                    {
+                        title: "Test 10 domande con correzione",
+                        text: "Agisci come esaminatore per le scuole superiori. Ho studiato [ARGOMENTO]. Somministrami un test di 10 domande a risposta aperta senza dare subito le soluzioni. Correggi le mie risposte una alla volta.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "7. Se hai degli appunti da riorganizzare",
+                category: "studio",
+                subject: "generale",
+                intent: "appunti",
+                badge: "Elaborazione Appunti",
+                description: "Trasforma appunti disordinati in materiale da ripasso perfetto.",
+                prompts: [
+                    {
+                        title: "Riassunto Strutturato",
+                        text: "Agisci come assistente allo studio per studenti superiori. Organizza questi miei appunti su [ARGOMENTO] in un riassunto sintetico per punti: [APPUNTI]. Non aggiungere informazioni esterne.",
+                        fields: ["ARGOMENTO", "APPUNTI"]
+                    }
+                ]
+            },
+            {
+                id: 10,
+                title: "10. Matematica — Formule ed Esercizi",
+                category: "materie",
+                subject: "matematica",
+                intent: "esercitazione",
+                badge: "Matematica",
+                description: "Comprendere logica, passaggi e formule per le scuole superiori.",
+                prompts: [
+                    {
+                        title: "Spiegazione Formula con Esempio",
+                        text: "Agisci come un professore di matematica empatico per ragazzi delle superiori. Spiegami la formula [FORMULA]: cosa rappresenta ogni simbolo, perché si usa e fammi un esempio svolto passo passo.",
+                        fields: ["FORMULA"]
+                    }
+                ]
+            },
+            {
+                id: 11,
+                title: "11. Fisica — Leggi e Problemi Realistici",
+                category: "materie",
+                subject: "fisica",
+                intent: "spiegazione",
+                badge: "Fisica",
+                description: "Capire leggi e problemi fisici collegandoli al mondo reale.",
+                prompts: [
+                    {
+                        title: "Concetto Fisico e Mondo Reale",
+                        text: "Agisci come docente di fisica delle superiori. Spiegami il concetto di [CONCETTO] per uno studente di 16 anni, usando un esempio pratico legato a sport o tecnologia.",
+                        fields: ["CONCETTO"]
+                    }
+                ]
+            },
+            {
+                id: 12,
+                title: "12. Chimica — Reazioni e Legami",
+                category: "materie",
+                subject: "chimica",
+                intent: "spiegazione",
+                badge: "Chimica",
+                description: "Reazioni, legami e stechiometria spiegati in modo intuitivo.",
+                prompts: [
+                    {
+                        title: "Spiegazione Reazione / Legame",
+                        text: "Agisci come docente di chimica per ragazzi di 15-17 anni. Spiegami [ARGOMENTO] con un linguaggio visivo e chiaro. Fammi poi 2 domande di verifica.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 13,
+                title: "13. Biologia — Processi Vitali",
+                category: "materie",
+                subject: "biologia",
+                intent: "spiegazione",
+                badge: "Biologia",
+                description: "Comprendere i processi vitali con mappe e analogie efficaci.",
+                prompts: [
+                    {
+                        title: "Processo Biologico a Fasi",
+                        text: "Agisci come professore di scienze per le superiori. Spiegami il processo di [PROCESSO] dividendolo in fasi cronologiche chiare. Alla fine fai un sintesi in 4 punti.",
+                        fields: ["PROCESSO"]
+                    }
+                ]
+            },
+            {
+                id: 14,
+                title: "14. Storia — Cause e Conseguenze",
+                category: "materie",
+                subject: "storia",
+                intent: "appunti",
+                badge: "Storia",
+                description: "Analizzare cause, conseguenze e collegamenti storici.",
+                prompts: [
+                    {
+                        title: "Schema Evento Storico",
+                        text: "Agisci come docente di storia del liceo/istituto. Spiegami [EVENTO] per uno studente di [ETA] anni, organizzando la risposta in: 1. Cause; 2. Svolgimento; 3. Conseguenze.",
+                        fields: ["EVENTO", "ETA"]
+                    }
+                ]
+            },
+            {
+                id: 16,
+                title: "16. Italiano & Scrittura — Temi e Saggi",
+                category: "materie",
+                subject: "italiano",
+                intent: "appunti",
+                badge: "Italiano",
+                description: "Comprensione del testo, analisi logica e sviluppo di saggi o temi.",
+                prompts: [
+                    {
+                        title: "Brainstorming e Scaletta Tema",
+                        text: "Agisci come professore di lettere. Devo scrivere un testo espositivo/argomentativo su [TRACCIA]. Ho [ETA] anni. Proponimi una scaletta in 4 punti e 3 idee forti senza scrivere il testo per me.",
+                        fields: ["TRACCIA", "ETA"]
+                    }
+                ]
+            },
+            {
+                id: 17,
+                title: "17. Letteratura — Autori e Poetiche",
+                category: "materie",
+                subject: "letteratura",
+                intent: "spiegazione",
+                badge: "Letteratura",
+                description: "Autori, opere, poetiche e analisi del testo poetico o narrativo.",
+                prompts: [
+                    {
+                        title: "Poetica Autore in Breve",
+                        text: "Agisci come docente di letteratura per le superiori. Spiegami la poetica di [AUTORE] per un ragazzo di [ETA] anni: concetti chiave, contesto e opere simbolo.",
+                        fields: ["AUTORE", "ETA"]
+                    }
+                ]
+            },
+            {
+                id: 18,
+                title: "18. Lingue Straniere — Conversazione e Grammatica",
+                category: "materie",
+                subject: "lingue",
+                intent: "quiz",
+                badge: "Lingue",
+                description: "Conversazione, grammatica, correzione frasi ed esercizio vocaboli.",
+                prompts: [
+                    {
+                        title: "Partner di Conversazione A2/B1/B2",
+                        text: "Agisci come madrelingua [LINGUA] e tutor per uno studente di 16 anni (livello B1). Fai una conversazione con me su [ARGOMENTO]. Fammi una domanda alla volta e correggerai i miei errori alla fine.",
+                        fields: ["LINGUA", "ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 67,
+                title: "67. Informatica — Algoritmi e Diagrammi di Flusso (Flowchart)",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Progetta la logica di un algoritmo prima di scriverlo in codice.",
+                prompts: [
+                    {
+                        title: "Progettazione Algoritmo e Flowchart",
+                        text: "Agisci come docente di informatica per gli istituti superiori. Devo progettare un algoritmo per [OBIETTIVO_ALGORITMO]. Spiegami la sequenza logica passo-passo e descrivi come rappresentarlo con un diagramma di flusso (Flowchart), indicando il significato di ciascun blocco.",
+                        fields: ["OBIETTIVO_ALGORITMO"]
+                    }
+                ]
+            },
+            {
+                id: 68,
+                title: "68. Informatica — Programmazione Orientata agli Oggetti (OOP)",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Comprendere Classi, Oggetti, Ereditarietà e Incapsulamento.",
+                prompts: [
+                    {
+                        title: "Spiegazione OOP con Analogia Pratica",
+                        text: "Agisci come mentor di programmazione per studenti di 16-17 anni. Spiegami i concetti cardine dell'OOP (Classe, Oggetto, Incapsulamento ed Ereditarietà) in [LINGUAGGIO]. Usa un'analogia concreta ed un breve esempio di codice.",
+                        fields: ["LINGUAGGIO"]
+                    }
+                ]
+            },
+            {
+                id: 69,
+                title: "69. Informatica — Basi di Dati e Query SQL",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Scrivere ed analizzare query SQL (SELECT, JOIN, WHERE, GROUP BY).",
+                prompts: [
+                    {
+                        title: "Guida alla Scrittura di Query SQL e JOIN",
+                        text: "Agisci come professore di Basi di Dati per le superiori. Devo scrivere una query SQL per [OBIETTIVO_QUERY] utilizzando le tabelle [TABELLE_COINVOLTE]. Spiegami quale tipo di JOIN serve e fammi una domanda guida.",
+                        fields: ["OBIETTIVO_QUERY", "TABELLE_COINVOLTE"]
+                    }
+                ]
+            },
+            {
+                id: 70,
+                title: "70. Informatica — Sviluppo Web e Layout Responsive",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Struttura HTML/CSS, Flexbox, Grid e layout adatti a smartphone e PC.",
+                prompts: [
+                    {
+                        title: "Spiegazione Flexbox e Layout Web Responsive",
+                        text: "Agisci come web developer e docente. Devo realizzare un layout web per [TIPO_SITO] che sia responsive per dispositivi mobili e desktop. Spiegami come usare [TECNOLOGIA] con regole ed un esempio minimale.",
+                        fields: ["TIPO_SITO", "TECNOLOGIA"]
+                    }
+                ]
+            },
+            {
+                id: 71,
+                title: "71. Informatica — Strutture Dati (Array, Liste, Stack, Queue)",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Confronto e scelta della struttura dati ideale per un software.",
+                prompts: [
+                    {
+                        title: "Scelta della Struttura Dati Migliore",
+                        text: "Agisci come tutor di informatica del triennio. Spiegami la differenza fondamentale tra [STRUTTURA_1] e [STRUTTURA_2]. In quale caso d'uso reale conviene scegliere l'una rispetto all'altra?",
+                        fields: ["STRUTTURA_1", "STRUTTURA_2"]
+                    }
+                ]
+            },
+            {
+                id: 72,
+                title: "72. Informatica — Cybersecurity e Sicurezza della Rete",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Principi di crittografia, firewall, HTTPS, malware e protezione dati.",
+                prompts: [
+                    {
+                        title: "Concetto di Sicurezza e Protezione Dati",
+                        text: "Agisci come esperto di cybersecurity per studenti superiori. Spiegami come funciona [CONCETTO_SICUREZZA] usando un esempio pratico ed elencando 3 regole fondamentali.",
+                        fields: ["CONCETTO_SICUREZZA"]
+                    }
+                ]
+            },
+            {
+                id: 73,
+                title: "73. Informatica — Controllo Versione con Git e GitHub",
+                category: "informatica",
+                subject: "informatica",
+                intent: "coding",
+                badge: "Informatica & Coding",
+                description: "Comprendere i comandi `commit`, `branch`, `push` e `merge` per lavoro di gruppo.",
+                prompts: [
+                    {
+                        title: "Workflow Git e Gestione Conflitti",
+                        text: "Agisci come mentor di sviluppo software. Spiegami il workflow di lavoro con Git e GitHub per uno studente di 17 anni che lavora in gruppo. Spiega cosa fanno `git commit`, `git branch` e `git merge`.",
+                        fields: []
+                    }
+                ]
+            },
+            {
+                id: 37,
+                title: "37. Storia dell'Arte — Analisi dell'Opera",
+                category: "materie",
+                subject: "arte",
+                intent: "appunti",
+                badge: "Arte",
+                description: "Analizza dipinti, sculture o architetture per le verifiche di arte.",
+                prompts: [
+                    {
+                        title: "Scheda di Analisi dell'Opera",
+                        text: "Agisci come docente di storia dell'arte del liceo. Devo analizzare l'opera [OPERA] di [ARTISTA]. Guida la mia analisi in 4 sezioni: 1. Contesto storico-culturale; 2. Soggetto e iconografia; 3. Tecnica e composizione spaziale/cromatica; 4. Significato ed eredità artistica.",
+                        fields: ["OPERA", "ARTISTA"]
+                    }
+                ]
+            },
+            {
+                id: 38,
+                title: "38. Filosofia — Dal Teorico al Quotidiano",
+                category: "materie",
+                subject: "filosofia",
+                intent: "spiegazione",
+                badge: "Filosofia",
+                description: "Comprendere le correnti filosofiche applicandole alla vita reale.",
+                prompts: [
+                    {
+                        title: "Filosofo e Dilemmi Contemporanei",
+                        text: "Agisci come professore di filosofia del liceo. Spiegami il pensiero di [FILOSOFO] su [TEMA] per uno studente di 16 anni. Poi mostrami come questo filosofo risponderebbe a un dilemma della vita di oggi.",
+                        fields: ["FILOSOFO", "TEMA"]
+                    }
+                ]
+            },
+            {
+                id: 39,
+                title: "39. Diritto ed Economia Politica",
+                category: "materie",
+                subject: "diritto",
+                intent: "spiegazione",
+                badge: "Diritto & Economia",
+                description: "Comprendere leggi, istituzioni, inflazione e mercati.",
+                prompts: [
+                    {
+                        title: "Concetto Giuridico/Economico Pratico",
+                        text: "Agisci come docente di Diritto ed Economia per gli istituti superiori. Spiegami il concetto di [CONCETTO] per uno studente di 15 anni, facendo un esempio reale legato agli acquisti quotidiani o alla vita dei cittadini.",
+                        fields: ["CONCETTO"]
+                    }
+                ]
+            },
+            {
+                id: 40,
+                title: "40. Latino e Greco — Analisi del Periodo",
+                category: "materie",
+                subject: "classiche",
+                intent: "esercitazione",
+                badge: "Lingue Classiche",
+                description: "Scomponi e comprendi la struttura sintattica prima di tradurre.",
+                prompts: [
+                    {
+                        title: "Guida alla Scomposizione del Verso/Frase",
+                        text: "Agisci come docente di lingue classiche (latino/greco). Ho questo periodo da tradurre: [TESTO_ORIGINALE]. Non darmene la traduzione automatica: indicami prima la proposizione principale, le subordinate e i costrutti chiave.",
+                        fields: ["TESTO_ORIGINALE"]
+                    }
+                ]
+            },
+            {
+                id: 41,
+                title: "41. Scienze della Terra — Vulcani e Terremoti",
+                category: "materie",
+                subject: "scienze_terra",
+                intent: "spiegazione",
+                badge: "Scienze della Terra",
+                description: "Capire la tettonica delle placche e i fenomeni geologici.",
+                prompts: [
+                    {
+                        title: "Processo Geologico Visivo",
+                        text: "Agisci come professore di Scienze della Terra per studenti di 14-16 anni. Spiegami come funziona [FENOMENO_GEOLOGICO] usando una metafora fisica intuitiva. Fammi poi 2 domande di verifica.",
+                        fields: ["FENOMENO_GEOLOGICO"]
+                    }
+                ]
+            },
+            {
+                id: 35,
+                title: "35. Prompt Rapidi per lo Studio",
+                category: "rapidi",
+                subject: "generale",
+                intent: "spiegazione",
+                badge: "Prompt Rapidi",
+                description: "Comandi veloci con Ruolo & Contesto pronti da copiare in un tap.",
+                content: `
+                    <div class="space-y-3">
+                        <div class="bg-lightBg p-3 rounded-xl border-2 border-navy">
+                            <h4 class="font-black text-xs text-brand uppercase tracking-wider mb-2">💡 Per Comprendere al Volo</h4>
+                            <div class="space-y-1.5 text-xs font-semibold text-navy">
+                                <div class="flex items-center justify-between bg-white p-2 rounded border border-navy">
+                                    <span>1. Spiegami [ARGOMENTO] con un esempio.</span>
+                                    <button onclick="copyText('Agisci come tutor per le superiori: spiegami questo argomento in modo chiaro e con un esempio.')" class="flat-btn bg-accentTeal text-navy text-[10px] px-2 py-0.5 rounded">Copia</button>
+                                </div>
+                                <div class="flex items-center justify-between bg-white p-2 rounded border border-navy">
+                                    <span>2. Spiegamelo passo per passo.</span>
+                                    <button onclick="copyText('Agisci come prof delle superiori: spiegamelo passo per passo fermandoti ad ogni punto.')" class="flat-btn bg-accentTeal text-navy text-[10px] px-2 py-0.5 rounded">Copia</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('favPrompts_v4') || '[]');
+        let currentCategory = 'all';
+        let currentSubject = 'all';
+        let currentIntent = 'all';
+        let searchQuery = '';
+        let activeModalPrompt = null;
+        let selectedWizardGoal = null;
+
+        const subjectLabels = {
+            informatica: "💻 Informatica",
+            matematica: "📐 Matematica",
+            fisica: "⚛️ Fisica",
+            chimica: "🧪 Chimica",
+            biologia: "🧬 Biologia",
+            scienze_terra: "🌍 Sc. Terra",
+            storia: "📜 Storia",
+            filosofia: "🏛️ Filosofia",
+            italiano: "✍️ Italiano",
+            letteratura: "📚 Letteratura",
+            lingue: "🌐 Lingue",
+            classiche: "🏛️ Latino/Greco",
+            diritto: "⚖️ Diritto/Econ.",
+            arte: "🎨 Arte",
+            civica: "🇮🇹 Civica",
+            generale: "💡 Generale"
+        };
+
+        function renderCards() {
+            const grid = document.getElementById('cardsGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+
+            const filtered = sectionsData.filter(item => {
+                // Category match
+                const matchesCategory = (currentCategory === 'all') || 
+                                        (currentCategory === 'fav' && favorites.includes(item.id)) ||
+                                        (item.category === currentCategory);
+
+                // Subject match
+                const matchesSubject = (currentSubject === 'all') || (item.subject === currentSubject);
+
+                // Intent/Goal match
+                const matchesIntent = (currentIntent === 'all') || (item.intent === currentIntent);
+
+                // Search query match
+                const fullText = (item.title + ' ' + item.description + ' ' + (item.badge || '') + ' ' + (subjectLabels[item.subject] || '')).toLowerCase();
+                const matchesSearch = fullText.includes(searchQuery.toLowerCase());
+
+                return matchesCategory && matchesSubject && matchesIntent && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'flat-card p-5 flex flex-col justify-between space-y-4';
+
+                const isFav = favorites.includes(item.id);
+                const subjBadge = subjectLabels[item.subject] || item.badge || 'Guida';
+
+                let promptsHTML = '';
+                if (item.prompts && item.prompts.length > 0) {
+                    promptsHTML = item.prompts.map((p, idx) => `
+                        <div class="prompt-box p-3 space-y-2 mt-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-bold text-brand">${p.title}</span>
+                                <div class="flex space-x-1">
+                                    ${p.fields && p.fields.length > 0 ? `
+                                        <button onclick="openCustomizer(${item.id}, ${idx})" class="flat-btn bg-accentYellow text-navy text-[10px] px-2 py-0.5 rounded flex items-center space-x-1">
+                                            <i class="fa-solid fa-sliders"></i>
+                                            <span>Personalizza</span>
+                                        </button>
+                                    ` : ''}
+                                    <button onclick="copyText('${escapeJsString(p.text)}')" class="flat-btn bg-accentTeal text-navy text-[10px] px-2 py-0.5 rounded flex items-center space-x-1">
+                                        <i class="fa-solid fa-copy"></i>
+                                        <span>Copia</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-xs font-mono text-navy font-medium leading-relaxed">${p.text}</p>
+                        </div>
+                    `).join('');
+                } else if (item.content) {
+                    promptsHTML = item.content;
+                }
+
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start gap-2">
+                            <button onclick="quickFilterSubject('${item.subject}')" class="inline-block bg-navy text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-navy hover:bg-brand transition-colors">
+                                ${subjBadge}
+                            </button>
+                            <button onclick="toggleFav(${item.id})" class="text-lg ${isFav ? 'text-accentYellow' : 'text-gray-300'} hover:scale-110 transition-transform">
+                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-extrabold text-sm text-navy leading-snug">${item.title}</h3>
+                        <p class="text-xs text-gray-600 font-medium leading-relaxed">${item.description}</p>
+                        ${promptsHTML}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            document.getElementById('fav-count').innerText = favorites.length;
+            updateFilterBadge();
+        }
+
+        function updateFilterBadge() {
+            const badge = document.getElementById('activeFilterBadge');
+            const badgeText = document.getElementById('activeFilterText');
+
+            if (currentCategory !== 'all' || currentSubject !== 'all' || currentIntent !== 'all' || searchQuery !== '') {
+                let parts = [];
+                if (currentIntent !== 'all') parts.push(`Obiettivo: ${currentIntent}`);
+                if (currentSubject !== 'all') parts.push(`Materia: ${subjectLabels[currentSubject] || currentSubject}`);
+                if (searchQuery !== '') parts.push(`"${searchQuery}"`);
+                
+                badgeText.innerText = parts.join(' • ');
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function filterIntent(intent) {
+            currentIntent = intent;
+            document.querySelectorAll('.intent-chip').forEach(btn => {
+                btn.classList.remove('chip-active');
+                btn.classList.add('bg-white', 'text-navy');
+            });
+            const activeBtn = document.getElementById(`chip-intent-${intent}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-navy');
+                activeBtn.classList.add('chip-active');
+            }
+            renderCards();
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderCards();
+        }
+
+        function handleSubjectSelect() {
+            currentSubject = document.getElementById('subjectSelect').value;
+            renderCards();
+        }
+
+        function quickFilterSubject(subj) {
+            currentSubject = subj;
+            document.getElementById('subjectSelect').value = subj;
+            renderCards();
+            window.scrollTo({ top: 320, behavior: 'smooth' });
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderCards();
+        }
+
+        function resetFilters() {
+            searchQuery = '';
+            currentCategory = 'all';
+            currentSubject = 'all';
+            currentIntent = 'all';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('subjectSelect').value = 'all';
+            filterIntent('all');
+        }
+
+        function openWizardModal() {
+            document.getElementById('modalWizard').classList.remove('hidden');
+        }
+
+        function closeWizardModal() {
+            document.getElementById('modalWizard').classList.add('hidden');
+            selectedWizardGoal = null;
+            document.querySelectorAll('.wiz-goal-btn').forEach(b => {
+                b.classList.remove('bg-brand', 'text-white');
+                b.classList.add('bg-lightBg', 'text-navy');
+            });
+        }
+
+        function selectWizardGoal(goal, btnEl) {
+            selectedWizardGoal = goal;
+            document.querySelectorAll('.wiz-goal-btn').forEach(b => {
+                b.classList.remove('bg-brand', 'text-white');
+                b.classList.add('bg-lightBg', 'text-navy');
+            });
+            btnEl.classList.remove('bg-lightBg', 'text-navy');
+            btnEl.classList.add('bg-brand', 'text-white');
+        }
+
+        function applyWizard() {
+            const wizSubj = document.getElementById('wizardSubject').value;
+            if (selectedWizardGoal) {
+                filterIntent(selectedWizardGoal);
+            }
+            if (wizSubj) {
+                currentSubject = wizSubj;
+                document.getElementById('subjectSelect').value = wizSubj;
+            }
+            closeWizardModal();
+            renderCards();
+            window.scrollTo({ top: 350, behavior: 'smooth' });
+        }
+
+        function openCustomizer(itemId, promptIdx) {
+            const item = sectionsData.find(s => s.id === itemId);
+            if (!item || !item.prompts || !item.prompts[promptIdx]) return;
+
+            activeModalPrompt = item.prompts[promptIdx];
+            document.getElementById('modalTitle').innerText = activeModalPrompt.title;
+
+            const fieldsContainer = document.getElementById('modalFields');
+            fieldsContainer.innerHTML = '';
+
+            activeModalPrompt.fields.forEach(field => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = 'space-y-1';
+                fieldDiv.innerHTML = `
+                    <label class="text-[10px] font-extrabold text-navy uppercase">[${field}]:</label>
+                    <input type="text" id="field-${field}" oninput="updateModalPreview()" placeholder="Inserisci ${field.toLowerCase().replace(/_/g, ' ')}..." class="w-full flat-input py-2 px-3 rounded-lg text-xs font-semibold text-navy">
+                `;
+                fieldsContainer.appendChild(fieldDiv);
+            });
+
+            updateModalPreview();
+            document.getElementById('modalCustomizer').classList.remove('hidden');
+        }
+
+        function updateModalPreview() {
+            if (!activeModalPrompt) return;
+            let resultText = activeModalPrompt.text;
+
+            activeModalPrompt.fields.forEach(field => {
+                const input = document.getElementById(`field-${field}`);
+                const val = input && input.value.trim() !== '' ? input.value.trim() : `[${field}]`;
+                resultText = resultText.replace(new RegExp(`\\[${field}\\]`, 'g'), val);
+            });
+
+            document.getElementById('modalPreview').innerText = resultText;
+        }
+
+        function closeModal() {
+            document.getElementById('modalCustomizer').classList.add('hidden');
+            activeModalPrompt = null;
+        }
+
+        function copyModalPrompt() {
+            const text = document.getElementById('modalPreview').innerText;
+            copyText(text);
+            closeModal();
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast());
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showToast(msg = 'Prompt copiato negli appunti!') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function toggleFav(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('favPrompts_v4', JSON.stringify(favorites));
+            renderCards();
+        }
+
+        function escapeJsString(str) {
+            return str.replace(/'/g, "\\'").replace(/\n/g, ' ');
+        }
+
+        window.onload = function() {
+            renderCards();
+        };
+    </script>
+</body>
+</html>
