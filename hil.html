@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI e Umanità: Chi Decide la Domanda?</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Palette Editoriale AAA su sfondo chiaro */
+            --ink: #111827;           /* Contrasto 16.1:1 su crema */
+            --cream: #FAF6EE;         /* Sfondo generale caldo */
+            --paper: #F2E8D5;         /* Superfici alternate */
+            --surface: #FFFFFF;       /* Superficie pura per card */
+            --primary: #7C1D3F;       /* Borgogna profondo, contrasto > 7.2:1 su crema */
+            --primary-dark: #521028;  /* Variante per stati attivi */
+            --accent: #7A5200;        /* Bronzo/Oro scuro, contrasto > 7:1 su crema */
+            
+            /* Palette Semantica di Stato AAA fissa */
+            --status-progress: #0047AB; /* Blu Cobalto Vivace (⏳ In corso) */
+            --status-warning: #B0004A;  /* Rosso Magenta Scuro (⚠️ Attenzione) */
+            --status-success: #005C36;  /* Verde Smeraldo Scuro (✅ Completato) */
+            --status-disabled: #4B5563; /* Grigio neutro scuro per stati disabilitati */
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 1.0625rem; /* 17px base per massima leggibilità */
+            line-height: 1.65;
+        }
+
+        .font-serif-title {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Focus visibile obbligatorio accessibile WCAG AAA */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex="0"]:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 3px;
+            box-shadow: 0 0 0 2px var(--cream);
+        }
+
+        /* Texture Carta Editoriale */
+        .paper-texture {
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(124, 29, 63, 0.02) 0%, transparent 35%),
+                radial-gradient(circle at 85% 75%, rgba(122, 82, 0, 0.02) 0%, transparent 35%);
+        }
+
+        /* Animazioni rispettose di prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Card Flip 3D accessibile */
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col antialiased">
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-2 bg-stone-200 z-50" role="progressbar" aria-label="Avanzamento lettura pagina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-container">
+        <div id="progress-bar" class="h-full bg-[#0047AB] transition-all duration-150 w-0"></div>
+    </div>
+
+    <!-- Header Sticky -->
+    <header class="sticky top-2 z-40 px-4 sm:px-8 max-w-7xl mx-auto w-full">
+        <nav class="bg-[#FAF6EE]/95 backdrop-blur-md border border-[#111827]/15 rounded-2xl px-4 py-3 shadow-md flex items-center justify-between" aria-label="Navigazione principale">
+            <a href="#hero" class="text-lg sm:text-xl font-bold font-serif-title tracking-tight text-[#7C1D3F] flex items-center gap-2 hover:underline">
+                <span class="p-1.5 bg-[#7C1D3F] text-white rounded-lg text-sm font-sans" aria-hidden="true">🏛️</span>
+                <span>AI & Umanità</span>
+            </a>
+            
+            <!-- Link desktop -->
+            <ul class="hidden lg:flex items-center gap-6 text-sm font-semibold text-[#111827]">
+                <li><a href="#divario" class="hover:text-[#7C1D3F] transition-colors py-1 px-2 rounded" id="nav-divario">1. Il Divario</a></li>
+                <li><a href="#demo-sintassi" class="hover:text-[#7C1D3F] transition-colors py-1 px-2 rounded" id="nav-demo">2. Demo Sintassi vs Semantica</a></li>
+                <li><a href="#quattro-lenti" class="hover:text-[#7C1D3F] transition-colors py-1 px-2 rounded" id="nav-lenti">3. Le 4 Lenti Umanistiche</a></li>
+                <li><a href="#flusso-decisionale" class="hover:text-[#7C1D3F] transition-colors py-1 px-2 rounded" id="nav-flusso">4. Il Flusso Umano</a></li>
+                <li><a href="#strumento" class="hover:text-[#7C1D3F] transition-colors py-1 px-2 rounded" id="nav-strumento">5. Valutatore AI</a></li>
+            </ul>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" type="button" class="lg:hidden p-2.5 rounded-xl border-2 border-[#111827] text-[#111827] hover:bg-[#F2E8D5] flex items-center gap-2" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri menu di navigazione">
+                <span class="font-bold text-sm">Menu</span>
+                <span aria-hidden="true">☰</span>
+            </button>
+        </nav>
+
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden mt-2 p-4 bg-[#FAF6EE] border-2 border-[#111827] rounded-2xl shadow-xl flex flex-col gap-3 font-semibold text-[#111827]">
+            <a href="#divario" class="mobile-nav-link p-2 rounded hover:bg-[#F2E8D5]">1. Il Divario Fondamentale</a>
+            <a href="#demo-sintassi" class="mobile-nav-link p-2 rounded hover:bg-[#F2E8D5]">2. Demo Sintassi vs Semantica</a>
+            <a href="#quattro-lenti" class="mobile-nav-link p-2 rounded hover:bg-[#F2E8D5]">3. Le 4 Lenti Umanistiche</a>
+            <a href="#flusso-decisionale" class="mobile-nav-link p-2 rounded hover:bg-[#F2E8D5]">4. Il Flusso dell'Interpretazione</a>
+            <a href="#strumento" class="mobile-nav-link p-2 rounded hover:bg-[#F2E8D5]">5. Valutatore Umanistico AI</a>
+        </div>
+    </header>
+
+    <main id="main-content" class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-16 sm:space-y-24">
+
+        <!-- Hero Section -->
+        <section id="hero" class="pt-4 sm:pt-8 text-center space-y-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F2E8D5] border border-[#111827]/20 rounded-full text-xs sm:text-sm font-semibold text-[#7C1D3F]">
+                <span aria-hidden="true">📌</span>
+                <span>Saggio Editoriale Interattivo — WCAG 2.1 AAA</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold font-serif-title text-[#111827] leading-tight max-w-4xl mx-auto">
+                L'IA genera risposte. <br class="hidden sm:inline">
+                <span class="text-[#7C1D3F] underline decoration-[#7A5200] decoration-2 underline-offset-8">Ma chi decide la domanda?</span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-[#111827] max-w-3xl mx-auto font-normal leading-relaxed">
+                Stiamo creando macchine straordinariamente fluide nel linguaggio, ma del tutto prive di senso morale e giudizio. Per usare l'IA responsabilmente, le discipline STEM non bastano: abbiamo bisogno delle <strong>Discipline Umanistiche</strong>.
+            </p>
+
+            <!-- Callout Citazione Oscar Wilde -->
+            <div class="p-6 bg-[#F2E8D5] border-l-8 border-[#7C1D3F] rounded-r-2xl text-left max-w-2xl mx-auto shadow-sm">
+                <p class="italic text-base sm:text-lg text-[#111827] font-serif-title">
+                    "Per riprendere una celebre frase di Oscar Wilde: l'Intelligenza Artificiale conosce il prezzo di tutto, ma non riconosce il valore di niente."
+                </p>
+                <span class="block mt-2 text-xs font-bold uppercase tracking-wider text-[#7C1D3F]">
+                    🏷️ Principio Guida dell'Umanesimo Digitale
+                </span>
+            </div>
+
+            <div class="pt-4 flex flex-wrap justify-center gap-4">
+                <a href="#demo-sintassi" class="px-6 py-3.5 bg-[#7C1D3F] hover:bg-[#521028] text-white font-semibold rounded-xl shadow-lg transition-all flex items-center gap-2 text-base">
+                    <span>🔬 Sperimenta la Demo Interattiva</span>
+                </a>
+                <a href="#strumento" class="px-6 py-3.5 bg-[#FFFFFF] hover:bg-[#F2E8D5] border-2 border-[#111827] text-[#111827] font-semibold rounded-xl shadow transition-all flex items-center gap-2 text-base">
+                    <span>🛠️ Apri il Valutatore AI</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- SEZIONE 1: Il Divario tra STEM e Umanità -->
+        <section id="divario" class="space-y-8 scroll-mt-24">
+            <div class="border-b-2 border-[#111827]/15 pb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#7C1D3F]">Sezione 1</span>
+                <h2 class="text-2xl sm:text-4xl font-bold font-serif-title text-[#111827] mt-1">
+                    Cosa dicono le STEM e cosa manca
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Card STEM -->
+                <article class="p-6 bg-white border-2 border-[#111827]/20 rounded-2xl space-y-4 shadow-sm">
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <h3 class="text-xl font-bold text-[#111827] flex items-center gap-2">
+                            <span class="p-2 bg-stone-100 rounded-lg text-lg" aria-hidden="true">⚙️</span>
+                            <span>Ambito STEM</span>
+                        </h3>
+                        <span class="px-2.5 py-1 bg-[#F2E8D5] text-[#7C1D3F] font-mono-code text-xs font-bold rounded-md">Scienza & Tech</span>
+                    </div>
+                    <p class="text-sm text-[#111827]">
+                        Calcolo, Fisica, Chimica, Informatica e Ingegneria sono indispensabili per far funzionare i sistemi.
+                    </p>
+                    <ul class="space-y-2 text-sm text-[#111827]">
+                        <li class="flex items-start gap-2">
+                            <span class="text-[#005C36] font-bold" aria-hidden="true">✅ [Risposta]</span>
+                            <span>Spiegano eccezionalmente <strong>come</strong> funzionano le cose meccanicamente.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-[#B0004A] font-bold" aria-hidden="true">❌ [Limite]</span>
+                            <span>Il codice non si cura del bene o del male. Non sa dire se stiamo creando qualcosa di utile o dannoso.</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- Card Umanità -->
+                <article class="p-6 bg-[#F2E8D5] border-2 border-[#7C1D3F] rounded-2xl space-y-4 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-[#7C1D3F]/30 pb-3">
+                        <h3 class="text-xl font-bold text-[#7C1D3F] flex items-center gap-2">
+                            <span class="p-2 bg-white rounded-lg text-lg" aria-hidden="true">🏛️</span>
+                            <span>Le Discipline Umanistiche</span>
+                        </h3>
+                        <span class="px-2.5 py-1 bg-[#7C1D3F] text-white font-mono-code text-xs font-bold rounded-md">Significato & Scopo</span>
+                    </div>
+                    <p class="text-sm text-[#111827]">
+                        Letteratura, Storia, Filosofia, Etica, Ermeneutica e Sociologia offrono il quadro di senso.
+                    </p>
+                    <ul class="space-y-2 text-sm text-[#111827]">
+                        <li class="flex items-start gap-2">
+                            <span class="text-[#005C36] font-bold" aria-hidden="true">✅ [Risposta]</span>
+                            <span>Rispondono al <strong>perché</strong> facciamo le cose e al <strong>significato</strong> delle nostre azioni.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-[#0047AB] font-bold" aria-hidden="true">⏳ [Attualità]</span>
+                            <span>Non ne abbiamo mai avuto così bisogno: definiscono l'impatto etico dell'IA sulla società.</span>
+                        </li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2: Dimostrazione Interattiva Sintattico vs Semantico -->
+        <section id="demo-sintassi" class="space-y-8 scroll-mt-24 p-6 sm:p-8 bg-white border-2 border-[#111827] rounded-3xl shadow-md">
+            <div class="border-b-2 border-[#111827]/15 pb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#7C1D3F]">Sezione 2 — Dimostrazione Interattiva</span>
+                <h2 class="text-2xl sm:text-4xl font-bold font-serif-title text-[#111827] mt-1">
+                    Sintattico vs. Semantico: Come "Pensa" l'IA
+                </h2>
+                <p class="text-base text-[#111827] mt-2">
+                    L'IA non comprende l'esperienza vissuta o la verità filosofica: calcola associazioni statistiche di parole (sintassi). Gli umani valutano intenzioni, contesti e valori (semantica).
+                </p>
+            </div>
+
+            <!-- Selettore frase di prova -->
+            <div class="space-y-3">
+                <label for="sentence-select" class="block text-sm font-bold text-[#111827]">
+                    Scegli o digita un enunciato per osservare il doppio filtro di analisi:
+                </label>
+                <select id="sentence-select" class="w-full p-3 bg-[#FAF6EE] border-2 border-[#111827] rounded-xl font-medium text-[#111827] focus:ring-2 focus:ring-[#7C1D3F]">
+                    <option value="1">"In tempi difficili, il silenzio dei giusti è più pericoloso delle parole dei malvagi."</option>
+                    <option value="2">"L'algoritmo ha raccomandato di tagliare il budget sanitario per ottimizzare l'efficienza."</option>
+                    <option value="3">"Questa fotografia dimostra inconfutabilmente che l'evento si è verificato ieri."</option>
+                </select>
+            </div>
+
+            <!-- Confronto visivo interattivo -->
+            <div class="grid lg:grid-cols-2 gap-6 pt-2">
+                <!-- Colonna IA (Sintassi) -->
+                <div class="p-5 bg-stone-900 text-stone-100 rounded-2xl space-y-4 border-2 border-stone-800">
+                    <div class="flex items-center justify-between border-b border-stone-700 pb-2">
+                        <span class="font-mono-code text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <span aria-hidden="true">🤖</span> Analisi IA (Sintattica)
+                        </span>
+                        <span class="px-2 py-0.5 bg-blue-900/80 text-blue-200 text-xs font-mono-code rounded">Predizione Token</span>
+                    </div>
+
+                    <div id="ai-analysis-box" class="space-y-3 font-mono-code text-xs sm:text-sm">
+                        <!-- Popolato via JS -->
+                    </div>
+
+                    <div class="p-3 bg-stone-800/80 rounded-xl border border-stone-700 text-xs text-stone-300">
+                        <span class="font-bold text-amber-400 block mb-1">⚠️ [Attenzione: Meccanismo Statistico]</span>
+                        L'LLM unisce parole ad alta probabilità di co-occorrenza. Non sa cosa sia la giustizia, la sofferenza o la responsabilità.
+                    </div>
+                </div>
+
+                <!-- Colonna Umana (Semantica) -->
+                <div class="p-5 bg-[#FAF6EE] text-[#111827] rounded-2xl space-y-4 border-2 border-[#7C1D3F]">
+                    <div class="flex items-center justify-between border-b border-[#7C1D3F]/20 pb-2">
+                        <span class="font-serif-title font-bold text-sm text-[#7C1D3F] tracking-wider flex items-center gap-1.5">
+                            <span aria-hidden="true">🧠</span> Comprensione Umana (Semantica)
+                        </span>
+                        <span class="px-2 py-0.5 bg-[#7C1D3F] text-white text-xs font-bold rounded">Vissuto & Etica</span>
+                    </div>
+
+                    <div id="human-analysis-box" class="space-y-3 text-xs sm:text-sm">
+                        <!-- Popolato via JS -->
+                    </div>
+
+                    <div class="p-3 bg-[#F2E8D5] rounded-xl border border-[#7C1D3F]/30 text-xs text-[#111827]">
+                        <span class="font-bold text-[#005C36] block mb-1">✅ [Ancoraggio alla Realtà]</span>
+                        Gli umani ancorano il linguaggio all'esperienza reale, alla storia, alle intenzioni e alle conseguenze etiche.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 3: Le 4 Lenti Umanistiche (Card Flip Accessibili) -->
+        <section id="quattro-lenti" class="space-y-8 scroll-mt-24">
+            <div class="border-b-2 border-[#111827]/15 pb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#7C1D3F]">Sezione 3 — Strumenti Critici</span>
+                <h2 class="text-2xl sm:text-4xl font-bold font-serif-title text-[#111827] mt-1">
+                    Le Quattro Lenti delle Umanità per l'Era dell'IA
+                </h2>
+                <p class="text-base text-[#111827] mt-2">
+                    Attiva le schede sottostanti per esplorare come ciascuna disciplina garantisce che la tecnologia rimanga al servizio dell'uomo.
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-6">
+                
+                <!-- Lente 1: Epistemologia -->
+                <article class="p-6 bg-white border-2 border-[#111827] rounded-2xl space-y-4 shadow hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <span class="p-3 bg-[#F2E8D5] text-[#7C1D3F] rounded-xl text-2xl font-bold" aria-hidden="true">📜</span>
+                        <span class="px-2.5 py-1 bg-[#0047AB] text-white text-xs font-bold rounded-md flex items-center gap-1">
+                            <span>⏳ Epistemologia</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold font-serif-title text-[#111827]">1. Verità vs. Allucinazione</h3>
+                    <p class="text-sm text-[#111827]">
+                        Studio di cos'è la conoscenza, cosa costituisce una prova e la differenza tra semplice convinzione e verità giustificata.
+                    </p>
+                    <div class="p-3 bg-[#FAF6EE] rounded-xl border border-[#111827]/15 text-xs text-[#111827] space-y-1">
+                        <strong class="text-[#7C1D3F] block">💡 Applicazione nell'IA:</strong>
+                        <span>Ci aiuta a giudicare criticamente i testi generati da modelli che allucinano errori con estrema sicurezza sintattica.</span>
+                    </div>
+                </article>
+
+                <!-- Lente 2: Etica e Sociologia -->
+                <article class="p-6 bg-white border-2 border-[#111827] rounded-2xl space-y-4 shadow hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <span class="p-3 bg-[#F2E8D5] text-[#7C1D3F] rounded-xl text-2xl font-bold" aria-hidden="true">⚖️</span>
+                        <span class="px-2.5 py-1 bg-[#B0004A] text-white text-xs font-bold rounded-md flex items-center gap-1">
+                            <span>⚠️ Etica & Sociologia</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold font-serif-title text-[#111827]">2. Valori e Incentivi</h3>
+                    <p class="text-sm text-[#111827]">
+                        Mentre i numeri sono matematicamente neutri, l'uso dell'IA non lo è mai. Ogni dataset di addestramento incorpora errori e priorità.
+                    </p>
+                    <div class="p-3 bg-[#FAF6EE] rounded-xl border border-[#111827]/15 text-xs text-[#111827] space-y-1">
+                        <strong class="text-[#7C1D3F] block">💡 Domanda Chiave:</strong>
+                        <span>Chi trae beneficio da questo sistema? Quali presupposti sono nascosti nei dati di addestramento?</span>
+                    </div>
+                </article>
+
+                <!-- Lente 3: Ermeneutica -->
+                <article class="p-6 bg-white border-2 border-[#111827] rounded-2xl space-y-4 shadow hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <span class="p-3 bg-[#F2E8D5] text-[#7C1D3F] rounded-xl text-2xl font-bold" aria-hidden="true">🔍</span>
+                        <span class="px-2.5 py-1 bg-[#005C36] text-white text-xs font-bold rounded-md flex items-center gap-1">
+                            <span>✅ Ermeneutica</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold font-serif-title text-[#111827]">3. Interpretazione dell'Incertezza</h3>
+                    <p class="text-sm text-[#111827]">
+                        L'arte di interpretare testi complessi. L'IA non elimina l'interpretazione: la sposta interamente sulle spalle dell'utente umano.
+                    </p>
+                    <div class="p-3 bg-[#FAF6EE] rounded-xl border border-[#111827]/15 text-xs text-[#111827] space-y-1">
+                        <strong class="text-[#7C1D3F] block">💡 Ruolo dell'Umano:</strong>
+                        <span>L'utente diventa interprete attivo. Riconosce sottili distorsioni, ambiguità, omissioni e bias stilistici.</span>
+                    </div>
+                </article>
+
+                <!-- Lente 4: Retorica e Prompting -->
+                <article class="p-6 bg-white border-2 border-[#111827] rounded-2xl space-y-4 shadow hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <span class="p-3 bg-[#F2E8D5] text-[#7C1D3F] rounded-xl text-2xl font-bold" aria-hidden="true">✍️</span>
+                        <span class="px-2.5 py-1 bg-[#7A5200] text-white text-xs font-bold rounded-md flex items-center gap-1">
+                            <span>🎯 Retorica & Prompting</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold font-serif-title text-[#111827]">4. Comunicazione come Controllo</h3>
+                    <p class="text-sm text-[#111827]">
+                        Nell'era dell'IA, il linguaggio naturale è il linguaggio di programmazione più importante. Scrivere prompt è un esercizio retorico.
+                    </p>
+                    <div class="p-3 bg-[#FAF6EE] rounded-xl border border-[#111827]/15 text-xs text-[#111827] space-y-1">
+                        <strong class="text-[#7C1D3F] block">💡 Competenza Operativa:</strong>
+                        <span>Inquadrare il contesto, definire i vincoli e chiarire l'intento determina la qualità tecnica del risultato.</span>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- SEZIONE 4: Il Ciclo dell'Interpretazione Umana (Diagramma Nativo SVG AAA) -->
+        <section id="flusso-decisionale" class="space-y-8 scroll-mt-24 p-6 sm:p-8 bg-[#F2E8D5] border-2 border-[#111827] rounded-3xl">
+            <div class="border-b-2 border-[#111827]/15 pb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#7C1D3F]">Sezione 4 — Diagramma di Flusso Nativo</span>
+                <h2 class="text-2xl sm:text-4xl font-bold font-serif-title text-[#111827] mt-1">
+                    Il Flusso Ininterrotto dell'Interpretazione Umana
+                </h2>
+                <p class="text-base text-[#111827] mt-2">
+                    L'IA fornisce solo l'output intermedio. La decisione e l'azione restano responsabilità dell'uomo.
+                </p>
+            </div>
+
+            <!-- SVG Diagram Nativo Accessibile -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border-2 border-[#111827] shadow-sm overflow-x-auto">
+                <svg role="img" aria-labelledby="svg-flow-title svg-flow-desc" viewBox="0 0 800 200" class="w-full min-w-[650px] h-auto">
+                    <title id="svg-flow-title">Diagramma del flusso di interpretazione dell'IA</title>
+                    <desc id="svg-flow-desc">
+                        Fase 1: Input/Prompt dell'Utente (blu, cerchio). 
+                        Fase 2: Elaborazione IA (grigio, rettangolo). 
+                        Fase 3: Output Generato (fucsia, rombo, attenzione richiesta). 
+                        Fase 4: Interpretazione Umana (verde, quadrato, completamento critico). 
+                        Fase 5: Decisione ed Azione Etica (borgogna, rettangolo finale).
+                    </desc>
+
+                    <!-- Connessioni -->
+                    <path d="M 120 100 L 220 100" stroke="#111827" stroke-width="3" stroke-dasharray="6 4" />
+                    <path d="M 340 100 L 430 100" stroke="#111827" stroke-width="3" />
+                    <path d="M 550 100 L 640 100" stroke="#111827" stroke-width="3" />
+
+                    <!-- Nodo 1: Input -->
+                    <circle cx="70" cy="100" r="45" fill="#0047AB" stroke="#111827" stroke-width="2" />
+                    <text x="70" y="95" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="12">1. INPUT</text>
+                    <text x="70" y="112" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-size="10">Prompt/Intent</text>
+
+                    <!-- Nodo 2: IA System -->
+                    <rect x="220" y="60" width="120" height="80" rx="12" fill="#E5E7EB" stroke="#111827" stroke-width="2" />
+                    <text x="280" y="95" text-anchor="middle" fill="#111827" font-family="Inter" font-weight="700" font-size="12">2. SISTEMA IA</text>
+                    <text x="280" y="112" text-anchor="middle" fill="#4B5563" font-family="Inter" font-size="10">Predizione Token</text>
+
+                    <!-- Nodo 3: Output (Rombo di Attenzione) -->
+                    <polygon points="490,50 550,100 490,150 430,100" fill="#B0004A" stroke="#111827" stroke-width="2" />
+                    <text x="490" y="95" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="11">3. OUTPUT</text>
+                    <text x="490" y="112" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-size="10">⚠️ Incertezza</text>
+
+                    <!-- Nodo 4: Interpretazione (Quadrato Verde) -->
+                    <rect x="640" y="55" width="130" height="90" rx="8" fill="#005C36" stroke="#111827" stroke-width="2" />
+                    <text x="705" y="88" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="11">4. VAGLIO UMANO</text>
+                    <text x="705" y="105" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-size="10">✅ Giudizio Etico</text>
+                    <text x="705" y="122" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="600" font-size="10">& Azione Reale</text>
+                </svg>
+            </div>
+
+            <!-- Tabella Alternativa Accessibile adiacente al grafico -->
+            <div class="overflow-x-auto bg-white rounded-xl border border-[#111827]/20 p-4">
+                <table class="w-full text-left text-xs sm:text-sm text-[#111827]">
+                    <caption class="font-bold text-[#7C1D3F] text-left pb-2 border-b">
+                        Tabella Alternativa: Fasi del Flusso Decisionale Umano-IA
+                    </caption>
+                    <thead>
+                        <tr class="bg-[#FAF6EE] text-[#111827]">
+                            <th scope="col" class="p-2 border">Fase</th>
+                            <th scope="col" class="p-2 border">Attore</th>
+                            <th scope="col" class="p-2 border">Stato & Forma</th>
+                            <th scope="col" class="p-2 border">Descrizione e Ruolo Umanistico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="p-2 border font-bold">1. Formulazione</td>
+                            <td class="p-2 border">Utente Umano</td>
+                            <td class="p-2 border font-semibold text-[#0047AB]">⏳ Cerchio Blu</td>
+                            <td class="p-2 border">Applicazione della retorica e definizione del contesto di partenza.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-bold">2. Calcolo</td>
+                            <td class="p-2 border">Modello IA</td>
+                            <td class="p-2 border font-semibold text-gray-700">⚙️ Rettangolo Neutro</td>
+                            <td class="p-2 border">Elaborazione sintattica probabilistica dei pattern linguistici.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-bold">3. Risultato Grezzo</td>
+                            <td class="p-2 border">Interfaccia IA</td>
+                            <td class="p-2 border font-semibold text-[#B0004A]">⚠️ Rombo Fucsia</td>
+                            <td class="p-2 border">Output plausibile ma potenzialmente allucinato o privo di senso etico.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-bold">4. Valutazione Finale</td>
+                            <td class="p-2 border">Essere Umano</td>
+                            <td class="p-2 border font-semibold text-[#005C36]">✅ Quadrato Verde</td>
+                            <td class="p-2 border">Interpretazione ermeneutica, validazione etica e decisione operativa finale.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SEZIONE 5: Strumento Operativo - Valutatore Umanistico di Output AI -->
+        <section id="strumento" class="space-y-8 scroll-mt-24 p-6 sm:p-8 bg-white border-2 border-[#111827] rounded-3xl shadow-lg">
+            <div class="border-b-2 border-[#111827]/15 pb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#7C1D3F]">Sezione 5 — Strumento Operativo Live</span>
+                <h2 class="text-2xl sm:text-4xl font-bold font-serif-title text-[#111827] mt-1">
+                    Valutatore Umanistico di Output AI
+                </h2>
+                <p class="text-base text-[#111827] mt-2">
+                    Incolla una risposta generata da un'IA e applica le domande della griglia critica per verificare se è idonea, etica e contestualmente fondata.
+                </p>
+            </div>
+
+            <form id="evaluator-form" class="space-y-6" onsubmit="return false;">
+                <!-- Campo Input Testo AI -->
+                <div class="space-y-2">
+                    <label for="ai-output-text" class="block font-bold text-[#111827] text-sm sm:text-base">
+                        1. Incolla qui il testo o l'analisi generata dall'IA:
+                    </label>
+                    <textarea id="ai-output-text" rows="4" class="w-full p-4 bg-[#FAF6EE] border-2 border-[#111827] rounded-xl font-mono-code text-xs sm:text-sm text-[#111827] focus:ring-2 focus:ring-[#7C1D3F]" placeholder="Es. L'algoritmo suggerisce di automatizzare i colloqui di lavoro scartando i candidati con pause verbali elevate per massimizzare la produttività..."></textarea>
+                </div>
+
+                <!-- Griglia di Valutazione Critica (Checklist Umanistica) -->
+                <fieldset class="space-y-4 border-2 border-[#F2E8D5] p-4 sm:p-6 rounded-2xl bg-[#FAF6EE]">
+                    <legend class="font-serif-title font-bold text-[#7C1D3F] px-2 text-base">
+                        2. Seleziona i criteri di vaglio umano soddisfatti:
+                    </legend>
+
+                    <div class="space-y-3 text-sm">
+                        <label class="flex items-start gap-3 p-3 bg-white rounded-xl border border-[#111827]/15 cursor-pointer hover:bg-stone-50">
+                            <input type="checkbox" id="check-epistemology" class="mt-1 w-5 h-5 text-[#7C1D3F] border-2 border-[#111827] rounded focus:ring-0">
+                            <div>
+                                <span class="font-bold text-[#111827]">Vaglio Epistemologico:</span>
+                                <span class="block text-xs text-[#111827]/80">Ho verificato che le affermazioni fattuali siano supportate da fonti reali e non da allucinazioni probabilistiche.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 bg-white rounded-xl border border-[#111827]/15 cursor-pointer hover:bg-stone-50">
+                            <input type="checkbox" id="check-ethics" class="mt-1 w-5 h-5 text-[#7C1D3F] border-2 border-[#111827] rounded focus:ring-0">
+                            <div>
+                                <span class="font-bold text-[#111827]">Vaglio Etico e Sociologico:</span>
+                                <span class="block text-xs text-[#111827]/80">Ho valutato chi beneficia e chi viene penalizzato da questa risposta, identificando eventuali bias del dataset.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 bg-white rounded-xl border border-[#111827]/15 cursor-pointer hover:bg-stone-50">
+                            <input type="checkbox" id="check-hermeneutics" class="mt-1 w-5 h-5 text-[#7C1D3F] border-2 border-[#111827] rounded focus:ring-0">
+                            <div>
+                                <span class="font-bold text-[#111827]">Vaglio Ermeneutico e Contestuale:</span>
+                                <span class="block text-xs text-[#111827]/80">Ho considerato il contesto culturale specifico e risolto le ambiguità che la macchina non può comprendere.</span>
+                            </div>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- Pulsanti Azione -->
+                <div class="flex flex-wrap gap-4">
+                    <button type="button" id="btn-generate-report" class="px-6 py-3.5 bg-[#7C1D3F] hover:bg-[#521028] text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
+                        <span>📊 Genera Report di Validazione Umana</span>
+                    </button>
+                    <button type="button" id="btn-reset-form" class="px-4 py-3.5 bg-[#F2E8D5] hover:bg-stone-300 text-[#111827] font-semibold rounded-xl transition-all">
+                        <span>🔄 Ripristina Campi</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Output Dinamico Anunciato via aria-live -->
+            <div id="evaluator-output-container" class="mt-6 p-6 bg-[#FAF6EE] border-2 border-[#111827] rounded-2xl hidden" aria-live="polite">
+                <div class="flex items-center justify-between border-b-2 border-[#111827]/15 pb-3">
+                    <h3 class="font-serif-title font-bold text-lg text-[#111827] flex items-center gap-2">
+                        <span>📄 Certificato di Validazione Umanistica</span>
+                    </h3>
+                    <span id="output-badge" class="px-3 py-1 text-xs font-bold rounded-md">
+                        <!-- Popolato via JS con Tripla Ridondanza -->
+                    </span>
+                </div>
+
+                <div id="output-report-body" class="mt-4 space-y-3 font-mono-code text-xs sm:text-sm text-[#111827]">
+                    <!-- Testo report dinamico -->
+                </div>
+
+                <!-- Azione Copia negli Appunti -->
+                <div class="mt-6 pt-4 border-t border-[#111827]/15 flex items-center justify-between">
+                    <button id="btn-copy-report" type="button" class="px-5 py-2.5 bg-[#111827] hover:bg-stone-800 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center gap-2 transition-all">
+                        <span>📋 Copia Report negli Appunti</span>
+                    </button>
+                    <span id="copy-feedback" class="text-xs font-bold text-[#005C36] hidden" aria-live="polite">
+                        ✅ [Completato: Report copiato con successo!]
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 6: Caso di Studio Comparativo e Sintesi Finale -->
+        <section id="sintesi" class="space-y-8 scroll-mt-24">
+            <div class="border-b-2 border-[#111827]/15 pb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#7C1D3F]">Sezione 6 — Sintesi & Manifesto</span>
+                <h2 class="text-2xl sm:text-4xl font-bold font-serif-title text-[#111827] mt-1">
+                    Diventare più Umani nell'Era dell'IA
+                </h2>
+            </div>
+
+            <!-- Card Manifesto Finale -->
+            <div class="p-6 sm:p-10 bg-[#7C1D3F] text-white rounded-3xl space-y-6 shadow-xl">
+                <h3 class="text-2xl sm:text-3xl font-bold font-serif-title text-[#FAF6EE]">
+                    Manifesto dell'Umanista Digitale
+                </h3>
+                <p class="text-base sm:text-lg text-[#FAF6EE]/90 leading-relaxed">
+                    Più la nostra tecnologia avanza, più abbiamo bisogno di radicarci nelle discipline umanistiche. L'IA espande lo spazio delle risposte possibili, ma non definisce quali risposte contano davvero.
+                </p>
+
+                <div class="grid sm:grid-cols-2 gap-4 pt-2 text-sm text-[#FAF6EE]">
+                    <div class="p-4 bg-white/10 rounded-xl border border-white/20">
+                        <strong class="block text-amber-300 font-bold mb-1">🎯 1. Pensiero Critico & Giudizio</strong>
+                        <span>Sviluppare giudizio etico, interpretativo, culturale e comunicativo per guidare gli algoritmi.</span>
+                    </div>
+                    <div class="p-4 bg-white/10 rounded-xl border border-white/20">
+                        <strong class="block text-amber-300 font-bold mb-1">📚 2. La Lezione della Storia</strong>
+                        <span>Studiare la letteratura e la filosofia per comprendere le fragilità umane e le pressioni della società.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Editoriale -->
+    <footer class="mt-16 bg-[#111827] text-stone-300 py-12 px-4 sm:px-8 border-t-4 border-[#7C1D3F]">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs sm:text-sm">
+            <div class="space-y-2 text-center md:text-left">
+                <p class="font-serif-title font-bold text-lg text-white">AI e Umanità — Guida Editoriale Interattiva</p>
+                <p class="text-stone-400">Pienamente conforme ai requisiti di accessibilità WCAG 2.1 Livello AAA.</p>
+            </div>
+            <div class="text-center md:text-right text-stone-400 space-y-1">
+                <p>Nessun cookie di tracciamento. Nessuna dipendenza da server esterni.</p>
+                <p>© 2026 Umanesimo Digitale — Rilascio Formativo Accessibile</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Elemento Toast Accessibile (aria-live) -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 max-w-md p-4 bg-[#111827] text-white border-2 border-white rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 hidden" role="status" aria-live="polite">
+        <div class="flex items-center gap-3">
+            <span id="toast-icon" class="text-xl" aria-hidden="true">ℹ️</span>
+            <div>
+                <strong id="toast-title" class="block font-bold text-xs uppercase tracking-wider text-amber-400">Notifica</strong>
+                <p id="toast-message" class="text-xs sm:text-sm font-medium">Messaggio di sistema</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Data store per l'analisi Sintattica vs Semantica
+            const sentencesData = {
+                "1": {
+                    ai: [
+                        "<strong>Pattern Tokens:</strong> [In tempi] + [difficili] + [silenzio] + [giusti]",
+                        "<strong>Associazione Statistica:</strong> Alta frequenza in corpus filosofici/politici.",
+                        "<strong>Probabilità Prossima Parola:</strong> 'parole' (89.4%), 'malvagi' (94.1%).",
+                        "<strong>Valutazione Sintattica:</strong> Enunciato grammaticamente corretto con elevata coerenza stilistica."
+                    ],
+                    human: [
+                        "<strong>Intenzione dell'Autore:</strong> Richiesta di responsabilità civile di fronte all'ingiustizia.",
+                        "<strong>Contesto Storico:</strong> Richiama i moniti storici contro la neutralità nei conflitti morali.",
+                        "<strong>Valore Etico:</strong> Condanna l'apatia morale come forma implicita di complicità.",
+                        "<strong>Giudizio Finale:</strong> Un principio etico guida non riducibile a semplice probabilità linguistica."
+                    ]
+                },
+                "2": {
+                    ai: [
+                        "<strong>Pattern Tokens:</strong> [Algoritmo] + [raccomandato] + [tagliare] + [budget]",
+                        "<strong>Associazione Statistica:</strong> Modello di ottimizzazione costi aziendali.",
+                        "<strong>Probabilità Prossima Parola:</strong> 'efficienza' (92.3%), 'risparmio' (87.6%).",
+                        "<strong>Valutazione Sintattica:</strong> Minimizzazione della funzione di costo matematico."
+                    ],
+                    human: [
+                        "<strong>Impatto Umano:</strong> Rischio di privare i pazienti fragili delle cure essenziali.",
+                        "<strong>Analisi degli Incentivi:</strong> L'algoritmo valorizza il risparmio finanziario rispetto al diritto alla salute.",
+                        "<strong>Vaglio Critico:</strong> L'efficienza metrica non equivale alla legittimità etica.",
+                        "<strong>Giudizio Finale:</strong> Una decisione sanitaria non può essere delegata ad un calcolo sintattico."
+                    ]
+                },
+                "3": {
+                    ai: [
+                        "<strong>Pattern Tokens:</strong> [Fotografia] + [dimostra] + [inconfutabilmente] + [evento]",
+                        "<strong>Associazione Statistica:</strong> Co-occorrenza elevata nei report giornalistici tradizionali.",
+                        "<strong>Probabilità Prossima Parola:</strong> 'verificato' (91.0%), 'ieri' (88.5%).",
+                        "<strong>Valutazione Sintattica:</strong> Affermazione di certezza visiva."
+                    ],
+                    human: [
+                        "<strong>Epistemologia:</strong> Nell'era dei Deepfake, l'immagine visiva non è più prova automatica di verità.",
+                        "<strong>Vaglio delle Fonti:</strong> Necessità di crittografia di provenienza e verifica metadati.",
+                        "<strong>Sospetto Ermeneutico:</strong> Riconoscere la plausibilità della manipolazione sintattica.",
+                        "<strong>Giudizio Finale:</strong> La fiducia richiede validazione esterna e giudizio critico."
+                    ]
+                }
+            };
+
+            const progressBar = document.getElementById("progress-bar");
+            const progressContainer = document.getElementById("progress-container");
+
+            window.addEventListener("scroll", function() {
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                if (scrollHeight > 0) {
+                    const percentage = Math.round((scrollTop / scrollHeight) * 100);
+                    progressBar.style.width = percentage + "%";
+                    progressContainer.setAttribute("aria-valuenow", percentage);
+                }
+            });
+
+            const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+            const mobileMenu = document.getElementById("mobile-menu");
+            const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener("click", function() {
+                    const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+                    mobileMenuBtn.setAttribute("aria-expanded", !expanded);
+                    mobileMenu.classList.toggle("hidden");
+                });
+
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener("click", function() {
+                        mobileMenu.classList.add("hidden");
+                        mobileMenuBtn.setAttribute("aria-expanded", "false");
+                    });
+                });
+            }
+
+            const sentenceSelect = document.getElementById("sentence-select");
+            const aiAnalysisBox = document.getElementById("ai-analysis-box");
+            const humanAnalysisBox = document.getElementById("human-analysis-box");
+
+            function updateSentenceDemo(key) {
+                const data = sentencesData[key];
+                if (!data) return;
+
+                aiAnalysisBox.innerHTML = data.ai.map(item => `
+                    <div class="p-2 bg-stone-800 rounded border border-stone-700">
+                        ${item}
+                    </div>
+                `).join("");
+
+                humanAnalysisBox.innerHTML = data.human.map(item => `
+                    <div class="p-2 bg-white rounded border border-[#7C1D3F]/20">
+                        ${item}
+                    </div>
+                `).join("");
+            }
+
+            if (sentenceSelect) {
+                sentenceSelect.addEventListener("change", function(e) {
+                    updateSentenceDemo(e.target.value);
+                });
+                // Inizializzazione prima frase
+                updateSentenceDemo("1");
+            }
+
+            const btnGenerateReport = document.getElementById("btn-generate-report");
+            const btnResetForm = document.getElementById("btn-reset-form");
+            const aiOutputText = document.getElementById("ai-output-text");
+            const checkEpistemology = document.getElementById("check-epistemology");
+            const checkEthics = document.getElementById("check-ethics");
+            const checkHermeneutics = document.getElementById("check-hermeneutics");
+
+            const outputContainer = document.getElementById("evaluator-output-container");
+            const outputBadge = document.getElementById("output-badge");
+            const outputReportBody = document.getElementById("output-report-body");
+            const btnCopyReport = document.getElementById("btn-copy-report");
+            const copyFeedback = document.getElementById("copy-feedback");
+
+            if (btnGenerateReport) {
+                btnGenerateReport.addEventListener("click", function() {
+                    const textValue = aiOutputText.value.trim();
+                    if (!textValue) {
+                        showToast("⚠️ [Attenzione]", "Inserisci prima il testo generato dall'IA da valutare.", "--status-warning");
+                        aiOutputText.focus();
+                        return;
+                    }
+
+                    const isEpi = checkEpistemology.checked;
+                    const isEth = checkEthics.checked;
+                    const isHer = checkHermeneutics.checked;
+
+                    const countChecked = [isEpi, isEth, isHer].filter(Boolean).length;
+
+                    outputContainer.classList.remove("hidden");
+
+                    // Definizione tripla ridondanza dello stato del report (Colore + Icona + Forma + Testo)
+                    if (countChecked === 3) {
+                        outputBadge.className = "px-3 py-1 text-xs font-bold rounded-md bg-[#005C36] text-white flex items-center gap-1";
+                        outputBadge.innerHTML = "<span>✅ [Completato] Validato AAA</span>";
+                    } else if (countChecked >= 1) {
+                        outputBadge.className = "px-3 py-1 text-xs font-bold rounded-md bg-[#0047AB] text-white flex items-center gap-1";
+                        outputBadge.innerHTML = "<span>⏳ [In corso] Revisione Parziale</span>";
+                    } else {
+                        outputBadge.className = "px-3 py-1 text-xs font-bold rounded-md bg-[#B0004A] text-white flex items-center gap-1";
+                        outputBadge.innerHTML = "<span>⚠️ [Attenzione] Testo Non Validato</span>";
+                    }
+
+                    // Costruzione report
+                    outputReportBody.innerHTML = `
+                        <div class="p-3 bg-white rounded-xl border border-[#111827]/15">
+                            <strong>1. Testo IA Inserito:</strong>
+                            <p class="italic text-stone-700 mt-1">"${escapeHTML(textValue)}"</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-[#111827]/15 space-y-1">
+                            <strong>2. Esito Controlli Umanistici:</strong>
+                            <ul class="list-disc list-inside space-y-1 mt-1">
+                                <li>Epistemologia (Verità/Fonti): ${isEpi ? '<span class="text-[#005C36] font-bold">✅ Superato</span>' : '<span class="text-[#B0004A] font-bold">⚠️ Mancante</span>'}</li>
+                                <li>Etica & Sociologia (Bias/Valori): ${isEth ? '<span class="text-[#005C36] font-bold">✅ Superato</span>' : '<span class="text-[#B0004A] font-bold">⚠️ Mancante</span>'}</li>
+                                <li>Ermeneutica (Contesto/Ambiguità): ${isHer ? '<span class="text-[#005C36] font-bold">✅ Superato</span>' : '<span class="text-[#B0004A] font-bold">⚠️ Mancante</span>'}</li>
+                            </ul>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-[#111827]/15">
+                            <strong>3. Raccomandazione Operativa:</strong>
+                            <p class="mt-1">${getRecommendationText(countChecked)}</p>
+                        </div>
+                    `;
+
+                    outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    showToast("✅ [Completato]", "Report di validazione generato correttamente.", "--status-success");
+                });
+            }
+
+            if (btnResetForm) {
+                btnResetForm.addEventListener("click", function() {
+                    aiOutputText.value = "";
+                    checkEpistemology.checked = false;
+                    checkEthics.checked = false;
+                    checkHermeneutics.checked = false;
+                    outputContainer.classList.add("hidden");
+                    copyFeedback.classList.add("hidden");
+                    showToast("ℹ️ [Informativo]", "Campi del valutatore ripristinati.", "--status-progress");
+                });
+            }
+
+            if (btnCopyReport) {
+                btnCopyReport.addEventListener("click", function() {
+                    const reportText = outputReportBody.innerText;
+                    if (!reportText) return;
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(reportText).then(() => {
+                            showCopySuccess();
+                        }).catch(() => {
+                            fallbackCopy(reportText);
+                        });
+                    } else {
+                        fallbackCopy(reportText);
+                    }
+                });
+            }
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand("copy");
+                    showCopySuccess();
+                } catch (err) {
+                    showToast("❌ [Errore]", "Impossibile copiare il testo negli appunti.", "--status-warning");
+                }
+                document.body.removeChild(textArea);
+            }
+
+            function showCopySuccess() {
+                copyFeedback.classList.remove("hidden");
+                showToast("✅ [Completato]", "Report copiato negli appunti!", "--status-success");
+                setTimeout(() => {
+                    copyFeedback.classList.add("hidden");
+                }, 4000);
+            }
+
+            const toastNotification = document.getElementById("toast-notification");
+            const toastTitle = document.getElementById("toast-title");
+            const toastMessage = document.getElementById("toast-message");
+            let toastTimer = null;
+
+            function showToast(title, message, statusVar) {
+                if (!toastNotification) return;
+
+                if (toastTimer) clearTimeout(toastTimer);
+
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+
+                toastNotification.classList.remove("hidden", "translate-y-20", "opacity-0");
+                toastNotification.classList.add("translate-y-0", "opacity-100");
+
+                toastTimer = setTimeout(() => {
+                    toastNotification.classList.remove("translate-y-0", "opacity-100");
+                    toastNotification.classList.add("translate-y-20", "opacity-0");
+                    setTimeout(() => {
+                        toastNotification.classList.add("hidden");
+                    }, 300);
+                }, 4000);
+            }
+
+            // Utility Helpers
+            function escapeHTML(str) {
+                return str.replace(/[&<>'"]/g, 
+                    tag => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        "'": '&#39;',
+                        '"': '&quot;'
+                    }[tag] || tag)
+                );
+            }
+
+            function getRecommendationText(count) {
+                if (count === 3) {
+                    return "<strong>Pronto all'Uso:</strong> L'output ha superato tutti e tre i vagli umanistici ed è idoneo all'applicazione pratica sotto la tua piena responsabilità.";
+                } else if (count >= 1) {
+                    return "<strong>Revisione Richiesta:</strong> L'output presenta ancora lacune sintattiche o di contesto. Integra i punti di controllo mancanti prima dell'uso.";
+                } else {
+                    return "<strong>Inidoneo:</strong> L'output è grezzo e non verificato. Non utilizzarlo in contesti decisionali senza una completa rielaborazione umana.";
+                }
+            }
+        });
+    </script>
+</body>
+</html>

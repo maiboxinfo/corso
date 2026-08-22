@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Che cos'è il Reasoning nell'Intelligenza Artificiale? - Dispensa Didattica Interattiva</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#1c1917',
+                        cream: '#fcfaf7',
+                        paper: '#f3ece1',
+                        'paper-dark': '#e6dccf',
+                        primary: '#7c1d3f',
+                        'primary-dark': '#5a1530',
+                        accent: '#b8862c',
+                        'accent-light': '#f4e8c1',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --ink: #1c1917;
+            --cream: #fcfaf7;
+            --paper: #f3ece1;
+            --primary: #7c1d3f;
+            --primary-dark: #5a1530;
+            --accent: #b8862c;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(rgba(124, 29, 63, 0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Focus styles for keyboard accessibility */
+        button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4c5b3;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-accent/20 selection:text-primary-dark">
+
+    <!-- READING PROGRESS BAR -->
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-paper z-50">
+        <div id="scrollProgress" class="h-full bg-primary transition-all duration-150 w-0"></div>
+    </div>
+
+    <!-- STICKY HEADER -->
+    <header class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-paper-dark/60 transition-all">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <span class="w-8 h-8 rounded-lg bg-primary text-cream flex items-center justify-center font-serif font-bold text-lg group-hover:bg-primary-dark transition-colors">R</span>
+                <span class="font-serif font-bold text-lg text-ink tracking-tight group-hover:text-primary transition-colors">SPA Editoriale <span class="text-xs font-sans font-normal text-slate-500 uppercase tracking-widest hidden sm:inline ml-1">| Didattica IA</span></span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-ink/80">
+                <a href="#concetto" class="hover:text-primary transition-colors">1. Concetto</a>
+                <a href="#esempio" class="hover:text-primary transition-colors">2. Esempio</a>
+                <a href="#deepmind" class="hover:text-primary transition-colors">3. DeepMind</a>
+                <a href="#livelli" class="hover:text-primary transition-colors">4. 3 Livelli</a>
+                <a href="#evoluzione" class="hover:text-primary transition-colors">5. Evoluzione</a>
+                <a href="#materie" class="hover:text-primary transition-colors">6. Applicazioni</a>
+                <a href="#glossario" class="hover:text-primary transition-colors">7. Glossario</a>
+            </nav>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <a href="#prompter" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 hover:bg-accent hover:text-white transition-all hidden sm:inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Tool per Docenti
+                </a>
+                <button id="mobileMenuBtn" aria-label="Apri Menu Navigazione" class="lg:hidden p-2 rounded-lg text-ink hover:bg-paper focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="00 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Drawer -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-cream border-b border-paper-dark px-4 pt-2 pb-6 space-y-3">
+            <a href="#concetto" class="mobile-link block py-1.5 text-ink/80 font-medium">1. Da Previsione a Reasoning</a>
+            <a href="#esempio" class="mobile-link block py-1.5 text-ink/80 font-medium">2. Esempio Guidato</a>
+            <a href="#deepmind" class="mobile-link block py-1.5 text-ink/80 font-medium">3. Google DeepMind e IMO</a>
+            <a href="#livelli" class="mobile-link block py-1.5 text-ink/80 font-medium">4. Tre Livelli di Reasoning</a>
+            <a href="#evoluzione" class="mobile-link block py-1.5 text-ink/80 font-medium">5. Evoluzione 2024–2026</a>
+            <a href="#materie" class="mobile-link block py-1.5 text-ink/80 font-medium">6. Per la Tua Materia</a>
+            <a href="#prompter" class="mobile-link block py-1.5 text-accent font-semibold">Generatore di Prompt</a>
+            <a href="#glossario" class="mobile-link block py-1.5 text-ink/80 font-medium">7. Glossario Essenziale</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- HERO SECTION -->
+        <section class="py-12 md:py-20 bg-gradient-to-b from-cream via-paper/40 to-cream border-b border-paper-dark/50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold text-xs uppercase tracking-wider mb-6">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    Dispensa Didattica Interattiva
+                </div>
+                
+                <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-ink tracking-tight leading-[1.15] mb-6">
+                    Che cos'è il “Reasoning” nell'Intelligenza Artificiale?
+                </h1>
+                
+                <p class="text-lg sm:text-xl text-ink/80 leading-relaxed font-light mb-8 max-w-3xl">
+                    Da semplice completamento statistico di testo a sistemi di verifica formale e ricerca scientifica. Un percorso guidato per comprendere i modelli di IA avanzati e applicarli nella scuola secondaria.
+                </p>
+
+                <!-- OBJECTIVES INTERACTIVE CARD -->
+                <div class="bg-paper/80 border border-paper-dark rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-paper-dark/80">
+                        <h2 class="font-serif text-lg font-bold text-primary flex items-center gap-2">
+                            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Obiettivi della Dispensa (Checklist di Lettura)
+                        </h2>
+                        <span id="objCounter" class="text-xs font-mono font-bold bg-primary text-cream px-2.5 py-1 rounded-full">0/5 completati</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="objectivesContainer">
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-cream/70 border border-paper-dark/60 hover:border-accent cursor-pointer transition-all">
+                            <input type="checkbox" class="obj-check mt-1 text-primary focus:ring-accent rounded border-paper-dark" onchange="updateObjProgress()">
+                            <span class="text-xs sm:text-sm text-ink/90 leading-snug">Capire il concetto di “reasoning” senza requisiti tecnici.</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-cream/70 border border-paper-dark/60 hover:border-accent cursor-pointer transition-all">
+                            <input type="checkbox" class="obj-check mt-1 text-primary focus:ring-accent rounded border-paper-dark" onchange="updateObjProgress()">
+                            <span class="text-xs sm:text-sm text-ink/90 leading-snug">Distinguere risposte plausibili da soluzioni costruite e verificate.</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-cream/70 border border-paper-dark/60 hover:border-accent cursor-pointer transition-all">
+                            <input type="checkbox" class="obj-check mt-1 text-primary focus:ring-accent rounded border-paper-dark" onchange="updateObjProgress()">
+                            <span class="text-xs sm:text-sm text-ink/90 leading-snug">Conoscere i casi di Google DeepMind (AlphaProof & AlphaGeometry).</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-cream/70 border border-paper-dark/60 hover:border-accent cursor-pointer transition-all">
+                            <input type="checkbox" class="obj-check mt-1 text-primary focus:ring-accent rounded border-paper-dark" onchange="updateObjProgress()">
+                            <span class="text-xs sm:text-sm text-ink/90 leading-snug">Trasferire i concetti alla propria disciplina didattica.</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-cream/70 border border-paper-dark/60 hover:border-accent cursor-pointer transition-all md:col-span-2">
+                            <input type="checkbox" class="obj-check mt-1 text-primary focus:ring-accent rounded border-paper-dark" onchange="updateObjProgress()">
+                            <span class="text-xs sm:text-sm text-ink/90 leading-snug">Sviluppare uno sguardo critico per l'Educazione alla Cittadinanza Digitale.</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: CONCETTO FONDAMENTALE -->
+        <section id="concetto" class="py-16 md:py-24 max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="mb-8">
+                <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Sezione 1</span>
+                <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                    Da “indovinare la parola successiva” a “risolvere un problema”
+                </h2>
+                <div class="h-1 w-16 bg-primary rounded-full"></div>
+            </div>
+
+            <div class="prose prose-lg text-ink/85 leading-relaxed space-y-6">
+                <p>
+                    Un modello linguistico di grandi dimensioni (<strong>LLM</strong>, dall'inglese <em>Large Language Model</em>) nasce come un sistema capace di prevedere quale parola, o frammento di parola, viene dopo un'altra. Se il modello legge <em>“Il gatto è salito sul…”</em>, può prevedere “tavolo” oppure “divano”: una previsione statistica basata su miliardi di testi letti in addestramento.
+                </p>
+                <p>
+                    Aumentando la scala del modello e migliorando l'addestramento, questa capacità apparentemente semplice permette di costruire rappresentazioni molto più ricche: concetti, relazioni, regole, strutture linguistiche, storiche, scientifiche e anche matematiche. Da qui nasce una capacità più interessante:
+                </p>
+
+                <!-- FLOW SCHEME BOX -->
+                <div class="my-8 p-6 bg-paper rounded-2xl border border-paper-dark text-center shadow-inner">
+                    <span class="text-xs font-mono uppercase tracking-wider text-primary font-semibold block mb-3">Lo schema generale del Reasoning</span>
+                    <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 font-serif text-sm sm:text-lg font-bold text-ink">
+                        <span class="px-3 py-1.5 bg-cream rounded-xl border border-paper-dark shadow-sm">Informazioni</span>
+                        <span class="text-accent">&rarr;</span>
+                        <span class="px-3 py-1.5 bg-cream rounded-xl border border-paper-dark shadow-sm">Combinazione</span>
+                        <span class="text-accent">&rarr;</span>
+                        <span class="px-3 py-1.5 bg-primary text-cream rounded-xl shadow-sm">Passaggi intermedi</span>
+                        <span class="text-accent">&rarr;</span>
+                        <span class="px-3 py-1.5 bg-accent text-white rounded-xl shadow-sm">Soluzione</span>
+                    </div>
+                </div>
+
+                <p>
+                    Questo comportamento, in senso ampio, è ciò che oggi si chiama <strong>“reasoning” (ragionamento)</strong>. Non significa che il modello “pensi come una persona”: significa che osserviamo un comportamento capace di risolvere un problema attraverso più passaggi collegati tra loro, invece che con una risposta immediata e isolata.
+                </p>
+
+                <!-- INTERACTIVE COMPARISON DEMO -->
+                <div class="my-8 bg-cream border border-paper-dark rounded-2xl overflow-hidden shadow-sm">
+                    <div class="bg-paper px-6 py-4 border-b border-paper-dark flex justify-between items-center">
+                        <h3 class="font-serif font-bold text-ink text-base">Simulatore: Risposta Immediata vs Reasoning a Passaggi</h3>
+                        <span class="text-xs font-mono text-accent font-semibold">Demo Interattiva</span>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-ink/70 mb-4">Seleziona la modalità di elaborazione per osservare come cambia la struttura dell'output dell'IA:</p>
+                        
+                        <div class="flex gap-3 mb-6">
+                            <button id="modeLLMBtn" onclick="setSimMode('llm')" class="flex-1 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all bg-primary text-white border-primary shadow-sm">
+                                LLM Tradizionale (Previsione)
+                            </button>
+                            <button id="modeReasoningBtn" onclick="setSimMode('reasoning')" class="flex-1 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all bg-paper text-ink border-paper-dark hover:border-accent">
+                                Modello Reasoning (Passo-Passo)
+                            </button>
+                        </div>
+
+                        <div class="bg-ink text-cream p-5 rounded-xl font-mono text-xs sm:text-sm leading-relaxed min-h-[140px] flex flex-col justify-center" id="simOutput">
+                            <!-- JS injected content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ANALOGIA CALLOUT -->
+                <div class="p-6 bg-accent-light/40 border-l-4 border-accent rounded-r-2xl my-8">
+                    <div class="flex items-center gap-2 font-serif font-bold text-ink mb-2">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Analogia Pedagogica</span>
+                    </div>
+                    <p class="text-sm text-ink/90 italic leading-relaxed">
+                        È la differenza tra uno studente che risponde “a naso” a una domanda d'esame e uno studente che costruisce la risposta passo dopo passo, mostrando il percorso che lo ha portato alla conclusione. Il secondo comportamento è più vicino a ciò che chiamiamo reasoning.
+                    </p>
+                </div>
+
+                <!-- PER LA TUA MATERIA TAB DISCOVERY -->
+                <div class="mt-10 bg-paper/60 border border-paper-dark rounded-2xl p-6">
+                    <h3 class="font-serif font-bold text-primary text-lg mb-3 flex items-center gap-2">
+                        <span>Per la Tua Materia</span>
+                        <span class="text-xs font-sans font-normal text-ink/60">(Seleziona la tua area disciplinare)</span>
+                    </h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button onclick="showSubjectTab('storia')" id="tab-storia" class="subject-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-primary text-white transition-all">Storia e Filosofia</button>
+                        <button onclick="showSubjectTab('scienze')" id="tab-scienze" class="subject-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-cream border border-paper-dark text-ink hover:border-accent transition-all">Scienze e Biologia</button>
+                        <button onclick="showSubjectTab('lettere')" id="tab-lettere" class="subject-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-cream border border-paper-dark text-ink hover:border-accent transition-all">Lettere e Lingue</button>
+                    </div>
+
+                    <div id="subject-content" class="bg-cream p-4 rounded-xl border border-paper-dark/80 text-sm leading-relaxed text-ink/90">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ESEMPIO GUIDATO -->
+        <section id="esempio" class="py-16 bg-paper/50 border-y border-paper-dark/60">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="mb-8">
+                    <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Sezione 2</span>
+                    <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        Un esempio guidato, passo dopo passo
+                    </h2>
+                    <div class="h-1 w-16 bg-primary rounded-full"></div>
+                </div>
+
+                <p class="text-lg text-ink/85 leading-relaxed mb-8">
+                    Per vedere concretamente la struttura a più passaggi, prendiamo un esempio semplice — non importa rifare il calcolo a mente, conta osservare la scomposizione della sequenza logica:
+                </p>
+
+                <!-- INTERACTIVE PROBLEM STEPPER -->
+                <div class="bg-cream border border-paper-dark rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <div class="p-4 bg-primary/10 border border-primary/20 rounded-xl mb-6">
+                        <span class="text-xs font-mono font-bold text-primary uppercase">Problema di partenza:</span>
+                        <p class="font-serif text-base sm:text-lg text-ink font-semibold mt-1">
+                            “Un negozio ha 5 scatole, ogni scatola contiene 8 bottiglie, e ne vende 7. Quante bottiglie rimangono?”
+                        </p>
+                    </div>
+
+                    <!-- STEPPER STEPS -->
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-paper/60 border border-paper-dark hover:border-primary/50 transition-colors">
+                            <span class="w-8 h-8 rounded-full bg-primary text-cream font-bold text-sm flex items-center justify-center shrink-0">1</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-ink font-mono uppercase">Primo passaggio (Sotto-problema 1)</h4>
+                                <p class="text-sm text-ink/80 mt-0.5"><strong class="font-mono text-primary">5 &times; 8 = 40</strong> (Quante bottiglie ci sono in totale).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-paper/60 border border-paper-dark hover:border-primary/50 transition-colors">
+                            <span class="w-8 h-8 rounded-full bg-accent text-white font-bold text-sm flex items-center justify-center shrink-0">2</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-ink font-mono uppercase">Secondo passaggio (Sotto-problema 2)</h4>
+                                <p class="text-sm text-ink/80 mt-0.5"><strong class="font-mono text-accent">40 &minus; 7 = 33</strong> (Quante ne restano dopo la vendita).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-primary text-cream">
+                            <span class="w-8 h-8 rounded-full bg-cream text-primary font-bold text-sm flex items-center justify-center shrink-0">&check;</span>
+                            <div>
+                                <h4 class="font-bold text-sm font-mono uppercase text-cream/90">Risposta Finale Verificata</h4>
+                                <p class="text-sm text-cream mt-0.5">Rimangono <strong>33 bottiglie</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-paper-dark text-xs sm:text-sm font-mono text-ink/80 text-center bg-paper/40 p-4 rounded-xl">
+                        <strong>Sequenza logica universale:</strong> Problema &rarr; Sotto-problema &rarr; Risultato intermedio &rarr; Nuovo calcolo &rarr; Risposta finale
+                    </div>
+                </div>
+
+                <p class="text-base text-ink/80 mt-6 leading-relaxed">
+                    Il punto importante non è la moltiplicazione in sé, ma la capacità di trasformare un problema in una sequenza ordinata. Un sistema capace di costruire e utilizzare sequenze di questo tipo può affrontare problemi molto più complessi di una semplice domanda a risposta diretta — proprio come uno studente che sa scomporre un problema complesso in problemi più piccoli e gestibili, indipendentemente dalla materia.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CASO CONCRETO GOOGLE DEEPMIND -->
+        <section id="deepmind" class="py-16 md:py-24 max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="mb-8">
+                <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Sezione 3</span>
+                <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                    Un caso concreto: Google DeepMind e la matematica olimpica
+                </h2>
+                <div class="h-1 w-16 bg-primary rounded-full"></div>
+            </div>
+
+            <div class="prose prose-lg text-ink/85 leading-relaxed space-y-6">
+                <p>
+                    <strong>Perché la matematica?</strong> Perché è uno dei pochi ambiti in cui una soluzione può essere verificata in modo rigoroso e oggettivo: o la dimostrazione è corretta, oppure non lo è. Questo la rende un terreno ideale per misurare quanto un sistema di IA sappia davvero “ragionare” e non solo produrre un testo che suona convincente.
+                </p>
+                <p>
+                    Nel luglio 2024 Google DeepMind ha presentato due sistemi progettati specificamente per il ragionamento matematico, <strong>AlphaProof</strong> e <strong>AlphaGeometry 2</strong>, e li ha messi alla prova sui problemi della <strong>International Mathematical Olympiad (IMO) 2024</strong> — la più prestigiosa competizione matematica al mondo per studenti delle scuole superiori, attiva dal 1959.
+                </p>
+
+                <!-- DEEPMIND SYSTEMS CARDS GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+                    <!-- AlphaProof Card -->
+                    <div class="bg-cream border-2 border-primary/30 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-md bg-primary text-cream text-xs font-mono font-bold">AlphaProof</span>
+                                <span class="text-xs font-mono text-ink/60">Verifica Formale</span>
+                            </div>
+                            <h3 class="font-serif font-bold text-xl text-primary mb-3">Dimostrazioni Meccanicamente Verificate</h3>
+                            <p class="text-sm text-ink/80 leading-relaxed mb-4">
+                                Combina un modello linguistico con <em>reinforcement learning</em> (apprendimento per rinforzo), ricerca guidata e il sistema di verifica formale <strong>Lean</strong>.
+                            </p>
+                            <div class="bg-paper p-3 rounded-xl border border-paper-dark text-xs text-ink/90 leading-normal">
+                                <strong>Differenza da LLM standard:</strong> Un LLM ordinario scrive “quindi fa 42” senza garanzie. AlphaProof costruisce una dimostrazione che Lean controlla passaggio per passaggio.
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-paper-dark text-xs text-ink/70 italic">
+                            <strong>Analogia:</strong> Lean funziona come un correttore inflessibile che non si lascia convincere da una spiegazione che “suona bene”, ma pretende la regola esatta.
+                        </div>
+                    </div>
+
+                    <!-- AlphaGeometry Card -->
+                    <div class="bg-cream border-2 border-accent/40 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-md bg-accent text-white text-xs font-mono font-bold">AlphaGeometry 2</span>
+                                <span class="text-xs font-mono text-ink/60">Neuro-Simbolico</span>
+                            </div>
+                            <h3 class="font-serif font-bold text-xl text-accent mb-3">Intelligenza Neuro-Simbolica</h3>
+                            <p class="text-sm text-ink/80 leading-relaxed mb-4">
+                                Unisce la creatività intuitiva della rete neurale (che propone costruzioni geometriche) con il rigore del motore simbolico (che applica regole matematiche rigide).
+                            </p>
+                            <div class="bg-paper p-3 rounded-xl border border-paper-dark text-xs text-ink/90 leading-normal">
+                                <strong>Approccio Ibrido:</strong> Rete neurale = intuizione del candidato; Motore simbolico = il testo di teoremi che valida ogni passaggio.
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-paper-dark text-xs text-ink/70 italic">
+                            <strong>Analogia:</strong> Come una coppia di studio formata da uno studente creativo e un compagno severo che applica alla lettera le definizioni.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VERIFIED NOTES BOX 1: IMO 2024 RESULTS -->
+                <div class="bg-paper border-l-4 border-primary p-6 rounded-r-2xl my-8">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Nota Verificata &mdash; Risultati IMO 2024
+                        </span>
+                        <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded">Fonte Ufficiale</span>
+                    </div>
+                    <ul class="text-sm text-ink/90 space-y-2 list-disc list-inside leading-relaxed">
+                        <li><strong>Punteggio:</strong> Il sistema combinato ha risolto <strong>4 problemi su 6</strong>, totalizzando <strong>28 punti su 42</strong> (livello Medaglia d'Argento, a solo 1 punto dalla soglia d'Oro di 29 punti).</li>
+                        <li><strong>AlphaProof:</strong> Sollevati 3 problemi non geometrici (2 di algebra, 1 di teoria dei numeri), incluso il problema più difficile della gara, risolto da soli 5 concorrenti umani su oltre 600.</li>
+                        <li><strong>AlphaGeometry 2:</strong> Sollevato il problema di geometria. I 2 problemi di combinatoria non sono stati risolti.</li>
+                        <li class="text-xs text-ink/70 pt-1"><em>Fonte: Blog Google DeepMind (25 luglio 2024) e Nature (novembre 2025).</em></li>
+                    </ul>
+                </div>
+
+                <!-- VERIFIED NOTES BOX 2: DISCREPANCY LESSON -->
+                <div class="bg-paper border-l-4 border-accent p-6 rounded-r-2xl my-8">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            Nota Verificata &mdash; Confronto Dati e Spirito Critico
+                        </span>
+                    </div>
+                    <p class="text-sm text-ink/90 leading-relaxed mb-3">
+                        AlphaGeometry 1 (2024) ha risolto 25 problemi su 30 nel benchmark IMO-AG-30 (vs 10 del precedente stato dell'arte). La versione <strong>AlphaGeometry 2 (2025)</strong> ha raggiunto l'<strong>83%</strong> di tutti i problemi storici IMO di geometria degli ultimi 25 anni.
+                    </p>
+                    <div class="p-3 bg-cream rounded-xl border border-paper-dark text-xs text-ink/80 leading-relaxed">
+                        <strong>Un esercizio di verifica delle fonti per gli studenti:</strong> Il blog DeepMind indica l'83%, mentre il paper tecnico su Nature riporta 42 problemi risolti su 50 (84%). Questa piccola discrepanza mostra come i numeri possano variare leggermente a seconda dei sottoinsiemi considerati, ricordando l'importanza di consultare sempre più fonti ufficiali.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: ATTENZIONE E LIMITI -->
+        <section class="py-16 bg-cream border-y border-paper-dark">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="p-8 bg-paper/80 border-2 border-primary/20 rounded-3xl shadow-sm">
+                    <span class="text-xs font-mono font-bold text-primary uppercase tracking-widest block mb-2">Sezione 4 &bull; Riflessione Critica</span>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink mb-4">
+                        Attenzione: questo non dimostra che l'IA “pensi come un matematico”
+                    </h2>
+                    <p class="text-base text-ink/85 leading-relaxed mb-6">
+                        È importante non fare un salto logico troppo affrettato. Il fatto che questi sistemi risolvano problemi matematici difficili dimostra che possono produrre soluzioni di livello molto elevato in un ambito verificabile. Non dimostra automaticamente che il sistema abbia una comprensione matematica paragonabile a quella di una persona, né che ogni passaggio rappresenti un pensiero interno.
+                    </p>
+
+                    <div class="bg-cream p-5 rounded-2xl border border-paper-dark">
+                        <h4 class="font-serif font-bold text-primary text-sm mb-2 uppercase tracking-wide">La domanda aperta della comunità scientifica:</h4>
+                        <p class="text-sm text-ink/90 italic leading-relaxed">
+                            “Quanto di questa capacità deriva da una genuina generalizzazione e quanto da pattern appresi, memoria, ricerca sistematica e procedure di verifica?”
+                        </p>
+                    </div>
+
+                    <!-- EDU CIVICA TIE-IN -->
+                    <div class="mt-6 flex items-start gap-3 p-4 bg-accent/10 border border-accent/20 rounded-xl">
+                        <span class="text-accent text-xl">&starf;</span>
+                        <div class="text-xs sm:text-sm text-ink/90 leading-relaxed">
+                            <strong>Per l'Educazione alla Cittadinanza Digitale:</strong> In linea con le indicazioni ministeriali sull'IA a scuola (DM n. 166/2025), questo è un gancio didattico fondamentale per abituare gli studenti a distinguere tra un <em>risultato impressionante</em> e una <em>comprensione dimostrata</em>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: TRE LIVELLI DI REASONING -->
+        <section id="livelli" class="py-16 md:py-24 max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="mb-8">
+                <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Sezione 5</span>
+                <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                    Tre livelli di reasoning, utili in ogni disciplina
+                </h2>
+                <div class="h-1 w-16 bg-primary rounded-full"></div>
+            </div>
+
+            <p class="text-lg text-ink/85 leading-relaxed mb-8">
+                Possiamo distinguere, in modo semplificato, tre livelli crescenti di comportamento nell'elaborazione delle informazioni:
+            </p>
+
+            <!-- 3 LEVELS CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Level 1 -->
+                <div class="bg-paper p-6 rounded-2xl border border-paper-dark relative flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-ink/10 text-ink font-mono font-bold flex items-center justify-center mb-4">L1</div>
+                        <h3 class="font-serif font-bold text-lg text-ink mb-2">Livello 1: Riconoscimento</h3>
+                        <p class="text-xs font-mono text-accent mb-3">Pattern &rarr; Risposta</p>
+                        <p class="text-xs text-ink/80 leading-relaxed italic mb-3">“Questo problema assomiglia a qualcosa che conosco già.”</p>
+                        <p class="text-xs text-ink/70 leading-relaxed">Richiamo immediato di casi simili già incontrati durante l'addestramento.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-paper-dark text-[11px] font-mono text-ink/60">Tassonomia Bloom: Ricordare / Comprendere</div>
+                </div>
+
+                <!-- Level 2 -->
+                <div class="bg-paper p-6 rounded-2xl border border-paper-dark relative flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-accent/20 text-accent font-mono font-bold flex items-center justify-center mb-4">L2</div>
+                        <h3 class="font-serif font-bold text-lg text-ink mb-2">Livello 2: Composizione</h3>
+                        <p class="text-xs font-mono text-accent mb-3">A + B + C &rarr; Conclusione</p>
+                        <p class="text-xs text-ink/80 leading-relaxed italic mb-3">“Conosco queste informazioni e posso combinarle tra loro.”</p>
+                        <p class="text-xs text-ink/70 leading-relaxed">Mette insieme più elementi distinti per arrivare a un risultato nuovo e coerente.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-paper-dark text-[11px] font-mono text-ink/60">Tassonomia Bloom: Applicare / Analizzare</div>
+                </div>
+
+                <!-- Level 3 -->
+                <div class="bg-paper p-6 rounded-2xl border-2 border-primary relative flex flex-col justify-between shadow-sm">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-primary text-cream font-mono font-bold flex items-center justify-center mb-4">L3</div>
+                        <h3 class="font-serif font-bold text-lg text-primary mb-2">Livello 3: Ricerca &amp; Verifica</h3>
+                        <p class="text-xs font-mono text-primary mb-3">Ipotesi &rarr; Ricerca &rarr; Correzione</p>
+                        <p class="text-xs text-ink/80 leading-relaxed italic mb-3">“Provo diverse possibilità, verifico quali funzionano, correggo.”</p>
+                        <p class="text-xs text-ink/70 leading-relaxed">Vero problem solving: esplora percorsi alternativi con motore di verifica.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-paper-dark text-[11px] font-mono text-primary font-bold">Tassonomia Bloom: Valutare / Creare</div>
+                </div>
+            </div>
+
+            <!-- BLOOM PARALLEL NOTE -->
+            <div class="p-6 bg-cream border border-paper-dark rounded-2xl text-sm leading-relaxed text-ink/80">
+                <strong class="font-serif text-primary text-base block mb-1">Parallelo con la Tassonomia di Bloom:</strong>
+                Chi si occupa di didattica riconoscerà un'eco della progressione di Bloom: dal semplice ricordare (L1) all'analizzare (L2), fino al valutare e creare (L3). Rimane un'analogia pedagogica utile come chiave di lettura: i due schemi nascono in ambiti differenti e non vanno sovrapposti in senso tecnico.
+            </div>
+        </section>
+
+        <!-- SECTION 6: EVOLUZIONE RECENTE 2024-2026 -->
+        <section id="evoluzione" class="py-16 md:py-24 bg-paper/40 border-y border-paper-dark">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="mb-8">
+                    <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Sezione 6</span>
+                    <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        L'evoluzione recente: dal 2024 al 2026
+                    </h2>
+                    <div class="h-1 w-16 bg-primary rounded-full"></div>
+                </div>
+
+                <p class="text-base text-ink/85 leading-relaxed mb-8">
+                    Seguire l'evoluzione di questi sistemi negli ultimi anni mostra come si aggiorna una conoscenza man mano che arrivano nuove fonti verificabili:
+                </p>
+
+                <!-- TIMELINE COMPONENT -->
+                <div class="relative border-l-2 border-primary/30 ml-4 sm:ml-8 space-y-10 my-10">
+                    <!-- 2024 Item -->
+                    <div class="relative pl-6 sm:pl-8">
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-paper border-2 border-primary"></span>
+                        <span class="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md">2024</span>
+                        <h3 class="font-serif font-bold text-lg text-ink mt-2">AlphaProof &amp; AlphaGeometry 2</h3>
+                        <p class="text-sm text-ink/80 mt-1 leading-relaxed">
+                            Richiedevano la traduzione manuale dei problemi da parte di esperti nel linguaggio formale (Lean) e impiegavano fino a 2-3 giorni di calcolo dedicato per problema.
+                        </p>
+                    </div>
+
+                    <!-- 2025 Item -->
+                    <div class="relative pl-6 sm:pl-8">
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-accent border-2 border-accent"></span>
+                        <span class="text-xs font-mono font-bold text-white bg-accent px-2.5 py-1 rounded-md">Luglio 2025</span>
+                        <h3 class="font-serif font-bold text-lg text-ink mt-2">Gemini “Deep Think” &mdash; IMO 2025 Medaglia d'Oro</h3>
+                        <p class="text-sm text-ink/80 mt-1 leading-relaxed">
+                            Raggiunge lo standard di medaglia d'oro alla IMO 2025 (6/6 problemi risolti). Lavora direttamente in <strong>linguaggio naturale</strong> sui testi ufficiali, entro il limite di tempo della gara (4h e mezza), senza traduzioni manuali.
+                        </p>
+                    </div>
+
+                    <!-- 2026 Item -->
+                    <div class="relative pl-6 sm:pl-8">
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-primary"></span>
+                        <span class="text-xs font-mono font-bold text-cream bg-primary px-2.5 py-1 rounded-md">Febbraio 2026</span>
+                        <h3 class="font-serif font-bold text-lg text-primary mt-2">Ricerca Scientifica Aperta &amp; Agente “Aletheia”</h3>
+                        <p class="text-sm text-ink/80 mt-1 leading-relaxed">
+                            Deep Think evoluto verso la ricerca aperta in matematica, fisica e informatica. Contribuisce a risolvere <strong>18 problemi di ricerca aperti</strong> (inclusa la dimostrazione di una congettura del 2015 rimasta insoluta per 10 anni).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- VERIFIED NOTE ON 2026 -->
+                <div class="bg-cream border border-paper-dark p-4 rounded-xl text-xs text-ink/80 leading-relaxed mb-10">
+                    <strong>Nota di cautela epistemologica (2026):</strong> Le notizie del febbraio 2026 provengono principalmente dagli annunci ufficiali dei laboratori sviluppatori. Pur essendo solide e riscontrate da fonti indipendenti, vanno lette con la doverosa cautela riservata ai risultati recenti non ancora ampiamente sedimentati da peer-review su larga scala.
+                </div>
+
+                <!-- TEST-TIME COMPUTE INTERACTIVE SLIDER -->
+                <div class="bg-cream border border-paper-dark rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-serif font-bold text-lg text-ink mb-2">Simulatore del Concetto: “Test-Time Compute” (Thinking Budget)</h3>
+                    <p class="text-sm text-ink/70 mb-6">
+                        Il filo conduttore dell'evoluzione dal 2024 al 2026 è il <strong>Test-time compute</strong>: concedere all'IA più tempo/calcolo prima di dare la risposta finale. Sposta lo slider per osservare l'effetto:
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between font-mono text-xs text-ink/80">
+                            <span>Risposta Immediata (0s)</span>
+                            <span id="budgetValue" class="text-primary font-bold">Budget Medio (60s)</span>
+                            <span>Ricerca Profonda (10 min+)</span>
+                        </div>
+                        <input type="range" id="computeSlider" min="1" max="3" value="2" oninput="updateComputeSim()" class="w-full accent-primary cursor-pointer">
+
+                        <div id="computeDesc" class="p-4 bg-paper rounded-xl border border-paper-dark font-mono text-xs sm:text-sm text-ink leading-relaxed">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: APPLICAZIONI PER MATERIA -->
+        <section id="materie" class="py-16 md:py-24 max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="mb-8">
+                <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Sezione 7</span>
+                <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                    E per la mia materia? Applicazioni trasversali
+                </h2>
+                <div class="h-1 w-16 bg-primary rounded-full"></div>
+            </div>
+
+            <p class="text-base text-ink/85 leading-relaxed mb-8">
+                Il concetto di reasoning a più passaggi e la distinzione tra "risposta plausibile" e "soluzione verificata" si trasferiscono direttamente nella didattica quotidiana di tutte le discipline:
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Card Italiano -->
+                <div class="bg-paper p-5 rounded-xl border border-paper-dark hover:border-primary transition-all">
+                    <h3 class="font-serif font-bold text-primary text-base mb-2">Italiano e Lettere</h3>
+                    <p class="text-xs sm:text-sm text-ink/80 leading-relaxed">
+                        Distinguere un'analisi letteraria che “suona bene” da una che regge davvero, verificando la coerenza interna dell'argomentazione passo dopo passo.
+                    </p>
+                </div>
+
+                <!-- Card Storia -->
+                <div class="bg-paper p-5 rounded-xl border border-paper-dark hover:border-primary transition-all">
+                    <h3 class="font-serif font-bold text-primary text-base mb-2">Storia e Filosofia</h3>
+                    <p class="text-xs sm:text-sm text-ink/80 leading-relaxed">
+                        Allenare catene causa-effetto e la verifica delle fonti parallela alla “verifica formale”: come dimostriamo che un'affermazione storica è fondata?
+                    </p>
+                </div>
+
+                <!-- Card Scienze -->
+                <div class="bg-paper p-5 rounded-xl border border-paper-dark hover:border-primary transition-all">
+                    <h3 class="font-serif font-bold text-primary text-base mb-2">Scienze (Fisica, Chimica, Biologia)</h3>
+                    <p class="text-xs sm:text-sm text-ink/80 leading-relaxed">
+                        Metodo scientifico sovrapponibile ai Livelli 2 e 3 (ipotesi, verifica, correzione). Mostra perché i sistemi verificati sono più affidabili di un testo generico.
+                    </p>
+                </div>
+
+                <!-- Card Lingue -->
+                <div class="bg-paper p-5 rounded-xl border border-paper-dark hover:border-primary transition-all">
+                    <h3 class="font-serif font-bold text-primary text-base mb-2">Lingue Straniere</h3>
+                    <p class="text-xs sm:text-sm text-ink/80 leading-relaxed">
+                        Discutere la differenza tra un testo fluente in superficie e un testo accurato nel contenuto quando si usano traduttori IA.
+                    </p>
+                </div>
+
+                <!-- Card Discipline Tecniche -->
+                <div class="bg-paper p-5 rounded-xl border border-paper-dark hover:border-primary transition-all">
+                    <h3 class="font-serif font-bold text-primary text-base mb-2">Discipline Tecniche &amp; Informatica</h3>
+                    <p class="text-xs sm:text-sm text-ink/80 leading-relaxed">
+                        Approfondire reti neurali, motori simbolici e reinforcement learning con progetti pratici e analisi di codice.
+                    </p>
+                </div>
+
+                <!-- Card Ed Civica -->
+                <div class="bg-paper p-5 rounded-xl border border-paper-dark hover:border-primary transition-all">
+                    <h3 class="font-serif font-bold text-accent text-base mb-2">Educazione Civica Digitale</h3>
+                    <p class="text-xs sm:text-sm text-ink/80 leading-relaxed">
+                        Valutazione critica delle affermazioni sulle capacità dell'IA (Linee guida ministeriali DM n. 166/2025).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOOL PER DOCENTI: GENERATORE DI PROMPT -->
+        <section id="prompter" class="py-16 bg-cream border-y border-paper-dark">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="bg-paper/90 border-2 border-accent/40 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-9 h-9 rounded-xl bg-accent text-white flex items-center justify-center font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </span>
+                        <div>
+                            <h2 class="font-serif text-xl sm:text-2xl font-bold text-ink">Strumento Operativo: Generatore di Esercizi di Reasoning</h2>
+                            <p class="text-xs sm:text-sm text-ink/70">Crea un prompt didattico strutturato per la tua classe basato sui 3 livelli di ragionamento.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-mono font-bold text-ink/80 mb-2 uppercase">Materia:</label>
+                            <select id="promptSubject" class="w-full p-2.5 rounded-xl bg-cream border border-paper-dark text-sm font-medium focus:ring-accent">
+                                <option value="storia">Storia e Filosofia</option>
+                                <option value="italiano">Italiano e Lettere</option>
+                                <option value="scienze">Scienze e Biologia</option>
+                                <option value="lingue">Lingue Straniere</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono font-bold text-ink/80 mb-2 uppercase">Livello di Reasoning Richiesto:</label>
+                            <select id="promptLevel" class="w-full p-2.5 rounded-xl bg-cream border border-paper-dark text-sm font-medium focus:ring-accent">
+                                <option value="L1">Livello 1 - Riconoscimento (Pattern &rarr; Risposta)</option>
+                                <option value="L2">Livello 2 - Composizione (Relazioni e passaggi)</option>
+                                <option value="L3" selected>Livello 3 - Ricerca e Verifica (Verifica critica)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="generateClassroomPrompt()" class="w-full py-3 bg-primary text-cream font-bold text-sm rounded-xl shadow hover:bg-primary-dark transition-all flex items-center justify-center gap-2">
+                        <span>Genera Traccia Esercizio per la Classe</span>
+                    </button>
+
+                    <div class="mt-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-mono text-ink/60 uppercase">Output Copiabile:</span>
+                            <button onclick="copyPromptOutput()" class="text-xs font-mono font-semibold text-accent hover:underline flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                Copia Traccia
+                            </button>
+                        </div>
+                        <pre id="promptOutput" class="bg-ink text-cream p-4 rounded-xl text-xs sm:text-sm font-mono whitespace-pre-wrap leading-relaxed border border-paper-dark max-h-60 overflow-y-auto">Seleziona i parametri e clicca per generare la traccia didattica...</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: SINTESI FINALE -->
+        <section class="py-16 max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="p-8 bg-primary text-cream rounded-3xl text-center shadow-lg relative overflow-hidden">
+                <span class="text-xs font-mono uppercase tracking-widest text-accent-light block mb-2">Sezione 8 &bull; Sintesi</span>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold mb-6">
+                    In Sintesi: La Triade del Reasoning
+                </h2>
+
+                <div class="inline-flex flex-wrap items-center justify-center gap-3 my-4 text-base sm:text-xl font-serif font-bold text-cream">
+                    <span class="px-4 py-2 bg-cream/10 rounded-xl border border-cream/20">COMBINARE</span>
+                    <span class="text-accent-light">&rarr;</span>
+                    <span class="px-4 py-2 bg-cream/10 rounded-xl border border-cream/20">CERCARE</span>
+                    <span class="text-accent-light">&rarr;</span>
+                    <span class="px-4 py-2 bg-accent text-white rounded-xl shadow">VERIFICARE</span>
+                </div>
+
+                <p class="text-sm sm:text-base text-cream/90 max-w-2xl mx-auto mt-6 leading-relaxed">
+                    Il reasoning non è semplicemente “pensare più a lungo”. È la capacità di costruire sequenze trasversali di elaborazione, esplorare più alternative e verificarle. Questa è la chiave per comprendere dove sta andando l'evoluzione dell'IA linguistica.
+                </p>
+            </div>
+        </section>
+
+        <!-- GLOSSARIO ESSENZIALE -->
+        <section id="glossario" class="py-16 md:py-24 bg-paper/60 border-t border-paper-dark">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-accent tracking-widest uppercase">Appendice</span>
+                        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1">
+                            Glossario Essenziale
+                        </h2>
+                    </div>
+
+                    <!-- Filter input -->
+                    <div class="w-full sm:w-64">
+                        <input type="text" id="glossarySearch" onkeyup="filterGlossary()" placeholder="Cerca termine..." class="w-full px-3.5 py-2 rounded-xl bg-cream border border-paper-dark text-sm focus:ring-accent">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="glossaryContainer">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-ink text-cream/80 py-12 border-t border-ink">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center text-xs space-y-3">
+            <p class="font-serif text-sm font-semibold text-cream">SPA Editoriale Didattica &mdash; Il Reasoning nell'IA</p>
+            <p class="text-cream/60">Sviluppato secondo i principi di chiarezza, verificabilità e trasferibilità didattica.</p>
+            <p class="text-cream/40 pt-4">&copy; 2026 Dispensa Autonoma Monofile per la Scuola.</p>
+        </div>
+    </footer>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-ink text-cream text-xs font-mono px-4 py-3 rounded-xl shadow-xl border border-paper-dark/30 transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2 pointer-events-none">
+        <span class="w-2 h-2 rounded-full bg-accent"></span>
+        <span id="toastMsg">Messaggio di notifica</span>
+    </div>
+
+    <!-- JAVASCRIPT INTERACTIVE LOGIC -->
+    <script>
+
+        // Glossary Data
+        const glossaryData = [
+            { term: "Token", desc: "L'unità minima di testo (circa una parola o parte di parola) che il modello elabora e prevede un pezzo alla volta." },
+            { term: "LLM (Large Language Model)", desc: "Modello linguistico di grandi dimensioni, addestrato a prevedere il testo più probabile a partire da enormi quantità di testi letti." },
+            { term: "Reasoning", desc: "La capacità di costruire un percorso a più passaggi per arrivare a una soluzione, invece di rispondere in un unico passo." },
+            { term: "Rete Neurale", desc: "Sistema che impara schemi osservando moltissimi esempi, un po' come si impara una lingua per esposizione anziché a memoria." },
+            { term: "Sistema Simbolico", desc: "Sistema che applica in modo rigido regole logiche o matematiche fisse, funzionando come un regolamento inviolabile." },
+            { term: "Sistema Neuro-Simbolico", desc: "Combinazione di una rete neurale (che propone idee) e di un sistema simbolico (che ne verifica la validità formale)." },
+            { term: "Reinforcement Learning", desc: "Addestramento in cui il sistema migliora ripetendo tentativi e ricevendo segnali di successo o insuccesso." },
+            { term: "Verifica Formale", desc: "Controllo meccanico eseguito da un programma (es. Lean) su ogni singolo passaggio logico di una dimostrazione." },
+            { term: "Benchmark", desc: "Insieme fisso di problemi-test utilizzato per misurare e confrontare le prestazioni di sistemi di IA differenti." },
+            { term: "Test-Time Compute", desc: "La quantità di calcolo/tempo che un sistema dedica a elaborare una risposta prima di darla ('thinking budget')." }
+        ];
+
+        // Subject Tabs Data
+        const subjectData = {
+            storia: "<strong>Storia e Filosofia:</strong> È lo stesso tipo di percorso che chiediamo quando facciamo collegare cause e conseguenze di un evento complesso (es. cause della Prima Guerra Mondiale), invece di far semplicemente elencare le date a memoria.",
+            scienze: "<strong>Scienze e Biologia:</strong> Corrisponde da vicino alla struttura del metodo scientifico tradizionale: osservazione del fenomeno &rarr; formulazione dell'ipotesi &rarr; esperimento di verifica &rarr; conclusione.",
+            lettere: "<strong>Lettere e Lingue:</strong> È il percorso che sosteniamo quando chiediamo di costruire un'argomentazione scritta coerente e argomentata, e non soltanto un testo superficialmente scorrevole."
+        };
+
+        // Initialize Page
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            // Reading progress scroll listener
+            window.addEventListener('scroll', () => {
+                const winScroll = document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / (height || 1)) * 100;
+                const progressBar = document.getElementById('scrollProgress');
+                if (progressBar) progressBar.style.width = scrolled + '%';
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                document.querySelectorAll('.mobile-link').forEach(link => {
+                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+                });
+            }
+
+            // Init Simulator Mode
+            setSimMode('llm');
+
+            // Init Subject Tab
+            showSubjectTab('storia');
+
+            // Init Compute Simulator
+            updateComputeSim();
+
+            // Init Glossary
+            renderGlossary(glossaryData);
+        });
+
+        // Objective Tracker
+        function updateObjProgress() {
+            const checks = document.querySelectorAll('.obj-check');
+            let count = 0;
+            checks.forEach(c => { if (c.checked) count++; });
+            const counter = document.getElementById('objCounter');
+            if (counter) counter.innerText = `${count}/${checks.length} completati`;
+        }
+
+        // Simulator Switcher
+        function setSimMode(mode) {
+            const output = document.getElementById('simOutput');
+            const btnLLM = document.getElementById('modeLLMBtn');
+            const btnReasoning = document.getElementById('modeReasoningBtn');
+
+            if (mode === 'llm') {
+                btnLLM.className = "flex-1 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all bg-primary text-white border-primary shadow-sm";
+                btnReasoning.className = "flex-1 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all bg-paper text-ink border-paper-dark hover:border-accent";
+                output.innerHTML = `
+<span class="text-accent font-bold">&gt; Prompt:</span> "Un negozio ha 5 scatole con 8 bottiglie ciascuna e ne vende 7. Quante restano?"
+<span class="text-emerald-400 font-bold mt-2 block">&gt; Output LLM Immediato:</span>
+"Rimangono 33 bottiglie nel negozio."
+<span class="text-gray-400 text-xs mt-3 block italic">// Risposta generata in un unico passaggio statistico di probabilità token.</span>`;
+            } else {
+                btnReasoning.className = "flex-1 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all bg-primary text-white border-primary shadow-sm";
+                btnLLM.className = "flex-1 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all bg-paper text-ink border-paper-dark hover:border-accent";
+                output.innerHTML = `
+<span class="text-accent font-bold">&gt; Prompt:</span> "Un negozio ha 5 scatole con 8 bottiglie ciascuna e ne vende 7. Quante restano?"
+<span class="text-emerald-400 font-bold mt-2 block">&gt; Catena di Ragionamento (Passo-Passo):</span>
+1. Identifico il totale iniziale: 5 scatole &times; 8 bottiglie/scatola = 40 bottiglie.
+2. Identifico la sottrazione (vendita): 40 &minus; 7 = 33 bottiglie.
+3. Verifico la coerenza con la richiesta.
+<span class="text-emerald-300 font-bold mt-1 block">&gt; Risposta Finale:</span> 33 bottiglie.`;
+            }
+        }
+
+        // Subject Tabs
+        function showSubjectTab(key) {
+            document.querySelectorAll('.subject-tab').forEach(b => {
+                b.className = "subject-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-cream border border-paper-dark text-ink hover:border-accent transition-all";
+            });
+            const activeBtn = document.getElementById(`tab-${key}`);
+            if (activeBtn) activeBtn.className = "subject-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-primary text-white transition-all";
+            
+            const container = document.getElementById('subject-content');
+            if (container) container.innerHTML = subjectData[key] || '';
+        }
+
+        // Compute Simulator
+        function updateComputeSim() {
+            const val = document.getElementById('computeSlider').value;
+            const label = document.getElementById('budgetValue');
+            const desc = document.getElementById('computeDesc');
+
+            if (val === "1") {
+                label.innerText = "Risposta Immediata (0-2s)";
+                desc.innerHTML = "<strong class='text-primary'>Basso Test-Time Compute:</strong> Il modello risponde subito basandosi unicamente sui pesi pre-addestrati. Adatto a domande semplici di recupero o riassunto.";
+            } else if (val === "2") {
+                label.innerText = "Budget Medio (30-60s)";
+                desc.innerHTML = "<strong class='text-accent'>Medio Test-Time Compute:</strong> Il modello esplora 3-5 ramificazioni logiche interne prima di sintetizzare la risposta. Risolve problemi di matematica scolastica ed esercizi complessi.";
+            } else {
+                label.innerText = "Ricerca Profonda / Deep Think (Ore/Giorni)";
+                desc.innerHTML = "<strong class='text-primary-dark'>Alto Test-Time Compute (sistemi stile AlphaProof / Gemini Deep Think):</strong> Il modello esegue migliaia di tentativi di ricerca guidata con verifica formale meccanica. Raggiunge livelli da medaglia d'oro olimpica e ricerca scientifica.";
+            }
+        }
+
+        // Classroom Prompt Generator
+        function generateClassroomPrompt() {
+            const subject = document.getElementById('promptSubject').value;
+            const level = document.getElementById('promptLevel').value;
+            const output = document.getElementById('promptOutput');
+
+            let text = "";
+            if (level === "L1") {
+                text = `[TRACCIA DIDATTICA - REASONING LIVELLO 1: RICONOSCIMENTO]
+Materia: ${subject.toUpperCase()}
+Obiettivo: Riconoscere la struttura di un problema noto.
+
+Consegna per gli studenti:
+1. Leggi il testo/scenario fornito.
+2. Identifica a quale modello o categoria concettuale studiata assomiglia.
+3. Formula la risposta spiegando qual è l'elemento chiave che ti ha permesso il riconoscimento.`;
+            } else if (level === "L2") {
+                text = `[TRACCIA DIDATTICA - REASONING LIVELLO 2: COMPOSIZIONE]
+Materia: ${subject.toUpperCase()}
+Obiettivo: Combinare più informazioni in una sequenza ordinata.
+
+Consegna per gli studenti:
+1. Scomponi la questione nei seguenti elementi: Dato A, Dato B, Regola C.
+2. Esegui il primo passaggio logico scrivendo il risultato intermedio.
+3. Collega il risultato intermedio al passaggio successivo per giungere alla conclusione.`;
+            } else {
+                text = `[TRACCIA DIDATTICA - REASONING LIVELLO 3: RICERCA E VERIFICA]
+Materia: ${subject.toUpperCase()}
+Obiettivo: Esplorare ipotesi, verificare e correggere eventuali errori.
+
+Consegna per gli studenti:
+1. Formula un'ipotesi di soluzione iniziale.
+2. Sottoponi l'ipotesi a una verifica formale (es. controllo delle fonti, coerenza logica, regola scientifica).
+3. Se trovi un punto debole, correggi l'ipotesi e mostra il percorso rettificato definitivo.`;
+            }
+
+            output.innerText = text;
+            showToast("Traccia didattica generata con successo!");
+        }
+
+        function copyPromptOutput() {
+            const text = document.getElementById('promptOutput').innerText;
+            if (!text || text.includes("Seleziona i parametri")) return;
+            
+            // Fallback copy logic
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Traccia copiata negli appunti!");
+            } catch (err) {
+                showToast("Errore durante la copia.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Render Glossary
+        function renderGlossary(data) {
+            const container = document.getElementById('glossaryContainer');
+            if (!container) return;
+            container.innerHTML = data.map(item => `
+                <div class="bg-cream p-4 rounded-xl border border-paper-dark hover:border-accent transition-colors flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-serif font-bold text-primary text-base mb-1">${item.term}</h4>
+                        <p class="text-xs text-ink/80 leading-relaxed">${item.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterGlossary() {
+            const query = document.getElementById('glossarySearch').value.toLowerCase();
+            const filtered = glossaryData.filter(i => 
+                i.term.toLowerCase().includes(query) || i.desc.toLowerCase().includes(query)
+            );
+            renderGlossary(filtered);
+        }
+
+        // Toast Feedback
+        let toastTimer = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

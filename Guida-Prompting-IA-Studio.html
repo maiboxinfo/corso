@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studiare con l'IA – Guida al Prompting Consapevole | Linee Guida MIM</title>
+    <meta name="description" content="Guida pratica per studenti e docenti sull'uso consapevole dell'Intelligenza Artificiale a scuola. Anatomia del PROMPT-D, scaffolding, privacy e pensiero critico.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mimHero: '#0E47CB',
+                        mimNavy: '#1A1A4E',
+                        mimBlue: '#2F54EB',
+                        mimYellow: '#F5A623',
+                        mimTeal: '#3DD9C5',
+                        mimCoral: '#E84545',
+                        mimLight: '#F4F5F7',
+                        mimText: '#1A1A2E'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #F4F5F7;
+            color: #1A1A2E;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .flat-outline { border: 2.5px solid #1A1A4E; }
+        .flat-shadow { box-shadow: 4px 4px 0px #1A1A4E; }
+        .flat-shadow-sm { box-shadow: 2px 2px 0px #1A1A4E; }
+        .flat-shadow-lg { box-shadow: 6px 6px 0px #1A1A4E; }
+        
+        .flat-btn {
+            transition: all 0.15s ease-in-out;
+            border: 2.5px solid #1A1A4E;
+        }
+        .flat-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px #1A1A4E;
+        }
+        .flat-btn:active {
+            transform: translate(0, 0);
+            box-shadow: 1px 1px 0px #1A1A4E;
+        }
+        
+        /* Scrollbar personalizzata */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #F4F5F7; }
+        ::-webkit-scrollbar-thumb {
+            background: #2F54EB;
+            border: 2px solid #1A1A4E;
+            border-radius: 6px;
+        }
+        
+        .svg-outline {
+            stroke: #1A1A4E;
+            stroke-width: 2.5px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        /* Flip cards 3D */
+        .card-perspective { perspective: 1000px; }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .card-inner.is-flipped { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            top: 0; left: 0;
+            border-radius: 1rem;
+        }
+        .card-back { transform: rotateY(180deg); }
+        
+        /* Accessibilità focus */
+        :focus-visible {
+            outline: 3px solid #2F54EB;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 bg-white border-b-4 border-mimNavy px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 min-w-0">
+                <div class="w-10 h-10 bg-mimBlue rounded-xl border-2 border-mimNavy flex items-center justify-center flat-shadow-sm shrink-0">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#3DD9C5" stroke="#1A1A4E" stroke-width="1.5"/>
+                        <path d="M2 17l10 5 10-5" stroke="#1A1A4E" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M2 12l10 5 10-5" stroke="#1A1A4E" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-mimBlue">Linee Guida Scuola MIM</span>
+                    <h1 class="text-lg lg:text-xl font-extrabold text-mimNavy leading-none truncate">Studiare con l'IA</h1>
+                </div>
+            </div>
+
+            <nav class="hidden lg:flex items-center space-x-1" aria-label="Navigazione principale">
+                <a href="#formula" class="px-3 py-1.5 rounded-lg text-sm font-bold text-mimNavy hover:bg-mimTeal/20 transition">Anatomia PROMPT-D</a>
+                <a href="#scaffolding" class="px-3 py-1.5 rounded-lg text-sm font-bold text-mimNavy hover:bg-mimTeal/20 transition">Aiuto Graduale</a>
+                <a href="#builder" class="px-3 py-1.5 rounded-lg text-sm font-bold text-mimNavy hover:bg-mimTeal/20 transition">Prompt Builder</a>
+                <a href="#simulator" class="px-3 py-1.5 rounded-lg text-sm font-bold text-mimNavy hover:bg-mimTeal/20 transition">Simulatore</a>
+                <a href="#quiz" class="px-3 py-1.5 rounded-lg text-sm font-bold text-mimNavy hover:bg-mimTeal/20 transition">Quiz</a>
+            </nav>
+
+            <a href="#builder" class="flat-btn bg-mimYellow hover:bg-yellow-400 text-mimNavy px-4 py-2 rounded-xl text-sm font-extrabold flex items-center gap-2 shrink-0">
+                <span class="hidden sm:inline">Crea Prompt</span>
+                <span class="sm:hidden">Crea</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke="#1A1A4E" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1">
+        <!-- HERO -->
+        <section class="bg-mimHero text-white py-12 lg:py-16 px-4 lg:px-8 border-b-4 border-mimNavy relative overflow-hidden">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 bg-mimYellow text-mimNavy font-extrabold px-3 py-1.5 rounded-full text-xs uppercase tracking-wider border-2 border-mimNavy flat-shadow-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-mimNavy" aria-hidden="true"></span>
+                        Guida Pratica Studenti e Docenti
+                    </div>
+                    
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                        Come usare bene l'Intelligenza Artificiale con i 
+                        <span class="bg-mimTeal text-mimNavy px-2 py-0.5 rounded-lg border-2 border-mimNavy">Prompt Giusti</span>
+                    </h2>
+                    
+                    <p class="text-lg sm:text-xl text-blue-100 max-w-2xl font-medium">
+                        L'IA può spiegare un argomento, farti esercitare, creare quiz e organizzare le idee. Ma c'è una regola d'oro:
+                    </p>
+
+                    <div class="bg-white text-mimNavy p-5 rounded-2xl border-[3px] border-mimNavy flat-shadow-lg space-y-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-mimCoral border-2 border-mimNavy flex items-center justify-center text-white font-bold shrink-0" aria-hidden="true">!</div>
+                            <p class="text-lg font-black text-mimNavy">La Regola Fondamentale MIM:</p>
+                        </div>
+                        <p class="text-base font-semibold text-mimText pl-11">
+                            "L'IA deve aiutarti a <span class="text-mimBlue font-bold underline decoration-mimYellow decoration-4">imparare</span>, non sostituirsi a te."
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <span class="bg-mimNavy/40 px-3 py-1.5 rounded-xl border border-white/20 text-xs font-semibold flex items-center gap-1.5">
+                            <span class="text-mimTeal" aria-hidden="true">✓</span> Consapevole
+                        </span>
+                        <span class="bg-mimNavy/40 px-3 py-1.5 rounded-xl border border-white/20 text-xs font-semibold flex items-center gap-1.5">
+                            <span class="text-mimTeal" aria-hidden="true">✓</span> Responsabile
+                        </span>
+                        <span class="bg-mimNavy/40 px-3 py-1.5 rounded-xl border border-white/20 text-xs font-semibold flex items-center gap-1.5">
+                            <span class="text-mimTeal" aria-hidden="true">✓</span> Critico
+                        </span>
+                        <span class="bg-mimNavy/40 px-3 py-1.5 rounded-xl border border-white/20 text-xs font-semibold flex items-center gap-1.5">
+                            <span class="text-mimTeal" aria-hidden="true">✓</span> Sicuro
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Illustrazione SVG completa e corretta -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="bg-white p-6 rounded-3xl border-[3px] border-mimNavy flat-shadow-lg w-full max-w-md text-mimNavy">
+                        <svg viewBox="0 0 400 320" class="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustrazione: studente che interagisce con un tutor IA">
+                            <rect x="10" y="10" width="380" height="300" rx="20" fill="#F4F5F7" stroke="#1A1A4E" stroke-width="3"/>
+                            
+                            <!-- Laptop / Schermo IA -->
+                            <rect x="40" y="50" width="150" height="110" rx="12" fill="#2F54EB" stroke="#1A1A4E" stroke-width="3"/>
+                            <rect x="52" y="62" width="126" height="70" rx="6" fill="#3DD9C5" stroke="#1A1A4E" stroke-width="2"/>
+                            <circle cx="90" cy="95" r="8" fill="#1A1A4E"/>
+                            <circle cx="140" cy="95" r="8" fill="#1A1A4E"/>
+                            <path d="M100 115 Q115 125 130 115" stroke="#1A1A4E" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            <path d="M160 72 L165 82 L175 85 L165 88 L160 98 L155 88 L145 85 L155 82 Z" fill="#F5A623" stroke="#1A1A4E" stroke-width="1.5"/>
+                            
+                            <!-- Fumetto -->
+                            <path d="M160 40 Q280 20 290 80 Q290 120 210 110 L190 130 L195 105 Q160 100 160 40 Z" fill="#FFFFFF" stroke="#1A1A4E" stroke-width="2.5"/>
+                            <text x="180" y="55" font-family="Inter, sans-serif" font-weight="800" font-size="12" fill="#1A1A4E">PROMPT-D</text>
+                            <text x="180" y="73" font-family="Inter, sans-serif" font-weight="600" font-size="10" fill="#2F54EB">"Aiutami a capire!"</text>
+                            
+                            <!-- Studente stilizzato -->
+                            <circle cx="300" cy="180" r="28" fill="#F5A623" stroke="#1A1A4E" stroke-width="2.5"/>
+                            <circle cx="290" cy="172" r="3" fill="#1A1A4E"/>
+                            <circle cx="310" cy="172" r="3" fill="#1A1A4E"/>
+                            <path d="M290 190 Q300 198 310 190" stroke="#1A1A4E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            <rect x="275" y="210" width="50" height="60" rx="10" fill="#2F54EB" stroke="#1A1A4E" stroke-width="2.5"/>
+                            <path d="M275 230 H255" stroke="#1A1A4E" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M325 230 H345" stroke="#1A1A4E" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M285 270 V300" stroke="#1A1A4E" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M315 270 V300" stroke="#1A1A4E" stroke-width="3" stroke-linecap="round"/>
+                            
+                            <!-- Libro -->
+                            <rect x="60" y="200" width="70" height="50" rx="4" fill="#E84545" stroke="#1A1A4E" stroke-width="2.5"/>
+                            <path d="M95 200 V250" stroke="#1A1A4E" stroke-width="2"/>
+                            <text x="70" y="230" font-family="Inter, sans-serif" font-weight="700" font-size="10" fill="#FFFFFF">Libro</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 py-12 space-y-16">
+
+            <!-- SEZIONE 1: ANATOMIA DEL PROMPT-D -->
+            <section id="formula" class="scroll-mt-24 space-y-8">
+                <div class="bg-mimBlue text-white p-6 sm:p-8 rounded-3xl border-[3px] border-mimNavy flat-shadow-lg space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="bg-mimYellow text-mimNavy font-black text-xs uppercase px-3 py-1 rounded-full border border-mimNavy">Architettura del Prompt</span>
+                            <h2 class="text-2xl sm:text-4xl font-black text-white">L'Anatomia del PROMPT-D</h2>
+                            <p class="text-blue-100 text-sm sm:text-base font-medium">Clicca o tocca le schede per scoprire la funzione di ogni componente.</p>
+                        </div>
+                        <div class="text-3xl font-black bg-white text-mimNavy px-6 py-3 rounded-2xl border-[3px] border-mimNavy flat-shadow-sm text-center shrink-0 tracking-wider">
+                            PROMPT-D
+                        </div>
+                    </div>
+
+                    <!-- Flip Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                        
+                        <!-- P - Profilo -->
+                        <div class="card-perspective h-64 cursor-pointer" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Profilo: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="w-10 h-10 rounded-xl bg-mimYellow text-mimNavy font-black flex items-center justify-center border-2 border-mimNavy text-xl">P</div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Profilo</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Chi deve essere l'IA?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-mimYellow text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-mimNavy text-white font-black flex items-center justify-center text-xs">P</span>
+                                            <h3 class="font-extrabold text-sm uppercase">PROFILO</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Definisce il ruolo specifico dell'IA (es. tutor didattico esperto, docente di valutazione formativa, coach di debate).
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimNavy flex items-center gap-1 pt-2 border-t border-mimNavy/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- R - Risultato -->
+                        <div class="card-perspective h-64 cursor-pointer" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Risultato: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="w-10 h-10 rounded-xl bg-mimTeal text-mimNavy font-black flex items-center justify-center border-2 border-mimNavy text-xl">R</div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Risultato</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Che cosa deve produrre?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-mimTeal text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-mimNavy text-white font-black flex items-center justify-center text-xs">R</span>
+                                            <h3 class="font-extrabold text-sm uppercase">RISULTATO</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Specifica con esattezza il prodotto finale richiesto (es. percorso guidato, simulazione di verifica, mappa, scaletta).
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimNavy flex items-center gap-1 pt-2 border-t border-mimNavy/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- O - Obiettivi -->
+                        <div class="card-perspective h-64 cursor-pointer" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Obiettivi: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="w-10 h-10 rounded-xl bg-mimCoral text-white font-black flex items-center justify-center border-2 border-mimNavy text-xl">O</div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Obiettivi</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Che cosa voglio imparare?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-mimCoral text-white p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-white text-mimNavy font-black flex items-center justify-center text-xs">O</span>
+                                            <h3 class="font-extrabold text-sm uppercase text-white">OBIETTIVI</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Dichiara la competenza o l'apprendimento desiderato (es. capire i concetti, argomentare, individuare errori).
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-white flex items-center gap-1 pt-2 border-t border-white/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- M - Materiali -->
+                        <div class="card-perspective h-64 cursor-pointer" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Materiali: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="w-10 h-10 rounded-xl bg-purple-400 text-mimNavy font-black flex items-center justify-center border-2 border-mimNavy text-xl">M</div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Materiali</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Su quali fonti deve basarsi?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-purple-400 text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-mimNavy text-white font-black flex items-center justify-center text-xs">M</span>
+                                            <h3 class="font-extrabold text-sm uppercase">MATERIALI</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Ancora le risposte a fonti certe fornite dallo studente (libro, appunti, dispensa) per prevenire informazioni errate.
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimNavy flex items-center gap-1 pt-2 border-t border-mimNavy/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- P - Parametri -->
+                        <div class="card-perspective h-64 cursor-pointer" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Parametri: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="w-10 h-10 rounded-xl bg-blue-300 text-mimNavy font-black flex items-center justify-center border-2 border-mimNavy text-xl">P</div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Parametri</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Quali vincoli rispettare?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-blue-300 text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-mimNavy text-white font-black flex items-center justify-center text-xs">P</span>
+                                            <h3 class="font-extrabold text-sm uppercase">PARAMETRI</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Fissa livello scolare, classe, tempo a disposizione, tono e divieto di svolgere il compito al posto dello studente.
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimNavy flex items-center gap-1 pt-2 border-t border-mimNavy/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- T - Tipo Output -->
+                        <div class="card-perspective h-64 cursor-pointer" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Tipo Output: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="w-10 h-10 rounded-xl bg-emerald-400 text-mimNavy font-black flex items-center justify-center border-2 border-mimNavy text-xl">T</div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Tipo Output</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Come formattare la risposta?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-emerald-400 text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-mimNavy text-white font-black flex items-center justify-center text-xs">T</span>
+                                            <h3 class="font-extrabold text-sm uppercase">TIPO OUTPUT</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Chiede una struttura definita: tabelle, elenchi, domande una alla volta, schemi causa-effetto, dialoghi socratici.
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimNavy flex items-center gap-1 pt-2 border-t border-mimNavy/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D - Diagnosi (evidenziata) -->
+                        <div class="card-perspective h-64 cursor-pointer sm:col-span-2 lg:col-span-2" onclick="flipCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){flipCard(this)}" aria-label="Scheda Diagnosi: tocca per ruotare">
+                            <div class="card-inner">
+                                <div class="card-front bg-white text-mimNavy p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-10 h-10 rounded-xl bg-mimCoral text-white font-black flex items-center justify-center border-2 border-mimNavy text-xl">D</div>
+                                                <span class="bg-mimYellow text-mimNavy font-black text-[10px] px-2 py-0.5 rounded border border-mimNavy uppercase">Fondamentale</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase">PROMPT-D</span>
+                                        </div>
+                                        <h3 class="font-extrabold text-lg text-mimNavy">Diagnosi</h3>
+                                        <p class="text-xs text-gray-600 font-bold uppercase tracking-wide">Come l'IA deve autoverificarsi e segnalare i limiti?</p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimBlue flex items-center gap-1 justify-end pt-2 border-t border-gray-100">
+                                        <span>Tocca per ruotare</span><span aria-hidden="true">➔</span>
+                                    </div>
+                                </div>
+                                <div class="card-back bg-mimNavy text-white p-5 border-[3px] border-mimNavy flat-shadow-sm flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="w-7 h-7 rounded-lg bg-mimCoral text-white font-black flex items-center justify-center text-xs">D</span>
+                                            <h3 class="font-extrabold text-sm uppercase text-mimTeal">DIAGNOSI (FONDAMENTALE)</h3>
+                                        </div>
+                                        <p class="text-xs font-semibold leading-relaxed">
+                                            Impone all'IA di controllare il proprio lavoro prima di inviare, segnalando esplicitamente informazioni non verificabili o vincoli non pienamente rispettati.
+                                        </p>
+                                    </div>
+                                    <div class="text-xs font-bold text-mimTeal flex items-center gap-1 pt-2 border-t border-white/20">
+                                        <span aria-hidden="true">◄</span> Torna al fronte
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROMPT BUILDER -->
+                <div id="builder" class="bg-white rounded-3xl border-[3px] border-mimNavy p-6 sm:p-8 flat-shadow-lg space-y-6 scroll-mt-24">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-mimYellow text-mimNavy font-black text-xl flex items-center justify-center border-2 border-mimNavy flat-shadow-sm" aria-hidden="true">🛠️</span>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-mimNavy">Generatore Interattivo di Prompt (PROMPT-D)</h3>
+                            <p class="text-sm text-gray-600 font-medium">Compila i 7 moduli dell'Anatomia PROMPT-D per costruire un prompt d'eccellenza.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 pt-2">
+                        <span class="text-xs font-bold text-mimNavy uppercase mr-2">Carica esempio:</span>
+                        <button onclick="loadPreset('storia')" class="flat-btn px-3 py-1 bg-mimLight hover:bg-mimTeal/30 text-xs font-bold rounded-lg text-mimNavy">📜 Storia</button>
+                        <button onclick="loadPreset('scienze')" class="flat-btn px-3 py-1 bg-mimLight hover:bg-mimTeal/30 text-xs font-bold rounded-lg text-mimNavy">🧬 Scienze</button>
+                        <button onclick="loadPreset('matematica')" class="flat-btn px-3 py-1 bg-mimLight hover:bg-mimTeal/30 text-xs font-bold rounded-lg text-mimNavy">📐 Matematica</button>
+                        <button onclick="loadPreset('inglese')" class="flat-btn px-3 py-1 bg-mimLight hover:bg-mimTeal/30 text-xs font-bold rounded-lg text-mimNavy">🇬🇧 Inglese</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <label for="inputP1" class="block text-[11px] font-extrabold uppercase text-mimNavy mb-0.5">P – Profilo (Chi deve essere l'IA?)</label>
+                                <input id="inputP1" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimNavy text-xs font-medium focus:ring-2 focus:ring-mimBlue focus:outline-none" value="Agisci come un tutor didattico esperto e paziente.">
+                            </div>
+                            <div>
+                                <label for="inputR" class="block text-[11px] font-extrabold uppercase text-mimNavy mb-0.5">R – Risultato (Cosa deve produrre?)</label>
+                                <input id="inputR" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimNavy text-xs font-medium focus:ring-2 focus:ring-mimBlue focus:outline-none" value="Crea un percorso guidato di spiegazione e verifica.">
+                            </div>
+                            <div>
+                                <label for="inputO" class="block text-[11px] font-extrabold uppercase text-mimNavy mb-0.5">O – Obiettivi (Cosa vuoi imparare?)</label>
+                                <input id="inputO" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimNavy text-xs font-medium focus:ring-2 focus:ring-mimBlue focus:outline-none" value="Voglio capire le cause della Rivoluzione Francese per saperne parlare all'interrogazione.">
+                            </div>
+                            <div>
+                                <label for="inputM" class="block text-[11px] font-extrabold uppercase text-mimNavy mb-0.5">M – Materiali (Su quali fonti basarsi?)</label>
+                                <input id="inputM" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimNavy text-xs font-medium focus:ring-2 focus:ring-mimBlue focus:outline-none" value="Basati sui concetti standard dei manuali scolastici di storia della scuola secondaria.">
+                            </div>
+                            <div>
+                                <label for="inputP2" class="block text-[11px] font-extrabold uppercase text-mimNavy mb-0.5">P – Parametri (Quali vincoli rispettare?)</label>
+                                <input id="inputP2" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimNavy text-xs font-medium focus:ring-2 focus:ring-mimBlue focus:outline-none" value="Sono uno studente di 14 anni. Non svolgere i compiti al posto mio.">
+                            </div>
+                            <div>
+                                <label for="inputT" class="block text-[11px] font-extrabold uppercase text-mimNavy mb-0.5">T – Tipo Output (Come formattare?)</label>
+                                <input id="inputT" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimNavy text-xs font-medium focus:ring-2 focus:ring-mimBlue focus:outline-none" value="Dividi la risposta in 3 punti con 1 esempio e poi fammi 1 domanda alla volta.">
+                            </div>
+                            <div>
+                                <label for="inputD" class="block text-[11px] font-extrabold uppercase text-mimCoral mb-0.5">D – Diagnosi (Autoverifica & limiti)</label>
+                                <input id="inputD" type="text" oninput="updatePromptBuilder()" class="w-full p-2.5 rounded-xl border-2 border-mimCoral text-xs font-medium focus:ring-2 focus:ring-mimCoral focus:outline-none" value="Prima di inviare, controlla se la risposta contiene concetti incerti e segnalali esplicitamente.">
+                            </div>
+                        </div>
+
+                        <div class="bg-mimLight p-5 rounded-2xl border-2 border-mimNavy flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black uppercase tracking-wider text-mimBlue flex items-center gap-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-mimTeal border border-mimNavy" aria-hidden="true"></span>
+                                        Anteprima Prompt PROMPT-D
+                                    </span>
+                                    <span class="text-[11px] font-bold text-gray-500">Pronto da copiare</span>
+                                </div>
+                                <div id="outputPrompt" class="p-4 bg-white rounded-xl border-2 border-mimNavy text-xs font-semibold text-mimNavy leading-relaxed shadow-inner min-h-[220px] whitespace-pre-wrap"></div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch gap-3">
+                                <button onclick="copyGeneratedPrompt()" class="flat-btn flex-1 bg-mimTeal hover:bg-teal-300 text-mimNavy py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="8" y="8" width="12" height="12" rx="2" fill="#FFFFFF" stroke="#1A1A4E" stroke-width="2"/>
+                                        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="#1A1A4E" stroke-width="2"/>
+                                    </svg>
+                                    <span>Copia Prompt</span>
+                                </button>
+                                <button onclick="sendToSimulator()" class="flat-btn bg-mimYellow hover:bg-yellow-400 text-mimNavy py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-1">
+                                    🚀 Provalo nel Simulatore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 2: SCAFFOLDING -->
+            <section id="scaffolding" class="scroll-mt-24 space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-mimCoral text-white font-black text-xl flex items-center justify-center border-2 border-mimNavy flat-shadow-sm" aria-hidden="true">3</span>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-mimNavy">Aiuto Graduale: il concetto di "Scaffolding"</h2>
+                        <p class="text-gray-600 font-medium">Non chiedere subito la risposta finale! Chiedi all'IA un supporto passo per passo.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border-[3px] border-mimNavy p-6 sm:p-8 flat-shadow space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl border-2 border-mimNavy bg-blue-50 space-y-2">
+                            <div class="inline-block bg-mimBlue text-white text-xs font-black px-2.5 py-1 rounded-lg border border-mimNavy">LIVELLO 1</div>
+                            <h3 class="font-extrabold text-mimNavy text-base">Piccolo Indizio</h3>
+                            <p class="text-xs text-gray-700 font-medium">Un semplice suggerimento per farti venire in mente la direzione corretta.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border-2 border-mimNavy bg-amber-50 space-y-2">
+                            <div class="inline-block bg-mimYellow text-mimNavy text-xs font-black px-2.5 py-1 rounded-lg border border-mimNavy">LIVELLO 2</div>
+                            <h3 class="font-extrabold text-mimNavy text-base">Indizio Più Chiaro</h3>
+                            <p class="text-xs text-gray-700 font-medium">Se ancora fai fatica, una guida sui passaggi e la regola specifica.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border-2 border-mimNavy bg-emerald-50 space-y-2">
+                            <div class="inline-block bg-mimTeal text-mimNavy text-xs font-black px-2.5 py-1 rounded-lg border border-mimNavy">LIVELLO 3</div>
+                            <h3 class="font-extrabold text-mimNavy text-base">Soluzione Completa</h3>
+                            <p class="text-xs text-gray-700 font-medium">Mostrare il procedimento finale solo dopo che ci hai provato davvero da solo!</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-mimLight p-4 rounded-2xl border-2 border-mimNavy space-y-2">
+                        <p class="text-xs font-black uppercase text-mimBlue">Prompt di Scaffolding suggerito:</p>
+                        <p class="text-sm font-semibold text-mimNavy italic">
+                            "Ho un problema di matematica. Non risolverlo subito al posto mio. Dammi un aiuto in tre livelli: prima un piccolo indizio, poi un indizio più chiaro se non riesco, e solo alla fine la soluzione completa. Aspetta la mia risposta prima di passare al livello successivo."
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: ESEMPI PER MATERIA -->
+            <section id="adattare" class="scroll-mt-24 space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-mimTeal text-mimNavy font-black text-xl flex items-center justify-center border-2 border-mimNavy flat-shadow-sm" aria-hidden="true">4</span>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-mimNavy">Esempi Pratici per Ogni Materia</h2>
+                        <p class="text-gray-600 font-medium">Usa l'IA per esercitarti attivamente invece di leggere e basta.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border-[3px] border-mimNavy p-6 sm:p-8 flat-shadow space-y-6">
+                    <div class="flex flex-wrap gap-2 border-b-2 border-mimNavy pb-4" role="tablist" aria-label="Materie">
+                        <button onclick="switchTab('scienze')" id="tab-scienze" role="tab" aria-selected="true" aria-controls="content-scienze" class="tab-btn flat-btn px-4 py-2 rounded-xl text-sm font-extrabold bg-mimBlue text-white">🧬 Scienze</button>
+                        <button onclick="switchTab('matematica')" id="tab-matematica" role="tab" aria-selected="false" aria-controls="content-matematica" class="tab-btn flat-btn px-4 py-2 rounded-xl text-sm font-extrabold bg-mimLight text-mimNavy">📐 Matematica</button>
+                        <button onclick="switchTab('inglese')" id="tab-inglese" role="tab" aria-selected="false" aria-controls="content-inglese" class="tab-btn flat-btn px-4 py-2 rounded-xl text-sm font-extrabold bg-mimLight text-mimNavy">🇬🇧 Inglese</button>
+                        <button onclick="switchTab('storia')" id="tab-storia" role="tab" aria-selected="false" aria-controls="content-storia" class="tab-btn flat-btn px-4 py-2 rounded-xl text-sm font-extrabold bg-mimLight text-mimNavy">🏛️ Storia</button>
+                    </div>
+
+                    <div id="content-scienze" role="tabpanel" aria-labelledby="tab-scienze" class="tab-content space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <h3 class="text-lg font-bold text-mimNavy">Chiedere Tabelle e Confronti Diretti</h3>
+                            <span class="text-xs bg-mimTeal px-2.5 py-1 rounded-lg border border-mimNavy font-bold">Scienze</span>
+                        </div>
+                        <p class="text-sm text-gray-700 font-medium">Quando due concetti ti sembrano simili o confondibili (es. mitosi vs meiosi), chiedi un confronto guidato o un'analogia con la vita quotidiana.</p>
+                        <div class="bg-blue-50 p-4 rounded-xl border-2 border-mimBlue text-sm font-semibold text-mimNavy">
+                            "Sono uno studente di 14 anni. So già che cos'è una cellula, ma non capisco bene la differenza tra mitosi e meiosi. Spiegamela usando una tabella semplice, un esempio e una frase facile da ricordare."
+                        </div>
+                    </div>
+
+                    <div id="content-matematica" role="tabpanel" aria-labelledby="tab-matematica" class="tab-content hidden space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <h3 class="text-lg font-bold text-mimNavy">Difficoltà Progressiva e Un Esercizio alla Volta</h3>
+                            <span class="text-xs bg-mimYellow px-2.5 py-1 rounded-lg border border-mimNavy font-bold text-mimNavy">Matematica</span>
+                        </div>
+                        <p class="text-sm text-gray-700 font-medium">Non farti dare una lista di 20 problemi con soluzioni complete: chiedi un percorso ad adattamento dinamico.</p>
+                        <div class="bg-amber-50 p-4 rounded-xl border-2 border-mimYellow text-sm font-semibold text-mimNavy">
+                            "Crea 5 equazioni di primo grado: 2 facili, 2 medie e 1 difficile. Dammi un esercizio alla volta e aumenta la difficoltà solo se rispondo correttamente."
+                        </div>
+                    </div>
+
+                    <div id="content-inglese" role="tabpanel" aria-labelledby="tab-inglese" class="tab-content hidden space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <h3 class="text-lg font-bold text-mimNavy">Tutor Linguistico e Traduzione Attiva</h3>
+                            <span class="text-xs bg-mimCoral text-white px-2.5 py-1 rounded-lg border border-mimNavy font-bold">Inglese</span>
+                        </div>
+                        <p class="text-sm text-gray-700 font-medium">Chiedi all'IA di correggere la tua grammatica spiegandoti l'errore senza darti le frasi pronte.</p>
+                        <div class="bg-red-50 p-4 rounded-xl border-2 border-mimCoral text-sm font-semibold text-mimNavy">
+                            "Sono a livello A2/B1. Voglio esercitarmi con il past simple. Fammi 10 frasi da tradurre dall'italiano all'inglese. Non mostrarmi le soluzioni finché non avrò provato a rispondere. Correggi ogni errore spiegandomi brevemente la regola."
+                        </div>
+                    </div>
+
+                    <div id="content-storia" role="tabpanel" aria-labelledby="tab-storia" class="tab-content hidden space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <h3 class="text-lg font-bold text-mimNavy">Simulatore di Interrogazione</h3>
+                            <span class="text-xs bg-purple-300 px-2.5 py-1 rounded-lg border border-mimNavy font-bold text-mimNavy">Storia</span>
+                        </div>
+                        <p class="text-sm text-gray-700 font-medium">Chiedi all'IA di farti da professore severo ma giusto, dandoti suggerimenti per completare il discorso.</p>
+                        <div class="bg-purple-50 p-4 rounded-xl border-2 border-purple-300 text-sm font-semibold text-mimNavy">
+                            "Interrogami sulla Rivoluzione Industriale. Comincia con domande semplici e rendile più difficili se rispondo bene. Dopo ogni risposta dimmi cosa è corretto e cosa potrei aggiungere per prendere un voto alto."
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: SICUREZZA E PENSIERO CRITICO -->
+            <section id="sicurezza" class="scroll-mt-24 space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-3xl border-[3px] border-mimNavy p-6 flat-shadow space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-mimCoral text-white flex items-center justify-center font-black border-2 border-mimNavy text-xl" aria-hidden="true">🔒</div>
+                            <h3 class="text-xl font-extrabold text-mimNavy">Proteggi i tuoi dati personali</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 font-medium">Quando usi un sistema di IA, non inserire mai informazioni riservate!</p>
+                        
+                        <div class="bg-red-50 p-4 rounded-2xl border-2 border-mimCoral space-y-2 text-xs font-semibold text-mimNavy">
+                            <p class="text-mimCoral uppercase font-black">❌ Da evitare assolutamente:</p>
+                            <ul class="list-disc pl-4 space-y-1 text-gray-700">
+                                <li>Nome e cognome completi tuoi o dei compagni</li>
+                                <li>Indirizzo di casa, scuola o numero di telefono</li>
+                                <li>Password e credenziali</li>
+                                <li>Documenti personali o foto private</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-300 text-xs font-medium text-emerald-900">
+                            💡 <strong>Usa pseudonimi o generici:</strong> invece di <em>"Marco Rossi della 3B"</em>, scrivi <em>"Uno studente di 14 anni"</em>.
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border-[3px] border-mimNavy p-6 flat-shadow space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-mimYellow text-mimNavy flex items-center justify-center font-black border-2 border-mimNavy text-xl" aria-hidden="true">⚠️</div>
+                            <h3 class="text-xl font-extrabold text-mimNavy">Attenzione: l'IA può sbagliare!</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 font-medium">Una risposta scritta bene non è automaticamente una risposta vera.</p>
+
+                        <div class="bg-amber-50 p-4 rounded-2xl border-2 border-mimYellow space-y-2 text-xs font-semibold text-mimNavy">
+                            <p class="text-mimNavy uppercase font-black">L'IA può:</p>
+                            <ul class="list-disc pl-4 space-y-1 text-gray-700">
+                                <li>Sbagliare date storiche o formule di matematica</li>
+                                <li>Inventare fonti o citazioni con molta sicurezza</li>
+                                <li>Dare informazioni incomplete o confuse</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-3 bg-mimNavy text-white rounded-xl text-xs font-extrabold flex flex-wrap items-center justify-around gap-1 text-center">
+                            <span class="text-mimTeal">Non copiare</span> ➔
+                            <span>Controlla</span> ➔
+                            <span class="text-mimYellow">Confronta</span> ➔
+                            <span>Capisci</span> ➔
+                            <span class="text-mimCoral">Rielabora</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 5: I 5 COMANDI D'ORO -->
+            <section id="comandi" class="scroll-mt-24 space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-mimNavy text-white font-black text-xl flex items-center justify-center border-2 border-mimNavy flat-shadow-sm" aria-hidden="true">5</span>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-mimNavy">I 5 Comandi d'Oro da Aggiungere</h2>
+                        <p class="text-gray-600 font-medium">Istruzioni veloci da incollare alla fine di qualunque tuo prompt.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border-[3px] border-mimNavy flat-shadow space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-2xl" aria-hidden="true">🧠</span>
+                            <h3 class="font-extrabold text-sm text-mimNavy uppercase">Per capire</h3>
+                            <p class="text-xs font-semibold text-mimBlue bg-blue-50 p-2 rounded-lg">"Spiegamelo passo per passo."</p>
+                        </div>
+                        <button onclick="copyText('Spiegamelo passo per passo.')" class="flat-btn w-full bg-mimLight hover:bg-mimTeal text-xs font-bold py-2 rounded-lg text-mimNavy">Copia frase</button>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border-[3px] border-mimNavy flat-shadow space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-2xl" aria-hidden="true">💡</span>
+                            <h3 class="font-extrabold text-sm text-mimNavy uppercase">Per provare da solo</h3>
+                            <p class="text-xs font-semibold text-mimBlue bg-blue-50 p-2 rounded-lg">"Non darmi subito la soluzione."</p>
+                        </div>
+                        <button onclick="copyText('Non darmi subito la soluzione.')" class="flat-btn w-full bg-mimLight hover:bg-mimTeal text-xs font-bold py-2 rounded-lg text-mimNavy">Copia frase</button>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border-[3px] border-mimNavy flat-shadow space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-2xl" aria-hidden="true">🎯</span>
+                            <h3 class="font-extrabold text-sm text-mimNavy uppercase">Per risposte adatte</h3>
+                            <p class="text-xs font-semibold text-mimBlue bg-blue-50 p-2 rounded-lg">"Adatta la spiegazione a uno studente di 14 anni."</p>
+                        </div>
+                        <button onclick="copyText('Adatta la spiegazione a uno studente di 14 anni.')" class="flat-btn w-full bg-mimLight hover:bg-mimTeal text-xs font-bold py-2 rounded-lg text-mimNavy">Copia frase</button>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border-[3px] border-mimNavy flat-shadow space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-2xl" aria-hidden="true">❓</span>
+                            <h3 class="font-extrabold text-sm text-mimNavy uppercase">Per verificarti</h3>
+                            <p class="text-xs font-semibold text-mimBlue bg-blue-50 p-2 rounded-lg">"Fammi una domanda alla volta."</p>
+                        </div>
+                        <button onclick="copyText('Fammi una domanda alla volta.')" class="flat-btn w-full bg-mimLight hover:bg-mimTeal text-xs font-bold py-2 rounded-lg text-mimNavy">Copia frase</button>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border-[3px] border-mimNavy flat-shadow space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-2xl" aria-hidden="true">🔎</span>
+                            <h3 class="font-extrabold text-sm text-mimNavy uppercase">Per controllare</h3>
+                            <p class="text-xs font-semibold text-mimBlue bg-blue-50 p-2 rounded-lg">"Segnala le informazioni da verificare sul libro."</p>
+                        </div>
+                        <button onclick="copyText('Segnala le informazioni che dovrei verificare su fonti affidabili.')" class="flat-btn w-full bg-mimLight hover:bg-mimTeal text-xs font-bold py-2 rounded-lg text-mimNavy">Copia frase</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 6: SIMULATORE -->
+            <section id="simulator" class="scroll-mt-24 space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-mimYellow text-mimNavy font-black text-xl flex items-center justify-center border-2 border-mimNavy flat-shadow-sm" aria-hidden="true">🤖</span>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-mimNavy">Simulatore Tutor AI Interattivo</h2>
+                        <p class="text-gray-600 font-medium">Metti alla prova un prompt e osserva come l'IA risponde quando applichi le regole MIM.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border-[3px] border-mimNavy p-6 sm:p-8 flat-shadow-lg space-y-6">
+                    <div class="bg-mimNavy text-white p-4 rounded-2xl flex items-center justify-between border-2 border-mimNavy flex-wrap gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-mimTeal animate-pulse" aria-hidden="true"></div>
+                            <span class="font-bold text-sm">Simulatore Tutor MIM (Modalità Didattica)</span>
+                        </div>
+                        <span class="text-xs bg-mimBlue px-2.5 py-1 rounded-lg font-mono">Formula PROMPT-D Attiva</span>
+                    </div>
+
+                    <div id="chatHistory" class="space-y-4 max-h-[350px] overflow-y-auto p-2" role="log" aria-live="polite" aria-label="Cronologia chat simulatore">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-mimBlue text-white border border-mimNavy flex items-center justify-center font-bold text-xs shrink-0">IA</div>
+                            <div class="bg-mimLight border-2 border-mimNavy p-4 rounded-2xl text-sm font-medium text-mimNavy max-w-[85%] space-y-2">
+                                <p>👋 Ciao! Sono il tuo tutor IA virtuale. Inviami un prompt strutturato secondo l'Anatomia <strong>PROMPT-D</strong> oppure usa i pulsanti di test qui sotto per vedere la differenza!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 pt-2 border-t-2 border-mimNavy">
+                        <span class="text-xs font-bold text-mimNavy uppercase self-center mr-2">Prova esempi rapidi:</span>
+                        <button onclick="runSimulatedPrompt('bad')" class="flat-btn bg-red-100 hover:bg-red-200 text-mimCoral text-xs font-extrabold px-3 py-2 rounded-xl">❌ Prompt Generico</button>
+                        <button onclick="runSimulatedPrompt('good')" class="flat-btn bg-teal-100 hover:bg-teal-200 text-mimNavy text-xs font-extrabold px-3 py-2 rounded-xl">✓ Prompt PROMPT-D</button>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <label for="simInput" class="sr-only">Scrivi un prompt</label>
+                        <input id="simInput" type="text" placeholder="Scrivi un prompt o usa il generatore sopra..." class="flex-1 p-3 rounded-xl border-2 border-mimNavy text-sm font-medium focus:outline-none focus:ring-2 focus:ring-mimBlue">
+                        <button onclick="sendSimInput()" class="flat-btn bg-mimBlue text-white px-6 py-3 rounded-xl font-black text-sm shrink-0">Invia</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 7: QUIZ -->
+            <section id="quiz" class="scroll-mt-24 space-y-6">
+                <div class="bg-mimNavy text-white p-8 rounded-3xl border-[3px] border-mimNavy flat-shadow-lg space-y-6">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div>
+                            <span class="bg-mimYellow text-mimNavy text-xs font-black uppercase px-3 py-1 rounded-full border border-mimNavy">Test Finale</span>
+                            <h2 class="text-2xl sm:text-3xl font-black text-white mt-2">Metti alla prova quello che hai imparato!</h2>
+                            <p class="text-blue-200 text-sm font-medium">Rispondi a 3 domande per verificare la tua competenza di Prompting Consapevole.</p>
+                        </div>
+                        <div id="quizScoreBadge" class="hidden bg-mimTeal text-mimNavy font-black px-4 py-2 rounded-xl border-2 border-white text-lg">
+                            Punteggio: <span id="quizScore">0</span>/3
+                        </div>
+                    </div>
+
+                    <div id="quizContainer" class="space-y-6 bg-white text-mimNavy p-6 rounded-2xl border-2 border-white">
+                        <!-- Contenuto generato da JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t-4 border-mimNavy py-8 px-4 lg:px-8 mt-12 text-center text-mimNavy">
+        <div class="max-w-7xl mx-auto space-y-3">
+            <div class="flex justify-center items-center gap-2 font-black text-lg">
+                <span class="w-3 h-3 rounded-full bg-mimYellow border border-mimNavy" aria-hidden="true"></span>
+                <span>Grafica MIM – Flat Design Outline Istituzionale</span>
+            </div>
+            <p class="text-xs text-gray-600 font-medium max-w-xl mx-auto">
+                Basato sulle linee guida del Ministero dell'Istruzione e del Merito (MIM) per l'uso consapevole, sicuro e critico dell'Intelligenza Artificiale a scuola.
+            </p>
+            <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+                Un cattivo prompt chiede: «Fammi il compito» • Un buon prompt chiede: «Aiutami a capire come posso farlo io»
+            </p>
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-mimNavy text-white border-[3px] border-mimNavy p-4 rounded-2xl flat-shadow-lg transform translate-y-32 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 pointer-events-none" role="status" aria-live="polite">
+        <div class="w-8 h-8 rounded-xl bg-mimTeal text-mimNavy font-black flex items-center justify-center text-lg" aria-hidden="true">✓</div>
+        <div>
+            <h4 class="font-extrabold text-sm text-white">Testo Copiato!</h4>
+            <p class="text-xs text-blue-200 font-medium">Incollalo nella tua chat IA preferita.</p>
+        </div>
+    </div>
+
+    <script>
+        // ========== FLIP CARDS ==========
+        function flipCard(cardEl) {
+            const inner = cardEl.querySelector('.card-inner');
+            if (inner) inner.classList.toggle('is-flipped');
+        }
+
+        // ========== PRESETS ==========
+        const presets = {
+            storia: {
+                p1: "Agisci come tutor didattico esperto e incoraggiante.",
+                r: "Crea un percorso guidato di spiegazione e verifica.",
+                o: "Voglio capire le cause della Rivoluzione Francese per sostenere un'interrogazione.",
+                m: "Basati sui capitoli dedicati alla Rivoluzione Francese nei manuali della scuola media.",
+                p2: "Sono uno studente di 14 anni. Non svolgere compiti o risposte al posto mio.",
+                t: "Dividi la spiegazione in 3 punti principali con un esempio, poi fammi 5 domande una alla volta.",
+                d: "Prima di inviare, controlla se hai rispettato tutti i vincoli e segnala eventuali concetti storici da verificare sul libro."
+            },
+            scienze: {
+                p1: "Agisci come docente esperto in biologia per ragazzi.",
+                r: "Genera una spiegazione comparativa con tabella.",
+                o: "Voglio comprendere nettamente la differenza tra mitosi e meiosi per la verifica.",
+                m: "Usa esclusivamente informazioni scientifiche accreditate e adatte al livello scolastico.",
+                p2: "Adatta il linguaggio a un quattordicenne ed evita termini eccessivamente specialistici non spiegati.",
+                t: "Fornisci una tabella comparativa, un'analogia con la vita quotidiana e 1 domanda finale di verifica.",
+                d: "Rivedi il testo per assicurarti che la distinzione tra cellule somatiche e germinali sia cristallina."
+            },
+            matematica: {
+                p1: "Agisci come un coach di matematica socratico.",
+                r: "Crea un esercizio ad adattamento dinamico.",
+                o: "Voglio imparare il metodo di risoluzione delle equazioni di primo grado.",
+                m: "Basati sulle regole di algebra elementare delle scuole secondarie.",
+                p2: "Niente compiti pronti o soluzioni immediate. Livello studente 14 anni.",
+                t: "Dammi un problema alla volta con suggerimenti graduali solo se sbaglio.",
+                d: "Verifica che il grado di difficoltà cresca solo dopo una mia risposta corretta."
+            },
+            inglese: {
+                p1: "Agisci come un tutor di madrelingua inglese specializzato in grammatica A2/B1.",
+                r: "Genera una sessione di traduzione attiva con correzione guidata.",
+                o: "Voglio padroneggiare l'uso del Past Simple nei verbi regolari e irregolari.",
+                m: "Fai riferimento alle strutture grammaticali di livello A2/B1.",
+                p2: "Non mostrare le soluzioni prima del mio tentativo.",
+                t: "Proponi 10 frasi da tradurre dall'italiano, una per volta, e spiegami la regola se commetto errori.",
+                d: "Segnala se una mia frase è comprensibile anche se con imperfezioni grammaticali."
+            }
+        };
+
+        function loadPreset(key) {
+            if (!presets[key]) return;
+            const p = presets[key];
+            document.getElementById('inputP1').value = p.p1;
+            document.getElementById('inputR').value = p.r;
+            document.getElementById('inputO').value = p.o;
+            document.getElementById('inputM').value = p.m;
+            document.getElementById('inputP2').value = p.p2;
+            document.getElementById('inputT').value = p.t;
+            document.getElementById('inputD').value = p.d;
+            updatePromptBuilder();
+        }
+
+        function updatePromptBuilder() {
+            const p1 = document.getElementById('inputP1').value.trim();
+            const r  = document.getElementById('inputR').value.trim();
+            const o  = document.getElementById('inputO').value.trim();
+            const m  = document.getElementById('inputM').value.trim();
+            const p2 = document.getElementById('inputP2').value.trim();
+            const t  = document.getElementById('inputT').value.trim();
+            const d  = document.getElementById('inputD').value.trim();
+
+            const fullPrompt = `[PROFILO]: ${p1}\n[RISULTATO]: ${r}\n[OBIETTIVI]: ${o}\n[MATERIALI]: ${m}\n[PARAMETRI]: ${p2}\n[TIPO OUTPUT]: ${t}\n[DIAGNOSI]: ${d}`;
+            document.getElementById('outputPrompt').textContent = fullPrompt;
+        }
+
+        function copyGeneratedPrompt() {
+            copyText(document.getElementById('outputPrompt').textContent);
+        }
+
+        function sendToSimulator() {
+            document.getElementById('simInput').value = document.getElementById('outputPrompt').textContent;
+            document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ========== COPY HELPER ==========
+        function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showToast).catch(fallbackCopy);
+            } else {
+                fallbackCopy();
+            }
+
+            function fallbackCopy() {
+                const temp = document.createElement('textarea');
+                temp.value = text;
+                temp.style.position = 'fixed';
+                temp.style.left = '-9999px';
+                document.body.appendChild(temp);
+                temp.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    console.error('Copia fallita', err);
+                }
+                document.body.removeChild(temp);
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 2500);
+        }
+
+        // ========== TABS ==========
+        function switchTab(subject) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-mimBlue', 'text-white');
+                btn.classList.add('bg-mimLight', 'text-mimNavy');
+                btn.setAttribute('aria-selected', 'false');
+            });
+
+            const content = document.getElementById(`content-${subject}`);
+            const tab = document.getElementById(`tab-${subject}`);
+            if (content && tab) {
+                content.classList.remove('hidden');
+                tab.classList.remove('bg-mimLight', 'text-mimNavy');
+                tab.classList.add('bg-mimBlue', 'text-white');
+                tab.setAttribute('aria-selected', 'true');
+            }
+        }
+
+        // ========== SIMULATORE ==========
+        function sendSimInput() {
+            const input = document.getElementById('simInput');
+            const val = input.value.trim();
+            if (!val) return;
+
+            appendMessage('user', val);
+            input.value = '';
+
+            setTimeout(() => {
+                const lower = val.toLowerCase();
+                if (lower.includes('soluzione') || lower.includes('fammi il compito') || lower.includes('risolvi questo') || val.length < 30) {
+                    appendMessage('ai', "⚠️ **Risposta Tutor MIM:**\nNoto che stai chiedendo direttamente la soluzione completa o la risposta senza un contesto chiaro. Se ti do subito la risposta, rischi di non capire i passaggi. Proviamo ad applicare la struttura **PROMPT-D**!\n\n💡 *Indizio #1:* Qual è il primo passaggio che proveresti a fare sul tuo quaderno?");
+                } else {
+                    appendMessage('ai', "🎓 **Risposta Tutor MIM (Struttura PROMPT-D rilevata!):**\nPerfetto! Grazie per aver specificato Profilo, Risultato, Obiettivi, Materiali, Parametri, Tipo Output e Diagnosi.\n\n[CONTROLLO DIAGNOSTICO]: Ho controllato i vincoli. Livello: 14 anni. Nessun compito svolto al posto tuo.\n\nEcco la spiegazione in 3 punti:\n1. **Cause Economiche:** Le ingenti spese della Corona francese.\n2. **Stati Generali:** La disuguaglianza di voto tra Clero, Nobiltà e Terzo Stato.\n3. **Esempio Pratico:** Immagina una riunione condominiale dove 2 persone decidono le spese per 98 persone!\n\n❓ **Domanda di verifica #1:** Perché la richiesta del Terzo Stato di votare «per testa» invece che «per ordine» era così rivoluzionaria?");
+                }
+            }, 600);
+        }
+
+        function runSimulatedPrompt(type) {
+            if (type === 'bad') {
+                document.getElementById('simInput').value = "Risolvi questo problema e dammi la soluzione.";
+            } else {
+                document.getElementById('simInput').value = "[PROFILO]: Agisci come tutor esperto.\n[RISULTATO]: Spiegazione e verifica.\n[OBIETTIVI]: Capire le cause della Rivoluzione Francese.\n[MATERIALI]: Manuali di storia per scuole medie.\n[PARAMETRI]: Studente di 14 anni, non dare risposte complete.\n[TIPO OUTPUT]: 3 punti, 1 esempio e 1 domanda di verifica.\n[DIAGNOSI]: Autoverifica le informazioni prima di inviare.";
+            }
+            sendSimInput();
+        }
+
+        function appendMessage(sender, text) {
+            const chatHistory = document.getElementById('chatHistory');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'flex gap-3 ' + (sender === 'user' ? 'justify-end' : '');
+
+            if (sender === 'ai') {
+                msgDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-mimBlue text-white border border-mimNavy flex items-center justify-center font-bold text-xs shrink-0">IA</div>
+                    <div class="bg-mimLight border-2 border-mimNavy p-4 rounded-2xl text-sm font-medium text-mimNavy max-w-[85%] whitespace-pre-line">${text}</div>
+                `;
+            } else {
+                msgDiv.innerHTML = `
+                    <div class="bg-mimYellow border-2 border-mimNavy p-4 rounded-2xl text-sm font-bold text-mimNavy max-w-[85%] whitespace-pre-line">${text}</div>
+                    <div class="w-8 h-8 rounded-full bg-mimYellow text-mimNavy border border-mimNavy flex items-center justify-center font-bold text-xs shrink-0">TU</div>
+                `;
+            }
+
+            chatHistory.appendChild(msgDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // ========== QUIZ ==========
+        const quizQuestions = [
+            {
+                q: "Qual è la regola fondamentale delle linee guida MIM sull'uso dell'IA a scuola?",
+                options: [
+                    "L'IA deve fare i compiti al posto dello studente per risparmiare tempo.",
+                    "L'IA deve aiutarti ad imparare, non sostituirsi a te.",
+                    "L'IA non deve mai essere usata per studiare scienze o matematica.",
+                    "Bisogna sempre fidarsi ciecamente di qualsiasi risposta dell'IA."
+                ],
+                correct: 1,
+                explanation: "Esatto! L'IA è un supporto per comprendere meglio, non un generatore di compiti pronti."
+            },
+            {
+                q: "A cosa serve il componente «D» (Diagnosi) nell'Anatomia del PROMPT-D?",
+                options: [
+                    "A misurare la velocità della connessione internet",
+                    "A chiedere all'IA di valutare la salute dello studente",
+                    "A imporre all'IA di autoverificarsi prima di inviare, segnalando limiti o informazioni incerte",
+                    "A calcolare il voto finale dell'interrogazione"
+                ],
+                correct: 2,
+                explanation: "Corretto! La Diagnosi è un elemento fondamentale per il pensiero critico: costringe l'IA ad autoverificarsi e a segnalare eventuali informazioni non certe."
+            },
+            {
+                q: "Quali dati NON dovresti mai condividere in una chat di Intelligenza Artificiale?",
+                options: [
+                    "Il tuo livello scolastico (es. 14 anni)",
+                    "L'argomento del capitolo di storia",
+                    "Nome completo, indirizzo di casa, numeri telefonici e password",
+                    "Esempi tratti dal libro di testo"
+                ],
+                correct: 2,
+                explanation: "Bravissimo/a! Per proteggere la privacy, evita sempre di inserire dati personali riservati o identificativi."
+            }
+        ];
+
+        let currentQuizScores = [null, null, null];
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            quizQuestions.forEach((qObj, index) => {
+                const qBlock = document.createElement('div');
+                qBlock.className = 'space-y-3 p-4 rounded-xl border-2 border-mimNavy bg-mimLight';
+
+                const optionsHtml = qObj.options.map((opt, optIdx) => {
+                    let btnClass = 'flat-btn w-full text-left p-3 rounded-xl border-2 border-mimNavy font-semibold text-xs sm:text-sm transition ';
+                    if (currentQuizScores[index] !== null) {
+                        if (optIdx === qObj.correct) {
+                            btnClass += 'bg-emerald-200 text-emerald-900 border-emerald-500';
+                        } else if (currentQuizScores[index] === optIdx) {
+                            btnClass += 'bg-red-200 text-red-900 border-red-500';
+                        } else {
+                            btnClass += 'bg-white opacity-60';
+                        }
+                    } else {
+                        btnClass += 'bg-white hover:bg-mimTeal/30 text-mimNavy';
+                    }
+
+                    return `<button onclick="answerQuiz(${index}, ${optIdx})" class="${btnClass}" ${currentQuizScores[index] !== null ? 'disabled' : ''}>
+                        ${['A', 'B', 'C', 'D'][optIdx]}) ${opt}
+                    </button>`;
+                }).join('');
+
+                let explanationHtml = '';
+                if (currentQuizScores[index] !== null) {
+                    const isCorrect = currentQuizScores[index] === qObj.correct;
+                    explanationHtml = `<div class="p-3 rounded-lg border border-mimNavy text-xs font-bold ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                        ${qObj.explanation}
+                    </div>`;
+                }
+
+                qBlock.innerHTML = `
+                    <p class="font-extrabold text-sm sm:text-base text-mimNavy">Domanda ${index + 1}: ${qObj.q}</p>
+                    <div class="space-y-2">${optionsHtml}</div>
+                    ${explanationHtml}
+                `;
+                container.appendChild(qBlock);
+            });
+
+            const scoreBadge = document.getElementById('quizScoreBadge');
+            const scoreSpan = document.getElementById('quizScore');
+            const answeredCount = currentQuizScores.filter(s => s !== null).length;
+
+            if (answeredCount > 0) {
+                scoreBadge.classList.remove('hidden');
+                const totalScore = currentQuizScores.filter((s, idx) => s === quizQuestions[idx].correct).length;
+                scoreSpan.textContent = totalScore;
+            }
+        }
+
+        function answerQuiz(qIdx, optionIdx) {
+            if (currentQuizScores[qIdx] !== null) return;
+            currentQuizScores[qIdx] = optionIdx;
+            renderQuiz();
+        }
+
+        // ========== INIT ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePromptBuilder();
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

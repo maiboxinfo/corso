@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guida Operativa: 30 Esercitazioni Pratiche sull'IA per Docenti</title>
+
+  <!-- Google Fonts: Editorial Serif + Inter Sans + Monospace -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#1C1C1C',
+            cream: '#FAF6EE',
+            paper: '#F2EAD9',
+            'paper-dark': '#E6DBC4',
+            primary: '#1E3A8A', // Indigo scuro verificato AAA (>7:1 su cream)
+            'primary-dark': '#0F172A',
+            accent: '#854D0E',  // Oro rameico scuro (>7:1 su cream)
+            'status-progress': '#0047AB', // Blu Cobalto AAA (8.47:1)
+            'status-warning': '#B0004A',  // Fucsia/Cremisi AAA (7.12:1)
+            'status-success': '#005C36',  // Verde Smeraldo AAA (8.12:1)
+            surface: '#FFFFFF',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Courier New', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --ink: #1C1C1C;
+      --cream: #FAF6EE;
+      --paper: #F2EAD9;
+      --primary: #1E3A8A;
+      --primary-dark: #0F172A;
+      --accent: #854D0E;
+      --status-progress: #0047AB;
+      --status-warning: #B0004A;
+      --status-success: #005C36;
+      --surface: #FFFFFF;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    /* Target focus ultra visibile per WCAG AAA */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex="0"]:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 5px rgba(30, 58, 138, 0.25);
+    }
+
+    /* Texture leggera editoriale */
+    .paper-texture {
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 0, 0, 0.015) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(0, 0, 0, 0.015) 0%, transparent 40%);
+    }
+
+    /* Riduzione movimento */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col antialiased">
+
+  <!-- Barra di Avanzamento Lettura -->
+  <div class="fixed top-0 left-0 w-full h-1.5 bg-paper z-50 overflow-hidden" role="progressbar" id="reading-progress-container" aria-label="Avanzamento lettura pagina" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <div id="reading-progress-bar" class="h-full bg-primary transition-all duration-150 w-0"></div>
+  </div>
+
+  <!-- Header Sticky con navigazione e contrasto garantito -->
+  <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur-md border-b border-paper-dark/60 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand & Titolo -->
+      <a href="#hero" class="flex items-center gap-3 group rounded-md p-1">
+        <div class="w-10 h-10 rounded-md bg-primary text-surface flex items-center justify-center font-serif font-bold text-xl shadow-md group-hover:bg-primary-dark transition-colors" aria-hidden="true">
+          IA
+        </div>
+        <div class="flex flex-col">
+          <span class="font-serif font-bold text-lg leading-tight text-ink group-hover:text-primary transition-colors">Docenti Registi</span>
+          <span class="text-xs text-ink/80 font-medium">Guida Operativa IA (HITL)</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Navigazione principale">
+        <a href="#hero" class="nav-link px-3 py-2 text-sm font-semibold text-ink hover:text-primary hover:bg-paper/80 rounded-md transition-colors" aria-current="page">
+          Home
+        </a>
+        <a href="#context" class="nav-link px-3 py-2 text-sm font-semibold text-ink hover:text-primary hover:bg-paper/80 rounded-md transition-colors">
+          Quadro HITL
+        </a>
+        <a href="#directory" class="nav-link px-3 py-2 text-sm font-semibold text-ink hover:text-primary hover:bg-paper/80 rounded-md transition-colors">
+          30 Esercitazioni
+        </a>
+        <a href="#generator" class="nav-link px-3 py-2 text-sm font-semibold text-ink hover:text-primary hover:bg-paper/80 rounded-md transition-colors">
+          Laboratorio PROMPT-D
+        </a>
+        <a href="#normativa" class="nav-link px-3 py-2 text-sm font-semibold text-ink hover:text-primary hover:bg-paper/80 rounded-md transition-colors">
+          Privacy &amp; AI Act
+        </a>
+      </nav>
+
+      <!-- Indicatori di Stato & Menu Mobile -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-2 bg-paper px-3 py-1.5 rounded-full border border-paper-dark text-xs font-semibold text-ink">
+          <span aria-hidden="true">📊</span>
+          <span>Avanzamento: <strong id="global-counter" class="text-primary font-bold">0/30</strong></span>
+        </div>
+
+        <button id="mobile-menu-btn" type="button" class="md:hidden p-2.5 rounded-md text-ink hover:bg-paper focus:outline-none focus:ring-2 focus:ring-primary border border-paper-dark" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri menu di navigazione">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path id="menu-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden bg-cream border-b border-paper-dark px-4 pt-2 pb-6 space-y-2 shadow-lg" aria-label="Menu mobile">
+      <a href="#hero" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-semibold text-ink hover:bg-paper hover:text-primary">
+        🏠 Home
+      </a>
+      <a href="#context" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-semibold text-ink hover:bg-paper hover:text-primary">
+        🎯 Quadro HITL &amp; Strategia
+      </a>
+      <a href="#directory" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-semibold text-ink hover:bg-paper hover:text-primary">
+        📚 30 Esercitazioni Pratiche
+      </a>
+      <a href="#generator" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-semibold text-ink hover:bg-paper hover:text-primary">
+        ⚙️ Laboratorio PROMPT-D
+      </a>
+      <a href="#normativa" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-semibold text-ink hover:bg-paper hover:text-primary">
+        ⚖️ Privacy &amp; AI Act
+      </a>
+    </div>
+  </header>
+
+  <main id="main-content" class="flex-grow">
+    
+    <!-- HERO SECTION -->
+    <section id="hero" class="py-12 md:py-20 border-b border-paper-dark/60 bg-gradient-to-b from-cream to-paper/40">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper border border-paper-dark text-xs sm:text-sm font-semibold text-primary mb-6">
+          <span class="w-2 h-2 rounded-full bg-status-success animate-pulse" aria-hidden="true"></span>
+          <span>[Guida Operativa] Conforme D.M. 166/2025 &amp; AI Act (WCAG 2.1 AAA)</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-ink tracking-tight leading-tight mb-6">
+          30 Esercitazioni Pratiche sull'IA per <span class="text-primary underline decoration-accent/60 underline-offset-8">Docenti Registi</span>
+        </h1>
+
+        <p class="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-ink/90 leading-relaxed font-sans mb-8">
+          Trasforma l'Intelligenza Artificiale Generativa in un amplificatore pedagogico. Governa i grandi modelli linguistici (LLM) con il paradigma <strong>Human-in-the-Loop (HITL)</strong>, riducendo il carico burocratico e potenziando inclusione, valutazione e rigore metodologico.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto">
+          <a href="#directory" class="w-full sm:w-auto px-6 py-3.5 rounded-md bg-primary text-surface font-semibold text-base shadow-md hover:bg-primary-dark transition-all text-center border-2 border-primary">
+            📚 Esplora le 30 Esercitazioni
+          </a>
+          <a href="#generator" class="w-full sm:w-auto px-6 py-3.5 rounded-md bg-surface text-ink font-semibold text-base shadow-sm hover:bg-paper transition-all text-center border-2 border-paper-dark">
+            ⚙️ Personalizza un PROMPT-D
+          </a>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 text-left">
+          <div class="bg-surface p-4 rounded-lg border border-paper-dark shadow-sm">
+            <span class="block text-xs font-semibold text-ink/70 uppercase">Modulo 1</span>
+            <span class="text-lg font-bold text-primary font-serif">8 Schede</span>
+            <span class="block text-xs text-ink/80 mt-1">Prompt Engineering</span>
+          </div>
+          <div class="bg-surface p-4 rounded-lg border border-paper-dark shadow-sm">
+            <span class="block text-xs font-semibold text-ink/70 uppercase">Modulo 2</span>
+            <span class="text-lg font-bold text-primary font-serif">7 Schede</span>
+            <span class="block text-xs text-ink/80 mt-1">Inclusione &amp; ICF</span>
+          </div>
+          <div class="bg-surface p-4 rounded-lg border border-paper-dark shadow-sm">
+            <span class="block text-xs font-semibold text-ink/70 uppercase">Modulo 3</span>
+            <span class="text-lg font-bold text-primary font-serif">7 Schede</span>
+            <span class="block text-xs text-ink/80 mt-1">Valutazione Formativa</span>
+          </div>
+          <div class="bg-surface p-4 rounded-lg border border-paper-dark shadow-sm">
+            <span class="block text-xs font-semibold text-ink/70 uppercase">Modulo 4</span>
+            <span class="text-lg font-bold text-primary font-serif">8 Schede</span>
+            <span class="block text-xs text-ink/80 mt-1">Privacy &amp; Etica AI</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTEXT & HITL FRAMEWORK SECTION -->
+    <section id="context" class="py-12 md:py-16 bg-cream border-b border-paper-dark/60">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="max-w-3xl mb-10">
+          <h2 class="text-2xl sm:text-3xl font-serif font-bold text-ink mb-3">
+            Il Paradigma Human-in-the-Loop (HITL)
+          </h2>
+          <p class="text-base text-ink/90">
+            L'IA non sostituisce l'insegnante, ma agisce come un assistente ad alte prestazioni probabilistiche. Il docente mantiene la regia etica, scientifica e pedagogica di ogni output generato.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Native SVG Diagram with Triple Redundancy -->
+          <div class="lg:col-span-7 bg-surface p-6 rounded-xl border border-paper-dark shadow-sm">
+            <h3 class="text-base font-bold text-ink mb-4 flex items-center gap-2">
+              <span aria-hidden="true">🔄</span>
+              <span>Ciclo di Validazione Operativo (HITL)</span>
+            </h3>
+
+            <!-- SVG Nativo accessibile con Title e Desc -->
+            <svg role="img" aria-labelledby="hitl-diag-title hitl-diag-desc" viewBox="0 0 600 280" class="w-full h-auto rounded-md bg-cream/40 p-2">
+              <title id="hitl-diag-title">Diagramma Flusso Human-in-the-Loop per Docenti</title>
+              <desc id="hitl-diag-desc">
+                Schema a 4 fasi: 1. Consegna PROMPT-D rigorosa (Quadrato Blu); 2. Elaborazione Probabilistica IA (Cerchio Azzurro); 3. Validazione HITL Docente (Rombo Fucsia Attenzione); 4. Materiale Didattico Approvato (Quadrato Verde Completato).
+              </desc>
+
+              <!-- Connessioni -->
+              <path d="M 120 70 L 210 70" stroke="#1E3A8A" stroke-width="3" stroke-dasharray="4,4" fill="none" />
+              <path d="M 330 70 L 420 70" stroke="#B0004A" stroke-width="3" fill="none" />
+              <path d="M 490 120 L 490 180" stroke="#005C36" stroke-width="3" fill="none" />
+
+              <!-- Fase 1: PROMPT-D -->
+              <rect x="20" y="30" width="100" height="80" rx="8" fill="#1E3A8A" />
+              <text x="70" y="65" font-family="Inter" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">1. PROMPT-D</text>
+              <text x="70" y="85" font-family="Inter" font-size="11" fill="#E2E8F0" text-anchor="middle">Input Strutturato</text>
+              <text x="70" y="130" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">🟦 [Fase 1: Input]</text>
+
+              <!-- Fase 2: LLM Engine -->
+              <circle cx="270" cy="70" r="45" fill="#0047AB" />
+              <text x="270" y="65" font-family="Inter" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">2. LLM Engine</text>
+              <text x="270" y="82" font-family="Inter" font-size="11" fill="#E2E8F0" text-anchor="middle">Output Statistico</text>
+              <text x="270" y="130" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">⏳ In corso</text>
+
+              <!-- Fase 3: HITL Review (Rombo Attenzione) -->
+              <polygon points="490,20 550,70 490,120 430,70" fill="#B0004A" />
+              <text x="490" y="65" font-family="Inter" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">3. Veto HITL</text>
+              <text x="490" y="80" font-family="Inter" font-size="10" fill="#FCE7F3" text-anchor="middle">Docente Regista</text>
+              <text x="490" y="140" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">⚠️ Attenzione</text>
+
+              <!-- Fase 4: Output Validato (Quadrato Verde) -->
+              <rect x="420" y="180" width="140" height="70" rx="8" fill="#005C36" />
+              <text x="490" y="215" font-family="Inter" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">4. Classe / Aula</text>
+              <text x="490" y="235" font-family="Inter" font-size="11" fill="#DCFCE7" text-anchor="middle">Materiale Validato</text>
+              <text x="490" y="270" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">✅ Completato</text>
+            </svg>
+
+            <!-- Versione Testuale Alternativa Obbligatoria per Accessibilità -->
+            <div class="mt-4 p-3 bg-paper/60 rounded-md text-xs text-ink/90">
+              <strong class="block mb-1">Descrizione testuale del ciclo HITL:</strong>
+              <ol class="list-decimal list-inside space-y-1">
+                <li><strong>Fase 1 (Input):</strong> Il docente inserisce un PROMPT-D con parametri e vincoli precisi.</li>
+                <li><strong>Fase 2 (In corso):</strong> L'IA generativa produce la risposta probabilistica.</li>
+                <li><strong>Fase 3 (Attenzione):</strong> Il docente effettua il controllo critico (fact-checking, privacy, bias).</li>
+                <li><strong>Fase 4 (Completato):</strong> Il materiale approvato viene introdotto nella didattica attiva.</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- Pilastri Normativi -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-surface p-5 rounded-lg border border-paper-dark shadow-sm">
+              <div class="flex items-center gap-2 mb-2 text-primary font-bold text-base">
+                <span aria-hidden="true">📜</span>
+                <h3>D.M. MIM n. 166/2025</h3>
+              </div>
+              <p class="text-sm text-ink/80">
+                Inquadra l'adozione delle tecnologie per la didattica digitale integrata imponendo l'uso di account aziendali/istituzionali protetti da accordi DPA (Data Processing Agreement).
+              </p>
+            </div>
+
+            <div class="bg-surface p-5 rounded-lg border border-paper-dark shadow-sm">
+              <div class="flex items-center gap-2 mb-2 text-primary font-bold text-base">
+                <span aria-hidden="true">🛡️</span>
+                <h3>AI Act (Reg. UE 2024/1689)</h3>
+              </div>
+              <p class="text-sm text-ink/80">
+                Classifica il settore dell'istruzione e della formazione professionale come ambito <strong>ad alto rischio</strong>, prescrivendo la supervisione umana e il divieto di profilazione acritica.
+              </p>
+            </div>
+
+            <div class="bg-surface p-5 rounded-lg border border-paper-dark shadow-sm">
+              <div class="flex items-center gap-2 mb-2 text-primary font-bold text-base">
+                <span aria-hidden="true">🔒</span>
+                <h3>GDPR Art. 5 (Minimizzazione)</h3>
+              </div>
+              <p class="text-sm text-ink/80">
+                Divieto assoluto di inserire nomi, cognomi o dettagli personali identificativi degli studenti all'interno dei prompt di terze parti.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DIRECTORY DELLE 30 ESERCITAZIONI -->
+    <section id="directory" class="py-12 md:py-16 bg-paper/30 border-b border-paper-dark/60">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-serif font-bold text-ink mb-2">
+              Archivio delle 30 Esercitazioni Pratiche
+            </h2>
+            <p class="text-sm sm:text-base text-ink/80 max-w-2xl">
+              Filtra per modulo disciplinare, cerca per parola chiave o seleziona una scheda per personalizzarla nel laboratorio.
+            </p>
+          </div>
+
+          <!-- Counter & Reset Button -->
+          <div class="flex items-center gap-3">
+            <button id="reset-filters-btn" type="button" class="px-3 py-2 bg-surface hover:bg-paper text-ink text-xs font-semibold rounded-md border border-paper-dark transition-colors flex items-center gap-1">
+              <span aria-hidden="true">🔄</span>
+              <span>Ripristina filtri</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar & Search Box -->
+        <div class="bg-surface p-4 sm:p-6 rounded-xl border border-paper-dark shadow-sm mb-8 space-y-4">
+          
+          <!-- Search Input -->
+          <div class="relative">
+            <label for="search-input" class="block text-xs font-bold text-ink uppercase tracking-wider mb-1">
+              Cerca tra le esercitazioni
+            </label>
+            <div class="relative">
+              <input type="text" id="search-input" placeholder="Es. IBSE, Flipped, ICF, Bloom, Fact-checking, Privacy..." class="w-full pl-10 pr-4 py-2.5 rounded-md border border-paper-dark bg-cream/40 text-ink text-sm focus:bg-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+              <span class="absolute left-3 top-3 text-ink/50" aria-hidden="true">🔍</span>
+            </div>
+          </div>
+
+          <!-- Module Tabs / Chips -->
+          <div>
+            <span class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+              Filtra per Modulo Didattico
+            </span>
+            <div class="flex flex-wrap gap-2" role="group" aria-label="Filtri per modulo">
+              <button type="button" data-module="all" class="module-filter-btn px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold border transition-all bg-primary text-surface border-primary" aria-pressed="true">
+                Tutti (30)
+              </button>
+              <button type="button" data-module="1" class="module-filter-btn px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold border transition-all bg-cream text-ink border-paper-dark hover:bg-paper" aria-pressed="false">
+                Modulo 1: Prompt-Engineering (1-8)
+              </button>
+              <button type="button" data-module="2" class="module-filter-btn px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold border transition-all bg-cream text-ink border-paper-dark hover:bg-paper" aria-pressed="false">
+                Modulo 2: Inclusione &amp; ICF (9-15)
+              </button>
+              <button type="button" data-module="3" class="module-filter-btn px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold border transition-all bg-cream text-ink border-paper-dark hover:bg-paper" aria-pressed="false">
+                Modulo 3: Valutazione &amp; Bloom (16-22)
+              </button>
+              <button type="button" data-module="4" class="module-filter-btn px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold border transition-all bg-cream text-ink border-paper-dark hover:bg-paper" aria-pressed="false">
+                Modulo 4: Etica &amp; Privacy (23-30)
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Cards Grid Container -->
+        <div id="exercise-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
+          <!-- Dynamic Exercise Cards rendered via JS -->
+        </div>
+
+        <!-- No Results Fallback -->
+        <div id="no-results" class="hidden text-center py-12 bg-surface rounded-xl border border-paper-dark p-8">
+          <span class="text-4xl mb-3 block" aria-hidden="true">🔍</span>
+          <h3 class="text-lg font-bold text-ink mb-1">Nessuna esercitazione trovata</h3>
+          <p class="text-sm text-ink/80 mb-4">Prova a modificare i termini di ricerca o azzera i filtri.</p>
+          <button type="button" onclick="resetFilters()" class="px-4 py-2 bg-primary text-surface text-sm font-semibold rounded-md hover:bg-primary-dark transition-colors">
+            Mostra tutte le esercitazioni
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LABORATORIO PERSONALIZZAZIONE PROMPT-D -->
+    <section id="generator" class="py-12 md:py-20 bg-cream border-b border-paper-dark/60">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="max-w-3xl mb-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-paper border border-paper-dark text-xs font-bold text-primary mb-3">
+            <span>⚙️ STRUMENTO OPERATIVO</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-serif font-bold text-ink mb-3">
+            Laboratorio Interattivo PROMPT-D
+          </h2>
+          <p class="text-base text-ink/90">
+            Seleziona una delle 30 esercitazioni, compila le variabili di contesto e genera il prompt strutturato pronto da copiare ed eseguire nel tuo modello linguistico.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Form Configurazione Parametri -->
+          <div class="lg:col-span-5 bg-surface p-6 rounded-xl border border-paper-dark shadow-sm space-y-5">
+            
+            <div>
+              <label for="prompt-selector" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                1. Seleziona Esercitazione Target
+              </label>
+              <select id="prompt-selector" class="w-full p-2.5 rounded-md border border-paper-dark bg-cream/30 text-ink text-sm font-semibold focus:ring-2 focus:ring-primary focus:border-primary">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <!-- Parametri Dinamici Generati -->
+            <div id="dynamic-params-container" class="space-y-4 pt-4 border-t border-paper-dark">
+              <span class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                2. Compila i Parametri del Contesto
+              </span>
+              <div id="params-fields-list" class="space-y-3">
+                <!-- Dynamic Input fields generated via JS based on selected prompt placeholders -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Box Output live e Guardrail Checklist -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Output PROMPT-D generato -->
+            <div class="bg-surface p-6 rounded-xl border border-paper-dark shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-ink uppercase tracking-wider">
+                    PROMPT-D Personalizzato
+                  </span>
+                  <span id="active-prompt-id-badge" class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-paper text-primary border border-paper-dark">
+                    PLAN-01
+                  </span>
+                </div>
+
+                <button id="copy-prompt-btn" type="button" class="px-4 py-2 bg-primary text-surface text-xs font-bold rounded-md hover:bg-primary-dark transition-colors flex items-center gap-1.5 shadow-sm">
+                  <span aria-hidden="true">📋</span>
+                  <span id="copy-btn-text">Copia Prompt</span>
+                </button>
+              </div>
+
+              <!-- Output Box Monospace con Contrasto Elevato -->
+              <div class="relative">
+                <pre id="prompt-output-box" class="w-full min-h-[220px] max-h-[380px] overflow-y-auto p-4 rounded-md bg-ink text-surface font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap border border-ink/80 shadow-inner" tabindex="0" aria-label="Prompt generato in formato testo"></pre>
+              </div>
+            </div>
+
+            <!-- Guardrail Checklist per la Scheda Attiva -->
+            <div class="bg-surface p-6 rounded-xl border border-paper-dark shadow-sm">
+              <h3 class="text-sm font-bold text-ink uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span>🛡️ Guardrail Checklist &amp; Controllo Scientifico</span>
+              </h3>
+              <p class="text-xs text-ink/80 mb-4">
+                Prima di utilizzare l'output nell'attività scolastica, verifica i punti di controllo obbligatori previsti per questa esercitazione:
+              </p>
+
+              <ul id="active-guardrails-list" class="space-y-2 text-xs sm:text-sm text-ink/90">
+                <!-- Rendered via JS -->
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SEZIONE NORMATIVA, PRIVACY ED ETICA -->
+    <section id="normativa" class="py-12 md:py-16 bg-paper/40 border-b border-paper-dark/60">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="max-w-3xl mb-8">
+          <h2 class="text-2xl sm:text-3xl font-serif font-bold text-ink mb-3">
+            Quadro etico, ToS e Limiti di Età (Cap. 2.8)
+          </h2>
+          <p class="text-base text-ink/90">
+            I termini di servizio (ToS) delle piattaforme commerciali stabiliscono requisiti di età rigidi che il docente è tenuto a rispettare nell'ambito della propria responsabilità professionale.
+          </p>
+        </div>
+
+        <!-- Table Limiti di Età con Contrasto e Accessibilità -->
+        <div class="bg-surface rounded-xl border border-paper-dark overflow-hidden shadow-sm mb-8">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-paper border-b border-paper-dark text-ink font-bold">
+                  <th scope="col" class="p-4">Piattaforma LLM</th>
+                  <th scope="col" class="p-4">Età Minima ToS</th>
+                  <th scope="col" class="p-4">Condizioni per Minori</th>
+                  <th scope="col" class="p-4">Uso Didattico Consentito</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-paper-dark text-ink/90">
+                <tr class="hover:bg-cream/50">
+                  <th scope="row" class="p-4 font-bold text-primary">OpenAI ChatGPT</th>
+                  <td class="p-4">13 Anni</td>
+                  <td class="p-4">13-18 anni con consenso genitoriale</td>
+                  <td class="p-4"><span class="inline-flex items-center gap-1 font-bold text-status-success">✅ Consentito (con consenso)</span></td>
+                </tr>
+                <tr class="hover:bg-cream/50">
+                  <th scope="row" class="p-4 font-bold text-primary">Google Gemini</th>
+                  <td class="p-4">13 Anni</td>
+                  <td class="p-4">Con account Workspace for Education protetto</td>
+                  <td class="p-4"><span class="inline-flex items-center gap-1 font-bold text-status-success">✅ Consentito (Education)</span></td>
+                </tr>
+                <tr class="hover:bg-cream/50">
+                  <th scope="row" class="p-4 font-bold text-primary">Microsoft Copilot</th>
+                  <td class="p-4">13 Anni</td>
+                  <td class="p-4">Con account scuola M365 Education</td>
+                  <td class="p-4"><span class="inline-flex items-center gap-1 font-bold text-status-success">✅ Consentito (Education)</span></td>
+                </tr>
+                <tr class="hover:bg-cream/50 bg-paper/20">
+                  <th scope="row" class="p-4 font-bold text-status-warning">Anthropic Claude</th>
+                  <td class="p-4 font-bold">18 Anni</td>
+                  <td class="p-4">Nessun accesso consentito ai minori</td>
+                  <td class="p-4"><span class="inline-flex items-center gap-1 font-bold text-status-warning">⚠️ VIETATO AI MINORI</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Box Informativo Anonimizzazione -->
+        <div class="bg-surface p-6 rounded-xl border-2 border-primary/30 shadow-sm flex flex-col md:flex-row items-start gap-4">
+          <div class="text-3xl p-3 bg-paper rounded-lg border border-paper-dark shrink-0" aria-hidden="true">
+            🔒
+          </div>
+          <div class="space-y-2">
+            <h3 class="text-base font-bold text-ink">Regola di Anonimizzazione "Studente X" (Art. 5 GDPR)</h3>
+            <p class="text-xs sm:text-sm text-ink/90">
+              Quando si richiede un adattamento o un PDP a un modello linguistico, sostituire sempre i dati anagrafici con profili funzionali generici:
+            </p>
+            <div class="p-3 bg-ink text-surface rounded font-mono text-xs">
+              ❌ "Adatta per Marco Rossi della 3B con dislessia" <br>
+              ✅ "Adatta per uno Studente X (ANNO_SCUOLA: 3° Sec. I Grado) con DSA (Dislessia) con lentezza di decodifica"
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER EDITORIALE -->
+  <footer class="bg-primary-dark text-surface py-12 border-t border-paper-dark/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="font-serif font-bold text-lg mb-2 text-surface">Guida Operativa IA Docenti</h4>
+          <p class="text-xs text-surface/80 leading-relaxed">
+            Strumento di supporto alla didattica digitale integrata basato sul paradigma Human-in-the-Loop (HITL), conforme al D.M. 166/2025 e all'AI Act europeo (Reg. UE 2024/1689).
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-2 text-surface uppercase tracking-wider">Accessibilità</h4>
+          <p class="text-xs text-surface/80 leading-relaxed">
+            Progettato secondo le linee guida WCAG 2.1 Livello AAA. Supporta la navigazione da tastiera, screen reader e modalità a movimento ridotto.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-2 text-surface uppercase tracking-wider">Note di Responsabilità</h4>
+          <p class="text-xs text-surface/80 leading-relaxed">
+            Il docente è l'unico responsabile della validazione scientifica e pedagogica del materiale didattico generato dall'IA prima della somministrazione alla classe.
+          </p>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-surface/20 flex flex-col sm:flex-row items-center justify-between text-xs text-surface/70 gap-2">
+        <span>© 2026 Formazione Accessibile — Docente Regista Critico dell'IA</span>
+        <a href="#hero" class="hover:text-surface underline">Torna ad inizio pagina ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST NOTIFICATION CONTAINER (Accessible via aria-live) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" aria-live="polite" aria-atomic="true">
+    <!-- Dynamic toasts inserted via JS -->
+  </div>
+
+  <script>
+    const EXERCISES_DATA = [
+      // MODULO 1
+      {
+        id: "PLAN-01",
+        module: "1",
+        title: "Progettazione IBSE (Inquiry-Based Science Education)",
+        category: "Prompt-Engineering Didattico",
+        objective: "Sviluppare la competenza di progettazione per scoperta scientifica (Apprendimento per scoperta).",
+        deliverable: "Piano lezione in 4 fasi (Ingaggio, Esplorazione, Formalizzazione, Esercitazione).",
+        template: `[P - PROFILO] Agisci come un docente esperto di didattica delle scienze e progettazione formativa IBSE (Inquiry-Based Science Education). [R - RISULTATO] Progetta un piano di lezione dettagliato di [DURATA_MINUTI] per la classe [ANNO_SCUOLA]. [O - OBIETTIVI] Gli obiettivi sono: stimolare l'osservazione, formulare ipotesi e giungere alla formalizzazione della legge di [LEGGE_SCIENTIFICA]. [M - MATERIALI] Utilizza esclusivamente materiali poveri e sicuri, integrando l'esperimento stimolo della [SIRINGA_TERMICA_O_ACCENDIFUOCO_PNEUMATICO]. [P - PARAMETRI] La classe è composta da [NUMERO_STUDENTI] alunni con livelli di interesse [LIVELLO_INTERESSE]. Inserisci vincoli per [DISCIPLINA_COLLEGATA]. [T - TIPO DI OUTPUT] Struttura l'output in 4 fasi: 1. Ingaggio (esperimento); 2. Esplorazione (lavoro a gruppi); 3. Formalizzazione (ruolo del docente); 4. Esercitazione (verifica formativa). Fornisci una tabella oraria. [D - DIAGNOSI] Verifica che la somma dei tempi sia esattamente [DURATA_MINUTI] e che l'esperimento sia fattibile senza laboratorio attrezzato.`,
+        placeholders: ["DURATA_MINUTI", "ANNO_SCUOLA", "LEGGE_SCIENTIFICA", "SIRINGA_TERMICA_O_ACCENDIFUOCO_PNEUMATICO", "NUMERO_STUDENTI", "LIVELLO_INTERESSE", "DISCIPLINA_COLLEGATA"],
+        guardrails: [
+          "Verificare la fattibilità dell'esperimento con materiali poveri.",
+          "Controllare la correttezza scientifica della convenzione dei segni nelle formule.",
+          "Accertarsi che il 50% del tempo sia dedicato alle fasi attive (1 e 2)."
+        ]
+      },
+      {
+        id: "PLAN-02",
+        module: "1",
+        title: "Brainstorming Metodologico",
+        category: "Prompt-Engineering Didattico",
+        objective: "Generare metafore analogiche ed esperimenti mentali per concetti astratti.",
+        deliverable: "3 metafore tratte dalla vita quotidiana degli adolescenti.",
+        template: `[P - PROFILO] Agisci come un divulgatore scientifico e docente specializzato in didattica per analogie. [R - RISULTATO] Genera 3 diverse metafore analogiche per spiegare il concetto di "[CONCETTO_ASTRATTO]". [O - OBIETTIVI] Facilitare la comprensione profonda ed evitare misconcetti in studenti di [ETÀ_STUDENTI] anni. [M - MATERIALI] Utilizza come riferimento il libro di testo di [MATERIA]. [P - PARAMETRI] Le metafore devono basarsi su [ESPERIENZA_QUOTIDIANA_SPECIFICA] (es. social media, gaming, sport). Includi parametri per [STILE_DI_APPRENDIMENTO]. [T - TIPO DI OUTPUT] Per ogni metafora indica: 1. L'analogia; 2. Il limite della metafora (dove si rompe scientificamente); 3. Una domanda guida per la discussione. [D - DIAGNOSI] Assicurati che l'analogia non introduca gravi errori concettuali.`,
+        placeholders: ["CONCETTO_ASTRATTO", "ETÀ_STUDENTI", "MATERIA", "ESPERIENZA_QUOTIDIANA_SPECIFICA", "STILE_DI_APPRENDIMENTO"],
+        guardrails: [
+          "Identificare esplicitamente il 'punto di rottura' dell'analogia per evitare misconcetti.",
+          "Verificare l'appropriatezza del linguaggio rispetto alla fascia d'età."
+        ]
+      },
+      {
+        id: "PLAN-03",
+        module: "1",
+        title: "Scaffolding di Lezione Flipped",
+        category: "Prompt-Engineering Didattico",
+        objective: "Creare un'impalcatura per la metodologia Flipped Classroom.",
+        deliverable: "Attività individuale a casa e ripresa attiva in presenza.",
+        template: `[P - PROFILO] Esperto in metodologia Flipped Classroom e didattica attiva. [R - RISULTATO] Progetta una lezione capovolta sull'argomento "[ARGOMENTO]". [O - OBIETTIVI] Trasferire l'acquisizione dei contenuti a casa per liberare tempo per l'applicazione in classe. [M - MATERIALI] Il materiale di partenza è [MATERIALE_VIDEO_O_TESTO] su [PIATTAFORMA]. [P - PARAMETRI] Destinatari: [CLASSE]. Prerequisiti: [PREREQUISITI]. Obiettivo in presenza: [OBIETTIVO_ATTIVITÀ_IN_PRESENZA]. Vincoli di tempo: [DURATA_IN_PRESENZA]. [T - TIPO DI OUTPUT] Descrivi: 1. Compito a casa; 2. Quiz rapido di controllo iniziale; 3. Attività cooperativa (es. Jigsaw o Debate); 4. Debriefing finale. [D - DIAGNOSI] Verifica che l'attività in classe non sia una lezione frontale ripetitiva.`,
+        placeholders: ["ARGOMENTO", "MATERIALE_VIDEO_O_TESTO", "PIATTAFORMA", "CLASSE", "PREREQUISITI", "OBIETTIVO_ATTIVITÀ_IN_PRESENZA", "DURATA_IN_PRESENZA"],
+        guardrails: [
+          "Assicurarsi che il compito a casa non superi i minuti di impegno previsti.",
+          "Controllare che l'attività in presenza sia realmente collaborativa."
+        ]
+      },
+      {
+        id: "PLAN-04",
+        module: "1",
+        title: "Scomposizione del Compito (Chunking)",
+        category: "Prompt-Engineering Didattico",
+        objective: "Gestire la complessità progettuale evitando la 'deriva del contesto'.",
+        deliverable: "Scomposizione di un laboratorio in micro-fasi sequenziali.",
+        template: `[P - PROFILO] Docente esperto in progettazione laboratoriale complessa. [R - RISULTATO] Scomponi la progettazione del laboratorio su "[ARGOMENTO_LABORATORIO]" in fasi gestibili. [O - OBIETTIVI] Evitare l'eccesso di informazioni in un singolo turno di chat (Chunking). [M - MATERIALI] Fai riferimento alle dotazioni di [NOME_LABORATORIO_SCUOLA]. [P - PARAMETRI] Classe: [ANNO_SCUOLA]. Numero gruppi: [NUMERO_GRUPPI]. Livello difficoltà: [LIVELLO]. [T - TIPO DI OUTPUT] Fornisci solo la struttura macro (indice delle fasi). Non scrivere i dettagli. Attendi il mio "OK" per sviluppare la Fase 1. [D - DIAGNOSI] Conferma di aver compreso che non devi ancora generare il contenuto completo.`,
+        placeholders: ["ARGOMENTO_LABORATORIO", "NOME_LABORATORIO_SCUOLA", "ANNO_SCUOLA", "NUMERO_GRUPPI", "LIVELLO"],
+        guardrails: [
+          "Monitorare la finestra di contesto del chatbot per evitare interruzioni del testo.",
+          "Validare la logica sequenziale della scaletta prima di procedere."
+        ]
+      },
+      {
+        id: "PLAN-05",
+        module: "1",
+        title: "Dialogo Iterativo (Follow-up)",
+        category: "Prompt-Engineering Didattico",
+        objective: "Affinare un output grezzo tramite feedback mirati e riscritture.",
+        deliverable: "Testo revisionato con glossario finale.",
+        template: `[P - PROFILO] Editor scolastico specializzato in [DISCIPLINA]. [R - RISULTATO] Riscrivi il seguente testo: "[TESTO_ORIGINALE]". [O - OBIETTIVI] Adattare il linguaggio a un target di [TARGET_AUDIENCE] (es. studenti con bassa scolarizzazione o eccellenze). [M - MATERIALI] Mantieni i concetti chiave di [FONTE_SCIENTIFICA]. [P - PARAMETRI] Tono desiderato: [TONO_DESIDERATO]. Lunghezza massima: [NUMERO_PAROLE]. Inserisci [ELEMENTO_DI_STILE] (es. grassetti, elenchi). [T - TIPO DI OUTPUT] Testo revisionato con glossario finale dei termini tecnici. [D - DIAGNOSI] Verifica che la semplificazione non abbia alterato il rigore dei fatti.`,
+        placeholders: ["DISCIPLINA", "TESTO_ORIGINALE", "TARGET_AUDIENCE", "FONTE_SCIENTIFICA", "TONO_DESIDERATO", "NUMERO_PAROLE", "ELEMENTO_DI_STILE"],
+        guardrails: [
+          "Confrontare il testo finale con l'originale per rilevare omissioni concettuali.",
+          "Verificare che il glossario sia allineato al livello della classe."
+        ]
+      },
+      {
+        id: "PLAN-06",
+        module: "1",
+        title: "Prompt Inverso (Stop and Ask)",
+        category: "Prompt-Engineering Didattico",
+        objective: "Ottimizzare l'output chiedendo all'IA di identificare i dati mancanti.",
+        deliverable: "Elenco di 5 domande di chiarimento prima della generazione.",
+        template: `[P - PROFILO] Consulente esperto in progettazione di [PROGETTO_COMPLESSO] nell'ambito [AMBITO_DISCIPLINARE]. [R - RISULTATO] Devo creare un percorso didattico innovativo. [O - OBIETTIVI] Massimizzare la precisione e la personalizzazione dell'output. [M - MATERIALI] Considera le dotazioni tecnologiche [HARDWARE/SOFTWARE]. [P - PARAMETRI] Classe: [CLASSE]. Obiettivo finale: [TRAGUARDO]. [T - TIPO DI OUTPUT] Prima di generare il progetto, ponimi 5 domande specifiche sul contesto, sugli studenti o sui vincoli che ti mancano per essere preciso. [D - DIAGNOSI] Non generare il progetto finché non avrò risposto.`,
+        placeholders: ["PROGETTO_COMPLESSO", "AMBITO_DISCIPLINARE", "HARDWARE/SOFTWARE", "CLASSE", "TRAGUARDO"],
+        guardrails: [
+          "Fornire risposte sintetiche ma precise per limitare il campo probabilistico.",
+          "Verificare che l'IA non inizi la generazione prematuramente."
+        ]
+      },
+      {
+        id: "PLAN-07",
+        module: "1",
+        title: "Template Parametrizzato (Placeholder)",
+        category: "Prompt-Engineering Didattico",
+        objective: "Creare modelli di prompt riutilizzabili per il dipartimento scolastico.",
+        deliverable: "Template pronto per il copia-incolla con placeholders.",
+        template: `[P - PROFILO] Architetto di prompt didattici e referente tecnologie. [R - RISULTATO] Crea un template parametrizzato PROMPT-D per la creazione di [TIPOLOGIA_ATTIVITÀ]. [O - OBIETTIVI] Facilitare il riutilizzo del prompt da parte di colleghi meno esperti. [M - MATERIALI] Utilizza lo standard dei metadati del Cap. 6.4. [P - PARAMETRI] Variabili obbligatorie: [ID_PROMPT], [MATERIA], [ARGOMENTO], [LIVELLO], [DURATA], [BES_DSA]. [T - TIPO DI OUTPUT] Fornisci il template pronto per il copia-incolla con placeholders tra parentesi quadre. [D - DIAGNOSI] Verifica la flessibilità del template su due argomenti distanti.`,
+        placeholders: ["TIPOLOGIA_ATTIVITÀ", "ID_PROMPT", "MATERIA", "ARGOMENTO", "LIVELLO", "DURATA", "BES_DSA"],
+        guardrails: [
+          "Verificare che ogni variabile sia spiegata nelle note d'uso.",
+          "Testare il template su almeno due modelli IA differenti."
+        ]
+      },
+      {
+        id: "PLAN-08",
+        module: "1",
+        title: "Repository di Dipartimento",
+        category: "Prompt-Engineering Didattico",
+        objective: "Strutturare un archivio condiviso di prompt validati e sicuri.",
+        deliverable: "Scheda tecnica in formato tabella Markdown.",
+        template: `[P - PROFILO] Referente innovazione didattica di istituto. [R - RISULTATO] Redigi la scheda tecnica del prompt "[TITOLO_PROMPT]". [O - OBIETTIVI] Standardizzare la documentazione dei prompt nel dipartimento di [MATERIA]. [M - MATERIALI] Includi i riferimenti al D.M. 166/2025. [P - PARAMETRI] Metadati richiesti: Autore, Versione, Modello IA testato, Obiettivo pedagogico, Template, Note sulla privacy. [T - TIPO DI OUTPUT] Scheda in formato tabella Markdown pronta per il repository. [D - DIAGNOSI] Assicurati di aver rimosso ogni riferimento a dati personali reali di studenti (Minimizzazione GDPR).`,
+        placeholders: ["TITOLO_PROMPT", "MATERIA"],
+        guardrails: [
+          "Escludere categoricamente nomi, cognomi o situazioni sensibili reali (Art. 5 GDPR).",
+          "Includere una clausola di validazione scientifica obbligatoria."
+        ]
+      },
+
+      // MODULO 2
+      {
+        id: "DIFF-09",
+        module: "2",
+        title: "Adattamento Lessicale e Sintattico",
+        category: "Differenziazione & Inclusione",
+        objective: "Rendere accessibile un testo complesso mantenendo il rigore concettuale.",
+        deliverable: "Testo facilitato ad alta leggibilità con glossario.",
+        template: `[P - PROFILO] Esperto in linguistica facilitata e inclusione scolastica. [R - RISULTATO] Riscrivi il seguente testo: "[TESTO_FONTE]". [O - OBIETTIVI] Garantire l'accesso al contenuto a uno studente con [LIVELLO_LINGUISTICO]. [M - MATERIALI] Utilizza le regole della scrittura ad alta leggibilità. [P - PARAMETRI] Vincoli: Parole ad alta frequenza, sintassi lineare (SVO), frasi max 15 parole, [TERMINE_TECNICO_DA_MANTENERE] con spiegazione a margine. [T - TIPO DI OUTPUT] Testo facilitato con glossario dei termini complessi. [D - DIAGNOSI] Verifica che i concetti scientifici non siano stati banalizzati o errati.`,
+        placeholders: ["TESTO_FONTE", "LIVELLO_LINGUISTICO", "TERMINE_TECNICO_DA_MANTENERE"],
+        guardrails: [
+          "Controllare che ogni termine tecnico sia accompagnato da una glossa semplificata.",
+          "Verificare l'assenza di subordinate complesse."
+        ]
+      },
+      {
+        id: "DIFF-10",
+        module: "2",
+        title: "Supporto DSA (Font e Mappe)",
+        category: "Differenziazione & Inclusione",
+        objective: "Creare materiali compensativi con gerarchia logica esplicita.",
+        deliverable: "Mappa concettuale testuale e guida cromatica.",
+        template: `[P - PROFILO] Specialista in disturbi specifici dell'apprendimento (DSA). [R - RISULTATO] Crea la struttura per una mappa concettuale sull'argomento "[ARGOMENTO]". [O - OBIETTIVI] Ridurre il carico cognitivo durante la decodifica. [M - MATERIALI] Fai riferimento al capitolo [CAPITOLO] del libro. [P - PARAMETRI] Includi: [SEGMENTAZIONE_TESTUALE], [RELAZIONI_CROMATICHE_CONCETTI], uso di font [NOME_FONT_DSA]. [T - TIPO DI OUTPUT] Schema gerarchico (Nodo centrale -> Nodi figli) con indicazione dei colori consigliati per ogni area logica. [D - DIAGNOSI] Verifica che la gerarchia non superi i 3 livelli di profondità.`,
+        placeholders: ["ARGOMENTO", "CAPITOLO", "SEGMENTAZIONE_TESTUALE", "RELAZIONI_CROMATICHE_CONCETTI", "NOME_FONT_DSA"],
+        guardrails: [
+          "Verificare la coerenza logica della gerarchia per evitare sovraccarico visivo.",
+          "Controllare che il testo sia compatibile con i lettori vocali."
+        ]
+      },
+      {
+        id: "DIFF-11",
+        module: "2",
+        title: "Personalizzazione ICF (Disabilità)",
+        category: "Differenziazione & Inclusione",
+        objective: "Adattare attività di laboratorio basate sul modello ICF.",
+        deliverable: "Piano operativo per docente curricolare e di sostegno.",
+        template: `[P - PROFILO] Docente esperto in didattica inclusiva e modello ICF. [R - RISULTATO] Adatta l'esperimento di laboratorio di [MATERIA] per lo studente. [O - OBIETTIVI] Rimuovere barriere fisiche o sensoriali per garantire la partecipazione attiva. [M - MATERIALI] Utilizza materiali alternativi come [STRUMENTO_COMPENSATIVO]. [P - PARAMETRI] Descrivi le modifiche basate su: 1. Fattori Ambientali; 2. Attività e Partecipazione (Modello ICF). Inserisci il ruolo dello studente nel gruppo. [T - TIPO DI OUTPUT] Piano operativo per il docente di sostegno e curricolare. [D - DIAGNOSI] Assicurati che l'adattamento favorisca l'autonomia e non la delega passiva ai compagni.`,
+        placeholders: ["MATERIA", "STRUMENTO_COMPENSATIVO"],
+        guardrails: [
+          "Validare la sicurezza dell'attività modificata.",
+          "Verificare che lo studente interagisca socialmente con il gruppo."
+        ]
+      },
+      {
+        id: "DIFF-12",
+        module: "2",
+        title: "Misure Compensative/Dispensative",
+        category: "Differenziazione & Inclusione",
+        objective: "Integrare le direttive del PDP nella progettazione assistita.",
+        deliverable: "Elenco misure compensative/dispensative e criteri equi.",
+        template: `[P - PROFILO] Referente inclusione d'istituto e tutor PDP. [R - RISULTATO] Proponi misure specifiche per lo studente con [TIPO_DI_DSA]. [O - OBIETTIVI] Allineare la prova agli obiettivi minimi disciplinari [OBIETTIVO_MINIMO]. [M - MATERIALI] Argomento della prova: [ARGOMENTO]. [P - PARAMETRI] Includi: [TIPOLOGIA_DI_STRUMENTO_TECNOLOGICO_DISPONIBILE], tempi aggiuntivi del [PERCENTUALE]%, riduzione del numero di quesiti. [T - TIPO DI OUTPUT] Elenco puntato di misure dispensative e compensative e criteri di valutazione equi. [D - DIAGNOSI] Rispetta il divieto assoluto di inserimento nomi reali degli alunni.`,
+        placeholders: ["TIPO_DI_DSA", "OBIETTIVO_MINIMO", "ARGOMENTO", "TIPOLOGIA_DI_STRUMENTO_TECNOLOGICO_DISPONIBILE", "PERCENTUALE"],
+        guardrails: [
+          "Anonimizzazione totale (Art. 5 GDPR).",
+          "Verifica coerenza con la normativa d'esame vigente."
+        ]
+      },
+      {
+        id: "DIFF-13",
+        module: "2",
+        title: "Supporto Visivo e Iconico (BES)",
+        category: "Differenziazione & Inclusione",
+        objective: "Facilitare l'apprendimento tramite canali non verbali (storyboard).",
+        deliverable: "Tabella descrittiva per fumetto o storyboard di 6 vignette.",
+        template: `[P - PROFILO] Progettista di contenuti visuali per BES e disabilità cognitive. [R - RISULTATO] Crea uno storyboard testuale di 6 vignette per spiegare [SEQUENZA_CONCETTUALE]. [O - OBIETTIVI] Facilitare l'astrazione tramite ganci iconici. [M - MATERIALI] Fonte: [LIBRO/DISPENSA]. [P - PARAMETRI] Per ogni vignetta descrivi: 1. Scena visiva; 2. Dialogo semplice; 3. Concetto chiave. Usa [STILE_VISIVO]. [T - TIPO DI OUTPUT] Tabella descrittiva per la creazione di un fumetto didattico. [D - DIAGNOSI] Verifica che l'immagine mentale suggerita non introduca misconcetti storici o scientifici.`,
+        placeholders: ["SEQUENZA_CONCETTUALE", "LIBRO/DISPENSA", "STILE_VISIVO"],
+        guardrails: [
+          "Verificare che la sequenza temporale sia lineare e priva di flashback complessi.",
+          "Controllare la pertinenza culturale dei simboli iconici."
+        ]
+      },
+      {
+        id: "DIFF-14",
+        module: "2",
+        title: "Scaffolding Tecnico (Strumenti Digitali)",
+        category: "Differenziazione & Inclusione",
+        objective: "Fornire guide 'passo-passo' per l'uso di software didattici.",
+        deliverable: "Guida operativa e checklist di troubleshooting.",
+        template: `[P - PROFILO] Animatore digitale e tutor per l'accessibilità tecnologica. [R - RISULTATO] Scrivi una guida operativa facilitata per gli studenti. [O - OBIETTIVI] Rendere lo studente autonomo nell'uso del software [NOME_SOFTWARE]. [M - MATERIALI] Ultima versione del software [VERSIONE]. [P - PARAMETRI] Formato check-list con icone descrittive. Livello di difficoltà: [LIVELLO]. Includi sezione "Troubleshooting". [T - TIPO DI OUTPUT] Tabella Markdown con due colonne: Azione e Verifica. [D - DIAGNOSI] Verifica che i passaggi corrispondano all'interfaccia aggiornata al 2026.`,
+        placeholders: ["NOME_SOFTWARE", "VERSIONE", "LIVELLO"],
+        guardrails: [
+          "Verificare la correttezza dei nomi dei menu e pulsanti.",
+          "Assicurarsi che la guida non richieda account personali a minori di 14 anni."
+        ]
+      },
+      {
+        id: "DIFF-15",
+        module: "2",
+        title: "Alternativa di Restituzione (Audio/Video)",
+        category: "Differenziazione & Inclusione",
+        objective: "Favorire il successo formativo tramite diverse modalità espressive.",
+        deliverable: "Traccia operativa per podcast e rubrica di valutazione.",
+        template: `[P - PROFILO] Esperto in media education e valutazione per competenze. [R - RISULTATO] Progetta una traccia strutturata per la creazione di un podcast sull'argomento "[ARGOMENTO_DISCIPLINARE]". [O - OBIETTIVI] Permettere la restituzione orale a studenti con gravi difficoltà di scrittura. [M - MATERIALI] Criteri di equità valutativa Cap. 7.3. [P - PARAMETRI] Scaletta richiesta: Intro, 3 punti chiave, Conclusione. Durata massima: [DURATA_PODCAST]. [T - TIPO DI OUTPUT] Traccia operativa e rubrica di valutazione che misuri la competenza disciplinare e non la qualità tecnica. [D - DIAGNOSI] Verifica l'allineamento agli obiettivi minimi della classe.`,
+        placeholders: ["ARGOMENTO_DISCIPLINARE", "DURATA_PODCAST"],
+        guardrails: [
+          "Verificare che la rubrica pesi il contenuto disciplinare per almeno l'80% del voto.",
+          "Controllare che la prova sia di pari dignità rispetto alla relazione scritta."
+        ]
+      },
+
+      // MODULO 3
+      {
+        id: "EVAL-16",
+        module: "3",
+        title: "Progettazione a Ritroso (Backward Design)",
+        category: "Valutazione & Bloom",
+        objective: "Definire i risultati desiderati prima delle attività (Wiggins-McTighe).",
+        deliverable: "Schema tabellare dell'UDA in 3 fasi.",
+        template: `[P - PROFILO] Progettista formativo esperto in Backward Design (Cap. 7.6.2). [R - RISULTATO] Struttura un modulo didattico su "[ARGOMENTO]". [O - OBIETTIVI] Garantire l'allineamento tra obiettivi e prove. [M - MATERIALI] Linee Guida Ministeriali [DISCIPLINA]. [P - PARAMETRI] Segui rigorosamente le 3 fasi: 1. Risultati desiderati ([OBIETTIVI_BLOOM]); 2. Prove di evidenza ([PROVE_EVIDENZA]); 3. Attività di apprendimento ([ATTIVITÀ]). [T - TIPO DI OUTPUT] Schema tabellare dettagliato. [D - DIAGNOSI] Verifica che ogni attività della fase 3 sia funzionale esclusivamente al superamento della fase 2.`,
+        placeholders: ["ARGOMENTO", "DISCIPLINA", "OBIETTIVI_BLOOM", "PROVE_EVIDENZA", "ATTIVITÀ"],
+        guardrails: [
+          "Verificare che la prova di evidenza sia realmente misurabile.",
+          "Controllare che gli obiettivi coprano almeno due livelli di Bloom."
+        ]
+      },
+      {
+        id: "EVAL-17",
+        module: "3",
+        title: "Tassonomia di Bloom (Verbi d'Azione)",
+        category: "Valutazione & Bloom",
+        objective: "Elevare il livello cognitivo delle verifiche (Analisi, Sintesi, Valutazione).",
+        deliverable: "5 quesiti a risposta aperta con risposta modello e livello Bloom.",
+        template: `[P - PROFILO] Esperto in docimologia e valutazione degli apprendimenti. [R - RISULTATO] Genera 5 quesiti a risposta aperta sull'argomento "[ARGOMENTO]". [O - OBIETTIVI] Evitare la mera ripetizione nozionistica (Cap. 7.3). [M - MATERIALI] Verbi d'azione: [CONFRONTARE], [GIUSTIFICARE], [PROGETTARE]. [P - PARAMETRI] Classe: [CLASSE]. Ogni domanda deve richiedere un ragionamento multistep. [T - TIPO DI OUTPUT] Quesiti con relativa "risposta modello" per il docente. [D - DIAGNOSI] Inserisci una giustificazione del livello cognitivo di Bloom per ciascuna domanda generata.`,
+        placeholders: ["ARGOMENTO", "CONFRONTARE", "GIUSTIFICARE", "PROGETTARE", "CLASSE"],
+        guardrails: [
+          "Verificare che nessuna domanda possa essere risposta tramite semplice copia-incolla.",
+          "Controllare la pertinenza dei verbi d'azione rispetto al target."
+        ]
+      },
+      {
+        id: "EVAL-18",
+        module: "3",
+        title: "Rubrica Analitica di Certificazione",
+        category: "Valutazione & Bloom",
+        objective: "Creare criteri trasparenti per la valutazione di competenze linguistiche o tecniche.",
+        deliverable: "Griglia Markdown con descrittori qualitativi osservabili.",
+        template: `[P - PROFILO] Esaminatore certificato e docente esperto in certificazioni. [R - RISULTATO] Crea una rubrica analitica per valutare [PROVA] a livello [LIVELLO_QCER]. [O - OBIETTIVI] Fornire feedback qualitativo trasparente (Cap. 1.9). [M - MATERIALI] Descrittori QCER 2026. [P - PARAMETRI] Dimensioni: Grammatica, Coerenza, Efficacia. Livelli: [PUNTI_FORZA], [MIGLIORAMENTO]. [T - TIPO DI OUTPUT] Griglia Markdown con descrittori qualitativi osservabili. [D - DIAGNOSI] Conferma che l'IA non assegnerà voti numerici, ma solo indicatori di livello.`,
+        placeholders: ["PROVA", "LIVELLO_QCER", "PUNTI_FORZA", "MIGLIORAMENTO"],
+        guardrails: [
+          "Assicurarsi che i descrittori siano espressi tramite azioni osservabili.",
+          "Verificare l'allineamento ai criteri ufficiali dell'ente certificatore."
+        ]
+      },
+      {
+        id: "EVAL-19",
+        module: "3",
+        title: "Valutazione del Compito di Realtà (UDA)",
+        category: "Valutazione & Bloom",
+        objective: "Valutare prodotti transdisciplinari complessi.",
+        deliverable: "Rubrica per compito di realtà con indicatori concreti.",
+        template: `[P - PROFILO] Coordinatore didattico esperto in UDA e compiti di realtà. [R - RISULTATO] Genera la rubrica valutativa finale del prodotto "[TITOLO_UDA]". [O - OBIETTIVI] Valutare competenze trasversali e disciplinari. [M - MATERIALI] Competenze Chiave Europee 2018. [P - PARAMETRI] Dimensioni: [CONTENUTO_TECNICO], [EFFICACIA_COMUNICATIVA], [SOSTENIBILITA]. Livelli: Avanzato, Intermedio, Base. [T - TIPO DI OUTPUT] Tabella con indicatori concreti. [D - DIAGNOSI] Verifica che ogni descrittore eviti aggettivi vaghi (es. "buono") e utilizzi verbi d'azione Bloom.`,
+        placeholders: ["TITOLO_UDA", "CONTENUTO_TECNICO", "EFFICACIA_COMUNICATIVA", "SOSTENIBILITA"],
+        guardrails: [
+          "Verificare la misurabilità dei descrittori (azioni osservabili).",
+          "Controllare l'equità dei pesi tra le diverse materie."
+        ]
+      },
+      {
+        id: "EVAL-20",
+        module: "3",
+        title: "Feedback Formativo Personalizzato",
+        category: "Valutazione & Bloom",
+        objective: "Fornire restituzioni proattive che guidino l'apprendimento.",
+        deliverable: "Lettera di feedback allo studente senza voto espresso.",
+        template: `[P - PROFILO] Tutor formativo esperto in feedback orientativo. [R - RISULTATO] Analizza l'elaborato (anonimo): "[TESTO_STUDENTE]". [O - OBIETTIVI] Stimolare l'autocorrezione dello studente. [M - MATERIALI] Griglia di valutazione della classe. [P - PARAMETRI] Organizza in: 1. Punti di forza; 2. [ERRORI_FREQUENTI] rilevati; 3. [CONSIGLI_PRATICI_PER_LIVELLO_SUPERIORE]. Tono: incoraggiante. [T - TIPO DI OUTPUT] Lettera di feedback allo studente. [D - DIAGNOSI] Verifica che il feedback non contenga il voto finale.`,
+        placeholders: ["TESTO_STUDENTE", "ERRORI_FREQUENTI", "CONSIGLI_PRATICI_PER_LIVELLO_SUPERIORE"],
+        guardrails: [
+          "Controllare l'accuratezza scientifica delle correzioni suggerite.",
+          "Verificare che il linguaggio sia comprensibile per lo studente."
+        ]
+      },
+      {
+        id: "EVAL-21",
+        module: "3",
+        title: "Griglia di Osservazione del Processo",
+        category: "Valutazione & Bloom",
+        objective: "Valutare le Soft Skills durante il Cooperative Learning.",
+        deliverable: "Griglia snella di osservazione in itinere.",
+        template: `[P - PROFILO] Esperto in metodologie cooperative e psicologia dell'apprendimento. [R - RISULTATO] Crea una griglia di osservazione "in itinere" per il docente. [O - OBIETTIVI] Valutare il processo e non solo il prodotto. [M - MATERIALI] Indicatori: [PARTECIPAZIONE], [GESTIONE_CONFLITTI], [RISPETTO_TEMPI]. [P - PARAMETRI] Scala: Sempre/Spesso/Raramente/Mai. [T - TIPO DI OUTPUT] Tabella snella (max 1 pagina) per uso in tempo reale. [D - DIAGNOSI] Verifica che gli indicatori siano osservabili senza interrompere la regia d'aula.`,
+        placeholders: ["PARTECIPAZIONE", "GESTIONE_CONFLITTI", "RISPETTO_TEMPI"],
+        guardrails: [
+          "Assicurarsi che la griglia sia utilizzabile in sessioni da 50 minuti.",
+          "Verificare la neutralità degli indicatori."
+        ]
+      },
+      {
+        id: "EVAL-22",
+        module: "3",
+        title: "Autovalutazione Metacognitiva",
+        category: "Valutazione & Bloom",
+        objective: "Stimolare la consapevolezza dell'alunno sul proprio processo.",
+        deliverable: "Questionario di riflessione post-attività per Google Moduli.",
+        template: `[P - PROFILO] Esperto in metacognizione e apprendimento autoriflessivo. [R - RISULTATO] Genera 5 domande aperte per un questionario post-attività su "[ARGOMENTO]". [O - OBIETTIVI] Far emergere il "come" si è appreso. [M - MATERIALI] Teoria della metacognizione. [P - PARAMETRI] Includi domande come: "In quale momento hai cambiato opinione?", "Quale ostacolo hai superato?". No risposte Sì/No. [T - TIPO DI OUTPUT] Formato pronto per Google Moduli. [D - DIAGNOSI] Verifica che il linguaggio sia adatto all'età della classe.`,
+        placeholders: ["ARGOMENTO"],
+        guardrails: [
+          "Verificare che le domande spingano alla riflessione profonda.",
+          "Accertarsi dell'assenza di quesiti nozionistici mascherati."
+        ]
+      },
+
+      // MODULO 4
+      {
+        id: "ETHIC-23",
+        module: "4",
+        title: "Fact-Checking Storiografico/Scientifico",
+        category: "Etica, Privacy & AI Act",
+        objective: "Identificare allucinazioni bibliografiche e fattuali.",
+        deliverable: "Report degli errori rilevati con correzioni documentate.",
+        template: `[P - PROFILO] Agisci come un [RICERCATORE_CRITICO] e analizzatore rigoroso di fonti d'archivio. [R - RISULTATO] Esegui il fact-checking del testo: "[TESTO]". [O - OBIETTIVI] Rilevare citazioni inventate o dati gonfiati. [M - MATERIALI] Riferimento obbligatorio: [TRIANGOLAZIONE_FONTI] (es. Treccani, Google Scholar, SBN). [P - PARAMETRI] Verifica date, percentuali e nomi propri. [T - TIPO DI OUTPUT] Report degli errori rilevati con correzioni documentate. [D - DIAGNOSI] Se rilevi una "allucinazione", segnalala citando la fonte reale contraria.`,
+        placeholders: ["RICERCATORE_CRITICO", "TESTO", "TRIANGOLAZIONE_FONTI"],
+        guardrails: [
+          "Verifica obbligatoria dei link URL generati (spesso fantasma).",
+          "Triangolazione su almeno due database stabili e accreditati."
+        ]
+      },
+      {
+        id: "ETHIC-24",
+        module: "4",
+        title: "Analisi degli Anacronismi Algoritmici (Presentismo)",
+        category: "Etica, Privacy & AI Act",
+        objective: "Riconoscere quando l'IA applica categorie moderne al passato.",
+        deliverable: "Testo revisionato filologicamente corretto.",
+        template: `[P - PROFILO] Storico esperto in analisi delle mentalità e dei contesti. [R - RISULTATO] Analizza la spiegazione su [PERIODO_STORICO] relativa a [CONCETTO]. [O - OBIETTIVI] Individuare l'applicazione di giudizi morali del 2026 a contesti passati. [M - MATERIALI] Bibliografia storiografica reale. [P - PARAMETRI] Identifica termini anacronistici (es. "diritti dei lavoratori" nel feudalesimo). [T - TIPO DI OUTPUT] Testo revisionato che rispetti la mentalità dell'epoca indagata. [D - DIAGNOSI] Verifica che la revisione sia filologicamente corretta e priva di giudizi di valore moderni.`,
+        placeholders: ["PERIODO_STORICO", "CONCETTO"],
+        guardrails: [
+          "Eliminare ogni aggettivo morale contemporaneo non appartenente al periodo.",
+          "Verificare la coerenza lessicale con le fonti primarie dell'epoca."
+        ]
+      },
+      {
+        id: "ETHIC-25",
+        module: "4",
+        title: "Rilevamento di Bias e Stereotipi",
+        category: "Etica, Privacy & AI Act",
+        objective: "Garantire la neutralità e l'equità dei materiali didattici (AI Act Art. 50).",
+        deliverable: "Analisi critica e proposta di versione bilanciata.",
+        template: `[P - PROFILO] Esperto in etica algoritmica e neutralità dell'informazione. [R - RISULTATO] Esegui un [CONTROLLO_AVVERSARIALE] sul seguente materiale didattico. [O - OBIETTIVI] Identificare bias di genere, etnici o culturali sottostanti. [M - MATERIALI] Linee guida MIM per l'equità. [P - PARAMETRI] Analizza se i ruoli sociali o le provenienze geografiche sono stereotipate. [T - TIPO DI OUTPUT] Analisi critica e proposta di versione bilanciata. [D - DIAGNOSI] Assicurati che l'output finale rappresenti una pluralità di prospettive.`,
+        placeholders: ["CONTROLLO_AVVERSARIALE"],
+        guardrails: [
+          "Verificare che le immagini mentali suggerite non rinforzino pregiudizi.",
+          "Integrare attivamente le prospettive sottorappresentate."
+        ]
+      },
+      {
+        id: "ETHIC-26",
+        module: "4",
+        title: "Procedura di Opt-Out e Privacy Control",
+        category: "Etica, Privacy & AI Act",
+        objective: "Proteggere i dati di addestramento (GDPR Art. 21).",
+        deliverable: "Istruzione pratica di disattivazione nei modelli commerciali.",
+        template: `[PROCEDURA OPERATIVA OPT-OUT PRIVACY]
+1. ChatGPT: Impostazioni -> Data Controls -> Disattiva "Chat History & Training".
+2. Gemini: Attività app Gemini -> Disattiva.
+3. Copilot: Utilizza account M365 Education con protezione dei dati aziendali attiva.
+[VERIFICA SUL PORTFOLIO DOCENTE]:
+Conferma di aver eseguito la disattivazione e di utilizzare account protetto.`,
+        placeholders: [],
+        guardrails: [
+          "Eseguire la verifica dei ToS almeno ogni 6 mesi.",
+          "Documentare l'avvenuta disattivazione per il Portfolio dei Docenti."
+        ]
+      },
+      {
+        id: "ETHIC-27",
+        module: "4",
+        title: "Minimizzazione e Anonimizzazione dei Dati",
+        category: "Etica, Privacy & AI Act",
+        objective: "Rispettare l'Art. 5 del GDPR (Minimizzazione).",
+        deliverable: "Prompt anonimizzato pronto per l'invio.",
+        template: `[P - PROFILO] Docente consapevole della normativa sulla protezione dati (GDPR). [R - RISULTATO] Sto progettando un intervento per uno studente con [DESCRIZIONE_SINTETICA]. [O - OBIETTIVI] Ottenere supporto didattico senza violare la privacy. [M - MATERIALI] Clausola vincolante: No nomi propri, no iniziali, no riferimenti familiari univoci. [P - PARAMETRI] Usa l'etichetta "Studente X". Descrivi solo il funzionamento cognitivo. [T - TIPO DI OUTPUT] Prompt anonimizzato pronto per l'invio. [D - DIAGNOSI] Verifica che nessuna informazione permetta l'identificazione indiretta dell'alunno.`,
+        placeholders: ["DESCRIZIONE_SINTETICA"],
+        guardrails: [
+          "Divieto assoluto di inserimento nomi/cognomi degli alunni.",
+          "Utilizzo esclusivo di profili sintetici o categorie generali."
+        ]
+      },
+      {
+        id: "ETHIC-28",
+        module: "4",
+        title: "Verifica Account Institutional (Education)",
+        category: "Etica, Privacy & AI Act",
+        objective: "Utilizzare strumenti conformi al D.M. MIM n. 166 (09/08/2025).",
+        deliverable: "Bozza e-mail richiesta attivazione servizi protetti DPA.",
+        template: `Oggetto: Richiesta attivazione servizi IA protetti (Google Workspace / Microsoft M365 Education) con accordo DPA.
+
+Spett.le Dirigente Scolastico / Animatore Digitale,
+In conformità al D.M. MIM n. 166/2025 e alle linee guida sulla protezione dei dati personali, si richiede l'attivazione dell'accesso protetto ai servizi di IA generativa (Gemini Education / Copilot M365) tramite dominio istituzionale @scuola.edu.it.
+
+Si chiede di verificare la sottoscrizione del Data Processing Agreement (DPA) con il fornitore al fine di garantire la non riutilizzabilità dei dati scolastici per l'addestramento dei modelli commerciali.`,
+        placeholders: [],
+        guardrails: [
+          "Verificare che l'account non sia Consumer ma Education.",
+          "Accertarsi della presenza della clausola di non-addestramento dei dati aziendali."
+        ]
+      },
+      {
+        id: "ETHIC-29",
+        module: "4",
+        title: "Rispetto dei Limiti di Età (ToS)",
+        category: "Etica, Privacy & AI Act",
+        objective: "Evitare violazioni contrattuali e rischi per i minori.",
+        deliverable: "Tabella informativa comparativa sui limiti di età.",
+        template: `[P - PROFILO] Referente per la cittadinanza digitale e cyber-security. [R - RISULTATO] Genera una tabella comparativa sull'età minima per: ChatGPT, Claude, Gemini, Copilot. [O - OBIETTIVI] Informare le famiglie sulla base giuridica dell'uso a scuola. [M - MATERIALI] ToS aggiornati al 2026. [P - PARAMETRI] Specifica esplicitamente che Claude richiede 18 anni e non può essere usato dai minori. [T - TIPO DI OUTPUT] Tabella Markdown informativa. [D - DIAGNOSI] Verifica la conformità con la tabella del Cap 2.8 del materiale di riferimento.`,
+        placeholders: [],
+        guardrails: [
+          "Non autorizzare mai l'uso di Claude agli studenti minorenni.",
+          "Verificare il consenso genitoriale per gli strumenti 13-18 anni."
+        ]
+      },
+      {
+        id: "ETHIC-30",
+        module: "4",
+        title: "Human-in-the-Loop (HITL) Validation",
+        category: "Etica, Privacy & AI Act",
+        objective: "Esercitare la responsabilità professionale finale.",
+        deliverable: "Modulo di validazione firmabile per il Portfolio Docente.",
+        template: `[P - PROFILO] Docente responsabile della validazione scientifica e didattica. [R - RISULTATO] Crea una checklist di autocontrollo finale per validare ogni materiale generato dall'IA. [O - OBIETTIVI] Assumere la paternità professionale dell'output. [M - MATERIALI] Indicatori: 1. Accuratezza scientifica; 2. Assenza di bias; 3. Rispetto privacy; 4. Coerenza pedagogica. [T - TIPO DI OUTPUT] Modulo di validazione firmabile. [D - DIAGNOSI] La firma del docente garantisce la conformità etica verso l'Istituzione e le famiglie.`,
+        placeholders: [],
+        guardrails: [
+          "Verificare che ogni materiale nel Portfolio contenga la firma di validazione HITL.",
+          "Accertarsi che il docente abbia visionato ogni link e formula prima della firma."
+        ]
+      }
+    ];
+
+    let userProgress = JSON.parse(localStorage.getItem('docenti_ia_progress') || '{}');
+    let currentModuleFilter = 'all';
+    let currentSearchTerm = '';
+    let selectedExerciseId = 'PLAN-01';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initReadingProgressBar();
+      initMobileMenu();
+      initScrollSpy();
+      renderExerciseGrid();
+      populatePromptSelector();
+      loadExerciseIntoGenerator('PLAN-01');
+      updateGlobalCounter();
+
+      // Event Listeners
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value.toLowerCase();
+        renderExerciseGrid();
+      });
+
+      document.querySelectorAll('.module-filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.module-filter-btn').forEach(b => {
+            b.setAttribute('aria-pressed', 'false');
+            b.classList.remove('bg-primary', 'text-surface', 'border-primary');
+            b.classList.add('bg-cream', 'text-ink', 'border-paper-dark');
+          });
+
+          const target = e.currentTarget;
+          target.setAttribute('aria-pressed', 'true');
+          target.classList.remove('bg-cream', 'text-ink', 'border-paper-dark');
+          target.classList.add('bg-primary', 'text-surface', 'border-primary');
+
+          currentModuleFilter = target.getAttribute('data-module');
+          renderExerciseGrid();
+        });
+      });
+
+      document.getElementById('prompt-selector').addEventListener('change', (e) => {
+        loadExerciseIntoGenerator(e.target.value);
+      });
+
+      document.getElementById('copy-prompt-btn').addEventListener('click', copyActivePromptToClipboard);
+      document.getElementById('reset-filters-btn').addEventListener('click', resetFilters);
+    });
+
+    function renderExerciseGrid() {
+      const grid = document.getElementById('exercise-grid');
+      const noResults = document.getElementById('no-results');
+      grid.innerHTML = '';
+
+      const filtered = EXERCISES_DATA.filter(ex => {
+        const matchesModule = currentModuleFilter === 'all' || ex.module === currentModuleFilter;
+        const matchesSearch = !currentSearchTerm || 
+          ex.title.toLowerCase().includes(currentSearchTerm) ||
+          ex.id.toLowerCase().includes(currentSearchTerm) ||
+          ex.objective.toLowerCase().includes(currentSearchTerm) ||
+          ex.category.toLowerCase().includes(currentSearchTerm);
+        return matchesModule && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+      } else {
+        noResults.classList.add('hidden');
+      }
+
+      filtered.forEach(ex => {
+        const isCompleted = userProgress[ex.id] === 'completed';
+        const card = document.createElement('article');
+        card.className = 'bg-surface p-5 rounded-xl border border-paper-dark shadow-sm hover:shadow-md transition-all flex flex-col justify-between';
+        
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-2.5 py-1 rounded text-xs font-mono font-bold bg-paper text-primary border border-paper-dark">
+                ${ex.id}
+              </span>
+              
+              <!-- Badge Tripla Ridondanza per Stato -->
+              <button type="button" onclick="toggleExerciseStatus('${ex.id}')" class="px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${isCompleted ? 'bg-status-success text-surface' : 'bg-paper text-ink border border-paper-dark hover:bg-paper-dark'}" aria-label="Stato completamento per ${ex.id}">
+                ${isCompleted ? '<span aria-hidden="true">✅</span><span>Completato</span>' : '<span aria-hidden="true">⏳</span><span>Da Fare</span>'}
+              </button>
+            </div>
+
+            <h3 class="font-serif font-bold text-base sm:text-lg text-ink mb-2 leading-snug">
+              ${ex.title}
+            </h3>
+
+            <p class="text-xs sm:text-sm text-ink/80 mb-4 line-clamp-2">
+              <strong>Obiettivo:</strong> ${ex.objective}
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-paper-dark/60 flex items-center justify-between text-xs">
+            <span class="text-ink/70 font-medium">${ex.category}</span>
+            <button type="button" onclick="selectAndScrollToGenerator('${ex.id}')" class="px-3 py-1.5 bg-primary text-surface font-semibold rounded hover:bg-primary-dark transition-colors flex items-center gap-1">
+              <span>Personalizza</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function populatePromptSelector() {
+      const select = document.getElementById('prompt-selector');
+      select.innerHTML = '';
+      
+      EXERCISES_DATA.forEach(ex => {
+        const opt = document.createElement('option');
+        opt.value = ex.id;
+        opt.textContent = `[${ex.id}] ${ex.title}`;
+        select.appendChild(opt);
+      });
+    }
+
+    function loadExerciseIntoGenerator(exerciseId) {
+      selectedExerciseId = exerciseId;
+      const ex = EXERCISES_DATA.find(e => e.id === exerciseId);
+      if (!ex) return;
+
+      document.getElementById('prompt-selector').value = exerciseId;
+      document.getElementById('active-prompt-id-badge').textContent = ex.id;
+
+      // Render Dynamic Fields
+      const paramsList = document.getElementById('params-fields-list');
+      paramsList.innerHTML = '';
+
+      if (ex.placeholders.length === 0) {
+        paramsList.innerHTML = `
+          <p class="text-xs text-ink/70 italic p-3 bg-paper/50 rounded">
+            Nessuna variabile richiesta. Questo prompt/procedura è direttamente pronto per l'uso.
+          </p>
+        `;
+      } else {
+        ex.placeholders.forEach(ph => {
+          const fieldWrapper = document.createElement('div');
+          fieldWrapper.className = 'flex flex-col gap-1';
+          
+          const label = document.createElement('label');
+          label.className = 'text-xs font-semibold text-ink';
+          label.setAttribute('for', `input-${ph}`);
+          label.textContent = `Variabile [${ph.replace(/_/g, ' ')}]:`;
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.id = `input-${ph}`;
+          input.value = ph; // default placeholder text
+          input.className = 'p-2 rounded border border-paper-dark bg-cream/30 text-xs font-mono text-ink focus:bg-surface focus:ring-2 focus:ring-primary';
+          
+          input.addEventListener('input', updatePromptOutputLive);
+
+          fieldWrapper.appendChild(label);
+          fieldWrapper.appendChild(input);
+          paramsList.appendChild(fieldWrapper);
+        });
+      }
+
+      // Render Guardrails
+      const guardrailsList = document.getElementById('active-guardrails-list');
+      guardrailsList.innerHTML = '';
+      ex.guardrails.forEach((g, idx) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-start gap-2 bg-paper/40 p-2.5 rounded border border-paper-dark/50';
+        li.innerHTML = `
+          <span class="text-status-warning shrink-0" aria-hidden="true">⚠️</span>
+          <span><strong>Controllo ${idx + 1}:</strong> ${g}</span>
+        `;
+        guardrailsList.appendChild(li);
+      });
+
+      updatePromptOutputLive();
+    }
+
+    function updatePromptOutputLive() {
+      const ex = EXERCISES_DATA.find(e => e.id === selectedExerciseId);
+      if (!ex) return;
+
+      let promptText = ex.template;
+
+      ex.placeholders.forEach(ph => {
+        const inputElem = document.getElementById(`input-${ph}`);
+        const val = inputElem ? inputElem.value.trim() : `[${ph}]`;
+        const regex = new RegExp(`\\[${ph}\\]`, 'g');
+        promptText = promptText.replace(regex, val || `[${ph}]`);
+      });
+
+      document.getElementById('prompt-output-box').textContent = promptText;
+    }
+
+    function selectAndScrollToGenerator(id) {
+      loadExerciseIntoGenerator(id);
+      const genElem = document.getElementById('generator');
+      genElem.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleExerciseStatus(id) {
+      if (userProgress[id] === 'completed') {
+        delete userProgress[id];
+        showToast(`Esercitazione ${id} contrassegnata come "Da Fare"`, 'info');
+      } else {
+        userProgress[id] = 'completed';
+        showToast(`✅ Esercitazione ${id} completata e salvata!`, 'success');
+      }
+
+      localStorage.setItem('docenti_ia_progress', JSON.stringify(userProgress));
+      renderExerciseGrid();
+      updateGlobalCounter();
+    }
+
+    function updateGlobalCounter() {
+      const count = Object.keys(userProgress).length;
+      document.getElementById('global-counter').textContent = `${count}/30`;
+    }
+
+    function resetFilters() {
+      currentModuleFilter = 'all';
+      currentSearchTerm = '';
+      document.getElementById('search-input').value = '';
+      
+      document.querySelectorAll('.module-filter-btn').forEach(b => {
+        b.setAttribute('aria-pressed', 'false');
+        b.classList.remove('bg-primary', 'text-surface', 'border-primary');
+        b.classList.add('bg-cream', 'text-ink', 'border-paper-dark');
+      });
+
+      const firstBtn = document.querySelector('.module-filter-btn[data-module="all"]');
+      if (firstBtn) {
+        firstBtn.setAttribute('aria-pressed', 'true');
+        firstBtn.classList.remove('bg-cream', 'text-ink', 'border-paper-dark');
+        firstBtn.classList.add('bg-primary', 'text-surface', 'border-primary');
+      }
+
+      renderExerciseGrid();
+      showToast('Filtri ripristinati', 'info');
+    }
+
+    function copyActivePromptToClipboard() {
+      const promptText = document.getElementById('prompt-output-box').textContent;
+      
+      if (!navigator.clipboard) {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = promptText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } else {
+        navigator.clipboard.writeText(promptText);
+      }
+
+      const copyBtnText = document.getElementById('copy-btn-text');
+      copyBtnText.textContent = 'Copiato! ✅';
+      showToast('📋 PROMPT-D copiato negli appunti!', 'success');
+
+      setTimeout(() => {
+        copyBtnText.textContent = 'Copia Prompt';
+      }, 2500);
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let bgColor = 'bg-primary text-surface';
+      let icon = 'ℹ️';
+
+      if (type === 'success') {
+        bgColor = 'bg-status-success text-surface';
+        icon = '✅';
+      } else if (type === 'warning') {
+        bgColor = 'bg-status-warning text-surface';
+        icon = '⚠️';
+      }
+
+      toast.className = `${bgColor} px-4 py-3 rounded-lg shadow-lg text-xs sm:text-sm font-semibold flex items-center gap-2 pointer-events-auto transition-all transform translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <span aria-hidden="true">${icon}</span>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+          if (container.contains(toast)) container.removeChild(toast);
+        }, 300);
+      }, 3500);
+    }
+
+    function initReadingProgressBar() {
+      window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+        
+        const bar = document.getElementById('reading-progress-bar');
+        const container = document.getElementById('reading-progress-container');
+        if (bar) bar.style.width = scrolled + '%';
+        if (container) container.setAttribute('aria-valuenow', Math.round(scrolled));
+      });
+    }
+
+    function initMobileMenu() {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !expanded);
+        menu.classList.toggle('hidden');
+      });
+
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    function initScrollSpy() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-link');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 100;
+          if (window.scrollY >= sectionTop) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('text-primary', 'bg-paper');
+          link.removeAttribute('aria-current');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('text-primary', 'bg-paper');
+            link.setAttribute('aria-current', 'page');
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>

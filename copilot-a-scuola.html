@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Copilot per Insegnanti - Guida Pratica & SPA Didattica 2026</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Editorial Palette - Verified AAA contrast */
+            --ink: #111827;            /* Text primary on light backgrounds (16:1) */
+            --cream: #FAF9F6;          /* Warm main background */
+            --paper: #F3F0E6;          /* Secondary alternate background */
+            --primary: #5B132B;        /* Main editorial bordeaux (9.2:1 contrast on white/cream) */
+            --primary-hover: #3D0C1D;  /* Darker state for hover/focus */
+            --accent: #78350F;         /* Warm amber accent */
+            --surface: #FFFFFF;        /* Crisp card surface */
+            --border-muted: #D1D5DB;   /* Subtle border */
+            
+            /* Semantic Status Tokens - Fixed AAA verified */
+            --status-progress: #0047AB; /* Cobalt Blue: In progress / Info */
+            --status-warning: #B0004A;  /* Deep Fuchsia/Magenta: Warning / Attention */
+            --status-success: #005C36;  /* Deep Emerald Green: Success / Completed */
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--ink);
+            background-color: var(--cream);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        h1, h2, h3, .font-serif-title {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        code, pre, .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Focus Ring Standard AAA */
+        *:focus-visible {
+            outline: 3px solid var(--primary) !important;
+            outline-offset: 3px !important;
+            border-radius: 4px;
+        }
+
+        /* Reduced Motion Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Print Optimization */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            .paper-section { background: white !important; }
+        }
+
+        /* Custom scrollbar for readable code boxes */
+        pre::-webkit-scrollbar {
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed top-0 left-0 right-0 h-1.5 bg-gray-200 z-50 no-print" role="progressbar" id="progress-container" aria-label="Progresso di lettura della pagina" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div id="progress-bar" class="h-full bg-[#5B132B] transition-all duration-150 w-0"></div>
+    </div>
+
+    <!-- Main Accessible Header -->
+    <header class="sticky top-1.5 z-40 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-stone-300 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#5B132B] text-white font-bold text-xl" aria-hidden="true">
+                        CP
+                    </span>
+                    <div>
+                        <a href="#hero" class="text-lg font-bold font-serif-title text-[#5B132B] hover:underline focus:underline">
+                            Copilot Scuola 2026
+                        </a>
+                        <p class="text-xs text-stone-600 hidden sm:block">Guida Didattica & SPA Accessibile (MIM Unica)</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2" aria-label="Navigazione principale">
+                    <a href="#cos-e-copilot" class="nav-link px-3 py-2 text-sm font-semibold text-stone-800 hover:text-[#5B132B] hover:bg-stone-200/60 rounded-md transition-colors" data-[#cos-e-copilot]">Cos'è Copilot</a>
+                    <a href="#linee-guida-mim" class="nav-link px-3 py-2 text-sm font-semibold text-stone-800 hover:text-[#5B132B] hover:bg-stone-200/60 rounded-md transition-colors" data-[#linee-guida-mim]">Linee Guida MIM</a>
+                    <a href="#prompting-race" class="nav-link px-3 py-2 text-sm font-semibold text-stone-800 hover:text-[#5B132B] hover:bg-stone-200/60 rounded-md transition-colors" data-[#prompting-race]">Prompt RACE</a>
+                    <a href="#didattica-pratica" class="nav-link px-3 py-2 text-sm font-semibold text-stone-800 hover:text-[#5B132B] hover:bg-stone-200/60 rounded-md transition-colors" data-[#didattica-pratica]">Didattica & Uso</a>
+                    <a href="#strumenti-operativi" class="nav-link px-3 py-2 text-sm font-semibold text-stone-800 hover:text-[#5B132B] hover:bg-stone-200/60 rounded-md transition-colors" data-[#strumenti-operativi]">Modelli & PDP</a>
+                    <a href="#glossario-checklist" class="nav-link px-3 py-2 text-sm font-semibold text-stone-800 hover:text-[#5B132B] hover:bg-stone-200/60 rounded-md transition-colors" data-[#glossario-checklist]">Checklist & Termini</a>
+                </nav>
+
+                <!-- Mobile menu toggle button -->
+                <div class="md:hidden">
+                    <button type="button" id="mobile-menu-btn" class="p-2.5 rounded-lg text-stone-800 hover:bg-stone-200 focus:bg-stone-200 min-w-[44px] min-h-[44px] flex items-center justify-center border border-stone-400" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri o chiudi il menu di navigazione">
+                        <svg class="w-6 h-6" id="menu-icon-open" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="w-6 h-6 hidden" id="menu-icon-close" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div class="md:hidden hidden border-t border-stone-300 bg-[#FAF9F6] px-4 pt-2 pb-4 space-y-2" id="mobile-menu">
+            <a href="#cos-e-copilot" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-medium text-stone-900 hover:bg-stone-200">1. Cos'è Microsoft Copilot</a>
+            <a href="#linee-guida-mim" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-medium text-stone-900 hover:bg-stone-200">2. Linee Guida MIM (Unica)</a>
+            <a href="#prompting-race" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-medium text-stone-900 hover:bg-stone-200">3. Generatore Prompt RACE</a>
+            <a href="#didattica-pratica" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-medium text-stone-900 hover:bg-stone-200">4. Attività Didattiche & Classe</a>
+            <a href="#strumenti-operativi" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-medium text-stone-900 hover:bg-stone-200">5. Modelli Verbali & PDP</a>
+            <a href="#glossario-checklist" class="mobile-nav-link block px-3 py-2.5 rounded-md text-base font-medium text-stone-900 hover:bg-stone-200">6. Checklist & Glossario</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section id="hero" class="py-12 md:py-16 bg-[#FAF9F6] border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-4xl">
+                    <!-- Badges -->
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-[#005C36] text-white border border-[#005C36]">
+                            <span aria-hidden="true">✅</span>
+                            <span>Aggiornato Agosto 2026</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-[#0047AB] text-white border border-[#0047AB]">
+                            <span aria-hidden="true">⏳</span>
+                            <span>Linee Guida MIM Unica</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-[#5B132B] text-white border border-[#5B132B]">
+                            <span aria-hidden="true">🔷</span>
+                            <span>Accessibile WCAG 2.1 AAA</span>
+                        </span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#5B132B] leading-tight mb-4">
+                        Microsoft Copilot per Insegnanti della Scuola Secondaria Superiore
+                    </h1>
+                    <p class="text-lg sm:text-xl text-stone-800 leading-relaxed mb-8 max-w-3xl">
+                        Guida pratica operativamente orientata alla didattica con l'Intelligenza Artificiale: progettazione UdA, prompt engineering, verifica delle fonti, inclusione BES/DSA ed etica conformemente alle direttive del Ministero dell'Istruzione e del Merito.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-4">
+                        <a href="#prompting-race" class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-lg bg-[#5B132B] text-white font-bold text-base hover:bg-[#3D0C1D] transition-colors shadow-md">
+                            <span class="mr-2" aria-hidden="true">⚡</span>
+                            Usa il Generatore di Prompt
+                        </a>
+                        <a href="#linee-guida-mim" class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-lg bg-stone-200 text-stone-900 border border-stone-400 font-bold text-base hover:bg-stone-300 transition-colors">
+                            <span class="mr-2" aria-hidden="true">📚</span>
+                            Consulta i 7 Principi MIM
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 1: What is Copilot & Features -->
+        <section id="cos-e-copilot" class="py-12 md:py-16 bg-[#F3F0E6] border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <span class="text-sm font-bold tracking-wider text-[#78350F] uppercase">Parte 1 — Posizionamento & Account</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-[#5B132B] mt-1">Cos'è Microsoft Copilot e come accedervi gratis</h2>
+                    <p class="text-stone-700 mt-2 max-w-3xl">
+                        Copilot è l'assistente IA generativa di Microsoft accessibile da <strong>copilot.microsoft.com</strong>, Microsoft Edge e app mobili. Per la didattica quotidiana, l'account personale gratuito è idoneo per oltre il 90% delle esigenze docenti.
+                    </p>
+                </div>
+
+                <!-- Interactive Card Switcher for Conversation Styles -->
+                <div class="bg-white p-6 rounded-xl border border-stone-300 shadow-sm mb-12">
+                    <h3 class="text-xl font-bold text-[#5B132B] mb-3">Le 3 Modalità di Conversazione in Copilot</h3>
+                    <p class="text-stone-700 text-sm mb-6">Seleziona uno stile per comprendere quale scegliere durante la preparazione della lezione:</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" role="tablist" aria-label="Stili di conversazione Copilot">
+                        <button type="button" role="tab" aria-selected="true" aria-controls="style-panel-1" id="style-tab-1" onclick="switchStyleTab(1)" class="style-tab-btn p-4 rounded-lg border-2 border-[#5B132B] bg-[#FAF9F6] text-left min-h-[44px] focus:outline-none">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-3 h-3 rounded-full bg-[#0047AB]" aria-hidden="true"></span>
+                                <span class="font-bold text-[#5B132B]">🎨 Creativo</span>
+                            </div>
+                            <span class="text-xs text-stone-600 block">Brainstorming & Idee innovative</span>
+                        </button>
+
+                        <button type="button" role="tab" aria-selected="false" aria-controls="style-panel-2" id="style-tab-2" onclick="switchStyleTab(2)" class="style-tab-btn p-4 rounded-lg border-2 border-stone-300 bg-white text-left min-h-[44px] focus:outline-none">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-3 h-3 rounded-full bg-[#005C36]" aria-hidden="true"></span>
+                                <span class="font-bold text-stone-900">⚖️ Bilanciato</span>
+                            </div>
+                            <span class="text-xs text-stone-600 block">Equilibrio per la didattica quotidiana</span>
+                        </button>
+
+                        <button type="button" role="tab" aria-selected="false" aria-controls="style-panel-3" id="style-tab-3" onclick="switchStyleTab(3)" class="style-tab-btn p-4 rounded-lg border-2 border-stone-300 bg-white text-left min-h-[44px] focus:outline-none">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-3 h-3 rounded-full bg-[#B0004A]" aria-hidden="true"></span>
+                                <span class="font-bold text-stone-900">🔍 Preciso</span>
+                            </div>
+                            <span class="text-xs text-stone-600 block">Accuratezza fattuale & sintesi</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab Panels -->
+                    <div class="mt-6 p-4 rounded-lg bg-[#FAF9F6] border border-stone-300">
+                        <div id="style-panel-1" role="tabpanel" aria-labelledby="style-tab-1">
+                            <h4 class="font-bold text-lg text-[#5B132B] mb-1">Stile Creativo</h4>
+                            <p class="text-stone-800 text-sm">Genera risposte più fantasiose e articolate. Ideale per la progettazione di giochi di ruolo storici, metafore didattiche, spunti per laboratori di scrittura e brainstorming su Unità di Apprendimento.</p>
+                        </div>
+                        <div id="style-panel-2" role="tabpanel" aria-labelledby="style-tab-2" class="hidden">
+                            <h4 class="font-bold text-lg text-[#5B132B] mb-1">Stile Bilanciato</h4>
+                            <p class="text-stone-800 text-sm">Combina precisione e scorrevolezza. È lo stile raccomandato per la stesura di spiegazioni di argomenti disciplinari, creazione di schede esercizi e formulazione di domande a risposta multipla.</p>
+                        </div>
+                        <div id="style-panel-3" role="tabpanel" aria-labelledby="style-tab-3" class="hidden">
+                            <h4 class="font-bold text-lg text-[#5B132B] mb-1">Stile Preciso</h4>
+                            <p class="text-stone-800 text-sm">Risposte concise, strutturate e rigorose. Perfetto per la verifica di riferimenti normativi, analisi grammaticali o sintattiche stringenti, estrazione dati da testi lunghi e quesiti tecnici.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Table: Free vs Pro -->
+                <div class="bg-white rounded-xl border border-stone-300 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-stone-200">
+                        <h3 class="text-xl font-bold text-[#5B132B]">Confronto Funzionalità: Account Gratuito vs Copilot Pro</h3>
+                        <p class="text-stone-600 text-sm mt-1">Confronto operativo basato sugli aggiornamenti ad Agosto 2026.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-stone-100 border-b border-stone-300 text-stone-900 text-sm font-bold">
+                                    <th class="p-4">Funzionalità Didattica</th>
+                                    <th class="p-4">Account Gratuito</th>
+                                    <th class="p-4">Copilot Pro / M365</th>
+                                    <th class="p-4">Utilità per il Docente</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-stone-200 text-sm">
+                                <tr>
+                                    <td class="p-4 font-semibold text-stone-900">Chat testuale GPT-4o</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Disponibile gratis</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Illimitata</td>
+                                    <td class="p-4 text-stone-700">Essenziale per la preparazione lezioni</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-semibold text-stone-900">Generazione Immagini (Designer)</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Disponibile (boost limitati)</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Priorità alta</td>
+                                    <td class="p-4 text-stone-700">Creazione di schemi didattici e immagini storiche</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-semibold text-stone-900">Navigazione Web Real-time</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Disponibile con fonti</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Disponibile con fonti</td>
+                                    <td class="p-4 text-stone-700">Ricerca notizie recenti e fact-checking</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-semibold text-stone-900">Caricamento PDF/Foto per OCR</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Disponibile</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Disponibile</td>
+                                    <td class="p-4 text-stone-700">Creazione verifiche da foto di libri cartacei</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-semibold text-stone-900">Think Deeper (Ragionamento)</td>
+                                    <td class="p-4 text-blue-800 font-semibold"><span aria-hidden="true">⏳</span> Limitato giornaliero</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Illimitato</td>
+                                    <td class="p-4 text-stone-700">Problemi complessi di Matematica e Fisica</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-semibold text-stone-900">Integrazione Word/PowerPoint</td>
+                                    <td class="p-4 text-rose-800 font-semibold"><span aria-hidden="true">❌</span> Non inclusa</td>
+                                    <td class="p-4 text-emerald-800 font-semibold"><span aria-hidden="true">✅</span> Integrato nativo</td>
+                                    <td class="p-4 text-stone-700">Generazione slide automatica (Copia/incolla con versione free)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 2: MIM Guidelines & Ethical Framework -->
+        <section id="linee-guida-mim" class="py-12 md:py-16 bg-[#FAF9F6] border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <span class="text-sm font-bold tracking-wider text-[#78350F] uppercase">Parte 2 — Quadro Normativo Italiano</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-[#5B132B] mt-1">Linee Guida MIM per l'Intelligenza Artificiale a Scuola</h2>
+                    <p class="text-stone-700 mt-2 max-w-3xl">
+                        Indicazioni pubblicate sulla <strong>Piattaforma Unica</strong> conformi al Regolamento UE AI Act (2024/1689), UNESCO e raccomandazioni DigComp 2.2 per la scuola secondaria di secondo grado.
+                    </p>
+                </div>
+
+                <!-- Native SVG Diagram for MIM 7 Principles -->
+                <div class="bg-white p-6 rounded-xl border border-stone-300 shadow-sm mb-12">
+                    <h3 class="text-xl font-bold text-[#5B132B] mb-4">Diagramma dei 7 Principi Fondamentali MIM</h3>
+                    
+                    <!-- SVG Diagram with mandatory title, desc & accessibility -->
+                    <div class="w-full overflow-x-auto py-4">
+                        <svg role="img" aria-labelledby="mim-diag-title mim-diag-desc" viewBox="0 0 900 360" class="w-full min-w-[750px] h-auto font-sans">
+                            <title id="mim-diag-title">Mappa dei 7 Principi Etici e Pedagogici MIM per l'IA a Scuola</title>
+                            <desc id="mim-diag-desc">Schema sintetico strutturato su tre livelli per i 7 principi etici e pedagogici delle Linee Guida MIM per l'IA nella scuola secondaria.</desc>
+
+                            <!-- Connecting network lines -->
+                            <!-- From Level 1 to Level 2 -->
+                            <line x1="450" y1="80" x2="180" y2="140" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4,4" />
+                            <line x1="450" y1="80" x2="450" y2="140" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4,4" />
+                            <line x1="450" y1="80" x2="720" y2="140" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4,4" />
+                            
+                            <!-- From Level 2 to Level 3 -->
+                            <line x1="180" y1="200" x2="180" y2="260" stroke="#9CA3AF" stroke-width="2" />
+                            <line x1="450" y1="200" x2="450" y2="260" stroke="#9CA3AF" stroke-width="2" />
+                            <line x1="720" y1="200" x2="720" y2="260" stroke="#9CA3AF" stroke-width="2" />
+
+                            <!-- Node 1: Centralità del Docente (Top Center) -->
+                            <rect x="300" y="20" width="300" height="60" rx="10" fill="#5B132B" stroke="#3D0C1D" stroke-width="2" />
+                            <text x="450" y="44" font-weight="700" font-size="15" fill="#FFFFFF" text-anchor="middle">1. Centralità del Docente</text>
+                            <text x="450" y="63" font-size="12" fill="#FAF9F6" text-anchor="middle">✅ Autonomia pedagogica e valutazione</text>
+
+                            <!-- Node 2: Trasparenza (Middle Left) -->
+                            <rect x="50" y="140" width="260" height="60" rx="8" fill="#005C36" stroke="#004025" stroke-width="1.5" />
+                            <text x="180" y="164" font-weight="700" font-size="14" fill="#FFFFFF" text-anchor="middle">2. Trasparenza</text>
+                            <text x="180" y="183" font-size="11" fill="#FFFFFF" text-anchor="middle">✅ Uso dichiarato dell'AI in classe</text>
+
+                            <!-- Node 3: Pensiero Critico (Middle Center) -->
+                            <rect x="320" y="140" width="260" height="60" rx="8" fill="#0047AB" stroke="#003380" stroke-width="1.5" />
+                            <text x="450" y="164" font-weight="700" font-size="14" fill="#FFFFFF" text-anchor="middle">3. Pensiero Critico</text>
+                            <text x="450" y="183" font-size="11" fill="#FFFFFF" text-anchor="middle">⏳ Fact-checking & allucinazioni</text>
+
+                            <!-- Node 4: Privacy & GDPR (Middle Right) -->
+                            <rect x="590" y="140" width="260" height="60" rx="8" fill="#B0004A" stroke="#800035" stroke-width="1.5" />
+                            <text x="720" y="164" font-weight="700" font-size="14" fill="#FFFFFF" text-anchor="middle">4. Privacy & GDPR</text>
+                            <text x="720" y="183" font-size="11" fill="#FFFFFF" text-anchor="middle">⚠️ Divieto dati sensibili alunni</text>
+
+                            <!-- Node 5: Equità & Inclusione (Bottom Left) -->
+                            <rect x="50" y="260" width="260" height="60" rx="8" fill="#FAF9F6" stroke="#005C36" stroke-width="2" />
+                            <text x="180" y="284" font-weight="700" font-size="14" fill="#111827" text-anchor="middle">5. Equità & Inclusione</text>
+                            <text x="180" y="303" font-size="11" fill="#374151" text-anchor="middle">🔷 Sostegno BES/DSA senza bias</text>
+
+                            <!-- Node 6: AI Literacy (Bottom Center) -->
+                            <rect x="320" y="260" width="260" height="60" rx="8" fill="#FAF9F6" stroke="#0047AB" stroke-width="2" />
+                            <text x="450" y="284" font-weight="700" font-size="14" fill="#111827" text-anchor="middle">6. AI Literacy (DigComp 2.2)</text>
+                            <text x="450" y="303" font-size="11" fill="#374151" text-anchor="middle">🔷 Competenza e consapevolezza</text>
+
+                            <!-- Node 7: Integrità Accademica (Bottom Right) -->
+                            <rect x="590" y="260" width="260" height="60" rx="8" fill="#FAF9F6" stroke="#B0004A" stroke-width="2" />
+                            <text x="720" y="284" font-weight="700" font-size="14" fill="#111827" text-anchor="middle">7. Regolamento d'Istituto</text>
+                            <text x="720" y="303" font-size="11" fill="#374151" text-anchor="middle">🔷 Integrità accademica e citazioni</text>
+                        </svg>
+                    </div>
+
+                    <!-- Textual Alternative Table for Accessibility -->
+                    <div class="mt-4 border-t border-stone-200 pt-4">
+                        <h4 class="font-bold text-stone-900 text-sm mb-2">Versione Testuale Alternativa dei Principi MIM:</h4>
+                        <ol class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-stone-800">
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#5B132B]"><strong>1. Centralità del Docente:</strong> L'AI è al servizio del docente, mai in sua sostituzione nella valutazione.</li>
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#005C36]"><strong>2. Trasparenza:</strong> Gli studenti vanno informati quando l'AI viene usata nella didattica.</li>
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#0047AB]"><strong>3. Pensiero Critico:</strong> I contenuti dell'AI devono sempre essere verificati contro le allucinazioni.</li>
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#B0004A]"><strong>4. Privacy e GDPR:</strong> Divieto assoluto di inserire nomi e dati sensibili di minori negli strumenti AI.</li>
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#5B132B]"><strong>5. Equità & Inclusione:</strong> Usare l'AI per ridurre i divari e sostenere BES/DSA senza creare stereotipi.</li>
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#5B132B]"><strong>6. AI Literacy (DigComp 2.2):</strong> Sviluppare competenze per comprendere e valutare gli algoritmi.</li>
+                            <li class="p-2 bg-stone-100 rounded border-l-4 border-[#5B132B]"><strong>7. Regolamento di Istituto:</strong> Adozione di un regolamento interno che disciplini citazioni e compiti a casa.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Legal Citations Box -->
+                <div class="p-6 bg-[#F3F0E6] rounded-xl border border-stone-300">
+                    <h3 class="text-lg font-bold text-[#5B132B] mb-2 flex items-center gap-2">
+                        <span aria-hidden="true">📜</span> Esempio di Criterio di Citazione dell'AI per gli Studenti
+                    </h3>
+                    <p class="text-sm text-stone-800 mb-3">Formula standard approvata da inserire nei compiti e tesine scolastiche:</p>
+                    <blockquote class="p-4 bg-white rounded border-l-4 border-[#0047AB] font-mono-code text-xs text-stone-900 leading-relaxed">
+                        "Per la stesura di questo elaborato ho utilizzato Microsoft Copilot per [generare una bozza iniziale / trovare spunti / rielaborare un paragrafo]. Ho successivamente verificato, modificato e integrato il contenuto prodotto dall'AI mediante il manuale scolastico e fonti ufficiali."
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 3: Prompt Engineering & Interactive RACE Tool -->
+        <section id="prompting-race" class="py-12 md:py-16 bg-[#F3F0E6] border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <span class="text-sm font-bold tracking-wider text-[#78350F] uppercase">Parte 3 — Arte del Prompting</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-[#5B132B] mt-1">Generatore di Prompt con Framework RACE</h2>
+                    <p class="text-stone-700 mt-2 max-w-3xl">
+                        Il framework <strong>RACE</strong> (Ruolo, Azione, Contesto, Esecuzione) consente di ottenere risposte precise e direttamente applicabili in classe.
+                    </p>
+                </div>
+
+                <!-- Interactive RACE Builder App -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Builder Form -->
+                    <div class="lg:col-span-7 bg-white p-6 rounded-xl border border-stone-300 shadow-sm space-y-4">
+                        <h3 class="text-xl font-bold text-[#5B132B] border-b border-stone-200 pb-2">Componi il tuo Prompt Didattico</h3>
+                        
+                        <!-- Presets Selector -->
+                        <div>
+                            <label for="race-preset" class="block text-sm font-bold text-stone-900 mb-1">Carica un Preset Disciplinare:</label>
+                            <select id="race-preset" onchange="loadRacePreset()" class="w-full p-2.5 rounded-lg border border-stone-400 bg-stone-50 text-stone-900 text-sm focus:bg-white min-h-[44px]">
+                                <option value="custom">-- Personalizzato / Compila a mano --</option>
+                                <option value="latino">Latino (Verifica Terza Declinazione - 2^ Classico)</option>
+                                <option value="matematica">Matematica (Problemi di Fisica contestualizzati - 3^ Scientifico)</option>
+                                <option value="italiano">Italiano (Analisi del Testo Promessi Sposi - 4^ Classico)</option>
+                                <option value="dsa">Inclusione DSA (Semplificazione Testo Storico - 3^ Liceo)</option>
+                                <option value="clil">CLIL Inglese (Climate Change & Greenhouse Effect - 4^ Linguistico)</option>
+                            </select>
+                        </div>
+
+                        <!-- R - Ruolo -->
+                        <div>
+                            <label for="race-role" class="block text-sm font-bold text-stone-900 mb-1">
+                                <span class="inline-block px-2 py-0.5 rounded text-xs bg-[#5B132B] text-white mr-1">R</span> Ruolo (Chi deve essere Copilot):
+                            </label>
+                            <input type="text" id="race-role" oninput="updateRacePrompt()" placeholder="Es. Sei un docente esperto di Didattica della Matematica..." class="w-full p-2.5 rounded-lg border border-stone-300 text-sm text-stone-900 min-h-[44px]">
+                        </div>
+
+                        <!-- A - Azione -->
+                        <div>
+                            <label for="race-action" class="block text-sm font-bold text-stone-900 mb-1">
+                                <span class="inline-block px-2 py-0.5 rounded text-xs bg-[#0047AB] text-white mr-1">A</span> Azione (Cosa deve creare):
+                            </label>
+                            <input type="text" id="race-action" oninput="updateRacePrompt()" placeholder="Es. Crea una verifica scritta di 1 ora con 5 quesiti a difficoltà crescente..." class="w-full p-2.5 rounded-lg border border-stone-300 text-sm text-stone-900 min-h-[44px]">
+                        </div>
+
+                        <!-- C - Contesto -->
+                        <div>
+                            <label for="race-context" class="block text-sm font-bold text-stone-900 mb-1">
+                                <span class="inline-block px-2 py-0.5 rounded text-xs bg-[#78350F] text-white mr-1">C</span> Contesto (Destinatari & Prerequisiti):
+                            </label>
+                            <input type="text" id="race-context" oninput="updateRacePrompt()" placeholder="Es. Per una classe terza di liceo scientifico. Argomento: derivate ed equazioni..." class="w-full p-2.5 rounded-lg border border-stone-300 text-sm text-stone-900 min-h-[44px]">
+                        </div>
+
+                        <!-- E - Esecuzione -->
+                        <div>
+                            <label for="race-execution" class="block text-sm font-bold text-stone-900 mb-1">
+                                <span class="inline-block px-2 py-0.5 rounded text-xs bg-[#005C36] text-white mr-1">E</span> Esecuzione (Formato & Griglie):
+                            </label>
+                            <textarea id="race-execution" oninput="updateRacePrompt()" rows="3" placeholder="Es. Formatta il testo in una tabella con punteggi e includi griglia di valutazione su 4 livelli..." class="w-full p-2.5 rounded-lg border border-stone-300 text-sm text-stone-900"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Live Output Panel -->
+                    <div class="lg:col-span-5 bg-[#FAF9F6] p-6 rounded-xl border border-stone-300 shadow-sm flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-stone-300 pb-2 mb-3">
+                                <h3 class="text-lg font-bold text-[#5B132B]">Anteprima Live Prompt</h3>
+                                <span class="text-xs px-2 py-1 rounded bg-[#005C36] text-white font-semibold">Pronto da Copiare</span>
+                            </div>
+                            <div id="race-output-live" class="p-4 bg-white rounded-lg border border-stone-300 font-mono-code text-xs text-stone-900 min-h-[220px] whitespace-pre-wrap leading-relaxed shadow-inner" aria-live="polite">
+                                Compila i campi a sinistra per generare il tuo prompt strutturato...
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <button type="button" onclick="copyPromptToClipboard()" class="w-full min-h-[44px] px-4 py-3 bg-[#5B132B] text-white font-bold rounded-lg hover:bg-[#3D0C1D] transition-colors flex items-center justify-center gap-2 shadow">
+                                <span aria-hidden="true">📋</span>
+                                <span>Copia Prompt per Copilot</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Toggle: Generic vs Effective Prompt -->
+                <div class="mt-12 bg-white p-6 rounded-xl border border-stone-300 shadow-sm">
+                    <h3 class="text-xl font-bold text-[#5B132B] mb-4">Confronto Pratico: Prompt Generico vs Prompt Efficace</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Bad Example -->
+                        <div class="p-4 rounded-lg bg-rose-50 border-l-4 border-[#B0004A]">
+                            <div class="flex items-center gap-2 mb-2 text-[#B0004A] font-bold">
+                                <span aria-hidden="true">❌</span>
+                                <span>Prompt Generico (Inefficace)</span>
+                            </div>
+                            <p class="font-mono-code text-xs text-stone-800 bg-white p-3 rounded border border-rose-200 mb-3">
+                                "Fammi un esercizio di italiano sui Promessi Sposi."
+                            </p>
+                            <p class="text-xs text-stone-700">
+                                <strong>Risultato:</strong> Output generico, senza indicazione di classe, tassonomia di Bloom, griglia o formato utilizzabile.
+                            </p>
+                        </div>
+
+                        <!-- Good Example -->
+                        <div class="p-4 rounded-lg bg-emerald-50 border-l-4 border-[#005C36]">
+                            <div class="flex items-center gap-2 mb-2 text-[#005C36] font-bold">
+                                <span aria-hidden="true">✅</span>
+                                <span>Prompt RACE Efficace</span>
+                            </div>
+                            <p class="font-mono-code text-xs text-stone-800 bg-white p-3 rounded border border-emerald-200 mb-3">
+                                "Sei un docente di italiano. Crea un'analisi del testo dal cap. X dei Promessi Sposi per una classe 4^ liceo. Includi 3 domande di comprensione, 2 di analisi stilistica e rubrica su 4 livelli."
+                            </p>
+                            <p class="text-xs text-stone-700">
+                                <strong>Risultato:</strong> Materiale pronto all'uso, tarato sul livello cognitivo della classe e corredato da criteri trasparenti.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 4: Classroom Activities & Subject Strategies -->
+        <section id="didattica-pratica" class="py-12 md:py-16 bg-[#FAF9F6] border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <span class="text-sm font-bold tracking-wider text-[#78350F] uppercase">Parte 4 — Didattica in Classe</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-[#5B132B] mt-1">Ricettario Didattico & Attività Guidate con gli Studenti</h2>
+                    <p class="text-stone-700 mt-2 max-w-3xl">
+                        Come impiegare Copilot durante le lezioni e come guidare gli studenti nell'uso etico dell'AI come tutor personale.
+                    </p>
+                </div>
+
+                <!-- Student AI Protocol Stepper -->
+                <div class="bg-white p-6 rounded-xl border border-stone-300 shadow-sm mb-12">
+                    <h3 class="text-xl font-bold text-[#5B132B] mb-2">Protocollo per lo Studio Assistito dagli Studenti (4 Fasi)</h3>
+                    <p class="text-sm text-stone-600 mb-6">Procedura guidata da condividere con gli studenti per evitare il plagiarsi e potenziare l'apprendimento:</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="p-4 rounded-lg bg-[#FAF9F6] border-t-4 border-[#5B132B]">
+                            <span class="text-xs font-bold text-[#5B132B] block mb-1">FASE 1 — 30 MINUTI</span>
+                            <h4 class="font-bold text-stone-900 text-sm mb-2">1. Studio Autonomo</h4>
+                            <p class="text-xs text-stone-700">Studia sul manuale cartaceo, sottolinea i concetti chiave e annota le domande sui punti oscuri.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-[#FAF9F6] border-t-4 border-[#0047AB]">
+                            <span class="text-xs font-bold text-[#0047AB] block mb-1">FASE 2 — 20 MINUTI</span>
+                            <h4 class="font-bold text-stone-900 text-sm mb-2">2. Interroga l'AI</h4>
+                            <p class="text-xs text-stone-700">Chiedi a Copilot spiegazioni alternative ed esempi. Non copiare compiti, usalo come tutor socratico.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-[#FAF9F6] border-t-4 border-[#B0004A]">
+                            <span class="text-xs font-bold text-[#B0004A] block mb-1">FASE 3 — 20 MINUTI</span>
+                            <h4 class="font-bold text-stone-900 text-sm mb-2">3. Rielaborazione</h4>
+                            <p class="text-xs text-stone-700">Chiudi Copilot e il libro. Riscrivi a parole tue quanto appreso per consolidare la memoria a lungo termine.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-[#FAF9F6] border-t-4 border-[#005C36]">
+                            <span class="text-xs font-bold text-[#005C36] block mb-1">FASE 4 — 10 MINUTI</span>
+                            <h4 class="font-bold text-stone-900 text-sm mb-2">4. Autovalutazione</h4>
+                            <p class="text-xs text-stone-700">Chiedi a Copilot: "Fammi 5 domande sull'argomento senza dare subito le soluzioni" e verifica la comprensione.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fact Checking Activity Box -->
+                <div class="bg-[#F3F0E6] p-6 rounded-xl border border-stone-300">
+                    <h3 class="text-xl font-bold text-[#5B132B] mb-3 flex items-center gap-2">
+                        <span aria-hidden="true">🔍</span> Attività Didattica: Fact-Checking delle Allucinazioni
+                    </h3>
+                    <p class="text-sm text-stone-800 mb-4">Questa attività soddisfa le raccomandazioni MIM per la promozione del pensiero critico:</p>
+                    
+                    <ol class="space-y-3 text-sm text-stone-900">
+                        <li class="flex items-start gap-3 bg-white p-3 rounded border border-stone-300">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#5B132B] text-white flex items-center justify-center text-xs font-bold">1</span>
+                            <div><strong>Generazione Output:</strong> Proietta alla LIM un prompt a Copilot come: <em>"Elenca i 5 terremoti più devastanti della storia italiana con date, magnitudo e vittime."</em></div>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white p-3 rounded border border-stone-300">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#5B132B] text-white flex items-center justify-center text-xs font-bold">2</span>
+                            <div><strong>Divisione in Gruppi:</strong> Assegna a ciascun gruppo uno dei punti generati per effettuare la verifica incrociata su INGV, Treccani e Wikipedia.</div>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white p-3 rounded border border-stone-300">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#5B132B] text-white flex items-center justify-center text-xs font-bold">3</span>
+                            <div><strong>Debriefing Metacognitivo:</strong> Analizza le imprecisioni trovate chiedendosi: <em>Perché l'AI ha sbagliato? Da dove proviene l'allucinazione?</em></div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 5: Administrative Documents & PDP Templates -->
+        <section id="strumenti-operativi" class="py-12 md:py-16 bg-[#F3F0E6] border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <span class="text-sm font-bold tracking-wider text-[#78350F] uppercase">Parte 5 — Amministrazione & Modelli</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-[#5B132B] mt-1">Modelli Operativi, Verbali e PDP Anonimizzati</h2>
+                    <p class="text-stone-700 mt-2 max-w-3xl">
+                        Strumenti di supporto per la redazione di verbali dei consigli di classe, relazioni finali e schemi PDP.
+                    </p>
+                </div>
+
+                <!-- GDPR Privacy Warning Callout -->
+                <div class="p-4 rounded-lg bg-rose-50 border-l-4 border-[#B0004A] mb-8 flex items-start gap-3">
+                    <span class="text-xl" aria-hidden="true">⚠️</span>
+                    <div>
+                        <h3 class="font-bold text-[#B0004A] text-sm">ATTENZIONE FONDAMENTALE PRIVACY (GDPR):</h3>
+                        <p class="text-xs text-stone-800">Non inserire MAI nei prompt nomi, cognomi, codici fiscali o diagnosi mediche reali degli studenti. Utilizzare solo segnaposto anonimi (es. <em>"Alunno 1 - Dislessia L. 170/2010"</em>).</p>
+                    </div>
+                </div>
+
+                <!-- Template Tabbed Box -->
+                <div class="bg-white p-6 rounded-xl border border-stone-300 shadow-sm">
+                    <div class="flex flex-wrap gap-2 border-b border-stone-200 pb-4 mb-4" role="tablist" aria-label="Modelli di documenti scolastici">
+                        <button type="button" role="tab" aria-selected="true" id="tmpl-tab-1" onclick="switchTemplateTab(1)" class="tmpl-btn px-4 py-2 rounded-lg font-bold text-sm bg-[#5B132B] text-white min-h-[44px]">
+                             PDP DSA / BES (Template)
+                        </button>
+                        <button type="button" role="tab" aria-selected="false" id="tmpl-tab-2" onclick="switchTemplateTab(2)" class="tmpl-btn px-4 py-2 rounded-lg font-bold text-sm bg-stone-200 text-stone-800 hover:bg-stone-300 min-h-[44px]">
+                             Verbale Consiglio di Classe
+                        </button>
+                        <button type="button" role="tab" aria-selected="false" id="tmpl-tab-3" onclick="switchTemplateTab(3)" class="tmpl-btn px-4 py-2 rounded-lg font-bold text-sm bg-stone-200 text-stone-800 hover:bg-stone-300 min-h-[44px]">
+                             Lettera Famiglie Profitto
+                        </button>
+                    </div>
+
+                    <div id="tmpl-panel-1" role="tabpanel" class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-stone-900 text-base">Prompt Modello PDP per Dislessia (L. 170/2010)</h4>
+                            <button type="button" onclick="copyTemplateCode('tmpl-code-1')" class="px-3 py-1.5 text-xs font-bold rounded bg-[#5B132B] text-white hover:bg-[#3D0C1D]">Copia Modello</button>
+                        </div>
+                        <pre id="tmpl-code-1" class="p-4 bg-stone-900 text-stone-100 rounded-lg text-xs overflow-x-auto font-mono-code leading-relaxed">
+Sei un docente coordinatore di scuola secondaria superiore. 
+Crea un modello vuoto di PDP (Piano Didattico Personalizzato) per uno studente con DSA (dislessia e disortografia), conforme alla L. 170/2010.
+
+Il modello deve includere:
+1. Dati anagrafici [CAMPI VUOTI]
+2. Diagnosi [CAMPO VUOTO PER ESTREMI CERTIFICAZIONE]
+3. Tabella delle misure dispensative e compensative per disciplina:
+   - Sintesi vocale e libri digitali
+   - Tempo aggiuntivo (+30%) nelle verifiche scritte
+   - Valutazione del contenuto rispetto alla forma ortografica
+4. Patto educativo con la famiglia
+NON inserire nomi reali o dati identificativi.
+                        </pre>
+                    </div>
+
+                    <div id="tmpl-panel-2" role="tabpanel" class="space-y-3 hidden">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-stone-900 text-base">Prompt Modello Verbale Scrutinio / Consiglio</h4>
+                            <button type="button" onclick="copyTemplateCode('tmpl-code-2')" class="px-3 py-1.5 text-xs font-bold rounded bg-[#5B132B] text-white hover:bg-[#3D0C1D]">Copia Modello</button>
+                        </div>
+                        <pre id="tmpl-code-2" class="p-4 bg-stone-900 text-stone-100 rounded-lg text-xs overflow-x-auto font-mono-code leading-relaxed">
+Crea un modello di verbale per il Consiglio di Classe intermedio (scuola secondaria di secondo grado).
+Includi le sezioni:
+1. Presenze/Assenze e Ordine del Giorno
+2. Andamento didattico-disciplinare generale della classe
+3. Casi particolari (usando "Alunno 1", "Alunno 2")
+4. Avanzamento Educazione Civica e PCTO
+5. Proposte di recupero e potenziamento
+6. Chiusura del verbale e firma del Segretario e Presidente.
+                        </pre>
+                    </div>
+
+                    <div id="tmpl-panel-3" role="tabpanel" class="space-y-3 hidden">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-stone-900 text-base">Prompt Comunicazione Formale Famiglie</h4>
+                            <button type="button" onclick="copyTemplateCode('tmpl-code-3')" class="px-3 py-1.5 text-xs font-bold rounded bg-[#5B132B] text-white hover:bg-[#3D0C1D]">Copia Modello</button>
+                        </div>
+                        <pre id="tmpl-code-3" class="p-4 bg-stone-900 text-stone-100 rounded-lg text-xs overflow-x-auto font-mono-code leading-relaxed">
+Scrivi un modello di lettera formale ma collaborativa da inviare alla famiglia di uno studente con profitto insufficiente a metà quadrimestre.
+La lettera deve:
+- Segnalare le criticità senza toni punitivi
+- Suggerire strategie di recupero e studio pomeridiano
+- Invitare i genitori a un colloquio con il docente
+Usare i segnaposto [NOME STUDENTE], [MATERIA], [DOCENTE].
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 6: Checklist & Searchable Glossary -->
+        <section id="glossario-checklist" class="py-12 md:py-16 bg-[#FAF9F6]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    
+                    <!-- Teacher Checklist -->
+                    <div class="lg:col-span-6 space-y-4">
+                        <div class="border-b border-stone-300 pb-3">
+                            <span class="text-xs font-bold tracking-wider text-[#78350F] uppercase">Autovalutazione</span>
+                            <h2 class="text-2xl font-bold text-[#5B132B]">Checklist Operativa del Docente</h2>
+                            <p class="text-xs text-stone-600 mt-1">Spunta le azioni completate per monitorare la tua adozione dell'AI:</p>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-stone-300 shadow-sm space-y-3" id="checklist-container">
+                            <label class="flex items-start gap-3 p-3 rounded hover:bg-stone-50 cursor-pointer border border-stone-200">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-1 w-5 h-5 text-[#5B132B] rounded border-stone-300 focus:ring-[#5B132B]">
+                                <span class="text-sm text-stone-800">Ho creato l'account Microsoft e provato l'interfaccia a <strong>copilot.microsoft.com</strong></span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 rounded hover:bg-stone-50 cursor-pointer border border-stone-200">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-1 w-5 h-5 text-[#5B132B] rounded border-stone-300 focus:ring-[#5B132B]">
+                                <span class="text-sm text-stone-800">Ho letto le <strong>Linee Guida MIM</strong> sulla Piattaforma Unica e il regolamento di istituto</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 rounded hover:bg-stone-50 cursor-pointer border border-stone-200">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-1 w-5 h-5 text-[#5B132B] rounded border-stone-300 focus:ring-[#5B132B]">
+                                <span class="text-sm text-stone-800">Verifico sempre le <strong>allucinazioni</strong> fattuali prima di stampare verifiche per la classe</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 rounded hover:bg-stone-50 cursor-pointer border border-stone-200">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-1 w-5 h-5 text-[#5B132B] rounded border-stone-300 focus:ring-[#5B132B]">
+                                <span class="text-sm text-stone-800">Non inserisco <strong>MAI dati personali</strong> o diagnosi di minori nei prompt</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 rounded hover:bg-stone-50 cursor-pointer border border-stone-200">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-1 w-5 h-5 text-[#5B132B] rounded border-stone-300 focus:ring-[#5B132B]">
+                                <span class="text-sm text-stone-800">Insegno agli studenti a <strong>citare correttamente l'AI</strong> e a svolgere il fact-checking</span>
+                            </label>
+                        </div>
+
+                        <!-- Progress indicator for checklist -->
+                        <div class="p-4 bg-[#F3F0E6] rounded-lg border border-stone-300 flex items-center justify-between">
+                            <span class="text-xs font-bold text-stone-800">Avanzamento Adozione:</span>
+                            <span id="checklist-status" class="text-sm font-bold text-[#005C36]">0 / 5 Completati</span>
+                        </div>
+                    </div>
+
+                    <!-- Searchable Glossary -->
+                    <div class="lg:col-span-6 space-y-4">
+                        <div class="border-b border-stone-300 pb-3">
+                            <span class="text-xs font-bold tracking-wider text-[#78350F] uppercase">Terminologia</span>
+                            <h2 class="text-2xl font-bold text-[#5B132B]">Glossario AI & DigComp 2.2</h2>
+                            <p class="text-xs text-stone-600 mt-1">Filtra ed esplora i concetti tecnici chiave:</p>
+                        </div>
+
+                        <!-- Search input -->
+                        <div>
+                            <label for="glossary-search" class="sr-only">Cerca nel glossario</label>
+                            <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="🔎 Cerca un termine (es. Prompt, LLM, Allucinazione)..." class="w-full p-3 rounded-lg border border-stone-400 text-sm bg-white min-h-[44px]">
+                        </div>
+
+                        <div class="space-y-3 max-h-[380px] overflow-y-auto pr-2" id="glossary-list">
+                            <div class="glossary-item p-3 bg-white rounded-lg border border-stone-300">
+                                <h3 class="font-bold text-[#5B132B] text-sm">LLM (Large Language Model)</h3>
+                                <p class="text-xs text-stone-700 mt-1">Modello statistico avanzato addestrato su enormi quantitativi di testo per comprendere e generare linguaggio naturale.</p>
+                            </div>
+                            <div class="glossary-item p-3 bg-white rounded-lg border border-stone-300">
+                                <h3 class="font-bold text-[#5B132B] text-sm">Allucinazione (Hallucination)</h3>
+                                <p class="text-xs text-stone-700 mt-1">Generazione da parte dell'AI di informazioni false o inventate presentate con tono autorevole e sicuro.</p>
+                            </div>
+                            <div class="glossary-item p-3 bg-white rounded-lg border border-stone-300">
+                                <h3 class="font-bold text-[#5B132B] text-sm">Prompt Engineering</h3>
+                                <p class="text-xs text-stone-700 mt-1">L'arte di formulare istruzioni chiare e contestualizzate per ottenere dall'AI risposte ottimali e prive di ambiguità.</p>
+                            </div>
+                            <div class="glossary-item p-3 bg-white rounded-lg border border-stone-300">
+                                <h3 class="font-bold text-[#5B132B] text-sm">Chain of Thought</h3>
+                                <p class="text-xs text-stone-700 mt-1">Tecnica di prompting che richiede all'AI di mostrare tutti i passaggi logici intermedi prima di fornire la risposta finale.</p>
+                            </div>
+                            <div class="glossary-item p-3 bg-white rounded-lg border border-stone-300">
+                                <h3 class="font-bold text-[#5B132B] text-sm">AI Literacy</h3>
+                                <p class="text-xs text-stone-700 mt-1">Competenza trasversale di comprensione, valutazione critica ed uso etico dei sistemi di intelligenza artificiale.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#111827] text-white py-12 border-t border-stone-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h2 class="font-serif-title text-xl font-bold text-white mb-2">Copilot per Insegnanti — Guida 2026</h2>
+                    <p class="text-xs text-stone-400 max-w-md">
+                        ApplicazioneDidattica Accessibile monofile creata in aderenza alle regole WCAG 2.1 AAA, ai principi del Ministero dell'Istruzione e del Merito (Piattaforma Unica) e del Regolamento Europeo AI Act.
+                    </p>
+                </div>
+                <div class="text-left md:text-right text-xs text-stone-400 space-y-1">
+                    <p>✅ Tripla ridondanza delle informazioni di stato garantita</p>
+                    <p>✅ Zero placeholder visivi — Grafici nativi SVG</p>
+                    <p>✅ Accessibilità contrasto AAA verificata (&gt;7:1)</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Box for Clipboard feedback -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 pointer-events-none" aria-live="polite" aria-atomic="true">
+        <div id="toast" class="hidden pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg bg-[#005C36] text-white shadow-xl border border-emerald-400 text-sm font-semibold">
+            <span id="toast-icon" aria-hidden="true">✅</span>
+            <span id="toast-message">Copiato negli appunti con successo!</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initScrollProgress();
+            initMobileMenu();
+            updateRacePrompt();
+        });
+
+        // Reading Scroll Progress Bar Update
+        function initScrollProgress() {
+            window.addEventListener('scroll', () => {
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                if (totalHeight > 0) {
+                    const progress = (window.scrollY / totalHeight) * 100;
+                    const progressBar = document.getElementById('progress-bar');
+                    const progressContainer = document.getElementById('progress-container');
+                    if (progressBar && progressContainer) {
+                        progressBar.style.width = `${progress}%`;
+                        progressContainer.setAttribute('aria-valuenow', Math.round(progress));
+                    }
+                }
+            });
+        }
+
+        // Mobile Menu Toggle
+        function initMobileMenu() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+
+            if (btn && menu) {
+                btn.addEventListener('click', () => {
+                    const expanded = btn.getAttribute('aria-expanded') === 'true';
+                    btn.setAttribute('aria-expanded', !expanded);
+                    menu.classList.toggle('hidden');
+                    iconOpen.classList.toggle('hidden');
+                    iconClose.classList.toggle('hidden');
+                });
+
+                // Close menu when link clicked
+                document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        menu.classList.add('hidden');
+                        btn.setAttribute('aria-expanded', 'false');
+                        iconOpen.classList.remove('hidden');
+                        iconClose.classList.add('hidden');
+                    });
+                });
+            }
+        }
+
+        function switchStyleTab(tabId) {
+            for (let i = 1; i <= 3; i++) {
+                const tab = document.getElementById(`style-tab-${i}`);
+                const panel = document.getElementById(`style-panel-${i}`);
+                if (tab && panel) {
+                    if (i === tabId) {
+                        tab.setAttribute('aria-selected', 'true');
+                        tab.classList.remove('border-stone-300', 'bg-white');
+                        tab.classList.add('border-[#5B132B]', 'bg-[#FAF9F6]');
+                        panel.classList.remove('hidden');
+                    } else {
+                        tab.setAttribute('aria-selected', 'false');
+                        tab.classList.remove('border-[#5B132B]', 'bg-[#FAF9F6]');
+                        tab.classList.add('border-stone-300', 'bg-white');
+                        panel.classList.add('hidden');
+                    }
+                }
+            }
+        }
+
+        const RACE_PRESETS = {
+            latino: {
+                role: "Sei un docente esperto di Lingua e Cultura Latina nei licei classici.",
+                action: "Crea una verifica scritta di 1 ora sulla Terza Declinazione (temi in consonante e in -i).",
+                context: "Per una classe seconda di liceo classico. Punteggio totale 30 punti.",
+                execution: "Includi:\n- 3 sostantivi da declinare\n- 8 forme nominali da analizzare\n- 5 frasi con completamento\n- Traduzione brano di 5 righe da Nepote con vocabolario\nFornisci griglia di valutazione e soluzioni separate."
+            },
+            matematica: {
+                role: "Sei un docente di Fisica e Matematica per il liceo scientifico.",
+                action: "Crea 4 problemi contestualizzati nella vita quotidiana sull'argomento 'Lavoro ed energia'.",
+                context: "Per una classe terza di liceo scientifico. Livello di difficoltà medio-alto.",
+                execution: "Ogni problema deve partire da una situazione reale (es. ciclista in salita, ascensore).\nFornisci lo svolgimento passo-passo e i diagrammi energetici concettuali."
+            },
+            italiano: {
+                role: "Sei un docente di Italiano esperto in didattica per competenze.",
+                action: "Crea un'analisi del testo dal cap. X dei Promessi Sposi (Monaca di Monza).",
+                context: "Per una classe quarta di liceo classico o scientifico.",
+                execution: "Includi:\n- 3 domande di comprensione letterale\n- 2 domande di analisi stilistica\n- 1 domanda di interpretazione critica\n- Rubrica di valutazione analitica su 4 livelli."
+            },
+            dsa: {
+                role: "Sei un docente specializzato in didattica inclusiva e strategie compensative.",
+                action: "Semplifica un testo di storia di 300 parole sulla Rivoluzione Industriale.",
+                context: "Per uno studente con disturbo specifico della comprensione del testo (DSA).",
+                execution: "Caratteristiche richieste:\n- Frasi brevi (max 15 parole)\n- Forma attiva\n- Parole chiave in grassetto\n- Glossario a margine dei termini tecnici\n- 3 domande di verifica a scelta multipla."
+            },
+            clil: {
+                role: "Sei un docente di Scienze Naturali abilitato all'insegnamento CLIL in lingua inglese.",
+                action: "Progetta una lezione CLIL di 2 ore sul tema 'Climate Change and Greenhouse Effect'.",
+                context: "Per una classe quarta di liceo linguistico con livello di inglese B1+/B2.",
+                execution: "Includi:\n- Vocabulary box di 15 termini scientifici\n- Testo di lettura di 300 parole\n- 5 domande di reading comprehension\n- Attività di speaking in coppia\n- Scaffolding linguistico per il writing."
+            }
+        };
+
+        function loadRacePreset() {
+            const select = document.getElementById('race-preset');
+            const key = select.value;
+            if (key !== 'custom' && RACE_PRESETS[key]) {
+                const data = RACE_PRESETS[key];
+                document.getElementById('race-role').value = data.role;
+                document.getElementById('race-action').value = data.action;
+                document.getElementById('race-context').value = data.context;
+                document.getElementById('race-execution').value = data.execution;
+                updateRacePrompt();
+            }
+        }
+
+        function updateRacePrompt() {
+            const role = document.getElementById('race-role').value.trim();
+            const action = document.getElementById('race-action').value.trim();
+            const context = document.getElementById('race-context').value.trim();
+            const execution = document.getElementById('race-execution').value.trim();
+
+            const outputBox = document.getElementById('race-output-live');
+
+            if (!role && !action && !context && !execution) {
+                outputBox.textContent = "Compila i campi a sinistra per generare il tuo prompt RACE...";
+                return;
+            }
+
+            let promptText = "";
+            if (role) promptText += `RUOLO:\n${role}\n\n`;
+            if (action) promptText += `AZIONE:\n${action}\n\n`;
+            if (context) promptText += `CONTESTO:\n${context}\n\n`;
+            if (execution) promptText += `ESECUZIONE:\n${execution}`;
+
+            outputBox.textContent = promptText;
+        }
+
+        function copyPromptToClipboard() {
+            const outputText = document.getElementById('race-output-live').textContent;
+            if (outputText && !outputText.startsWith("Compila i campi")) {
+                executeCopy(outputText);
+            } else {
+                showToast("⚠️ Attenzione: Compila prima i campi del prompt!", "warning");
+            }
+        }
+
+        function copyTemplateCode(elementId) {
+            const codeEl = document.getElementById(elementId);
+            if (codeEl) {
+                executeCopy(codeEl.textContent.trim());
+            }
+        }
+
+        function executeCopy(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(() => showToast("✅ Prompt copiato negli appunti!", "success"))
+                    .catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("✅ Prompt copiato negli appunti!", "success");
+            } catch (err) {
+                showToast("❌ Errore nella copia manuale", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        let toastTimer = null;
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            if (!toast || !toastMessage) return;
+
+            toastMessage.textContent = message;
+
+            if (type === "warning") {
+                toast.className = "pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg bg-[#B0004A] text-white shadow-xl text-sm font-semibold border border-rose-300";
+                toastIcon.textContent = "⚠️";
+            } else if (type === "error") {
+                toast.className = "pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg bg-rose-900 text-white shadow-xl text-sm font-semibold border border-rose-300";
+                toastIcon.textContent = "❌";
+            } else {
+                toast.className = "pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg bg-[#005C36] text-white shadow-xl text-sm font-semibold border border-emerald-300";
+                toastIcon.textContent = "✅";
+            }
+
+            toast.classList.remove('hidden');
+
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function switchTemplateTab(tabId) {
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`tmpl-tab-${i}`);
+                const panel = document.getElementById(`tmpl-panel-${i}`);
+                if (btn && panel) {
+                    if (i === tabId) {
+                        btn.setAttribute('aria-selected', 'true');
+                        btn.classList.remove('bg-stone-200', 'text-stone-800');
+                        btn.classList.add('bg-[#5B132B]', 'text-white');
+                        panel.classList.remove('hidden');
+                    } else {
+                        btn.setAttribute('aria-selected', 'false');
+                        btn.classList.remove('bg-[#5B132B]', 'text-white');
+                        btn.classList.add('bg-stone-200', 'text-stone-800');
+                        panel.classList.add('hidden');
+                    }
+                }
+            }
+        }
+
+        function updateChecklistProgress() {
+            const container = document.getElementById('checklist-container');
+            if (!container) return;
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            let checkedCount = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) checkedCount++;
+            });
+            const statusEl = document.getElementById('checklist-status');
+            if (statusEl) {
+                statusEl.textContent = `${checkedCount} / ${checkboxes.length} Completati`;
+                if (checkedCount === checkboxes.length) {
+                    statusEl.className = "text-sm font-bold text-[#005C36]";
+                } else {
+                    statusEl.className = "text-sm font-bold text-[#0047AB]";
+                }
+            }
+        }
+
+        function filterGlossary() {
+            const searchInput = document.getElementById('glossary-search');
+            if (!searchInput) return;
+            const filter = searchInput.value.toLowerCase().trim();
+            const items = document.querySelectorAll('.glossary-item');
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

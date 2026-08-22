@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Come Funziona un'IA? - Visual Explainer dei Transformer</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP for Smooth SVG Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Google Fonts: Playfair Display (Titles), Inter (Body), JetBrains Mono (Vectors/Code) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --ink: #221b16;
+            --cream: #faf6ee;
+            --paper: #f2ead9;
+            --primary: #7c1d3f;
+            --primary-dark: #5a1530;
+            --accent: #b8862c;
+            --accent-light: #f5e8cd;
+            --subtle-border: rgba(34, 27, 22, 0.12);
+            --grid-line: rgba(34, 27, 22, 0.05);
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-serif-editorial {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        code, pre, .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Subtle radial texture overlay */
+        .editorial-bg-texture {
+            background-image: radial-gradient(var(--subtle-border) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .paper-card {
+            background-color: rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--subtle-border);
+            backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .paper-card:hover {
+            border-color: rgba(124, 29, 63, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(34, 27, 22, 0.08);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--paper);
+            border-radius: 4px;
+            border: 1px solid var(--subtle-border);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* SVG Interactive Elements */
+        .svg-node {
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+        .svg-node:hover {
+            filter: drop-shadow(0 4px 8px rgba(124, 29, 63, 0.25));
+        }
+
+        .attention-path {
+            stroke-dasharray: 8, 4;
+            animation: dash 30s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        /* Toast styling */
+        #toast {
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="editorial-bg-texture min-h-screen flex flex-col">
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-amber-900/10 z-50">
+        <div id="scroll-progress" class="h-full bg-[var(--primary)] w-0 transition-all duration-150"></div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-40 bg-[var(--cream)]/90 backdrop-blur-md border-b border-[var(--subtle-border)] transition-all duration-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="#hero" class="flex items-center gap-3 group">
+                <span class="w-8 h-8 rounded-lg bg-[var(--primary)] text-[var(--cream)] flex items-center justify-center font-bold font-serif-editorial text-lg group-hover:bg-[var(--accent)] transition-colors">
+                    A
+                </span>
+                <span class="font-serif-editorial font-bold text-lg sm:text-xl text-[var(--ink)] tracking-tight">
+                    Explainer LLM
+                </span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="#canvas-section" class="hover:text-[var(--primary)] transition-colors">Visual Canvas</a>
+                <a href="#operational-tool" class="hover:text-[var(--primary)] transition-colors">Simulatore Live</a>
+                <a href="#comparison" class="hover:text-[var(--primary)] transition-colors">NLP vs Transformer</a>
+                <a href="#summary" class="hover:text-[var(--primary)] transition-colors">Sintesi</a>
+            </nav>
+
+            <!-- Quick Action Button -->
+            <div class="flex items-center gap-3">
+                <a href="#operational-tool" class="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-[var(--primary)] text-[var(--cream)] hover:bg-[var(--primary-dark)] transition-all shadow-sm">
+                    Sperimenta
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section id="hero" class="py-16 md:py-24 px-4 sm:px-6 max-w-5xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--paper)] border border-[var(--subtle-border)] text-xs font-mono-code text-[var(--primary)] mb-6">
+                <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                Architettura dei Modelli Linguistici Generativi
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[var(--ink)] tracking-tight leading-tight mb-6">
+                Come un'IA trasforma le <span class="italic text-[var(--primary)] font-serif-editorial">Parole</span> in <span class="underline decoration-[var(--accent)] decoration-2 underline-offset-4">Significato</span>.
+            </h1>
+
+            <p class="text-lg sm:text-xl text-[var(--ink)]/80 max-w-3xl mx-auto font-normal leading-relaxed mb-10">
+                Dai token grezzi alla predizione della parola successiva: esplora visivamente ed interattivamente la meccanica concettuale interna dell'architettura Transformer.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#canvas-section" class="px-6 py-3 rounded-xl bg-[var(--ink)] text-[var(--cream)] font-medium hover:bg-[var(--primary)] transition-all flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-play text-xs"></i> Avvia l'Explainer Animato
+                </a>
+                <a href="#operational-tool" class="px-6 py-3 rounded-xl bg-[var(--paper)] text-[var(--ink)] font-medium border border-[var(--subtle-border)] hover:bg-[var(--accent-light)] transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-xs"></i> Apri il Prototipatore
+                </a>
+            </div>
+        </section>
+
+        <!-- Interactive Visual Canvas Section -->
+        <section id="canvas-section" class="py-8 px-4 sm:px-6 max-w-6xl mx-auto">
+            <div class="paper-card p-4 sm:p-8 shadow-xl relative overflow-hidden">
+                
+                <!-- Canvas Header & Scene Title Dynamic Box -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[var(--subtle-border)] mb-6">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono-code text-[var(--accent)] font-semibold uppercase tracking-wider mb-1">
+                            <span id="scene-number-tag">Scena 01 / 06</span>
+                        </div>
+                        <h2 id="scene-title" class="text-2xl sm:text-3xl font-bold text-[var(--ink)]">
+                            1. Input del Testo
+                        </h2>
+                    </div>
+                    <p id="scene-description" class="text-sm sm:text-base text-[var(--ink)]/75 max-w-xl leading-snug">
+                        Il percorso inizia con una frase in linguaggio naturale fornita dall'utente come prompt di input.
+                    </p>
+                </div>
+
+                <!-- Scene Navigation Pills -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-4 text-xs font-medium no-scrollbar">
+                    <button onclick="window.sceneApp.goTo(0)" class="scene-pill px-3 py-1.5 rounded-lg border border-[var(--subtle-border)] hover:bg-[var(--paper)] transition-all flex items-center gap-2 whitespace-nowrap active-pill" data-index="0">
+                        <span>01.</span> Input
+                    </button>
+                    <button onclick="window.sceneApp.goTo(1)" class="scene-pill px-3 py-1.5 rounded-lg border border-[var(--subtle-border)] hover:bg-[var(--paper)] transition-all flex items-center gap-2 whitespace-nowrap" data-index="1">
+                        <span>02.</span> Tokenizzazione
+                    </button>
+                    <button onclick="window.sceneApp.goTo(2)" class="scene-pill px-3 py-1.5 rounded-lg border border-[var(--subtle-border)] hover:bg-[var(--paper)] transition-all flex items-center gap-2 whitespace-nowrap" data-index="2">
+                        <span>03.</span> Vector Embedding
+                    </button>
+                    <button onclick="window.sceneApp.goTo(3)" class="scene-pill px-3 py-1.5 rounded-lg border border-[var(--subtle-border)] hover:bg-[var(--paper)] transition-all flex items-center gap-2 whitespace-nowrap" data-index="3">
+                        <span>04.</span> Self-Attention
+                    </button>
+                    <button onclick="window.sceneApp.goTo(4)" class="scene-pill px-3 py-1.5 rounded-lg border border-[var(--subtle-border)] hover:bg-[var(--paper)] transition-all flex items-center gap-2 whitespace-nowrap" data-index="4">
+                        <span>05.</span> Prediction
+                    </button>
+                    <button onclick="window.sceneApp.goTo(5)" class="scene-pill px-3 py-1.5 rounded-lg border border-[var(--subtle-border)] hover:bg-[var(--paper)] transition-all flex items-center gap-2 whitespace-nowrap" data-index="5">
+                        <span>06.</span> Generazione
+                    </button>
+                </div>
+
+                <!-- SVG Interactive Animation Screen -->
+                <div class="relative w-full aspect-[16/9] min-h-[380px] sm:min-h-[480px] bg-[var(--cream)] rounded-xl border border-[var(--subtle-border)] overflow-hidden shadow-inner flex items-center justify-center">
+                    
+                    <!-- Background Grid -->
+                    <div class="absolute inset-0 opacity-40 pointer-events-none" style="background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+                    <!-- SVG Renderer -->
+                    <svg id="svg-canvas" class="w-full h-full relative z-10" viewBox="0 0 1000 580" preserveAspectRatio="xMidYMid meet" aria-label="Visualizzazione grafica delle fasi del Transformer">
+                        <defs>
+                            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                                <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#221b16" flood-opacity="0.12"/>
+                            </filter>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                            <linearGradient id="primary-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#7c1d3f" />
+                                <stop offset="100%" stop-color="#5a1530" />
+                            </linearGradient>
+                            <linearGradient id="accent-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#b8862c" />
+                                <stop offset="100%" stop-color="#d4a34b" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Layers Structure -->
+                        <g id="layer-bg"></g>
+                        <g id="layer-connections"></g>
+                        <g id="layer-objects"></g>
+                        <g id="layer-particles"></g>
+                        <g id="layer-labels"></g>
+                        <g id="layer-controls"></g>
+                    </svg>
+
+                    <!-- Interactive Parameter Controls Overlay (Dynamically toggled for Attention/Prediction scenes) -->
+                    <div id="interactive-overlay" class="absolute bottom-4 right-4 bg-[var(--cream)]/95 border border-[var(--subtle-border)] backdrop-blur-md p-3 sm:p-4 rounded-xl shadow-lg z-20 max-w-xs text-xs space-y-3 transition-opacity duration-300 opacity-0 pointer-events-none">
+                        <div class="font-bold text-[var(--ink)] flex items-center justify-between">
+                            <span id="overlay-title"><i class="fa-solid fa-sliders text-[var(--primary)] mr-1"></i> Parametri Live</span>
+                        </div>
+                        
+                        <div id="control-attention-box" class="space-y-1">
+                            <div class="flex justify-between font-mono-code text-[11px]">
+                                <span>Soglia Attention:</span>
+                                <span id="val-attention" class="font-bold text-[var(--primary)]">0.45</span>
+                            </div>
+                            <input type="range" id="slider-attention" min="0.1" max="0.9" step="0.05" value="0.45" class="w-full accent-[var(--primary)] cursor-pointer">
+                        </div>
+
+                        <div id="control-temperature-box" class="space-y-1">
+                            <div class="flex justify-between font-mono-code text-[11px]">
+                                <span>Temperatura:</span>
+                                <span id="val-temperature" class="font-bold text-[var(--accent)]">0.70</span>
+                            </div>
+                            <input type="range" id="slider-temperature" min="0.1" max="1.5" step="0.1" value="0.7" class="w-full accent-[var(--accent)] cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scene Controller Bar -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-[var(--subtle-border)]">
+                    <div class="flex items-center gap-2">
+                        <button id="btn-prev" class="px-4 py-2 rounded-lg bg-[var(--paper)] border border-[var(--subtle-border)] font-medium text-sm hover:bg-[var(--accent-light)] transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-left text-xs"></i> Indietro
+                        </button>
+                        <button id="btn-play-pause" class="px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--cream)] font-medium text-sm hover:bg-[var(--primary-dark)] transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right text-xs"></i> Replay Scena
+                        </button>
+                        <button id="btn-next" class="px-4 py-2 rounded-lg bg-[var(--ink)] text-[var(--cream)] font-medium text-sm hover:bg-[var(--primary)] transition-all flex items-center gap-2">
+                            Avanti <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Progress Dots -->
+                    <div id="scene-dots" class="flex items-center gap-2">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Operational Sandbox Tool -->
+        <section id="operational-tool" class="py-16 px-4 sm:px-6 max-w-6xl mx-auto">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-xs font-mono-code text-[var(--accent)] uppercase tracking-wider font-bold">Strumento Applicativo</span>
+                <h2 class="text-3xl font-bold text-[var(--ink)] mt-1 mb-3">Simulatore di Generazione Live</h2>
+                <p class="text-sm sm:text-base text-[var(--ink)]/75">
+                    Digita una frase per osservare in tempo reale come il modello la suddivide in token, ne mappa la struttura nello spazio semantico e calcola la distribuzione delle probabilità successive.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left Input Panel -->
+                <div class="lg:col-span-5 paper-card p-6 flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <label for="prompt-input" class="block font-semibold text-sm text-[var(--ink)]">
+                            Prompt di Testo di Prova:
+                        </label>
+                        <div class="relative">
+                            <textarea id="prompt-input" rows="3" class="w-full p-3 text-sm rounded-xl border border-[var(--subtle-border)] bg-[var(--cream)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-serif-editorial text-[15px]" placeholder="Inserisci una frase, es: Il gatto beve il latte caldo...">Il gatto beve il latte</textarea>
+                        </div>
+
+                        <!-- Presets -->
+                        <div>
+                            <span class="text-xs text-[var(--ink)]/60 block mb-2 font-medium">Esempi rapidi preimpostati:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="window.setPreset('Il gatto beve il latte')" class="px-2.5 py-1 text-xs rounded-md bg-[var(--paper)] hover:bg-[var(--accent-light)] border border-[var(--subtle-border)] transition-colors">Gatto e latte</button>
+                                <button onclick="window.setPreset('La capitale d\'Italia è Roma')" class="px-2.5 py-1 text-xs rounded-md bg-[var(--paper)] hover:bg-[var(--accent-light)] border border-[var(--subtle-border)] transition-colors">Geografia</button>
+                                <button onclick="window.setPreset('L\'intelligenza artificiale apprende dai')" class="px-2.5 py-1 text-xs rounded-md bg-[var(--paper)] hover:bg-[var(--accent-light)] border border-[var(--subtle-border)] transition-colors">Tech</button>
+                            </div>
+                        </div>
+
+                        <!-- Model Hyperparameters -->
+                        <div class="p-4 rounded-xl bg-[var(--paper)]/60 border border-[var(--subtle-border)] space-y-3 text-xs">
+                            <div class="font-bold text-[var(--ink)]">Impostazioni della Pipeline</div>
+                            <div class="flex justify-between items-center">
+                                <span>Algoritmo Tokenizer:</span>
+                                <span class="font-mono-code font-semibold">BPE (Byte-Pair)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Campionamento:</span>
+                                <span class="font-mono-code font-semibold">Top-P (Nucleus 0.9)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btn-process-sim" class="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-[var(--cream)] font-semibold transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-gears"></i> Elabora Flusso Transformer
+                    </button>
+                </div>
+
+                <!-- Right Dynamic Output Sandbox -->
+                <div class="lg:col-span-7 paper-card p-6 flex flex-col justify-between space-y-6">
+                    <div class="space-y-6">
+                        <!-- Step 1: Token breakdown -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-mono-code font-bold uppercase text-[var(--primary)]">1. Token Estratti</span>
+                                <span id="sim-token-count" class="text-xs font-mono-code text-[var(--ink)]/60">5 Token</span>
+                            </div>
+                            <div id="sim-tokens-container" class="flex flex-wrap gap-2 p-3 bg-[var(--cream)] rounded-xl border border-[var(--subtle-border)] min-h-[50px] items-center">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Next Token Prediction Probabilities -->
+                        <div>
+                            <span class="text-xs font-mono-code font-bold uppercase text-[var(--accent)] block mb-2">2. Top Candidate Next-Tokens</span>
+                            <div id="sim-probs-container" class="space-y-2 p-3 bg-[var(--cream)] rounded-xl border border-[var(--subtle-border)]">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Generated Final Prompt Continuation -->
+                        <div>
+                            <span class="text-xs font-mono-code font-bold uppercase text-[var(--ink)]/70 block mb-1">3. Testo Continuato Autonomamente:</span>
+                            <div id="sim-final-output" class="p-3 bg-[var(--paper)] rounded-xl border border-[var(--subtle-border)] font-serif-editorial text-base text-[var(--ink)] font-medium">
+                                --
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar with Copy Function -->
+                    <div class="flex items-center justify-between pt-4 border-t border-[var(--subtle-border)]">
+                        <span class="text-xs text-[var(--ink)]/60 italic">Risultato della simulazione pronto per esportazione</span>
+                        <button id="btn-copy-sim" class="px-4 py-2 rounded-lg bg-[var(--ink)] hover:bg-[var(--primary)] text-[var(--cream)] text-xs font-medium transition-colors flex items-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Copia Report Simulazione
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparative Deep Dive: Traditional NLP vs Transformer -->
+        <section id="comparison" class="py-16 px-4 sm:px-6 max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="text-xs font-mono-code text-[var(--accent)] uppercase tracking-wider font-bold">Analisi Comparativa</span>
+                <h2 class="text-3xl font-bold text-[var(--ink)] mt-1">N-Gram vs Self-Attention</h2>
+                <p class="text-sm text-[var(--ink)]/75 mt-2">Perché l'architettura Transformer ha rivoluzionato il campo rispetto ai vecchi modelli statistici.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1: Traditional NLP -->
+                <div class="paper-card p-6 border-l-4 border-l-amber-700 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold font-serif-editorial text-[var(--ink)]">Approccio Tradizionale (N-Gram / RNN)</h3>
+                        <span class="px-2.5 py-1 text-[10px] font-mono-code uppercase rounded bg-amber-100 text-amber-900 font-bold">Pre-2017</span>
+                    </div>
+
+                    <ul class="space-y-3 text-sm text-[var(--ink)]/80">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-xmark text-red-700 mt-1"></i>
+                            <span><strong>Finestra di memoria limitata:</strong> Dimentica le parole lette all'inizio di un paragrafo lungo.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-xmark text-red-700 mt-1"></i>
+                            <span><strong>Elaborazione Sequenziale:</strong> Non può parallelizzare il calcolo sulle GPU moderne.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-xmark text-red-700 mt-1"></i>
+                            <span><strong>Ambiguità contestuale:</strong> La parola "banca" ha lo stesso significato rigido indipendentemente dal contesto.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card 2: Transformer LLM -->
+                <div class="paper-card p-6 border-l-4 border-l-[var(--primary)] space-y-4 bg-white">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold font-serif-editorial text-[var(--primary)]">Architettura Transformer (Attention)</h3>
+                        <span class="px-2.5 py-1 text-[10px] font-mono-code uppercase rounded bg-rose-100 text-[var(--primary)] font-bold">Standard Attuale</span>
+                    </div>
+
+                    <ul class="space-y-3 text-sm text-[var(--ink)]/80">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-700 mt-1"></i>
+                            <span><strong>Self-Attention O(N²):</strong> Collega direttamente ogni parola a tutte le altre parole nella finestra di contesto.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-700 mt-1"></i>
+                            <span><strong>Elaborazione Parallela:</strong> Processa l'intero prompt contemporaneamente in fase di addestramento.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-700 mt-1"></i>
+                            <span><strong>Embedding Dinamico:</strong> "Banca" riceve una rappresentazione vettoriale differente se seguita da "fiume" o da "denaro".</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Synthesis & Ready-to-Copy Cheat Sheet Section -->
+        <section id="summary" class="py-16 px-4 sm:px-6 max-w-5xl mx-auto">
+            <div class="paper-card p-6 sm:p-10 bg-[var(--paper)] border border-[var(--subtle-border)]">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-[var(--subtle-border)]">
+                    <div>
+                        <span class="text-xs font-mono-code text-[var(--primary)] font-bold uppercase">Quaderno Didattico</span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-[var(--ink)] mt-1">Sintesi dei Concetti Chiave</h2>
+                    </div>
+                    <button id="btn-copy-summary" class="px-4 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-[var(--cream)] text-sm font-semibold transition-all shadow flex items-center gap-2 self-start md:self-auto">
+                        <i class="fa-regular fa-copy"></i> Copia Scheda Sintetica
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-sm">
+                    <div class="space-y-2">
+                        <div class="font-bold text-[var(--primary)] font-mono-code">1. Tokenization</div>
+                        <p class="text-xs text-[var(--ink)]/80 leading-relaxed">
+                            Ponte tra testo umano e numeri. Spezza le stringhe in frammenti sottoparola indicizzati da ID numerici univoci.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="font-bold text-[var(--primary)] font-mono-code">2. Vector Space</div>
+                        <p class="text-xs text-[var(--ink)]/80 leading-relaxed">
+                            Mappa i token in uno spazio a centinaia di dimensioni. Concetti semanticamente simili si posizionano vicini.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="font-bold text-[var(--primary)] font-mono-code">3. Positional Encoding</div>
+                        <p class="text-xs text-[var(--ink)]/80 leading-relaxed">
+                            Aggiunge la consapevolezza dell'ordine delle parole nei vettori, essenziale perché il Transformer elabora tutto in parallelo.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="font-bold text-[var(--primary)] font-mono-code">4. Self-Attention</div>
+                        <p class="text-xs text-[var(--ink)]/80 leading-relaxed">
+                            Calcola matrici di affinità Query, Key e Value per determinare l'influenza reciproca di ciascun token nel contesto.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="font-bold text-[var(--primary)] font-mono-code">5. Logits & Softmax</div>
+                        <p class="text-xs text-[var(--ink)]/80 leading-relaxed">
+                            Converte i punteggi grezzi di output della rete in una distribuzione percentuale di probabilità per l'intero vocabolario.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="font-bold text-[var(--primary)] font-mono-code">6. Autoregressione</div>
+                        <p class="text-xs text-[var(--ink)]/80 leading-relaxed">
+                            Il token appena predetto viene riagganciato in coda al prompt originale per generare la parola successiva nel ciclo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--ink)] text-[var(--cream)]/70 py-12 px-4 sm:px-6 border-t border-[var(--subtle-border)] text-sm">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded bg-[var(--primary)] text-[var(--cream)] flex items-center justify-center font-bold font-serif-editorial text-sm">
+                    A
+                </span>
+                <span class="font-serif-editorial font-bold text-lg text-white">SPA Didattica Editoriale</span>
+            </div>
+
+            <p class="text-xs text-center md:text-left text-zinc-400">
+                Basato sulla logica "Leitwort" &bull; Autonomo e monofile &bull; Nessuna dipendenza server.
+            </p>
+
+            <div class="text-xs font-mono-code text-zinc-400">
+                Visual Explainer Transformer v2.5
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-[var(--ink)] text-[var(--cream)] px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-amber-900/30 text-sm font-medium pointer-events-none">
+        <i class="fa-solid fa-circle-check text-[var(--accent)]"></i>
+        <span id="toast-message">Copiato negli appunti!</span>
+    </div>
+
+    <script>
+        /**
+         * Global Application State & Data Structure
+         */
+        const AI_EXPLAINER_DATA = {
+            scenes: [
+                {
+                    id: 'input',
+                    title: '1. Input del Testo (Prompt)',
+                    numberTag: 'Scena 01 / 06',
+                    description: 'Tutto parte da una sequenza di testo inserita dall\'utente. La rete neurale deve prepararsi a interpretare questi caratteri grezzi.',
+                    promptText: "Il gatto beve il latte"
+                },
+                {
+                    id: 'tokenization',
+                    title: '2. Tokenizzazione & ID Numerici',
+                    numberTag: 'Scena 02 / 06',
+                    description: 'Il testo viene suddiviso in unità atomiche (token). Ad ogni token corrisponde un ID intero univoco nel vocabolario.',
+                    tokens: [
+                        { text: "Il", id: 381, color: "#7c1d3f" },
+                        { text: "gatto", id: 1042, color: "#b8862c" },
+                        { text: "beve", id: 882, color: "#2d6a4f" },
+                        { text: "il", id: 381, color: "#7c1d3f" },
+                        { text: "latte", id: 2419, color: "#1d3557" }
+                    ]
+                },
+                {
+                    id: 'embedding',
+                    title: '3. Spazio dei Vettori (Embedding 2D)',
+                    numberTag: 'Scena 03 / 06',
+                    description: 'Gli ID numerici vengono convertiti in vettori densi. Nel nostro spazio 2D semplificato, parole con significati affini si collocano vicine.',
+                    vectors: [
+                        { label: "gatto", x: 260, y: 220, category: "animali" },
+                        { label: "cane", x: 210, y: 260, category: "animali" },
+                        { label: "beve", x: 620, y: 190, category: "azioni" },
+                        { label: "mangia", x: 680, y: 230, category: "azioni" },
+                        { label: "latte", x: 480, y: 400, category: "bevande" },
+                        { label: "acqua", x: 420, y: 440, category: "bevande" },
+                        { label: "auto", x: 800, y: 420, category: "oggetti" }
+                    ]
+                },
+                {
+                    id: 'attention',
+                    title: '4. Meccanismo di Self-Attention',
+                    numberTag: 'Scena 04 / 06',
+                    description: 'L\'Attention permette a ciascun token di guardare gli altri token della frase per derivarne il contesto specifico (es. "beve" collega "gatto" a "latte").',
+                    nodes: [
+                        { text: "Il", x: 150, y: 280 },
+                        { text: "gatto", x: 320, y: 280 },
+                        { text: "beve", x: 500, y: 280 },
+                        { text: "il", x: 680, y: 280 },
+                        { text: "latte", x: 850, y: 280 }
+                    ],
+                    links: [
+                        { from: 1, to: 2, weight: 0.85, label: "chi beve?" },
+                        { from: 2, to: 4, weight: 0.92, label: "cosa beve?" },
+                        { from: 0, to: 1, weight: 0.35, label: "articolo" },
+                        { from: 3, to: 4, weight: 0.30, label: "articolo" },
+                        { from: 1, to: 4, weight: 0.65, label: "soggetto-oggetto" }
+                    ]
+                },
+                {
+                    id: 'prediction',
+                    title: '5. Distribuzione di Probabilità (Next-Token)',
+                    numberTag: 'Scena 05 / 06',
+                    description: 'Dopo i livelli di Attention, il modello calcola i Logits e la funzione Softmax produce una percentuale per ciascun candidato possibile nel vocabolario.',
+                    candidates: [
+                        { word: "caldo", prob: 68, selected: true },
+                        { word: "fresco", prob: 18, selected: false },
+                        { word: "subito", prob: 9, selected: false },
+                        { word: "in cucina", prob: 5, selected: false }
+                    ]
+                },
+                {
+                    id: 'generation',
+                    title: '6. Generazione Autoregressiva Loop',
+                    numberTag: 'Scena 06 / 06',
+                    description: 'Il token scelto ("caldo") viene aggiunto al prompt e il flusso ricomincia per generare la parola successiva.',
+                    loopText: "Il gatto beve il latte"
+                }
+            ]
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toast-message");
+            if (!toast || !toastMsg) return;
+
+            toastMsg.textContent = msg;
+            toast.classList.add("show");
+
+            if (window.toastTimer) clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+        class SceneManager {
+            constructor(data, svgId) {
+                this.data = data;
+                this.svg = document.getElementById(svgId);
+                this.currentIndex = 0;
+                this.activeTimeline = null;
+                
+                // SVG Layer references
+                this.layerBg = document.getElementById("layer-bg");
+                this.layerConnections = document.getElementById("layer-connections");
+                this.layerObjects = document.getElementById("layer-objects");
+                this.layerParticles = document.getElementById("layer-particles");
+                this.layerLabels = document.getElementById("layer-labels");
+
+                this.attentionThreshold = 0.45;
+                this.temperature = 0.7;
+
+                this.initUI();
+                this.renderDots();
+                this.goTo(0);
+            }
+
+            clearLayers() {
+                if (this.activeTimeline) {
+                    this.activeTimeline.kill();
+                }
+                this.layerBg.innerHTML = "";
+                this.layerConnections.innerHTML = "";
+                this.layerObjects.innerHTML = "";
+                this.layerParticles.innerHTML = "";
+                this.layerLabels.innerHTML = "";
+            }
+
+            initUI() {
+                const btnPrev = document.getElementById("btn-prev");
+                const btnNext = document.getElementById("btn-next");
+                const btnPlay = document.getElementById("btn-play-pause");
+                const sliderAtt = document.getElementById("slider-attention");
+                const sliderTemp = document.getElementById("slider-temperature");
+
+                if (btnPrev) btnPrev.addEventListener("click", () => this.previous());
+                if (btnNext) btnNext.addEventListener("click", () => this.next());
+                if (btnPlay) btnPlay.addEventListener("click", () => this.goTo(this.currentIndex));
+
+                if (sliderAtt) {
+                    sliderAtt.addEventListener("input", (e) => {
+                        this.attentionThreshold = parseFloat(e.target.value);
+                        document.getElementById("val-attention").textContent = this.attentionThreshold.toFixed(2);
+                        if (this.currentIndex === 3) this.drawAttentionScene();
+                    });
+                }
+
+                if (sliderTemp) {
+                    sliderTemp.addEventListener("input", (e) => {
+                        this.temperature = parseFloat(e.target.value);
+                        document.getElementById("val-temperature").textContent = this.temperature.toFixed(2);
+                        if (this.currentIndex === 4) this.drawPredictionScene();
+                    });
+                }
+            }
+
+            renderDots() {
+                const container = document.getElementById("scene-dots");
+                if (!container) return;
+                container.innerHTML = "";
+                this.data.scenes.forEach((sc, idx) => {
+                    const dot = document.createElement("button");
+                    dot.className = `w-3 h-3 rounded-full transition-all border border-[var(--subtle-border)] ${idx === this.currentIndex ? 'bg-[var(--primary)] w-6' : 'bg-stone-300'}`;
+                    dot.setAttribute("aria-label", `Vai a scena ${idx + 1}`);
+                    dot.onclick = () => this.goTo(idx);
+                    container.appendChild(dot);
+                });
+            }
+
+            updateHeader() {
+                const scene = this.data.scenes[this.currentIndex];
+                const titleEl = document.getElementById("scene-title");
+                const descEl = document.getElementById("scene-description");
+                const tagEl = document.getElementById("scene-number-tag");
+
+                if (titleEl) titleEl.textContent = scene.title;
+                if (descEl) descEl.textContent = scene.description;
+                if (tagEl) tagEl.textContent = scene.numberTag;
+
+                // Update nav pills
+                document.querySelectorAll(".scene-pill").forEach((btn, idx) => {
+                    if (idx === this.currentIndex) {
+                        btn.classList.add("bg-[var(--primary)]", "text-[var(--cream)]", "font-bold");
+                        btn.classList.remove("border-[var(--subtle-border)]");
+                    } else {
+                        btn.classList.remove("bg-[var(--primary)]", "text-[var(--cream)]", "font-bold");
+                        btn.classList.add("border-[var(--subtle-border)]");
+                    }
+                });
+
+                this.renderDots();
+
+                // Toggle Overlay Sliders
+                const overlay = document.getElementById("interactive-overlay");
+                const boxAtt = document.getElementById("control-attention-box");
+                const boxTemp = document.getElementById("control-temperature-box");
+
+                if (overlay && boxAtt && boxTemp) {
+                    if (this.currentIndex === 3) {
+                        overlay.style.opacity = "1";
+                        overlay.style.pointerEvents = "auto";
+                        boxAtt.style.display = "block";
+                        boxTemp.style.display = "none";
+                    } else if (this.currentIndex === 4) {
+                        overlay.style.opacity = "1";
+                        overlay.style.pointerEvents = "auto";
+                        boxAtt.style.display = "none";
+                        boxTemp.style.display = "block";
+                    } else {
+                        overlay.style.opacity = "0";
+                        overlay.style.pointerEvents = "none";
+                    }
+                }
+            }
+
+            next() {
+                if (this.currentIndex < this.data.scenes.length - 1) {
+                    this.goTo(this.currentIndex + 1);
+                }
+            }
+
+            previous() {
+                if (this.currentIndex > 0) {
+                    this.goTo(this.currentIndex - 1);
+                }
+            }
+
+            goTo(index) {
+                this.currentIndex = index;
+                this.clearLayers();
+                this.updateHeader();
+
+                switch (index) {
+                    case 0: this.drawInputScene(); break;
+                    case 1: this.drawTokenScene(); break;
+                    case 2: this.drawEmbeddingScene(); break;
+                    case 3: this.drawAttentionScene(); break;
+                    case 4: this.drawPredictionScene(); break;
+                    case 5: this.drawGenerationScene(); break;
+                }
+            }
+
+            drawInputScene() {
+                const tl = gsap.timeline();
+                this.activeTimeline = tl;
+
+                // Create Central Frame Box
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", "200");
+                rect.setAttribute("y", "200");
+                rect.setAttribute("width", "600");
+                rect.setAttribute("height", "180");
+                rect.setAttribute("rx", "20");
+                rect.setAttribute("fill", "#faf6ee");
+                rect.setAttribute("stroke", "#7c1d3f");
+                rect.setAttribute("stroke-width", "3");
+                rect.setAttribute("filter", "url(#shadow)");
+                this.layerObjects.appendChild(rect);
+
+                // Label Tag
+                const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                label.setAttribute("x", "230");
+                label.setAttribute("y", "235");
+                label.setAttribute("fill", "#b8862c");
+                label.setAttribute("font-size", "14");
+                label.setAttribute("font-weight", "bold");
+                label.setAttribute("font-family", "JetBrains Mono");
+                label.textContent = "PROMPT INGRESSO (STRINGA GREZZA)";
+                this.layerLabels.appendChild(label);
+
+                // Animated Prompt Text
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", "230");
+                text.setAttribute("y", "300");
+                text.setAttribute("fill", "#221b16");
+                text.setAttribute("font-size", "32");
+                text.setAttribute("font-family", "Playfair Display");
+                text.setAttribute("font-weight", "bold");
+                text.textContent = "“Il gatto beve il latte”";
+                this.layerLabels.appendChild(text);
+
+                // Cursor Line
+                const cursor = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                cursor.setAttribute("x1", "565");
+                cursor.setAttribute("y1", "270");
+                cursor.setAttribute("x2", "565");
+                cursor.setAttribute("y2", "305");
+                cursor.setAttribute("stroke", "#7c1d3f");
+                cursor.setAttribute("stroke-width", "3");
+                this.layerObjects.appendChild(cursor);
+
+                // GSAP Animations
+                tl.from(rect, { duration: 0.8, scale: 0.8, opacity: 0, ease: "back.out(1.7)" })
+                  .from(text, { duration: 1, opacity: 0, y: 10, ease: "power2.out" })
+                  .to(cursor, { duration: 0.5, opacity: 0, repeat: -1, yoyo: true });
+            }
+
+            drawTokenScene() {
+                const tl = gsap.timeline();
+                this.activeTimeline = tl;
+
+                const tokens = this.data.scenes[1].tokens;
+                const startX = 140;
+                const spacing = 150;
+
+                tokens.forEach((t, i) => {
+                    const x = startX + i * spacing;
+
+                    // Token Card Box
+                    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    g.setAttribute("class", "svg-node");
+
+                    const box = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    box.setAttribute("x", x);
+                    box.setAttribute("y", "230");
+                    box.setAttribute("width", "125");
+                    box.setAttribute("height", "130");
+                    box.setAttribute("rx", "16");
+                    box.setAttribute("fill", "#ffffff");
+                    box.setAttribute("stroke", t.color);
+                    box.setAttribute("stroke-width", "2");
+                    box.setAttribute("filter", "url(#shadow)");
+
+                    // Word Text
+                    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txt.setAttribute("x", x + 62);
+                    txt.setAttribute("y", "280");
+                    txt.setAttribute("text-anchor", "middle");
+                    txt.setAttribute("fill", "#221b16");
+                    txt.setAttribute("font-size", "20");
+                    txt.setAttribute("font-weight", "bold");
+                    txt.setAttribute("font-family", "Inter");
+                    txt.textContent = t.text;
+
+                    // ID Badge Box
+                    const badge = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    badge.setAttribute("x", x + 20);
+                    badge.setAttribute("y", "310");
+                    badge.setAttribute("width", "85");
+                    badge.setAttribute("height", "30");
+                    badge.setAttribute("rx", "8");
+                    badge.setAttribute("fill", t.color);
+
+                    const idTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    idTxt.setAttribute("x", x + 62);
+                    idTxt.setAttribute("y", "330");
+                    idTxt.setAttribute("text-anchor", "middle");
+                    idTxt.setAttribute("fill", "#faf6ee");
+                    idTxt.setAttribute("font-size", "12");
+                    idTxt.setAttribute("font-family", "JetBrains Mono");
+                    idTxt.setAttribute("font-weight", "bold");
+                    idTxt.textContent = `ID #${t.id}`;
+
+                    g.appendChild(box);
+                    g.appendChild(txt);
+                    g.appendChild(badge);
+                    g.appendChild(idTxt);
+                    this.layerObjects.appendChild(g);
+
+                    tl.from(g, { duration: 0.6, y: -40, opacity: 0, ease: "back.out(1.5)" }, i * 0.15);
+                });
+            }
+
+            drawEmbeddingScene() {
+                const tl = gsap.timeline();
+                this.activeTimeline = tl;
+
+                // Axes
+                const axisX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                axisX.setAttribute("x1", "150"); axisX.setAttribute("y1", "480");
+                axisX.setAttribute("x2", "850"); axisX.setAttribute("y2", "480");
+                axisX.setAttribute("stroke", "#221b16"); axisX.setAttribute("stroke-opacity", "0.3"); axisX.setAttribute("stroke-width", "2");
+
+                const axisY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                axisY.setAttribute("x1", "150"); axisY.setAttribute("y1", "100");
+                axisY.setAttribute("x2", "150"); axisY.setAttribute("y2", "480");
+                axisY.setAttribute("stroke", "#221b16"); axisY.setAttribute("stroke-opacity", "0.3"); axisY.setAttribute("stroke-width", "2");
+
+                this.layerBg.appendChild(axisX);
+                this.layerBg.appendChild(axisY);
+
+                // Cluster Labels
+                const clusters = [
+                    { name: "Soggetti / Animali", x: 230, y: 170 },
+                    { name: "Verbi / Azioni", x: 650, y: 150 },
+                    { name: "Cibi / Bevande", x: 450, y: 360 }
+                ];
+
+                clusters.forEach(c => {
+                    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    t.setAttribute("x", c.x); t.setAttribute("y", c.y);
+                    t.setAttribute("fill", "#b8862c"); t.setAttribute("font-size", "12");
+                    t.setAttribute("font-family", "JetBrains Mono"); t.setAttribute("font-weight", "bold");
+                    t.setAttribute("opacity", "0.7");
+                    t.textContent = c.name;
+                    this.layerLabels.appendChild(t);
+                });
+
+                // Nodes
+                const vectors = this.data.scenes[2].vectors;
+                vectors.forEach((v, i) => {
+                    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    g.setAttribute("class", "svg-node");
+
+                    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    dot.setAttribute("cx", v.x);
+                    dot.setAttribute("cy", v.y);
+                    dot.setAttribute("r", "10");
+                    dot.setAttribute("fill", v.label === "gatto" || v.label === "beve" || v.label === "latte" ? "#7c1d3f" : "#2d6a4f");
+                    dot.setAttribute("filter", "url(#shadow)");
+
+                    const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    lbl.setAttribute("x", v.x + 15);
+                    lbl.setAttribute("y", v.y + 5);
+                    lbl.setAttribute("fill", "#221b16");
+                    lbl.setAttribute("font-size", "14");
+                    lbl.setAttribute("font-weight", "bold");
+                    lbl.setAttribute("font-family", "Inter");
+                    lbl.textContent = v.label;
+
+                    g.appendChild(dot);
+                    g.appendChild(lbl);
+                    this.layerObjects.appendChild(g);
+
+                    tl.from(g, { duration: 0.7, scale: 0, opacity: 0, ease: "elastic.out(1, 0.5)" }, i * 0.1);
+                });
+
+                // Semantic Connection Line between gatto and cane
+                const conn = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                conn.setAttribute("x1", "260"); conn.setAttribute("y1", "220");
+                conn.setAttribute("x2", "210"); conn.setAttribute("y2", "260");
+                conn.setAttribute("stroke", "#b8862c"); conn.setAttribute("stroke-dasharray", "4"); conn.setAttribute("stroke-width", "2");
+                this.layerConnections.appendChild(conn);
+
+                tl.from(conn, { duration: 0.8, opacity: 0 }, 1.0);
+            }
+
+            drawAttentionScene() {
+                this.clearLayers();
+                const tl = gsap.timeline();
+                this.activeTimeline = tl;
+
+                const nodes = this.data.scenes[3].nodes;
+                const links = this.data.scenes[3].links;
+
+                // Render Connections Arcs
+                links.forEach((link, idx) => {
+                    if (link.weight < this.attentionThreshold) return;
+
+                    const n1 = nodes[link.from];
+                    const n2 = nodes[link.to];
+
+                    const midX = (n1.x + n2.x) / 2;
+                    const curveY = 280 - Math.abs(n2.x - n1.x) * 0.45;
+
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    const d = `M ${n1.x} 260 Q ${midX} ${curveY} ${n2.x} 260`;
+                    path.setAttribute("d", d);
+                    path.setAttribute("fill", "none");
+                    path.setAttribute("stroke", "#7c1d3f");
+                    path.setAttribute("stroke-width", Math.max(2, link.weight * 6));
+                    path.setAttribute("stroke-opacity", link.weight);
+                    path.setAttribute("class", "attention-path");
+
+                    this.layerConnections.appendChild(path);
+
+                    // Flowing Particle
+                    const particle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    particle.setAttribute("r", "5");
+                    particle.setAttribute("fill", "#b8862c");
+                    particle.setAttribute("filter", "url(#glow)");
+                    this.layerParticles.appendChild(particle);
+
+                    // Animate Particle along path using GSAP
+                    tl.to(particle, {
+                        duration: 2 + (1 - link.weight) * 2,
+                        repeat: -1,
+                        ease: "none",
+                        motionPath: {
+                            path: path,
+                            align: path,
+                            alignOrigin: [0.5, 0.5]
+                        }
+                    }, 0);
+                });
+
+                // Render Nodes
+                nodes.forEach((node, i) => {
+                    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    g.setAttribute("class", "svg-node");
+
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("x", node.x - 50);
+                    rect.setAttribute("y", "260");
+                    rect.setAttribute("width", "100");
+                    rect.setAttribute("height", "50");
+                    rect.setAttribute("rx", "12");
+                    rect.setAttribute("fill", "#faf6ee");
+                    rect.setAttribute("stroke", "#221b16");
+                    rect.setAttribute("stroke-width", "2");
+                    rect.setAttribute("filter", "url(#shadow)");
+
+                    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txt.setAttribute("x", node.x);
+                    txt.setAttribute("y", "292");
+                    txt.setAttribute("text-anchor", "middle");
+                    txt.setAttribute("fill", "#221b16");
+                    txt.setAttribute("font-size", "16");
+                    txt.setAttribute("font-weight", "bold");
+                    txt.setAttribute("font-family", "Inter");
+                    txt.textContent = node.text;
+
+                    g.appendChild(rect);
+                    g.appendChild(txt);
+                    this.layerObjects.appendChild(g);
+
+                    tl.from(g, { duration: 0.5, scale: 0.8, opacity: 0 }, i * 0.1);
+                });
+            }
+
+            drawPredictionScene() {
+                this.clearLayers();
+                const tl = gsap.timeline();
+                this.activeTimeline = tl;
+
+                const candidates = this.data.scenes[4].candidates;
+                const startY = 160;
+                const spacingY = 80;
+
+                // Adjust probabilities slightly by temperature scale
+                const adjustedProbs = candidates.map(c => {
+                    let adjusted = Math.pow(c.prob, 1 / this.temperature);
+                    return adjusted;
+                });
+                const total = adjustedProbs.reduce((a, b) => a + b, 0);
+                const finalPercentages = adjustedProbs.map(v => Math.round((v / total) * 100));
+
+                candidates.forEach((cand, i) => {
+                    const y = startY + i * spacingY;
+                    const pct = finalPercentages[i];
+
+                    // Label
+                    const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    lbl.setAttribute("x", "180");
+                    lbl.setAttribute("y", y + 26);
+                    lbl.setAttribute("fill", "#221b16");
+                    lbl.setAttribute("font-size", "18");
+                    lbl.setAttribute("font-weight", "bold");
+                    lbl.setAttribute("font-family", "Playfair Display");
+                    lbl.textContent = cand.word;
+                    this.layerLabels.appendChild(lbl);
+
+                    // Bar Track
+                    const track = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    track.setAttribute("x", "300");
+                    track.setAttribute("y", y);
+                    track.setAttribute("width", "450");
+                    track.setAttribute("height", "36");
+                    track.setAttribute("rx", "10");
+                    track.setAttribute("fill", "#f2ead9");
+                    this.layerBg.appendChild(track);
+
+                    // Probability Fill Bar
+                    const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    bar.setAttribute("x", "300");
+                    bar.setAttribute("y", y);
+                    bar.setAttribute("width", "0"); // Animated
+                    bar.setAttribute("height", "36");
+                    bar.setAttribute("rx", "10");
+                    bar.setAttribute("fill", cand.selected ? "url(#primary-grad)" : "url(#accent-grad)");
+                    this.layerObjects.appendChild(bar);
+
+                    // Percentage Text
+                    const pctTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    pctTxt.setAttribute("x", "765");
+                    pctTxt.setAttribute("y", y + 24);
+                    pctTxt.setAttribute("fill", cand.selected ? "#7c1d3f" : "#221b16");
+                    pctTxt.setAttribute("font-size", "16");
+                    pctTxt.setAttribute("font-weight", "bold");
+                    pctTxt.setAttribute("font-family", "JetBrains Mono");
+                    pctTxt.textContent = `${pct}%`;
+                    this.layerLabels.appendChild(pctTxt);
+
+                    tl.to(bar, { duration: 1, width: (450 * pct) / 100, ease: "power2.out" }, i * 0.15);
+                });
+            }
+
+            drawGenerationScene() {
+                const tl = gsap.timeline();
+                this.activeTimeline = tl;
+
+                // Box
+                const box = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                box.setAttribute("x", "180"); box.setAttribute("y", "180");
+                box.setAttribute("width", "640"); box.setAttribute("height", "220");
+                box.setAttribute("rx", "20"); box.setAttribute("fill", "#faf6ee");
+                box.setAttribute("stroke", "#7c1d3f"); box.setAttribute("stroke-width", "3");
+                box.setAttribute("filter", "url(#shadow)");
+                this.layerObjects.appendChild(box);
+
+                // Initial text
+                const textInit = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textInit.setAttribute("x", "220"); textInit.setAttribute("y", "260");
+                textInit.setAttribute("fill", "#221b16"); textInit.setAttribute("font-size", "28");
+                textInit.setAttribute("font-family", "Playfair Display");
+                textInit.textContent = "“Il gatto beve il latte";
+                this.layerLabels.appendChild(textInit);
+
+                // New Token appending
+                const textNew = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textNew.setAttribute("x", "520"); textNew.setAttribute("y", "260");
+                textNew.setAttribute("fill", "#7c1d3f"); textNew.setAttribute("font-size", "28");
+                textNew.setAttribute("font-weight", "bold");
+                textNew.setAttribute("font-family", "Playfair Display");
+                textNew.textContent = " caldo”";
+                this.layerLabels.appendChild(textNew);
+
+                // Loop Arrow Path
+                const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                arrow.setAttribute("d", "M 600 320 C 600 420, 250 420, 250 320");
+                arrow.setAttribute("fill", "none");
+                arrow.setAttribute("stroke", "#b8862c");
+                arrow.setAttribute("stroke-width", "4");
+                arrow.setAttribute("stroke-dasharray", "8,6");
+                arrow.setAttribute("marker-end", "url(#arrow-head)");
+                this.layerConnections.appendChild(arrow);
+
+                // Label on Loop
+                const loopLbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                loopLbl.setAttribute("x", "425"); loopLbl.setAttribute("y", "420");
+                loopLbl.setAttribute("text-anchor", "middle");
+                loopLbl.setAttribute("fill", "#b8862c");
+                loopLbl.setAttribute("font-size", "13");
+                loopLbl.setAttribute("font-family", "JetBrains Mono");
+                loopLbl.setAttribute("font-weight", "bold");
+                loopLbl.textContent = "RE-IMMISSIONE NEL PROMPT (AUTOREGRESSIONE)";
+                this.layerLabels.appendChild(loopLbl);
+
+                tl.from(box, { duration: 0.6, opacity: 0, scale: 0.9 })
+                  .from(textNew, { duration: 0.8, opacity: 0, y: -20, ease: "bounce.out" })
+                  .from(arrow, { duration: 1, opacity: 0, strokeDashoffset: 100 })
+                  .from(loopLbl, { duration: 0.5, opacity: 0 });
+            }
+        }
+
+        function runSimulation() {
+            const inputEl = document.getElementById("prompt-input");
+            const tokensContainer = document.getElementById("sim-tokens-container");
+            const probsContainer = document.getElementById("sim-probs-container");
+            const countEl = document.getElementById("sim-token-count");
+            const finalOut = document.getElementById("sim-final-output");
+
+            if (!inputEl || !tokensContainer || !probsContainer) return;
+
+            const text = inputEl.value.trim() || "Il gatto beve il latte";
+            const rawWords = text.split(/\s+/);
+
+            // Render Tokens
+            tokensContainer.innerHTML = "";
+            let tokenCount = 0;
+            const colors = ["#7c1d3f", "#b8862c", "#2d6a4f", "#1d3557"];
+
+            rawWords.forEach((word, idx) => {
+                tokenCount++;
+                const chip = document.createElement("span");
+                const col = colors[idx % colors.length];
+                chip.className = "px-3 py-1.5 rounded-lg text-xs font-mono-code font-bold text-white shadow-sm flex items-center gap-1.5";
+                chip.style.backgroundColor = col;
+                chip.innerHTML = `${word} <span class="opacity-60 text-[10px]">#${1000 + Math.floor(Math.random()*8000)}</span>`;
+                tokensContainer.appendChild(chip);
+            });
+
+            if (countEl) countEl.textContent = `${tokenCount} Token`;
+
+            // Mocked Next Probabilities based on last word
+            const lastWord = rawWords[rawWords.length - 1].toLowerCase();
+            let mockCandidates = [];
+
+            if (lastWord.includes("latte") || lastWord.includes("acqua")) {
+                mockCandidates = [
+                    { word: "caldo", pct: 65 },
+                    { word: "fresco", pct: 22 },
+                    { word: "subito", pct: 8 },
+                    { word: "in tazza", pct: 5 }
+                ];
+            } else if (lastWord.includes("roma") || lastWord.includes("italia")) {
+                mockCandidates = [
+                    { word: "in Europa", pct: 58 },
+                    { word: "storica", pct: 25 },
+                    { word: "e Milano", pct: 12 },
+                    { word: "oggi", pct: 5 }
+                ];
+            } else {
+                mockCandidates = [
+                    { word: "dati", pct: 52 },
+                    { word: "modelli", pct: 30 },
+                    { word: "algoritmi", pct: 12 },
+                    { word: "esempi", pct: 6 }
+                ];
+            }
+
+            probsContainer.innerHTML = "";
+            mockCandidates.forEach((cand, i) => {
+                const row = document.createElement("div");
+                row.className = "flex items-center gap-3 text-xs";
+                row.innerHTML = `
+                    <span class="w-20 font-serif-editorial font-bold text-sm text-[var(--ink)]">${cand.word}</span>
+                    <div class="flex-grow h-3 bg-[var(--paper)] rounded-full overflow-hidden">
+                        <div class="h-full bg-[var(--primary)] transition-all duration-500" style="width: ${cand.pct}%"></div>
+                    </div>
+                    <span class="font-mono-code w-10 text-right font-bold text-[var(--primary)]">${cand.pct}%</span>
+                `;
+                probsContainer.appendChild(row);
+            });
+
+            // Set final continuation
+            const topPrediction = mockCandidates[0].word;
+            if (finalOut) {
+                finalOut.innerHTML = `“${text} <span class="text-[var(--primary)] font-bold underline decoration-[var(--accent)]">${topPrediction}</span>”`;
+            }
+        }
+
+        window.setPreset = function(presetText) {
+            const inputEl = document.getElementById("prompt-input");
+            if (inputEl) {
+                inputEl.value = presetText;
+                runSimulation();
+            }
+        };
+
+        window.addEventListener("DOMContentLoaded", () => {
+            // Instantiate Scene App
+            window.sceneApp = new SceneManager(AI_EXPLAINER_DATA, "svg-canvas");
+
+            // Scroll Progress Indicator
+            window.addEventListener("scroll", () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                const bar = document.getElementById("scroll-progress");
+                if (bar) bar.style.width = scrolled + "%";
+            });
+
+            // Process button in sandbox
+            const btnProcess = document.getElementById("btn-process-sim");
+            if (btnProcess) btnProcess.addEventListener("click", runSimulation);
+
+            // Copy Simulation Report
+            const btnCopySim = document.getElementById("btn-copy-sim");
+            if (btnCopySim) {
+                btnCopySim.addEventListener("click", () => {
+                    const inputEl = document.getElementById("prompt-input");
+                    const finalOut = document.getElementById("sim-final-output");
+                    const txt = `REPORT SIMULAZIONE LLM:\nInput: ${inputEl.value}\nContinuazione Predetta: ${finalOut.innerText}`;
+                    
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(txt);
+                    } else {
+                        const ta = document.createElement("textarea");
+                        ta.value = txt; document.body.appendChild(ta); ta.select();
+                        document.execCommand("copy"); document.body.removeChild(ta);
+                    }
+                    showToast("Report della simulazione copiato negli appunti!");
+                });
+            }
+
+            // Copy Summary Cheat Sheet
+            const btnCopySummary = document.getElementById("btn-copy-summary");
+            if (btnCopySummary) {
+                btnCopySummary.addEventListener("click", () => {
+                    const cheatSheetText = `SINTESI ARCHITETTURA TRANSFORMER / LLM:
+1. TOKENIZATION: Conversione del testo in ID numerici sottoparola.
+2. EMBEDDING: Trasformazione degli ID in vettori densi nello spazio semantico.
+3. POSITIONAL ENCODING: Iniezione di vettori di posizione per preservare l'ordine delle parole.
+4. SELF-ATTENTION: Calcolo dinamico dei pesi di contesto tra tutti i token.
+5. PREDICTION (SOFTMAX): Produzione delle probabilità percentuali per il token successivo.
+6. AUTOREGRESSIONE: Ri-immissione del token generato per la parola successiva.`;
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(cheatSheetText);
+                    } else {
+                        const ta = document.createElement("textarea");
+                        ta.value = cheatSheetText; document.body.appendChild(ta); ta.select();
+                        document.execCommand("copy"); document.body.removeChild(ta);
+                    }
+                    showToast("Scheda sintetica copiata negli appunti!");
+                });
+            }
+
+            // Run initial sandbox simulation
+            runSimulation();
+        });
+    </script>
+</body>
+</html>
