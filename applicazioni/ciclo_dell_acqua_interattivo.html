@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroSphere - Il Ciclo dell'Acqua</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        aqua: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .pulse-ring {
+            animation: pulse-ring-anim 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+
+        @keyframes pulse-ring-anim {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 0.2; }
+            100% { transform: scale(0.8); opacity: 0.8; }
+        }
+
+        .sun-glow {
+            animation: sun-pulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes sun-pulse {
+            0% { filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6)); }
+            100% { filter: drop-shadow(0 0 28px rgba(245, 158, 11, 0.9)); }
+        }
+
+        .cloud-float {
+            animation: float-cloud 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes float-cloud {
+            0% { transform: translateX(0px); }
+            100% { transform: translateX(18px); }
+        }
+
+        .tab-btn.active {
+            background-color: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+        }
+
+        .hotspot {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hotspot:hover {
+            transform: scale(1.15);
+        }
+
+        /* Glassmorphism cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Micro-animations for scientific theory cards */
+        @keyframes anim-steam {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-22px) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes anim-stomata {
+            0% { transform: translateY(0) scale(0.6); opacity: 0; }
+            60% { opacity: 1; }
+            100% { transform: translateY(-16px) scale(1.1); opacity: 0; }
+        }
+
+        @keyframes anim-cloud-build {
+            0% { transform: scale(0.96); }
+            100% { transform: scale(1.04); }
+        }
+
+        @keyframes anim-rain-drop {
+            0% { transform: translateY(-10px); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(22px); opacity: 0; }
+        }
+
+        @keyframes anim-percolation {
+            0% { transform: translateY(-8px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(20px); opacity: 0.2; }
+        }
+
+        @keyframes anim-sublimation {
+            0% { transform: translate(0, 0) scale(0.7); opacity: 0; }
+            50% { opacity: 0.9; }
+            100% { transform: translate(12px, -20px) scale(1.3); opacity: 0; }
+        }
+
+        .steam-particle { animation: anim-steam 2.2s ease-in-out infinite; }
+        .stomata-particle { animation: anim-stomata 2.5s ease-out infinite; }
+        .cloud-pulse-card { animation: anim-cloud-build 3.5s ease-in-out infinite alternate; }
+        .rain-drop-card { animation: anim-rain-drop 1.4s linear infinite; }
+        .perco-drop-card { animation: anim-percolation 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .sublime-particle { animation: anim-sublimation 2.2s ease-out infinite; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-aqua-200 selection:text-aqua-700">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/80 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-aqua-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-aqua-500/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-aqua-700 to-sky-500 bg-clip-text text-transparent">HydroSphere 360°</h1>
+                    <p class="text-xs text-slate-500 font-medium">La Fisica e la Chimica del Ciclo dell'Acqua</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200/60 w-full md:w-auto overflow-x-auto">
+                <button onclick="switchTab('explorer')" id="tab-explorer" class="tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center space-x-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <span>Ecosistema Visivo</span>
+                </button>
+                <button onclick="switchTab('lab')" id="tab-lab" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all duration-200 flex items-center space-x-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    <span>Simulatore Clima</span>
+                </button>
+                <button onclick="switchTab('theory')" id="tab-theory" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all duration-200 flex items-center space-x-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <span>Schede Scientifiche</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all duration-200 flex items-center space-x-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Test di Verifica</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- ================= TAB 1: EXPLORER ================= -->
+        <div id="view-explorer" class="space-y-6">
+            
+            <!-- Controls Bar -->
+            <div class="glass-card p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-aqua-100 text-aqua-700">
+                        Modalità Grafica Dinamica
+                    </span>
+                    <p class="text-xs text-slate-500 hidden sm:block">Clicca sui punti interattivi nell'illustrazione per scoprire i dettagli termodinamici.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="btn-toggle-anim" onclick="toggleParticles()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors flex items-center space-x-1.5">
+                        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span id="label-anim">Metti in Pausa Animazione</span>
+                    </button>
+                    <button onclick="resetStageSelection()" class="px-3 py-1.5 bg-aqua-50 hover:bg-aqua-100 text-aqua-700 text-xs font-semibold rounded-lg transition-colors">
+                        Vista Generale
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Interactive Canvas / SVG Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Interactive Scene (2 cols) -->
+                <div class="lg:col-span-2 relative bg-gradient-to-b from-sky-100 via-sky-50 to-emerald-50 rounded-3xl border border-slate-200 overflow-hidden shadow-lg min-h-[460px] flex items-center justify-center">
+                    
+                    <!-- SVG Visual Landscape -->
+                    <svg id="water-svg" class="w-full h-full absolute inset-0 select-none" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                        <defs>
+                            <!-- Sky Gradient -->
+                            <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#bae6fd"/>
+                                <stop offset="60%" stop-color="#e0f2fe"/>
+                                <stop offset="100%" stop-color="#f0f9ff"/>
+                            </linearGradient>
+
+                            <!-- Ocean Gradient -->
+                            <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38bdf8"/>
+                                <stop offset="50%" stop-color="#0284c7"/>
+                                <stop offset="100%" stop-color="#0369a1"/>
+                            </linearGradient>
+
+                            <!-- Mountain Gradient -->
+                            <linearGradient id="mountainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#94a3b8"/>
+                                <stop offset="100%" stop-color="#475569"/>
+                            </linearGradient>
+
+                            <!-- Soil Gradient -->
+                            <linearGradient id="soilGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#86efac"/>
+                                <stop offset="25%" stop-color="#15803d"/>
+                                <stop offset="50%" stop-color="#b45309"/>
+                                <stop offset="100%" stop-color="#78350f"/>
+                            </linearGradient>
+
+                            <!-- Sun Glow -->
+                            <radialGradient id="sunGlowGrad" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#fef08a" stop-opacity="1"/>
+                                <stop offset="60%" stop-color="#fde047" stop-opacity="0.8"/>
+                                <stop offset="100%" stop-color="#facc15" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+
+                        <!-- Background Sky -->
+                        <rect x="0" y="0" width="1000" height="600" fill="url(#skyGrad)" />
+
+                        <!-- Sun -->
+                        <g class="sun-glow" transform="translate(130, 110)">
+                            <circle cx="0" cy="0" r="65" fill="url(#sunGlowGrad)"/>
+                            <circle cx="0" cy="0" r="35" fill="#facc15"/>
+                        </g>
+
+                        <!-- Mountains -->
+                        <polygon points="620,600 780,220 940,600" fill="url(#mountainGrad)"/>
+                        <polygon points="500,600 640,280 800,600" fill="#64748b"/>
+                        <!-- Snow Cap -->
+                        <polygon points="780,220 745,300 765,290 780,310 795,290 815,300" fill="#ffffff"/>
+
+                        <!-- Hills & Soil Layer -->
+                        <path d="M 0,420 Q 250,380 480,430 T 750,450 L 1000,500 L 1000,600 L 0,600 Z" fill="url(#soilGrad)"/>
+
+                        <!-- Underground Water Table Layer (Aquifer) -->
+                        <path d="M 0,530 Q 300,510 600,535 T 1000,550 L 1000,600 L 0,600 Z" fill="#0284c7" opacity="0.35"/>
+                        <path d="M 0,560 Q 350,550 700,565 T 1000,570 L 1000,600 L 0,600 Z" fill="#0369a1" opacity="0.5"/>
+
+                        <!-- Ocean Body -->
+                        <path d="M 0,440 C 120,440 200,450 320,470 L 320,600 L 0,600 Z" fill="url(#oceanGrad)"/>
+
+                        <!-- River Flowing from Mountain -->
+                        <path d="M 720,380 Q 620,420 520,450 T 320,470" fill="none" stroke="#38bdf8" stroke-width="14" stroke-linecap="round"/>
+                        <path d="M 720,380 Q 620,420 520,450 T 320,470" fill="none" stroke="#e0f2fe" stroke-width="4" stroke-dasharray="8 8" stroke-linecap="round"/>
+
+                        <!-- Trees / Vegetation -->
+                        <g transform="translate(440, 400)">
+                            <!-- Tree 1 -->
+                            <rect x="18" y="25" width="8" height="20" fill="#78350f"/>
+                            <circle cx="22" cy="18" r="18" fill="#16a34a"/>
+                            <circle cx="15" cy="12" r="12" fill="#22c55e"/>
+                            <!-- Tree 2 -->
+                            <rect x="58" y="20" width="10" height="25" fill="#78350f"/>
+                            <circle cx="63" cy="12" r="22" fill="#15803d"/>
+                            <circle cx="70" cy="8" r="14" fill="#22c55e"/>
+                        </g>
+
+                        <!-- Cloud Formations -->
+                        <g class="cloud-float" transform="translate(380, 110)">
+                            <path d="M 20 40 A 25 25 0 0 1 65 25 A 35 35 0 0 1 125 25 A 25 25 0 0 1 160 40 A 20 20 0 0 1 150 70 L 30 70 A 20 20 0 0 1 20 40 Z" fill="#ffffff" opacity="0.95" filter="drop-shadow(0 8px 12px rgba(0,0,0,0.06))"/>
+                        </g>
+
+                        <g class="cloud-float" transform="translate(680, 130)" style="animation-delay: -3s;">
+                            <path d="M 20 40 A 25 25 0 0 1 65 25 A 35 35 0 0 1 125 25 A 25 25 0 0 1 160 40 A 20 20 0 0 1 150 70 L 30 70 A 20 20 0 0 1 20 40 Z" fill="#94a3b8" opacity="0.85"/>
+                            <!-- Rain overlay line graphics -->
+                            <path d="M 40 80 L 30 100 M 70 80 L 60 100 M 100 80 L 90 100 M 130 80 L 120 100" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+
+                    <!-- HTML Particle Canvas Overlay -->
+                    <canvas id="particle-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+                    <!-- Hotspots (Clickable Nodes) -->
+                    <!-- 1. Evaporazione -->
+                    <div onclick="selectStage('evaporation')" class="hotspot absolute left-[18%] top-[55%] -translate-x-1/2 -translate-y-1/2 z-20 group">
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute w-12 h-12 rounded-full bg-amber-400/30 pulse-ring"></div>
+                            <div class="w-10 h-10 rounded-full bg-white shadow-md border-2 border-amber-400 flex items-center justify-center text-amber-600 font-bold text-sm">
+                                1
+                            </div>
+                        </div>
+                        <span class="absolute top-12 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm backdrop-blur-sm group-hover:scale-105 transition-transform">
+                            Evaporazione
+                        </span>
+                    </div>
+
+                    <!-- 2. Traspirazione -->
+                    <div onclick="selectStage('transpiration')" class="hotspot absolute left-[48%] top-[65%] -translate-x-1/2 -translate-y-1/2 z-20 group">
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute w-12 h-12 rounded-full bg-emerald-400/30 pulse-ring"></div>
+                            <div class="w-10 h-10 rounded-full bg-white shadow-md border-2 border-emerald-500 flex items-center justify-center text-emerald-600 font-bold text-sm">
+                                2
+                            </div>
+                        </div>
+                        <span class="absolute top-12 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm backdrop-blur-sm group-hover:scale-105 transition-transform">
+                            Traspirazione
+                        </span>
+                    </div>
+
+                    <!-- 3. Condensazione -->
+                    <div onclick="selectStage('condensation')" class="hotspot absolute left-[46%] top-[20%] -translate-x-1/2 -translate-y-1/2 z-20 group">
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute w-12 h-12 rounded-full bg-sky-400/30 pulse-ring"></div>
+                            <div class="w-10 h-10 rounded-full bg-white shadow-md border-2 border-sky-400 flex items-center justify-center text-sky-600 font-bold text-sm">
+                                3
+                            </div>
+                        </div>
+                        <span class="absolute top-12 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm backdrop-blur-sm group-hover:scale-105 transition-transform">
+                            Condensazione
+                        </span>
+                    </div>
+
+                    <!-- 4. Precipitazione -->
+                    <div onclick="selectStage('precipitation')" class="hotspot absolute left-[76%] top-[26%] -translate-x-1/2 -translate-y-1/2 z-20 group">
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute w-12 h-12 rounded-full bg-blue-500/30 pulse-ring"></div>
+                            <div class="w-10 h-10 rounded-full bg-white shadow-md border-2 border-blue-600 flex items-center justify-center text-blue-600 font-bold text-sm">
+                                4
+                            </div>
+                        </div>
+                        <span class="absolute top-12 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm backdrop-blur-sm group-hover:scale-105 transition-transform">
+                            Precipitazioni
+                        </span>
+                    </div>
+
+                    <!-- 5. Scorrimento & Infiltrazione -->
+                    <div onclick="selectStage('infiltration')" class="hotspot absolute left-[62%] top-[82%] -translate-x-1/2 -translate-y-1/2 z-20 group">
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute w-12 h-12 rounded-full bg-indigo-400/30 pulse-ring"></div>
+                            <div class="w-10 h-10 rounded-full bg-white shadow-md border-2 border-indigo-500 flex items-center justify-center text-indigo-600 font-bold text-sm">
+                                5
+                            </div>
+                        </div>
+                        <span class="absolute top-12 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm backdrop-blur-sm group-hover:scale-105 transition-transform">
+                            Infiltrazione & Ruscellamento
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Stage Detail Side Panel (1 col) -->
+                <div class="glass-card rounded-3xl p-6 border border-slate-200/80 flex flex-col justify-between shadow-md">
+                    <div>
+                        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
+                            <span id="detail-tag" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-700">
+                                Panoramica
+                            </span>
+                            <span id="detail-formula" class="text-xs font-mono font-medium text-slate-400">
+                                H₂O (l) ⇄ H₂O (g)
+                            </span>
+                        </div>
+
+                        <h2 id="detail-title" class="text-2xl font-bold text-slate-800 mb-3">
+                            Il Ciclo Idrologico
+                        </h2>
+
+                        <p id="detail-desc" class="text-sm text-slate-600 leading-relaxed mb-6">
+                            L'acqua sulla Terra è costantemente in movimento. È un sistema chiuso in cui la massa totale d'acqua rimane essenzialmente costante nel tempo, cambiando continuamente stato fisico tra liquido, aeriforme e solido.
+                        </p>
+
+                        <!-- Key Science Facts Box -->
+                        <div id="detail-facts" class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-3">
+                            <div class="flex items-start space-x-3">
+                                <div id="fact-icon-1" class="w-7 h-7 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
+                                    ☀️
+                                </div>
+                                <div>
+                                    <h4 id="fact-title-1" class="text-xs font-bold text-slate-700">Motore Primario</h4>
+                                    <p id="fact-text-1" class="text-xs text-slate-500">Il Sole fornisce l'energia termica necessaria a guidare tutti i passaggi di stato.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div id="fact-icon-2" class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
+                                    🌍
+                                </div>
+                                <div>
+                                    <h4 id="fact-title-2" class="text-xs font-bold text-slate-700">Forza di Gravità</h4>
+                                    <p id="fact-text-2" class="text-xs text-slate-500">Trascina le precipitazioni verso il basso e muove i fiumi verso i mari.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                        <span>Seleziona una fase (1-5)</span>
+                        <span>HydroSphere Core</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: SIMULATOR LAB ================= -->
+        <div id="view-lab" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-sky-600 to-indigo-600 rounded-3xl p-6 text-white shadow-lg">
+                <h2 class="text-2xl font-bold mb-2">Laboratorio di Simulazione Climatica</h2>
+                <p class="text-sky-100 text-sm max-w-2xl">
+                    Modifica i parametri ambientali (Temperatura, Umidità e Vegetazione) e osserva in tempo reale l'impatto sulla velocità di evaporazione, sulla formazione delle nubi e sul rischio di dissesto idrogeologico.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Controls Panel -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-200 space-y-6">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                        <span>Variabili Ambientali</span>
+                    </h3>
+
+                    <!-- Slider 1: Temperature -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-semibold">
+                            <label class="text-slate-700">Temperatura Solare Gl.:</label>
+                            <span id="val-temp" class="text-amber-600 font-bold">28 °C</span>
+                        </div>
+                        <input type="range" id="slider-temp" min="0" max="50" value="28" oninput="updateLabSimulation()" class="w-full accent-amber-500 h-2 bg-slate-200 rounded-lg cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>0°C (Glaciazione)</span>
+                            <span>25°C (Mite)</span>
+                            <span>50°C (Calore Estremo)</span>
+                        </div>
+                    </div>
+
+                    <!-- Slider 2: Humidity -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-semibold">
+                            <label class="text-slate-700">Umidità Atmosferica:</label>
+                            <span id="val-humidity" class="text-sky-600 font-bold">60 %</span>
+                        </div>
+                        <input type="range" id="slider-humidity" min="10" max="100" value="60" oninput="updateLabSimulation()" class="w-full accent-sky-500 h-2 bg-slate-200 rounded-lg cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>10% (Arido)</span>
+                            <span>60% (Normale)</span>
+                            <span>100% (Satura)</span>
+                        </div>
+                    </div>
+
+                    <!-- Slider 3: Vegetation Cover -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-semibold">
+                            <label class="text-slate-700">Copertura Forestale:</label>
+                            <span id="val-veg" class="text-emerald-600 font-bold">70 %</span>
+                        </div>
+                        <input type="range" id="slider-veg" min="0" max="100" value="70" oninput="updateLabSimulation()" class="w-full accent-emerald-500 h-2 bg-slate-200 rounded-lg cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>0% (Deforestato)</span>
+                            <span>50% (Urbano/Misto)</span>
+                            <span>100% (Lussureggiante)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Metrics & Dynamic Gauge Display -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        
+                        <!-- Metric 1 -->
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tasso Evaporazione</div>
+                            <div class="my-3 flex items-baseline space-x-2">
+                                <span id="metric-evap" class="text-3xl font-extrabold text-amber-500">High</span>
+                                <span class="text-xs text-slate-400">mm/giorno</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div id="bar-evap" class="bg-amber-400 h-full w-3/4 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- Metric 2 -->
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Densità Nuvolosa</div>
+                            <div class="my-3 flex items-baseline space-x-2">
+                                <span id="metric-clouds" class="text-3xl font-extrabold text-sky-500">65%</span>
+                                <span class="text-xs text-slate-400">copertura</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div id="bar-clouds" class="bg-sky-400 h-full w-2/3 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- Metric 3 -->
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ricarica Falda</div>
+                            <div class="my-3 flex items-baseline space-x-2">
+                                <span id="metric-aquifer" class="text-3xl font-extrabold text-emerald-500">Ottima</span>
+                                <span class="text-xs text-slate-400">infiltrazione</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div id="bar-aquifer" class="bg-emerald-500 h-full w-4/5 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Dynamic Scientific Diagnosis Card -->
+                    <div class="glass-card p-6 rounded-3xl border border-slate-200/80 bg-white shadow-sm space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+                                💡
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800">Analisi dell'Equilibrio Idrogeologico</h4>
+                        </div>
+
+                        <p id="lab-analysis-text" class="text-sm text-slate-600 leading-relaxed">
+                            A 28°C con una copertura boschiva del 70%, il sistema mantiene un eccellente ricircolo d'acqua. La traspirazione delle piante raffredda l'aria circostante e favorisce la ritenzione idrica nel suolo, prevenendo l'erosione e garantendo una ricarica costante delle falde sotterranee.
+                        </p>
+
+                        <div id="lab-warning-badge" class="hidden px-3 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center space-x-2">
+                            <span>⚠️</span>
+                            <span id="lab-warning-text">Rischio di dissesto idrogeologico imminente a causa della scarsa vegetazione!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: THEORY & SCIENCE CARDS ================= -->
+        <div id="view-theory" class="hidden space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2 mb-8">
+                <h2 class="text-2xl font-bold text-slate-800">Approfondimenti di Fisica e Chimica</h2>
+                <p class="text-sm text-slate-500">Comprendere i principi termodinamici, le trasformazioni molecolari e l'energia latente nel ciclo dell'acqua.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Card 1: Evaporazione -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group">
+                    <div>
+                        <!-- Animated Graphic Evaporation -->
+                        <div class="w-full h-36 rounded-2xl bg-gradient-to-b from-amber-50 to-orange-50/50 border border-amber-100 flex items-center justify-center relative overflow-hidden mb-4">
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 200 120" fill="none">
+                                <!-- Sun rays background -->
+                                <circle cx="100" cy="20" r="18" fill="#facc15" class="animate-pulse"/>
+                                <path d="M100 0V8 M100 32V40 M80 20H72 M128 20H120 M86 6L80 0 M114 34L120 40 M114 6L120 0 M86 34L80 40" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                                
+                                <!-- Water surface -->
+                                <path d="M0 95 C 40 90, 60 100, 100 95 C 140 90, 160 100, 200 95 L 200 120 L 0 120 Z" fill="#38bdf8" opacity="0.75"/>
+                                <path d="M0 102 C 50 98, 80 105, 120 100 C 160 95, 180 105, 200 102 L 200 120 L 0 120 Z" fill="#0284c7" opacity="0.85"/>
+                                
+                                <!-- Animated Vapor Particles -->
+                                <g class="steam-particle" style="animation-delay: 0s;">
+                                    <circle cx="70" cy="80" r="4" fill="#f59e0b"/>
+                                    <path d="M70 80 Q 73 70 70 60" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+                                </g>
+                                <g class="steam-particle" style="animation-delay: 0.7s;">
+                                    <circle cx="100" cy="85" r="5" fill="#fbbf24"/>
+                                    <path d="M100 85 Q 104 72 100 62" stroke="#fbbf24" stroke-width="1.5" fill="none"/>
+                                </g>
+                                <g class="steam-particle" style="animation-delay: 1.4s;">
+                                    <circle cx="130" cy="82" r="3.5" fill="#f59e0b"/>
+                                    <path d="M130 82 Q 127 70 130 58" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wider">Fasore Termico</span>
+                            <h3 class="text-base font-bold text-slate-800">Evaporazione & Calore Latente</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            L'acqua liquida assorbe energia termica dal Sole. Le molecole $H_2O$ aumentano la propria energia cinetica fino a spezzare i legami a idrogeno, passando allo stato aeriforme (vapore acqueo). Questo processo assorbe calore dall'ambiente (calore latente di evaporazione).
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-amber-600">
+                        <span>ΔH_evap</span>
+                        <span class="font-bold">≈ 2260 J/g</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Traspirazione -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group">
+                    <div>
+                        <!-- Animated Graphic Transpiration -->
+                        <div class="w-full h-36 rounded-2xl bg-gradient-to-b from-emerald-50 to-teal-50/50 border border-emerald-100 flex items-center justify-center relative overflow-hidden mb-4">
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 200 120" fill="none">
+                                <!-- Leaf stem and shape -->
+                                <path d="M40 100 Q 80 80 120 40 C 150 10, 180 30, 160 60 C 130 100, 70 110, 40 100 Z" fill="#22c55e" opacity="0.85"/>
+                                <path d="M40 100 Q 80 80 120 40" stroke="#15803d" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M75 83 L65 70 M95 67 L105 78 M115 48 L105 38" stroke="#15803d" stroke-width="1.5" stroke-linecap="round"/>
+
+                                <!-- Stomata dots & droplets escaping -->
+                                <circle cx="80" cy="65" r="3" fill="#86efac"/>
+                                <circle cx="110" cy="50" r="3" fill="#86efac"/>
+                                <circle cx="135" cy="35" r="3" fill="#86efac"/>
+
+                                <!-- Escaping vapor droplets -->
+                                <g class="stomata-particle" style="animation-delay: 0s;">
+                                    <circle cx="80" cy="60" r="3.5" fill="#0284c7"/>
+                                </g>
+                                <g class="stomata-particle" style="animation-delay: 0.8s;">
+                                    <circle cx="110" cy="45" r="4" fill="#38bdf8"/>
+                                </g>
+                                <g class="stomata-particle" style="animation-delay: 1.5s;">
+                                    <circle cx="135" cy="30" r="3" fill="#0284c7"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Bio-Fisica</span>
+                            <h3 class="text-base font-bold text-slate-800">Evapotraspirazione</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Le piante assorbono acqua dalle radici per trasportare nutrienti minerali. Attraverso microscopici pori sulle foglie (gli **stomi**), l'acqua in eccesso evapora nell'atmosfera. L'unione di evaporazione dal suolo e traspirazione vegetale costituisce l'evapotraspirazione.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-emerald-600">
+                        <span>Regolazione Stomatica</span>
+                        <span class="font-bold">Raffreddamento Fogliare</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Condensazione -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group">
+                    <div>
+                        <!-- Animated Graphic Condensation -->
+                        <div class="w-full h-36 rounded-2xl bg-gradient-to-b from-sky-50 to-blue-50/50 border border-sky-100 flex items-center justify-center relative overflow-hidden mb-4">
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 200 120" fill="none">
+                                <!-- Condensation Nuclei particle (Center) -->
+                                <circle cx="100" cy="55" r="4" fill="#64748b"/>
+                                <circle cx="100" cy="55" r="8" stroke="#94a3b8" stroke-dasharray="2 2" stroke-width="1.5"/>
+
+                                <!-- Cloud forming around nucleus -->
+                                <g class="cloud-pulse-card" transform-origin="100 55">
+                                    <path d="M70 65 A18 18 0 0 1 90 42 A22 22 0 0 1 125 42 A18 18 0 0 1 140 65 A15 15 0 0 1 130 80 L75 80 A15 15 0 0 1 70 65 Z" fill="#38bdf8" opacity="0.3"/>
+                                    <path d="M75 62 A15 15 0 0 1 92 45 A18 18 0 0 1 120 45 A15 15 0 0 1 132 62 A12 12 0 0 1 125 75 L80 75 A12 12 0 0 1 75 62 Z" fill="#ffffff"/>
+                                </g>
+
+                                <!-- Incoming vapor particles aggregating -->
+                                <circle cx="55" cy="70" r="2.5" fill="#0284c7" class="animate-ping"/>
+                                <circle cx="145" cy="45" r="2.5" fill="#0284c7" class="animate-ping" style="animation-delay: 0.5s;"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-700 uppercase tracking-wider">Micro-Aerosol</span>
+                            <h3 class="text-base font-bold text-slate-800">Condensazione e Nuclei</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Salendo di quota, l'aria si raffredda. Il vapore acqueo si condensa attorno a microscopiche particelle di pulviscolo atmosferico, polline o sale marino (detti **nuclei di condensazione**), formando microscopiche goccioline che costituiscono le nubi.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-sky-600">
+                        <span>Punto di Rugiada</span>
+                        <span class="font-bold">Rilascio Calore Latente</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Precipitazioni -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group">
+                    <div>
+                        <!-- Animated Graphic Precipitation -->
+                        <div class="w-full h-36 rounded-2xl bg-gradient-to-b from-blue-50 to-indigo-50/50 border border-blue-100 flex items-center justify-center relative overflow-hidden mb-4">
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 200 120" fill="none">
+                                <!-- Dark rain cloud -->
+                                <path d="M50 40 A20 20 0 0 1 80 25 A28 28 0 0 1 130 25 A20 20 0 0 1 160 40 A16 16 0 0 1 150 60 L55 60 A16 16 0 0 1 50 40 Z" fill="#64748b"/>
+
+                                <!-- Rain drops falling -->
+                                <g class="rain-drop-card" style="animation-delay: 0s;">
+                                    <line x1="70" y1="65" x2="65" y2="80" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
+                                </g>
+                                <g class="rain-drop-card" style="animation-delay: 0.4s;">
+                                    <line x1="95" y1="65" x2="90" y2="82" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
+                                </g>
+                                <g class="rain-drop-card" style="animation-delay: 0.8s;">
+                                    <line x1="120" y1="65" x2="115" y2="80" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+                                </g>
+                                <g class="rain-drop-card" style="animation-delay: 1.1s;">
+                                    <line x1="140" y1="65" x2="135" y2="78" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
+                                </g>
+
+                                <!-- Snow crystal symbol -->
+                                <path d="M160 85 L160 97 M154 91 L166 91 M155 86 L165 96 M155 96 L165 86" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 text-blue-700 uppercase tracking-wider">Coalescenza</span>
+                            <h3 class="text-base font-bold text-slate-800">Precipitazione</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Quando le gocce d'acqua o i cristalli di ghiaccio all'interno delle nubi diventano troppo pesanti per essere sostenuti dalle correnti ascensionali d'aria, cadono al suolo sotto forma di pioggia, neve, granula o grandine a causa della forza di gravità.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-blue-600">
+                        <span>Forza Peso vs Ascensione</span>
+                        <span class="font-bold">Gravità > Drag</span>
+                    </div>
+                </div>
+
+                <!-- Card 5: Percolazione e Falde -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group">
+                    <div>
+                        <!-- Animated Graphic Percolation -->
+                        <div class="w-full h-36 rounded-2xl bg-gradient-to-b from-emerald-50 via-amber-50/40 to-slate-100 border border-indigo-100 flex items-center justify-center relative overflow-hidden mb-4">
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 200 120" fill="none">
+                                <!-- Soil layers -->
+                                <rect x="0" y="0" width="200" height="25" fill="#4ade80" opacity="0.6"/> <!-- Grass layer -->
+                                <rect x="0" y="25" width="200" height="40" fill="#b45309" opacity="0.25"/> <!-- Soil layer -->
+                                <rect x="0" y="65" width="200" height="30" fill="#78350f" opacity="0.4"/> <!-- Permeable rock -->
+                                <rect x="0" y="95" width="200" height="25" fill="#0284c7" opacity="0.6"/> <!-- Aquifer table -->
+
+                                <!-- Soil pores particles trickling down -->
+                                <g class="perco-drop-card" style="animation-delay: 0s;">
+                                    <circle cx="50" cy="20" r="3" fill="#0284c7"/>
+                                </g>
+                                <g class="perco-drop-card" style="animation-delay: 0.6s;">
+                                    <circle cx="100" cy="25" r="3.5" fill="#38bdf8"/>
+                                </g>
+                                <g class="perco-drop-card" style="animation-delay: 1.2s;">
+                                    <circle cx="150" cy="20" r="3" fill="#0284c7"/>
+                                </g>
+
+                                <!-- Underground flow arrow -->
+                                <path d="M30 108 L170 108" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 4"/>
+                                <polygon points="175,108 167,104 167,112" fill="#ffffff"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">Idrogeologia</span>
+                            <h3 class="text-base font-bold text-slate-800">Percolazione e Falde</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Una parte dell'acqua caduta penetra nel terreno (**infiltrazione**). Attraversando strati di roccia permeabile, giunge fino a uno strato impermeabile formando le **falde freatiche** o artesiane, riserve fondamentali di acqua potabile per il pianeta.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-indigo-600">
+                        <span>Permeabilità del Rocciame</span>
+                        <span class="font-bold">Filtrazione Naturale</span>
+                    </div>
+                </div>
+
+                <!-- Card 6: Sublimazione e Deposizione -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 space-y-4 flex flex-col justify-between group">
+                    <div>
+                        <!-- Animated Graphic Sublimation -->
+                        <div class="w-full h-36 rounded-2xl bg-gradient-to-b from-cyan-50 to-sky-100/60 border border-cyan-100 flex items-center justify-center relative overflow-hidden mb-4">
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 200 120" fill="none">
+                                <!-- Glacier / Ice peak -->
+                                <polygon points="30,120 80,50 130,120" fill="#bae6fd"/>
+                                <polygon points="80,50 65,75 80,70 95,75" fill="#ffffff"/>
+
+                                <!-- Ice crystal -->
+                                <circle cx="80" cy="50" r="12" fill="#0284c7" opacity="0.15" class="animate-pulse"/>
+                                <path d="M80 40 L80 60 M70 50 L90 50" stroke="#0284c7" stroke-width="2"/>
+
+                                <!-- Direct gas particles escape (Sublimation) -->
+                                <g class="sublime-particle" style="animation-delay: 0s;">
+                                    <circle cx="85" cy="42" r="3" fill="#38bdf8"/>
+                                </g>
+                                <g class="sublime-particle" style="animation-delay: 0.7s;">
+                                    <circle cx="75" cy="38" r="2.5" fill="#06b6d4"/>
+                                </g>
+                                <g class="sublime-particle" style="animation-delay: 1.4s;">
+                                    <circle cx="90" cy="46" r="3.5" fill="#38bdf8"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-cyan-100 text-cyan-700 uppercase tracking-wider">Transizione Diretta</span>
+                            <h3 class="text-base font-bold text-slate-800">Sublimazione & Deposizione</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            In condizioni estreme di pressione e bassa temperatura (es. ad alte quote o sui ghiacciai), l'acqua può passare direttamente dallo stato solido (ghiaccio) a quello aeriforme (vapore) senza passare per lo stato liquido (**sublimazione**), o viceversa (**deposizione**).
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-cyan-600">
+                        <span>Solido ⇄ Gas</span>
+                        <span class="font-bold">Senza Fase Liquida</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: QUIZ ================= -->
+        <div id="view-quiz" class="hidden max-w-3xl mx-auto space-y-6">
+            
+            <div id="quiz-intro" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm text-center space-y-4">
+                <div class="w-16 h-16 bg-aqua-100 text-aqua-600 rounded-2xl mx-auto flex items-center justify-center text-2xl font-bold">
+                    🧠
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Metti alla prova le tue conoscenze!</h2>
+                <p class="text-sm text-slate-600 max-w-lg mx-auto">
+                    Rispondi alle 5 domande a risposta multipla per verificare quello che hai imparato sul ciclo dell'acqua e sui suoi principi fisici.
+                </p>
+                <button onclick="startQuiz()" class="px-6 py-3 bg-aqua-600 hover:bg-aqua-700 text-white font-bold text-sm rounded-2xl shadow-md transition-all transform hover:scale-105">
+                    Inizia il Quiz
+                </button>
+            </div>
+
+            <!-- Quiz Card -->
+            <div id="quiz-box" class="hidden bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md space-y-6">
+                
+                <!-- Progress Header -->
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-400 pb-4 border-b border-slate-100">
+                    <span id="quiz-progress-text">Domanda 1 di 5</span>
+                    <span id="quiz-score-live">Punteggio: 0</span>
+                </div>
+
+                <!-- Question -->
+                <h3 id="quiz-question-text" class="text-lg font-bold text-slate-800">
+                    Qual è il motore principale che fornisce energia all'intero ciclo dell'acqua?
+                </h3>
+
+                <!-- Options -->
+                <div id="quiz-options-container" class="space-y-3">
+                    <!-- Dynamic buttons inserted here -->
+                </div>
+
+                <!-- Feedback / Explanation Box -->
+                <div id="quiz-feedback" class="hidden p-4 rounded-2xl border text-xs space-y-2">
+                    <p id="quiz-feedback-title" class="font-bold"></p>
+                    <p id="quiz-feedback-text" class="text-slate-600"></p>
+                </div>
+
+                <!-- Next Button -->
+                <div class="flex justify-end pt-4">
+                    <button id="btn-next-question" onclick="nextQuestion()" class="hidden px-5 py-2.5 bg-slate-900 text-white font-semibold text-xs rounded-xl hover:bg-slate-800 transition-colors">
+                        Prossima Domanda →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Score Result -->
+            <div id="quiz-result" class="hidden bg-white p-8 rounded-3xl border border-slate-200 shadow-md text-center space-y-6">
+                <div id="quiz-badge-icon" class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl shadow-inner">
+                    🏆
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Quiz Completato!</h2>
+                <p id="quiz-final-score" class="text-lg text-slate-600 font-medium">Hai ottenuto 5 su 5 punti!</p>
+                <p id="quiz-final-msg" class="text-xs text-slate-500 max-w-md mx-auto">Eccellente! Dimostri una padronanza perfetta della fisica e della chimica dell'acqua.</p>
+                
+                <button onclick="startQuiz()" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
+                    Ricomincia Quiz
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200/80 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
+            <p>© HydroSphere 360° - Risorsa Didattica Interattiva di Scienze e Fisica</p>
+            <p>Progettato per la Scuola Secondaria</p>
+        </div>
+    </footer>
+
+    <script>
+        /* State Management */
+        let currentTab = 'explorer';
+        let particlesActive = true;
+        let particleAnimationId = null;
+
+        // Stage details dictionary
+        const stageData = {
+            evaporation: {
+                tag: "Fase 1",
+                title: "Evaporazione",
+                formula: "H₂O (liquido) + Energia Termica → H₂O (gas)",
+                desc: "Sotto l'azione dei raggi solari, le molecole d'acqua presenti negli oceani, nei laghi e nei fiumi guadagnano energia cinetica. Quando l'energia è sufficiente per vincere la pressione atmosferica e i legami a idrogeno, l'acqua liquida si trasforma in vapore invisibile e sale verso l'alto.",
+                fact1Title: "Fase Endotermica",
+                fact1Text: "Assorbe circa 2260 Joule per ogni grammo d'acqua evaporata.",
+                fact2Title: "Origine Principale",
+                fact2Text: "Oltre l'80% del vapore atmosferico globale proviene dagli oceani.",
+                icon1: "☀️",
+                icon2: "🌊"
+            },
+            transpiration: {
+                tag: "Fase 2",
+                title: "Traspirazione Vegetale",
+                formula: "Assorbimento Radicale → Traspirazione Stomatica",
+                desc: "Le piante assorbono grandi quantità d'acqua dal terreno per trasportare i sali minerali fino alle foglie. L'acqua in eccesso viene rilasciata nell'aria sotto forma di vapore acqueo attraverso minuscole aperture fogliari chiamate stomi.",
+                fact1Title: "Azione Polmonare Green",
+                fact1Text: "Una grande quercia può traspirare oltre 400 litri d'acqua in un solo giorno estivo.",
+                fact2Title: "Evapotraspirazione",
+                fact2Text: "Nelle foreste pluviali rappresenta fino al 50% delle precipitazioni locali.",
+                icon1: "🌿",
+                icon2: "🍃"
+            },
+            condensation: {
+                tag: "Fase 3",
+                title: "Condensazione",
+                formula: "H₂O (gas) - Energia Termica → H₂O (liquido/solido)",
+                desc: "Salendo di quota nell'atmosfera, l'aria si raffredda. Raggiunto il 'punto di rugiada', il vapore si condensa attorno ai nuclei di condensazione (polvere, sale), formando minuscole gocce d'acqua o cristalli di ghiaccio che costituiscono le nubi e la nebbia.",
+                fact1Title: "Fase Esotermica",
+                fact1Text: "Rilascia calore nell'atmosfera, alimentando i moti convettivi e i venti.",
+                fact2Title: "Nuclei di Condensazione",
+                fact2Text: "Senza microparticelle in sospensione, la formazione di nubi sarebbe difficilissima.",
+                icon1: "☁️",
+                icon2: "❄️"
+            },
+            precipitation: {
+                tag: "Fase 4",
+                title: "Precipitazioni",
+                formula: "Forza di Gravità > Spinta Convettiva",
+                desc: "All'interno delle nubi, le goccioline d'acqua collisionano e si fondono (coalescenza). Quando diventano troppo pesanti per rimanere in sospensione, la gravità le trascina a terra sotto forma di pioggia, neve, grandine o nevischio.",
+                fact1Title: "Forme Diverse",
+                fact1Text: "La forma (liquida o solida) dipende dalle temperature incontrate durante la caduta.",
+                fact2Title: "Distribuzione Globale",
+                fact2Text: "Mantiene il bilancio idrico sui continenti compensando l'evaporazione.",
+                icon1: "🌧️",
+                icon2: "🏔️"
+            },
+            infiltration: {
+                tag: "Fase 5",
+                title: "Infiltrazione e Ruscellamento",
+                formula: "Gravità + Permeabilità del Suolo",
+                desc: "L'acqua caduta sulla superficie terrestre segue due vie principali: scorrimento superficiale (ruscellamento) verso fiumi e mari, oppure penetrazione nel terreno (infiltrazione) alimentando le falde acquifere sotterranee.",
+                fact1Title: "Falda Freatica",
+                fact1Text: "Costituisce la più grande riserva d'acqua dolce liquida accessibile sul pianeta.",
+                fact2Title: "Ruolo della Vegetazione",
+                fact2Text: "Le radici e il suolo boschivo agiscono da spugna, frenando le alluvioni.",
+                icon1: "💧",
+                icon2: "⛰️"
+            }
+        };
+
+        // Quiz Questions Data
+        const quizQuestions = [
+            {
+                q: "Qual è la principale fonte di energia che alimenta il ciclo dell'acqua?",
+                options: ["Il calore geotermico del nucleo terrestre", "L'energia termica del Sole", "L'attrazione gravitazionale della Luna", "I venti atmosferici"],
+                correct: 1,
+                explanation: "Il Sole fornisce il calore necessario a far evaporare l'acqua liquida da oceani e continenti, avviando l'intero ciclo."
+            },
+            {
+                q: "Cosa sono i 'nuclei di condensazione'?",
+                options: ["Microscopiche particelle (polvere, sale) attorno a cui si condensa il vapore", "Il centro delle gocce di pioggia più grandi", "I granelli di sabbia sul fondo dell'oceano", "I cristalli di ghiaccio che formano la grandine"],
+                correct: 0,
+                explanation: "Il vapore acqueo necessita di microparticelle solide in sospensione per passare dallo stato gassoso a quello liquido e formare le nubi."
+            },
+            {
+                q: "Come si chiama il processo per cui le piante rilasciano vapore acqueo dalle foglie?",
+                options: ["Sublimazione", "Percolazione", "Traspirazione", "Precipitazione"],
+                correct: 2,
+                explanation: "La traspirazione avviene attraverso microscopici pori fogliari (stomi) e contribuisce notevolmente all'umidità dell'aria."
+            },
+            {
+                q: "Cosa accade durante il passaggio da vapore ad acqua liquida (Condensazione)?",
+                options: ["Viene assorbito calore dall'ambiente", "Viene rilasciato calore nell'ambiente (esotermico)", "La temperatura dell'aria aumenta sempre di 50°C", "L'acqua perde la sua massa molecolare"],
+                correct: 1,
+                explanation: "La condensazione è una trasformazione esotermica che rilascia nell'atmosfera il calore latente precedentemente assorbito durante l'evaporazione."
+            },
+            {
+                q: "Quale fattore favorisce maggiormente l'infiltrazione dell'acqua nel terreno rispetto al ruscellamento superficiale?",
+                options: ["La presenza di una folta copertura vegetale e radici", "La cementificazione delle strade", "Pendenze montane estremamente ripide", "L'assenza totale di pioggia"],
+                correct: 0,
+                explanation: "La vegetazione rallenta il flusso dell'acqua in superficie e rende il suolo poroso, facilitando la ricarica delle falde acquifere."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        class Particle {
+            constructor(type) {
+                this.reset(type);
+            }
+
+            reset(type) {
+                this.type = type; // 'evap', 'rain', 'aquifer'
+                const w = canvas.width;
+                const h = canvas.height;
+
+                if (type === 'evap') {
+                    // Start in ocean/river area
+                    this.x = Math.random() * (w * 0.4) + (w * 0.05);
+                    this.y = h * 0.75 + Math.random() * (h * 0.15);
+                    this.vy = -(Math.random() * 1.2 + 0.6);
+                    this.vx = Math.random() * 0.4 - 0.2;
+                    this.radius = Math.random() * 2.5 + 1.5;
+                    this.alpha = Math.random() * 0.6 + 0.3;
+                } else if (type === 'rain') {
+                    // Start from clouds (top right area)
+                    this.x = Math.random() * (w * 0.3) + (w * 0.65);
+                    this.y = h * 0.22;
+                    this.vy = Math.random() * 3.5 + 2.5;
+                    this.vx = -0.5; // slight wind tilt
+                    this.length = Math.random() * 8 + 4;
+                    this.alpha = Math.random() * 0.7 + 0.3;
+                } else if (type === 'aquifer') {
+                    // Flow underground towards ocean
+                    this.x = Math.random() * (w * 0.4) + (w * 0.55);
+                    this.y = h * 0.88 + Math.random() * (h * 0.08);
+                    this.vx = -(Math.random() * 0.8 + 0.3);
+                    this.vy = Math.random() * 0.2 - 0.1;
+                    this.radius = Math.random() * 2 + 1;
+                    this.alpha = Math.random() * 0.5 + 0.3;
+                }
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Reset boundaries
+                if (this.type === 'evap' && this.y < canvas.height * 0.25) {
+                    this.reset('evap');
+                }
+                if (this.type === 'rain' && this.y > canvas.height * 0.75) {
+                    this.reset('rain');
+                }
+                if (this.type === 'aquifer' && this.x < canvas.width * 0.2) {
+                    this.reset('aquifer');
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+
+                if (this.type === 'evap') {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#f59e0b'; // Amber warm vapor
+                    ctx.fill();
+                } else if (this.type === 'rain') {
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x + this.vx * 2, this.y + this.length);
+                    ctx.strokeStyle = '#0284c7';
+                    ctx.lineWidth = 1.8;
+                    ctx.stroke();
+                } else if (this.type === 'aquifer') {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            // Create particle pools
+            for (let i = 0; i < 25; i++) particles.push(new Particle('evap'));
+            for (let i = 0; i < 35; i++) particles.push(new Particle('rain'));
+            for (let i = 0; i < 20; i++) particles.push(new Particle('aquifer'));
+        }
+
+        function animateParticles() {
+            if (!particlesActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            particleAnimationId = requestAnimationFrame(animateParticles);
+        }
+
+        function toggleParticles() {
+            particlesActive = !particlesActive;
+            const label = document.getElementById('label-anim');
+            if (particlesActive) {
+                label.innerText = 'Metti in Pausa Animazione';
+                animateParticles();
+            } else {
+                label.innerText = 'Riprendi Animazione';
+                cancelAnimationFrame(particleAnimationId);
+            }
+        }
+
+        /* Navigation Tab Handler */
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const tabs = ['explorer', 'lab', 'theory', 'quiz'];
+            
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                
+                if (t === tabId) {
+                    btn.classList.add('active');
+                    btn.classList.remove('text-slate-600');
+                    view.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('text-slate-600');
+                    view.classList.add('hidden');
+                }
+            });
+
+            if (tabId === 'explorer') {
+                setTimeout(() => {
+                    resizeCanvas();
+                }, 50);
+            }
+        }
+
+        /* Interactive Hotspot Selection */
+        function selectStage(stageKey) {
+            const data = stageData[stageKey];
+            if (!data) return;
+
+            document.getElementById('detail-tag').innerText = data.tag;
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-formula').innerText = data.formula;
+            document.getElementById('detail-desc').innerText = data.desc;
+
+            document.getElementById('fact-icon-1').innerText = data.icon1;
+            document.getElementById('fact-title-1').innerText = data.fact1Title;
+            document.getElementById('fact-text-1').innerText = data.fact1Text;
+
+            document.getElementById('fact-icon-2').innerText = data.icon2;
+            document.getElementById('fact-title-2').innerText = data.fact2Title;
+            document.getElementById('fact-text-2').innerText = data.fact2Text;
+        }
+
+        function resetStageSelection() {
+            document.getElementById('detail-tag').innerText = "Panoramica";
+            document.getElementById('detail-title').innerText = "Il Ciclo Idrologico";
+            document.getElementById('detail-formula').innerText = "H₂O (l) ⇄ H₂O (g)";
+            document.getElementById('detail-desc').innerText = "L'acqua sulla Terra è costantemente in movimento. È un sistema chiuso in cui la massa totale d'acqua rimane essenzialmente costante nel tempo, cambiando continuamente stato fisico tra liquido, aeriforme e solido.";
+
+            document.getElementById('fact-icon-1').innerText = "☀️";
+            document.getElementById('fact-title-1').innerText = "Motore Primario";
+            document.getElementById('fact-text-1').innerText = "Il Sole fornisce l'energia termica necessaria a guidare tutti i passaggi di stato.";
+
+            document.getElementById('fact-icon-2').innerText = "🌍";
+            document.getElementById('fact-title-2').innerText = "Forza di Gravità";
+            document.getElementById('fact-text-2').innerText = "Trascina le precipitazioni verso il basso e muove i fiumi verso i mari.";
+        }
+
+        function updateLabSimulation() {
+            const temp = parseInt(document.getElementById('slider-temp').value);
+            const humidity = parseInt(document.getElementById('slider-humidity').value);
+            const veg = parseInt(document.getElementById('slider-veg').value);
+
+            // Display numerical values
+            document.getElementById('val-temp').innerText = `${temp} °C`;
+            document.getElementById('val-humidity').innerText = `${humidity} %`;
+            document.getElementById('val-veg').innerText = `${veg} %`;
+
+            // Calculate metrics
+            // Evaporation speed depends on Temp and Veg (transpiration)
+            const evapScore = Math.min(100, Math.round((temp * 1.5) + (veg * 0.3)));
+            
+            // Cloud density depends on Evaporation + Ambient Humidity
+            const cloudScore = Math.min(100, Math.round((humidity * 0.6) + (evapScore * 0.4)));
+
+            // Aquifer recharge depends on Vegetation (absorbs water) and inverse of extreme heat
+            const aquiferScore = Math.max(5, Math.min(100, Math.round((veg * 0.8) + (humidity * 0.3) - (temp * 0.4))));
+
+            // UI updates
+            document.getElementById('bar-evap').style.width = `${evapScore}%`;
+            document.getElementById('metric-evap').innerText = evapScore > 70 ? 'Elevato' : (evapScore > 35 ? 'Medio' : 'Basso');
+
+            document.getElementById('bar-clouds').style.width = `${cloudScore}%`;
+            document.getElementById('metric-clouds').innerText = `${cloudScore}%`;
+
+            document.getElementById('bar-aquifer').style.width = `${aquiferScore}%`;
+            document.getElementById('metric-aquifer').innerText = aquiferScore > 65 ? 'Ottima' : (aquiferScore > 35 ? 'Moderata' : 'Scarsa');
+
+            // Dynamic scientific diagnosis
+            const analysisText = document.getElementById('lab-analysis-text');
+            const warningBadge = document.getElementById('lab-warning-badge');
+            const warningText = document.getElementById('lab-warning-text');
+
+            if (veg < 25 && temp > 30) {
+                warningBadge.classList.remove('hidden');
+                warningText.innerText = "Allarme Siccità ed Erosione: Scarsa vegetazione e alte temperature riducono la ricarica sotterranea e causano il dilavamento del suolo.";
+                analysisText.innerText = "A temperature elevate senza sufficiente vegetazione, l'evaporazione è intensa ma il terreno non trattiene l'acqua. Le rare precipitazioni scorrono via velocemente senza infiltrarsi nelle falde.";
+            } else if (humidity > 80 && cloudScore > 75) {
+                warningBadge.classList.add('hidden');
+                analysisText.innerText = "Saturazione Atmosferica: L'elevata umidità unita ad alta evaporazione genera una spessa copertura nuvolosa. Il sistema è pronto per precipitazioni abbondanti o temporali convettivi.";
+            } else if (temp < 5) {
+                warningBadge.classList.add('hidden');
+                analysisText.innerText = "Condizioni Glaciali: Le basse temperature rallentano drasticamente l'evaporazione. L'acqua rimane prevalentemente bloccata sotto forma di neve, ghiaccio o nelle falde liquide stabili.";
+            } else {
+                warningBadge.classList.add('hidden');
+                analysisText.innerText = `A ${temp}°C con una copertura boschiva del ${veg}%, il sistema mantiene un buon equilibrio idrogeologico. La traspirazione vegetale contribuisce alla formazione regolare di nubi e garantisce una costante filtrazione nel terreno.`;
+            }
+        }
+
+        function startQuiz() {
+            quizIndex = 0;
+            quizScore = 0;
+            quizAnswered = false;
+
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            quizAnswered = false;
+            const q = quizQuestions[quizIndex];
+
+            document.getElementById('quiz-progress-text').innerText = `Domanda ${quizIndex + 1} di ${quizQuestions.length}`;
+            document.getElementById('quiz-score-live').innerText = `Punteggio: ${quizScore}`;
+            document.getElementById('quiz-question-text').innerText = q.q;
+
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('btn-next-question').classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-sky-400 hover:bg-sky-50/50 transition-all font-medium text-xs sm:text-sm text-slate-700 flex items-center justify-between";
+                btn.onclick = () => checkQuizAnswer(idx);
+                btn.innerHTML = `<span>${opt}</span><span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[10px] text-slate-400 font-mono">${String.fromCharCode(65 + idx)}</span>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selectedIdx) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const q = quizQuestions[quizIndex];
+            const container = document.getElementById('quiz-options-container');
+            const buttons = container.querySelectorAll('button');
+
+            const feedback = document.getElementById('quiz-feedback');
+            const feedbackTitle = document.getElementById('quiz-feedback-title');
+            const feedbackText = document.getElementById('quiz-feedback-text');
+
+            if (selectedIdx === q.correct) {
+                quizScore++;
+                buttons[selectedIdx].className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-xs sm:text-sm flex items-center justify-between";
+                
+                feedback.className = "p-4 rounded-2xl border bg-emerald-50 border-emerald-200 text-xs space-y-1 block";
+                feedbackTitle.className = "font-bold text-emerald-800";
+                feedbackTitle.innerText = "Esatto! 🎉";
+            } else {
+                buttons[selectedIdx].className = "w-full text-left p-4 rounded-2xl border-2 border-rose-400 bg-rose-50 text-rose-900 font-semibold text-xs sm:text-sm flex items-center justify-between";
+                buttons[q.correct].className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-xs sm:text-sm flex items-center justify-between";
+
+                feedback.className = "p-4 rounded-2xl border bg-rose-50 border-rose-200 text-xs space-y-1 block";
+                feedbackTitle.className = "font-bold text-rose-800";
+                feedbackTitle.innerText = "Risposta non corretta ❌";
+            }
+
+            feedbackText.innerText = q.explanation;
+            document.getElementById('quiz-score-live').innerText = `Punteggio: ${quizScore}`;
+            document.getElementById('btn-next-question').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                renderQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-box').classList.add('hidden');
+            const resultBox = document.getElementById('quiz-result');
+            resultBox.classList.remove('hidden');
+
+            document.getElementById('quiz-final-score').innerText = `Hai ottenuto ${quizScore} su ${quizQuestions.length} punti!`;
+
+            const icon = document.getElementById('quiz-badge-icon');
+            const msg = document.getElementById('quiz-final-msg');
+
+            if (quizScore === 5) {
+                icon.innerText = "🏆";
+                icon.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl bg-amber-100 text-amber-600";
+                msg.innerText = "Eccellente! Dimostri una padronanza perfetta della fisica e della chimica del ciclo dell'acqua.";
+            } else if (quizScore >= 3) {
+                icon.innerText = "🌟";
+                icon.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl bg-sky-100 text-sky-600";
+                msg.innerText = "Buon lavoro! Hai una solida comprensione dei processi idrologici principali.";
+            } else {
+                icon.innerText = "📚";
+                icon.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl bg-slate-100 text-slate-600";
+                msg.innerText = "Rivedi il diagramma interattivo e le schede scientifiche per consolidare le tue conoscenze!";
+            }
+        }
+
+        /* Initial Setup on Page Load */
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            initParticles();
+            animateParticles();
+            updateLabSimulation();
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+    </script>
+</body>
+</html>

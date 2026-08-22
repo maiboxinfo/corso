@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Come è fatto un computer – Guida per ragazzi</title>
+  <style>
+    /* ========================================
+       VARIABLES
+       ======================================== */
+    :root {
+      --color-primary: #2563eb;
+      --color-primary-hover: #1d4ed8;
+      --color-primary-light: #dbeafe;
+      --color-background: #f8fafc;
+      --color-surface: #ffffff;
+      --color-text: #1e293b;
+      --color-muted: #64748b;
+      --color-border: #e2e8f0;
+      --color-success: #16a34a;
+      --color-warning: #d97706;
+      --color-danger: #dc2626;
+      --color-cpu: #7c3aed;
+      --color-ram: #0891b2;
+      --color-storage: #059669;
+      --color-gpu: #ea580c;
+      --color-psu: #b45309;
+      --color-mb: #4f46e5;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-8: 48px;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+
+      --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --max-width: 1100px;
+      --sidebar-width: 260px;
+    }
+
+    /* ========================================
+       RESET / BASE
+       ======================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-background);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    img, svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    /* ========================================
+       TYPOGRAPHY
+       ======================================== */
+    h1, h2, h3, h4 {
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    h1 { font-size: 1.875rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+
+    p {
+      margin-bottom: var(--space-3);
+      color: var(--color-text);
+    }
+
+    .lead {
+      font-size: 1.125rem;
+      color: var(--color-muted);
+    }
+
+    .muted {
+      color: var(--color-muted);
+    }
+
+    .small {
+      font-size: 0.875rem;
+    }
+
+    /* ========================================
+       LAYOUT
+       ======================================== */
+    #app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--color-text);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      flex: 1;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    #sidebar {
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-5) var(--space-4);
+      position: sticky;
+      top: 65px;
+      height: calc(100vh - 65px);
+      overflow-y: auto;
+    }
+
+    #main {
+      padding: var(--space-6) var(--space-5);
+      min-height: calc(100vh - 65px);
+    }
+
+    /* ========================================
+       COMPONENTS
+       ======================================== */
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--color-muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.15s ease;
+    }
+
+    .nav-item:hover {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .nav-item.active {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .component-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+    }
+
+    .component-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .component-card .icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .component-card h3 {
+      margin-bottom: var(--space-2);
+    }
+
+    .component-card p {
+      font-size: 0.95rem;
+      color: var(--color-muted);
+      margin-bottom: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-cpu { background: #ede9fe; color: var(--color-cpu); }
+    .badge-ram { background: #cffafe; color: var(--color-ram); }
+    .badge-storage { background: #d1fae5; color: var(--color-storage); }
+    .badge-gpu { background: #ffedd5; color: var(--color-gpu); }
+    .badge-psu { background: #fef3c7; color: var(--color-psu); }
+    .badge-mb { background: #e0e7ff; color: var(--color-mb); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .btn-outline {
+      border: 1.5px solid var(--color-border);
+      color: var(--color-text);
+      background: var(--color-surface);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .hero {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      background: linear-gradient(180deg, var(--color-primary-light) 0%, var(--color-background) 100%);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      margin-bottom: var(--space-3);
+    }
+
+    .hero .lead {
+      max-width: 560px;
+      margin: 0 auto var(--space-5);
+    }
+
+    .section-title {
+      margin-bottom: var(--space-5);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    /* Diagram styles */
+    .diagram-container {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      overflow-x: auto;
+    }
+
+    .diagram-svg {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .hotspot {
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+
+    .hotspot:hover {
+      opacity: 0.85;
+    }
+
+    .hotspot.active rect,
+    .hotspot.active path,
+    .hotspot.active circle {
+      stroke-width: 3;
+    }
+
+    .info-panel {
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-top: var(--space-4);
+      min-height: 100px;
+    }
+
+    .info-panel h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Quiz */
+    .quiz-question {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-4);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+      width: 100%;
+      font-size: 0.95rem;
+    }
+
+    .quiz-option:hover:not(.disabled) {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+
+    .quiz-option.correct {
+      border-color: var(--color-success);
+      background: #dcfce7;
+    }
+
+    .quiz-option.wrong {
+      border-color: var(--color-danger);
+      background: #fee2e2;
+    }
+
+    .quiz-option.disabled {
+      cursor: default;
+    }
+
+    .quiz-feedback {
+      margin-top: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .quiz-feedback.correct {
+      background: #dcfce7;
+      color: var(--color-success);
+    }
+
+    .quiz-feedback.wrong {
+      background: #fee2e2;
+      color: var(--color-danger);
+    }
+
+    .score-box {
+      text-align: center;
+      padding: var(--space-6);
+      background: var(--color-primary-light);
+      border-radius: var(--radius-lg);
+      margin-top: var(--space-5);
+    }
+
+    .score-box .score {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+
+    /* Flow diagram */
+    .flow-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      justify-content: center;
+      align-items: center;
+      margin: var(--space-5) 0;
+    }
+
+    .flow-step {
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      text-align: center;
+      min-width: 120px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .flow-arrow {
+      color: var(--color-muted);
+      font-size: 1.25rem;
+    }
+
+    /* ========================================
+       STATES
+       ======================================== */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      #sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        z-index: 200;
+        width: min(280px, 85vw);
+        transition: left 0.25s ease;
+        box-shadow: var(--shadow-lg);
+      }
+
+      #sidebar.open {
+        left: 0;
+      }
+
+      .menu-toggle {
+        display: flex !important;
+      }
+
+      #main {
+        padding: var(--space-4);
+      }
+
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 150;
+    }
+
+    .overlay.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header id="header"></header>
+    <div class="overlay" id="overlay"></div>
+    <div class="layout">
+      <aside id="sidebar"></aside>
+      <main id="main"></main>
+    </div>
+  </div>
+
+  <script>
+    // ========================================
+    // CONFIG
+    // ========================================
+    const CONFIG = {
+      title: "Come è fatto un computer"
+    };
+
+    // ========================================
+    // STATE
+    // ========================================
+    const state = {
+      route: "home",
+      selectedComponent: null,
+      quizAnswers: {},
+      quizSubmitted: false,
+      sidebarOpen: false
+    };
+
+    // ========================================
+    // DATA (fatti reali, nessuna invenzione)
+    // ========================================
+    const COMPONENTS = [
+      {
+        id: "case",
+        name: "Case (Scatola)",
+        badge: "struttura",
+        color: "#64748b",
+        short: "La struttura metallica o plastica che contiene e protegge tutti i componenti.",
+        detail: "Il case (o chassis) è l'involucro esterno del computer. Tiene insieme tutti i pezzi, protegge dalla polvere e dagli urti, e permette il passaggio dell'aria per il raffreddamento. Su di esso ci sono i tasti di accensione, le luci e le porte USB anteriori."
+      },
+      {
+        id: "psu",
+        name: "Alimentatore (PSU)",
+        badge: "badge-psu",
+        color: "#b45309",
+        short: "Trasforma la corrente di casa (220V) in tensioni basse e stabili per i componenti.",
+        detail: "L'alimentatore (Power Supply Unit) converte la corrente alternata della presa di casa (circa 230 volt in Europa) in corrente continua a tensioni basse (3,3 V, 5 V, 12 V) che servono a CPU, scheda madre, hard disk e altri pezzi. Ha una potenza misurata in watt (es. 500 W, 650 W)."
+      },
+      {
+        id: "motherboard",
+        name: "Scheda madre",
+        badge: "badge-mb",
+        color: "#4f46e5",
+        short: "La grande scheda che collega tutti i componenti e fa comunicare tra loro.",
+        detail: "La scheda madre (motherboard) è il circuito stampato principale. Su di essa si inseriscono CPU, RAM, scheda video e si collegano hard disk, alimentatore e porte. Contiene il chipset che gestisce il traffico dei dati e il BIOS/UEFI, il piccolo programma che avvia il computer."
+      },
+      {
+        id: "cpu",
+        name: "Processore (CPU)",
+        badge: "badge-cpu",
+        color: "#7c3aed",
+        short: "Il «cervello» del computer: esegue i calcoli e le istruzioni dei programmi.",
+        detail: "La CPU (Central Processing Unit) è un chip di silicio con miliardi di transistor. Esegue le istruzioni dei programmi a velocità enormi (miliardi di operazioni al secondo). Si monta in un socket sulla scheda madre e ha bisogno di un dissipatore con ventola perché si scalda molto."
+      },
+      {
+        id: "ram",
+        name: "Memoria RAM",
+        badge: "badge-ram",
+        color: "#0891b2",
+        short: "Memoria veloce e temporanea dove il processore tiene i dati che sta usando.",
+        detail: "La RAM (Random Access Memory) è una memoria volatilia: si cancella quando spegni il computer. È molto più veloce dell'hard disk. Più RAM hai, più programmi puoi tenere aperti contemporaneamente senza rallentamenti. Si presenta come moduli lunghi e sottili che si inseriscono in slot sulla scheda madre."
+      },
+      {
+        id: "storage",
+        name: "Memoria di massa (SSD/HDD)",
+        badge: "badge-storage",
+        color: "#059669",
+        short: "Dove vengono salvati in modo permanente sistema operativo, file e programmi.",
+        detail: "L'hard disk (HDD) usa dischi magnetici rotanti; l'SSD (Solid State Drive) usa memoria flash senza parti mobili ed è molto più veloce e silenzioso. Qui sono memorizzati Windows/Linux/macOS, documenti, foto, giochi. A differenza della RAM, i dati restano anche a computer spento."
+      },
+      {
+        id: "gpu",
+        name: "Scheda video (GPU)",
+        badge: "badge-gpu",
+        color: "#ea580c",
+        short: "Si occupa di disegnare le immagini sullo schermo, soprattutto nei giochi e nel montaggio video.",
+        detail: "La GPU (Graphics Processing Unit) può essere integrata nella CPU oppure dedicata (una scheda a parte). È specializzata in calcoli paralleli per generare grafica 3D, video e anche per l'intelligenza artificiale. Le schede dedicate hanno una propria memoria video (VRAM)."
+      },
+      {
+        id: "cooling",
+        name: "Sistema di raffreddamento",
+        badge: "struttura",
+        color: "#0ea5e9",
+        short: "Ventole e dissipatori che portano via il calore generato da CPU e GPU.",
+        detail: "I componenti elettronici producono calore. Un dissipatore di alluminio o rame a contatto con la CPU trasferisce il calore; una o più ventole lo allontanano. Esistono anche sistemi a liquido. Senza raffreddamento il computer si spegnerebbe per protezione o si danneggerebbe."
+      }
+    ];
+
+    const QUIZ = [
+      {
+        id: 1,
+        question: "Quale componente viene chiamato il «cervello» del computer?",
+        options: [
+          "La memoria RAM",
+          "Il processore (CPU)",
+          "L'alimentatore",
+          "L'hard disk"
+        ],
+        correct: 1,
+        explanation: "La CPU esegue le istruzioni dei programmi, proprio come il cervello elabora le informazioni."
+      },
+      {
+        id: 2,
+        question: "Cosa succede ai dati nella RAM quando spegni il computer?",
+        options: [
+          "Restano salvati per sempre",
+          "Vengono copiati automaticamente sull'hard disk",
+          "Si cancellano",
+          "Diventano più veloci"
+        ],
+        correct: 2,
+        explanation: "La RAM è memoria volatile: ha bisogno di corrente elettrica. Senza corrente i dati spariscono."
+      },
+      {
+        id: 3,
+        question: "A cosa serve principalmente l'alimentatore (PSU)?",
+        options: [
+          "A raffreddare la CPU",
+          "A convertire la corrente di casa in tensioni basse per i componenti",
+          "A memorizzare i file",
+          "A collegare la tastiera"
+        ],
+        correct: 1,
+        explanation: "La presa di casa fornisce circa 230 volt in corrente alternata. I chip interni lavorano a pochi volt in corrente continua."
+      },
+      {
+        id: 4,
+        question: "Quale memoria mantiene i dati anche a computer spento?",
+        options: [
+          "La RAM",
+          "La cache della CPU",
+          "L'SSD o l'hard disk",
+          "Nessuna delle precedenti"
+        ],
+        correct: 2,
+        explanation: "SSD e hard disk sono memorie di massa non volatili: i dati restano anche senza corrente."
+      },
+      {
+        id: 5,
+        question: "Quale componente collega fisicamente tutti gli altri?",
+        options: [
+          "La scheda video",
+          "L'alimentatore",
+          "La scheda madre",
+          "Il case"
+        ],
+        correct: 2,
+        explanation: "Sulla scheda madre si inseriscono CPU, RAM, schede di espansione e si collegano i cavi di alimentazione e dati."
+      }
+    ];
+
+    // ========================================
+    // COMPONENTS (UI)
+    // ========================================
+    const Components = {
+      IconHome() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+      },
+      IconParts() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
+      },
+      IconDiagram() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`;
+      },
+      IconFlow() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`;
+      },
+      IconQuiz() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+      },
+      IconMenu() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+      },
+      IconClose() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+      },
+
+      Header() {
+        return `
+          <div class="header-inner">
+            <div class="logo">
+              <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <span>Come è fatto un computer</span>
+            </div>
+            <button class="menu-toggle" data-action="toggle-sidebar" aria-label="Apri menu">
+              ${Components.IconMenu()}
+            </button>
+          </div>
+        `;
+      },
+
+      Sidebar() {
+        const items = [
+          { route: "home", label: "Inizio", icon: Components.IconHome() },
+          { route: "componenti", label: "I componenti", icon: Components.IconParts() },
+          { route: "diagramma", label: "Diagramma", icon: Components.IconDiagram() },
+          { route: "flusso", label: "Come lavora", icon: Components.IconFlow() },
+          { route: "quiz", label: "Quiz", icon: Components.IconQuiz() }
+        ];
+
+        return `
+          <nav>
+            <ul class="nav-list">
+              ${items.map(item => `
+                <li>
+                  <a href="#/${item.route}" class="nav-item ${state.route === item.route ? "active" : ""}" data-action="nav" data-route="${item.route}">
+                    ${item.icon}
+                    <span>${item.label}</span>
+                  </a>
+                </li>
+              `).join("")}
+            </ul>
+          </nav>
+          <p class="small muted" style="margin-top: 32px; padding: 0 8px;">
+            Guida pensata per ragazzi di circa 14 anni.<br>
+            Solo fatti reali, senza invenzioni.
+          </p>
+        `;
+      },
+
+      ComponentCard(comp) {
+        return `
+          <article class="component-card" data-action="select-component" data-id="${comp.id}">
+            <div class="icon-wrap" style="background:${comp.color}18;">
+              ${this.ComponentIcon(comp.id, comp.color)}
+            </div>
+            <span class="badge ${comp.badge.startsWith("badge-") ? comp.badge : ""}" style="${!comp.badge.startsWith("badge-") ? `background:${comp.color}22;color:${comp.color}` : ""}">${comp.name.split(" ")[0]}</span>
+            <h3 style="margin-top:12px;">${comp.name}</h3>
+            <p>${comp.short}</p>
+          </article>
+        `;
+      },
+
+      ComponentIcon(id, color) {
+        const icons = {
+          case: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="15" y2="10"/><circle cx="12" cy="16" r="1.5"/></svg>`,
+          psu: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M7 10h2v4H7zM11 10h2v4h-2zM15 10h2v4h-2z"/><line x1="3" y1="10" x2="1" y2="10"/><line x1="23" y1="10" x2="21" y2="10"/></svg>`,
+          motherboard: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="1"/><rect x="6" y="6" width="5" height="5" rx="0.5"/><rect x="13" y="6" width="5" height="3" rx="0.5"/><rect x="6" y="13" width="3" height="5" rx="0.5"/><rect x="11" y="13" width="7" height="3" rx="0.5"/><circle cx="18" cy="18" r="1.2"/></svg>`,
+          cpu: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="6" y="6" width="12" height="12" rx="1"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="2" x2="9" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/><line x1="9" y1="18" x2="9" y2="22"/><line x1="15" y1="18" x2="15" y2="22"/><line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/><line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/></svg>`,
+          ram: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="2" y="7" width="20" height="10" rx="1"/><line x1="6" y1="7" x2="6" y2="17"/><line x1="10" y1="7" x2="10" y2="17"/><line x1="14" y1="7" x2="14" y2="17"/><line x1="18" y1="7" x2="18" y2="17"/><rect x="4" y="10" width="2" height="4"/><rect x="8" y="10" width="2" height="4"/><rect x="12" y="10" width="2" height="4"/><rect x="16" y="10" width="2" height="4"/></svg>`,
+          storage: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/><circle cx="7" cy="7" r="1"/><circle cx="7" cy="17" r="1"/></svg>`,
+          gpu: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="1"/><rect x="5" y="9" width="6" height="6" rx="0.5"/><line x1="14" y1="9" x2="19" y2="9"/><line x1="14" y1="12" x2="19" y2="12"/><line x1="14" y1="15" x2="17" y2="15"/><circle cx="20" cy="12" r="1"/></svg>`,
+          cooling: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>`
+        };
+        return icons[id] || icons.case;
+      }
+    };
+
+    // ========================================
+    // VIEWS
+    // ========================================
+    const Views = {
+      home() {
+        return `
+          <div class="hero">
+            <h1>Come è fatto un computer?</h1>
+            <p class="lead">
+              Scopri i pezzi veri che stanno dentro un PC desktop.
+              Niente fantascienza: solo componenti reali spiegati in modo semplice.
+            </p>
+            <button class="btn btn-primary" data-action="nav" data-route="componenti">
+              Inizia a esplorare
+            </button>
+          </div>
+
+          <h2 class="section-title">Cosa imparerai</h2>
+          <div class="card-grid">
+            <div class="card">
+              <h3>1. I pezzi principali</h3>
+              <p class="muted">CPU, RAM, scheda madre, alimentatore, memoria di massa e raffreddamento: a cosa serve ciascuno.</p>
+            </div>
+            <div class="card">
+              <h3>2. Come sono disposti</h3>
+              <p class="muted">Un diagramma proporzionato che mostra dove si trovano i componenti dentro il case.</p>
+            </div>
+            <div class="card">
+              <h3>3. Come collaborano</h3>
+              <p class="muted">Il percorso semplice dei dati: dall'input all'elaborazione fino allo schermo e al salvataggio.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 32px;">
+            <h3>Un computer non è magia</h3>
+            <p>
+              Un computer è una macchina elettrica che elabora informazioni.
+              Tutti i pezzi sono collegati tra loro attraverso la <strong>scheda madre</strong>.
+              L'<strong>alimentatore</strong> fornisce l'energia, la <strong>CPU</strong> calcola,
+              la <strong>RAM</strong> tiene i dati temporanei e l'<strong>SSD/hard disk</strong>
+              conserva tutto in modo permanente.
+            </p>
+            <p class="muted small" style="margin-bottom:0;">
+              Questa guida parla soprattutto dei computer fissi (desktop). I portatili hanno gli stessi componenti, ma più compatti e saldati.
+            </p>
+          </div>
+        `;
+      },
+
+      componenti() {
+        const selected = COMPONENTS.find(c => c.id === state.selectedComponent);
+
+        return `
+          <h1 class="section-title">I componenti principali</h1>
+          <p class="lead" style="margin-bottom:24px;">
+            Clicca su una scheda per leggere di più. Ogni pezzo ha un ruolo preciso.
+          </p>
+
+          <div class="card-grid">
+            ${COMPONENTS.map(c => Components.ComponentCard(c)).join("")}
+          </div>
+
+          ${selected ? `
+            <div class="info-panel" style="margin-top:28px;">
+              <h4>${selected.name}</h4>
+              <p style="margin-bottom:0;">${selected.detail}</p>
+            </div>
+          ` : `
+            <div class="info-panel" style="margin-top:28px;">
+              <h4>Seleziona un componente</h4>
+              <p class="muted" style="margin-bottom:0;">Clicca su una delle schede qui sopra per vedere la spiegazione completa.</p>
+            </div>
+          `}
+        `;
+      },
+
+      diagramma() {
+        const selected = COMPONENTS.find(c => c.id === state.selectedComponent);
+
+        return `
+          <h1 class="section-title">Diagramma del computer</h1>
+          <p class="lead" style="margin-bottom:20px;">
+            Schema semplificato ma proporzionato di un PC desktop visto da lato.
+            Clicca sulle parti colorate per saperne di più.
+          </p>
+
+          <div class="diagram-container">
+            <svg class="diagram-svg" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" aria-label="Schema interno di un computer desktop">
+              <!-- Case outline -->
+              <rect x="40" y="30" width="560" height="360" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="3"/>
+              <!-- Front panel indicator -->
+              <rect x="40" y="30" width="18" height="360" rx="2" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+
+              <!-- PSU (top-right, realistic position) -->
+              <g class="hotspot ${state.selectedComponent === "psu" ? "active" : ""}" data-action="select-component" data-id="psu" style="cursor:pointer">
+                <rect x="420" y="45" width="160" height="70" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+                <text x="500" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">Alimentatore</text>
+                <text x="500" y="95" text-anchor="middle" font-size="11" fill="#b45309">PSU</text>
+              </g>
+
+              <!-- Motherboard area -->
+              <g class="hotspot ${state.selectedComponent === "motherboard" ? "active" : ""}" data-action="select-component" data-id="motherboard" style="cursor:pointer">
+                <rect x="80" y="130" width="320" height="230" rx="4" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                <text x="240" y="155" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Scheda madre</text>
+              </g>
+
+              <!-- CPU on motherboard -->
+              <g class="hotspot ${state.selectedComponent === "cpu" ? "active" : ""}" data-action="select-component" data-id="cpu" style="cursor:pointer">
+                <rect x="160" y="175" width="70" height="70" rx="3" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+                <text x="195" y="215" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">CPU</text>
+              </g>
+
+              <!-- Cooler over CPU -->
+              <g class="hotspot ${state.selectedComponent === "cooling" ? "active" : ""}" data-action="select-component" data-id="cooling" style="cursor:pointer">
+                <circle cx="195" cy="210" r="38" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="4 2"/>
+                <text x="195" y="255" text-anchor="middle" font-size="10" fill="#0369a1">Dissipatore</text>
+              </g>
+
+              <!-- RAM slots -->
+              <g class="hotspot ${state.selectedComponent === "ram" ? "active" : ""}" data-action="select-component" data-id="ram" style="cursor:pointer">
+                <rect x="260" y="180" width="18" height="90" rx="2" fill="#cffafe" stroke="#0891b2" stroke-width="1.5"/>
+                <rect x="285" y="180" width="18" height="90" rx="2" fill="#cffafe" stroke="#0891b2" stroke-width="1.5"/>
+                <text x="290" y="290" text-anchor="middle" font-size="11" font-weight="600" fill="#0e7490">RAM</text>
+              </g>
+
+              <!-- GPU (PCIe slot, horizontal) -->
+              <g class="hotspot ${state.selectedComponent === "gpu" ? "active" : ""}" data-action="select-component" data-id="gpu" style="cursor:pointer">
+                <rect x="100" y="290" width="200" height="45" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+                <text x="200" y="318" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">Scheda video (GPU)</text>
+              </g>
+
+              <!-- Storage (bottom) -->
+              <g class="hotspot ${state.selectedComponent === "storage" ? "active" : ""}" data-action="select-component" data-id="storage" style="cursor:pointer">
+                <rect x="430" y="280" width="130" height="55" rx="3" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+                <text x="495" y="305" text-anchor="middle" font-size="12" font-weight="600" fill="#047857">SSD / HDD</text>
+                <text x="495" y="322" text-anchor="middle" font-size="10" fill="#059669">Memoria di massa</text>
+              </g>
+
+              <!-- Case label -->
+              <g class="hotspot ${state.selectedComponent === "case" ? "active" : ""}" data-action="select-component" data-id="case" style="cursor:pointer">
+                <text x="320" y="400" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Case (scatola esterna)</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="info-panel">
+            ${selected ? `
+              <h4>${selected.name}</h4>
+              <p style="margin-bottom:0;">${selected.detail}</p>
+            ` : `
+              <h4>Clicca su un componente nel disegno</h4>
+              <p class="muted" style="margin-bottom:0;">Le parti colorate sono interattive. Ogni colore corrisponde a un componente diverso.</p>
+            `}
+          </div>
+        `;
+      },
+
+      flusso() {
+        return `
+          <h1 class="section-title">Come lavorano insieme</h1>
+          <p class="lead">
+            Ecco il percorso semplificato di un'operazione comune: aprire un file e vederlo sullo schermo.
+          </p>
+
+          <div class="card" style="margin-bottom:28px;">
+            <h3>Esempio: apri una foto</h3>
+            <div class="flow-steps">
+              <div class="flow-step" style="border-color:#059669;color:#047857;">SSD / HDD<br><span class="small muted">legge il file</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="border-color:#0891b2;color:#0e7490;">RAM<br><span class="small muted">carica i dati</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="border-color:#7c3aed;color:#5b21b6;">CPU<br><span class="small muted">elabora</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="border-color:#ea580c;color:#c2410c;">GPU<br><span class="small muted">disegna l'immagine</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="border-color:#2563eb;color:#1d4ed8;">Schermo<br><span class="small muted">la vedi</span></div>
+            </div>
+            <p class="muted small" style="margin-bottom:0;">
+              Tutti questi passaggi avvengono in frazioni di secondo. La scheda madre fa da «strada» tra i componenti e l'alimentatore fornisce l'energia a tutti.
+            </p>
+          </div>
+
+          <div class="card-grid">
+            <div class="card">
+              <h3>Input</h3>
+              <p class="muted">Tastiera, mouse, touchpad o microfono inviano segnali elettrici alla scheda madre. La CPU li interpreta come comandi.</p>
+            </div>
+            <div class="card">
+              <h3>Elaborazione</h3>
+              <p class="muted">La CPU esegue le istruzioni del sistema operativo e dei programmi. Usa la RAM come «banco di lavoro» veloce.</p>
+            </div>
+            <div class="card">
+              <h3>Output e salvataggio</h3>
+              <p class="muted">I risultati vanno allo schermo (tramite GPU), alle casse, alla stampante… e possono essere salvati sull'SSD o sull'hard disk.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:28px;background:#f0fdf4;border-color:#bbf7d0;">
+            <h3 style="color:#166534;">In sintesi</h3>
+            <p style="margin-bottom:0;">
+              Un computer è un sistema di componenti specializzati che collaborano.
+              Nessun pezzo fa tutto da solo: la CPU calcola, la RAM ricorda temporaneamente,
+              la memoria di massa conserva, la GPU disegna e l'alimentatore dà energia a tutti.
+            </p>
+          </div>
+        `;
+      },
+
+      quiz() {
+        const answeredCount = Object.keys(state.quizAnswers).length;
+        const allAnswered = answeredCount === QUIZ.length;
+
+        let score = 0;
+        if (state.quizSubmitted) {
+          QUIZ.forEach(q => {
+            if (state.quizAnswers[q.id] === q.correct) score++;
+          });
+        }
+
+        return `
+          <h1 class="section-title">Quiz di verifica</h1>
+          <p class="lead" style="margin-bottom:24px;">
+            Cinque domande per controllare se hai capito. Rispondi a tutte e poi premi «Controlla le risposte».
+          </p>
+
+          ${QUIZ.map((q, idx) => {
+            const userAnswer = state.quizAnswers[q.id];
+            const isAnswered = userAnswer !== undefined;
+            const showResult = state.quizSubmitted;
+
+            return `
+              <div class="quiz-question">
+                <h3>${idx + 1}. ${q.question}</h3>
+                <div class="quiz-options">
+                  ${q.options.map((opt, i) => {
+                    let cls = "quiz-option";
+                    if (showResult) {
+                      cls += " disabled";
+                      if (i === q.correct) cls += " correct";
+                      else if (i === userAnswer && userAnswer !== q.correct) cls += " wrong";
+                    } else if (isAnswered && userAnswer === i) {
+                      cls += " correct";
+                    }
+                    return `
+                      <button class="${cls}"
+                        data-action="quiz-answer"
+                        data-qid="${q.id}"
+                        data-idx="${i}"
+                        ${showResult ? "disabled" : ""}>
+                        ${opt}
+                      </button>
+                    `;
+                  }).join("")}
+                </div>
+                ${showResult ? `
+                  <div class="quiz-feedback ${userAnswer === q.correct ? "correct" : "wrong"}">
+                    ${userAnswer === q.correct ? "✓ Corretto! " : "✗ Non esatto. "}
+                    ${q.explanation}
+                  </div>
+                ` : ""}
+              </div>
+            `;
+          }).join("")}
+
+          ${!state.quizSubmitted ? `
+            <button class="btn btn-primary" data-action="submit-quiz" ${allAnswered ? "" : "disabled style='opacity:0.5;cursor:not-allowed'"}>
+              Controlla le risposte
+            </button>
+            <p class="small muted" style="margin-top:12px;">Risposte date: ${answeredCount} / ${QUIZ.length}</p>
+          ` : `
+            <div class="score-box">
+              <p class="muted">Il tuo punteggio</p>
+              <div class="score">${score} / ${QUIZ.length}</div>
+              <p style="margin-top:12px;">
+                ${score === QUIZ.length ? "Perfetto! Hai capito molto bene come è fatto un computer." :
+                  score >= 3 ? "Buon lavoro! Rileggi le parti che non ti sono chiare e riprova." :
+                  "Riguarda le sezioni sui componenti e sul diagramma, poi riprova."}
+              </p>
+              <button class="btn btn-outline" data-action="reset-quiz" style="margin-top:16px;">
+                Rifai il quiz
+              </button>
+            </div>
+          `}
+        `;
+      },
+
+      render(route) {
+        const main = document.querySelector("#main");
+        const view = this[route] || this.home;
+        main.innerHTML = view.call(this);
+        state.route = route;
+
+        // Update sidebar active state
+        document.querySelector("#sidebar").innerHTML = Components.Sidebar();
+      }
+    };
+
+    // ========================================
+    // ROUTER
+    // ========================================
+    const Router = {
+      getRoute() {
+        const hash = location.hash.replace(/^#\/?/, "");
+        return hash || "home";
+      },
+
+      navigate(route) {
+        location.hash = `/${route}`;
+        state.sidebarOpen = false;
+        this.updateSidebar();
+      },
+
+      render() {
+        const route = this.getRoute();
+        Views.render(route);
+      },
+
+      updateSidebar() {
+        const sidebar = document.querySelector("#sidebar");
+        const overlay = document.querySelector("#overlay");
+        if (state.sidebarOpen) {
+          sidebar.classList.add("open");
+          overlay.classList.add("visible");
+        } else {
+          sidebar.classList.remove("open");
+          overlay.classList.remove("visible");
+        }
+      }
+    };
+
+    // ========================================
+    // EVENTS
+    // ========================================
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-action]");
+      if (!target) {
+        // close sidebar on overlay click
+        if (event.target.id === "overlay") {
+          state.sidebarOpen = false;
+          Router.updateSidebar();
+        }
+        return;
+      }
+
+      const action = target.dataset.action;
+
+      switch (action) {
+        case "nav":
+          event.preventDefault();
+          Router.navigate(target.dataset.route);
+          break;
+
+        case "toggle-sidebar":
+          state.sidebarOpen = !state.sidebarOpen;
+          Router.updateSidebar();
+          break;
+
+        case "select-component":
+          state.selectedComponent = target.dataset.id;
+          Views.render(state.route);
+          break;
+
+        case "quiz-answer":
+          if (state.quizSubmitted) return;
+          state.quizAnswers[target.dataset.qid] = parseInt(target.dataset.idx, 10);
+          Views.render("quiz");
+          break;
+
+        case "submit-quiz":
+          if (Object.keys(state.quizAnswers).length < QUIZ.length) return;
+          state.quizSubmitted = true;
+          Views.render("quiz");
+          break;
+
+        case "reset-quiz":
+          state.quizAnswers = {};
+          state.quizSubmitted = false;
+          Views.render("quiz");
+          break;
+      }
+    });
+
+    window.addEventListener("hashchange", () => {
+      Router.render();
+    });
+
+    // ========================================
+    // INIT
+    // ========================================
+    function init() {
+      document.querySelector("#header").innerHTML = Components.Header();
+      document.querySelector("#sidebar").innerHTML = Components.Sidebar();
+      Router.render();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

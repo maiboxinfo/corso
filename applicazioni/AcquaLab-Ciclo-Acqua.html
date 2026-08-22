@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcquaLab – Il Ciclo dell'Acqua</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              blue: '#2563eb',
+              teal: '#0d9488',
+              purple: '#7c3aed',
+              rose: '#e11d48',
+              amber: '#d97706',
+              emerald: '#059669',
+            }
+          },
+          boxShadow: {
+            'glow-blue': '0 0 20px rgba(37, 99, 235, 0.15)',
+            'glow-teal': '0 0 20px rgba(13, 148, 136, 0.15)',
+            'glow-purple': '0 0 20px rgba(124, 58, 237, 0.15)',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    h1, h2, h3, h4, .font-outfit {
+      font-family: 'Outfit', sans-serif;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cta-btn {
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      transition: all 0.25s ease;
+    }
+    .cta-btn:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      color: white;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    }
+    .tab-btn:not(.active):hover {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    canvas {
+      background: #ffffff;
+      border-radius: 1rem;
+    }
+    .quiz-option.correct {
+      background: #d1fae5 !important;
+      border-color: #059669 !important;
+      color: #065f46 !important;
+    }
+    .quiz-option.wrong {
+      background: #fee2e2 !important;
+      border-color: #e11d48 !important;
+      color: #9f1239 !important;
+    }
+    .class-btn.selected {
+      background: #dbeafe;
+      border-color: #2563eb;
+      color: #1e40af;
+    }
+    .class-btn.right {
+      background: #d1fae5;
+      border-color: #059669;
+      color: #065f46;
+    }
+    .class-btn.wrong {
+      background: #fee2e2;
+      border-color: #e11d48;
+      color: #9f1239;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- HEADER -->
+  <header class="glass-nav sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white shadow-glow-blue">
+          <i class="fas fa-water text-lg"></i>
+        </div>
+        <div>
+          <div class="font-outfit font-bold text-slate-800 text-lg leading-tight">AcquaLab</div>
+          <div class="text-xs text-slate-500 font-medium">Il Ciclo dell'Acqua</div>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-1">
+        <button onclick="scrollToSection('intro')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fas fa-house text-blue-500"></i> Intro
+        </button>
+        <button onclick="scrollToSection('mol-lab')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fas fa-flask text-teal-500"></i> Laboratorio
+        </button>
+        <button onclick="scrollToSection('polarity')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fas fa-sliders text-purple-500"></i> Simulatore
+        </button>
+        <button onclick="scrollToSection('quiz')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fas fa-graduation-cap text-amber-500"></i> Quiz
+        </button>
+      </nav>
+      <button id="menuBtn" onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-100 bg-white">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
+        <button onclick="scrollToSection('intro'); toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left flex items-center gap-2">
+          <i class="fas fa-house text-blue-500 w-5"></i> Introduzione
+        </button>
+        <button onclick="scrollToSection('mol-lab'); toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left flex items-center gap-2">
+          <i class="fas fa-flask text-teal-500 w-5"></i> Laboratorio
+        </button>
+        <button onclick="scrollToSection('polarity'); toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left flex items-center gap-2">
+          <i class="fas fa-sliders text-purple-500 w-5"></i> Simulatore
+        </button>
+        <button onclick="scrollToSection('quiz'); toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left flex items-center gap-2">
+          <i class="fas fa-graduation-cap text-amber-500 w-5"></i> Quiz
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-16">
+    <!-- INTRO + ANALOGY -->
+    <section id="intro" class="scroll-mt-24">
+      <div class="glass-panel rounded-3xl overflow-hidden">
+        <div class="bg-gradient-to-br from-blue-50 via-teal-50 to-cyan-50 p-8 md:p-12">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wide mb-4">
+            <i class="fas fa-droplet"></i> Scienze della Terra · 14 anni
+          </div>
+          <h1 class="font-outfit font-extrabold text-3xl md:text-5xl text-slate-900 mb-4 leading-tight">
+            Il viaggio infinito dell'<span class="gradient-text">acqua</span>
+          </h1>
+          <p class="text-slate-600 text-base md:text-lg max-w-2xl leading-relaxed mb-8">
+            L'acqua non scompare mai: <strong>evapora</strong>, diventa <strong>nuvola</strong>, <strong>cade</strong> come pioggia o neve, scorre nei fiumi e torna al mare. Questo movimento continuo si chiama <strong>ciclo dell'acqua</strong> (o ciclo idrologico). Scopriamolo insieme!
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="scrollToSection('mol-lab')" class="cta-btn text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-glow-blue flex items-center gap-2">
+              <i class="fas fa-flask"></i> Vai al Laboratorio
+            </button>
+            <button onclick="scrollToSection('analogy')" class="bg-white text-slate-700 px-6 py-3 rounded-xl font-semibold text-sm border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+              <i class="fas fa-lightbulb text-amber-500"></i> Vedi l'analogia
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALOGY -->
+      <div id="analogy" class="mt-8 scroll-mt-24">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                <i class="fas fa-route text-lg"></i>
+              </div>
+              <h2 class="font-outfit font-bold text-xl text-slate-800">Analogia: il postino dell'acqua</h2>
+            </div>
+            <p class="text-slate-600 leading-relaxed mb-4">
+              Immagina una goccia d'acqua come un <strong>postino instancabile</strong>. Parte dal mare (l'ufficio centrale), sale in cielo con l'energia del Sole (la bici), si ferma nelle nuvole (il deposito), poi consegna la posta (pioggia/neve) sulla terra e torna sempre all'ufficio. Non si ferma mai!
+            </p>
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
+              <i class="fas fa-circle-info text-blue-500 mt-0.5"></i>
+              <div class="text-sm text-blue-800">
+                <strong>Differenza chiave:</strong> a differenza di un vero postino, la goccia può cambiare "vestito" (liquido ↔ gas ↔ solido) durante il viaggio, ma resta sempre H₂O.
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="flex gap-2 mb-4">
+              <button id="viewAnalogyBtn" onclick="toggleView('analogy')" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white transition">
+                Vista analogia
+              </button>
+              <button id="viewTechBtn" onclick="toggleView('tech')" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                Vista tecnica
+              </button>
+            </div>
+            <div id="viewAnalogy" class="space-y-3">
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-2xl">☀️</span>
+                <div><div class="font-semibold text-slate-800">Il Sole (motore)</div><div class="text-sm text-slate-500">Fornisce energia al postino</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-2xl">☁️</span>
+                <div><div class="font-semibold text-slate-800">Le nuvole (deposito)</div><div class="text-sm text-slate-500">Dove la posta aspetta di essere consegnata</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-2xl">🌧️</span>
+                <div><div class="font-semibold text-slate-800">Pioggia/neve (consegna)</div><div class="text-sm text-slate-500">La posta arriva a destinazione</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-2xl">🌊</span>
+                <div><div class="font-semibold text-slate-800">Oceano (ufficio centrale)</div><div class="text-sm text-slate-500">Punto di partenza e ritorno</div></div>
+              </div>
+            </div>
+            <div id="viewTech" class="hidden space-y-3">
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <i class="fas fa-sun text-amber-500 text-xl w-8 text-center"></i>
+                <div><div class="font-semibold text-slate-800">Radiazione solare</div><div class="text-sm text-slate-500">Energia che attiva l'evaporazione</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <i class="fas fa-cloud text-slate-400 text-xl w-8 text-center"></i>
+                <div><div class="font-semibold text-slate-800">Condensazione</div><div class="text-sm text-slate-500">Vapore → goccioline (nubi)</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <i class="fas fa-cloud-rain text-blue-500 text-xl w-8 text-center"></i>
+                <div><div class="font-semibold text-slate-800">Precipitazione</div><div class="text-sm text-slate-500">Pioggia, neve, grandine</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <i class="fas fa-water text-teal-500 text-xl w-8 text-center"></i>
+                <div><div class="font-semibold text-slate-800">Raccolta e deflusso</div><div class="text-sm text-slate-500">Ritorno agli oceani e laghi</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LABORATORIO -->
+    <section id="mol-lab" class="scroll-mt-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div>
+          <h2 class="font-outfit font-extrabold text-2xl md:text-3xl text-slate-900 mb-1">Laboratorio del Ciclo</h2>
+          <p class="text-slate-500">Seleziona una fase e osserva cosa succede</p>
+        </div>
+        <div class="flex flex-wrap gap-2" id="labTabs">
+          <!-- tabs generati da JS -->
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <!-- CANVAS -->
+        <div class="glass-panel rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-600">Animazione interattiva</span>
+            <button id="playPauseBtn" onclick="toggleAnimation()" class="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition">
+              <i id="playPauseIcon" class="fas fa-pause"></i>
+            </button>
+          </div>
+          <canvas id="labCanvas" width="520" height="340" class="w-full"></canvas>
+          <div class="mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-400"></span> Acqua liquida</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-300"></span> Vapore</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-300"></span> Nuvola</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span> Sole</span>
+          </div>
+        </div>
+
+        <!-- INFO PANEL -->
+        <div class="glass-panel rounded-2xl p-6 flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <span id="itemBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700 border border-blue-200">Fase</span>
+            <h3 id="itemName" class="font-outfit font-bold text-xl text-slate-800">—</h3>
+          </div>
+          <p id="itemDesc" class="text-slate-600 leading-relaxed mb-5 flex-grow">—</p>
+          <div class="grid grid-cols-1 gap-3 mb-5">
+            <div class="flex gap-3 p-3 bg-slate-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                <i class="fas fa-1 text-xs"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-slate-500 uppercase">Fatto 1</div>
+                <div id="fact1" class="text-sm text-slate-700 font-medium">—</div>
+              </div>
+            </div>
+            <div class="flex gap-3 p-3 bg-slate-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-teal-600 shrink-0">
+                <i class="fas fa-2 text-xs"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-slate-500 uppercase">Fatto 2</div>
+                <div id="fact2" class="text-sm text-slate-700 font-medium">—</div>
+              </div>
+            </div>
+            <div class="flex gap-3 p-3 bg-slate-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+                <i class="fas fa-3 text-xs"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-slate-500 uppercase">Fatto 3</div>
+                <div id="fact3" class="text-sm text-slate-700 font-medium">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-slate-800 text-slate-100 rounded-xl p-4 font-mono text-sm">
+            <span class="text-slate-400 text-xs block mb-1">Processo chiave</span>
+            <span id="itemNotation">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULATORE -->
+    <section id="polarity" class="scroll-mt-24">
+      <div class="mb-6">
+        <h2 class="font-outfit font-extrabold text-2xl md:text-3xl text-slate-900 mb-1">Simulatore: Energia del Sole</h2>
+        <p class="text-slate-500">Muovi lo slider per vedere come la temperatura influenza l'evaporazione</p>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <div class="text-sm font-semibold text-slate-500 mb-1">Temperatura media</div>
+            <div class="flex items-baseline gap-2">
+              <span id="tempValue" class="font-outfit font-extrabold text-4xl text-slate-800">20</span>
+              <span class="text-slate-500 font-medium">°C</span>
+              <span id="tempLabel" class="ml-3 px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-700 border border-teal-200">Temperato</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="setTemp(5)" class="px-4 py-2 rounded-lg text-sm font-semibold bg-sky-100 text-sky-700 hover:bg-sky-200 transition">Freddo (5°C)</button>
+            <button onclick="setTemp(20)" class="px-4 py-2 rounded-lg text-sm font-semibold bg-teal-100 text-teal-700 hover:bg-teal-200 transition">Temperato</button>
+            <button onclick="setTemp(35)" class="px-4 py-2 rounded-lg text-sm font-semibold bg-amber-100 text-amber-700 hover:bg-amber-200 transition">Caldo (35°C)</button>
+          </div>
+        </div>
+
+        <input type="range" id="tempSlider" min="0" max="40" value="20" class="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600 mb-8"
+               oninput="updateSimulation(this.value)">
+
+        <!-- Visual -->
+        <div class="relative h-48 bg-gradient-to-b from-sky-100 to-blue-50 rounded-2xl overflow-hidden border border-slate-100 mb-6">
+          <!-- Sun -->
+          <div id="sunIcon" class="absolute top-4 right-8 transition-all duration-500">
+            <i class="fas fa-sun text-amber-400 text-4xl"></i>
+          </div>
+          <!-- Vapor particles -->
+          <div id="vaporCloud" class="absolute inset-x-0 top-10 flex justify-center gap-4 opacity-40 transition-opacity duration-500">
+            <i class="fas fa-cloud text-slate-300 text-3xl"></i>
+            <i class="fas fa-cloud text-slate-300 text-2xl"></i>
+            <i class="fas fa-cloud text-slate-300 text-3xl"></i>
+          </div>
+          <!-- Water surface -->
+          <div class="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-blue-400 to-blue-300 flex items-end justify-center pb-2">
+            <span class="text-white text-xs font-semibold opacity-80">Superficie oceano / lago</span>
+          </div>
+          <!-- Rising drops -->
+          <div id="risingDrops" class="absolute bottom-16 inset-x-0 flex justify-around px-8 transition-all duration-500">
+            <span class="text-blue-300 text-lg animate-bounce" style="animation-delay:0s">↑</span>
+            <span class="text-blue-300 text-lg animate-bounce" style="animation-delay:0.2s">↑</span>
+            <span class="text-blue-300 text-lg animate-bounce" style="animation-delay:0.4s">↑</span>
+            <span class="text-blue-300 text-lg animate-bounce" style="animation-delay:0.1s">↑</span>
+            <span class="text-blue-300 text-lg animate-bounce" style="animation-delay:0.3s">↑</span>
+          </div>
+          <!-- Status text -->
+          <div class="absolute top-4 left-4 bg-white/80 backdrop-blur rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm">
+            <span id="evapStatus">Evaporazione moderata</span>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-sky-50 border border-sky-100 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="fas fa-snowflake text-sky-500"></i>
+              <span class="font-semibold text-slate-800">Clima freddo</span>
+            </div>
+            <p class="text-sm text-slate-600">Poca energia solare → evaporazione lenta. L'acqua resta più a lungo in forma liquida o solida (ghiaccio/neve).</p>
+          </div>
+          <div class="p-4 bg-amber-50 border border-amber-100 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="fas fa-temperature-high text-amber-500"></i>
+              <span class="font-semibold text-slate-800">Clima caldo</span>
+            </div>
+            <p class="text-sm text-slate-600">Tanta energia solare → evaporazione intensa. Più vapore in atmosfera, cicli più rapidi e spesso più precipitazioni.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="scroll-mt-24">
+      <div class="mb-6">
+        <h2 class="font-outfit font-extrabold text-2xl md:text-3xl text-slate-900 mb-1">Metti alla prova le tue conoscenze</h2>
+        <p class="text-slate-500">Quiz + mini-gioco di classificazione</p>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-6">
+        <!-- QUIZ PRINCIPALE -->
+        <div class="lg:col-span-8 glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-sm font-semibold text-slate-500">
+              Domanda <span id="qNum">1</span> di <span id="qTotal">6</span>
+            </div>
+            <div class="text-sm font-semibold text-slate-600">
+              Punteggio: <span id="scoreDisplay">0</span>
+            </div>
+          </div>
+          <div class="w-full h-2 bg-slate-100 rounded-full mb-6 overflow-hidden">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-teal-500 rounded-full transition-all duration-300" style="width:16.67%"></div>
+          </div>
+
+          <div id="quizContent">
+            <!-- generato da JS -->
+          </div>
+
+          <div class="flex justify-between mt-6">
+            <button id="prevBtn" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition disabled:opacity-40" disabled>
+              <i class="fas fa-arrow-left mr-1"></i> Precedente
+            </button>
+            <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-2.5 rounded-xl text-sm font-semibold cta-btn text-white">
+              Prossima <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- CLASSIFICATION -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-6">
+          <h3 class="font-outfit font-bold text-lg text-slate-800 mb-1">Classifica i processi</h3>
+          <p class="text-sm text-slate-500 mb-4">A quale fase appartiene?</p>
+          <div id="classList" class="space-y-3 mb-5">
+            <!-- generato da JS -->
+          </div>
+          <button onclick="checkAnswers()" class="w-full py-2.5 rounded-xl text-sm font-semibold cta-btn text-white">
+            <i class="fas fa-check-double mr-1"></i> Verifica
+          </button>
+          <div id="classFeedback" class="mt-3 text-sm font-medium text-center hidden"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-16 border-t border-slate-200 bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white">
+          <i class="fas fa-water"></i>
+        </div>
+        <div>
+          <div class="font-outfit font-bold text-slate-800">AcquaLab</div>
+          <div class="text-xs text-slate-500">Il ciclo dell'acqua spiegato in modo interattivo</div>
+        </div>
+      </div>
+      <div class="text-sm text-slate-400">Pensato per ragazzi di 14 anni · Scienze della Terra</div>
+    </div>
+  </footer>
+
+  <script>
+    // ========== DATA ==========
+    const ITEMS = {
+      evaporazione: {
+        name: "Evaporazione",
+        badge: "Fase 1",
+        badgeClass: "bg-amber-100 text-amber-700 border-amber-200",
+        description: "L'energia del Sole riscalda la superficie di oceani, laghi e fiumi. Le molecole d'acqua più energetiche sfuggono e diventano vapore acqueo invisibile che sale verso l'atmosfera.",
+        fact1: "Avviene principalmente dagli oceani (circa 86% dell'acqua evaporata).",
+        fact2: "Anche piante e suolo rilasciano vapore (evapotraspirazione).",
+        fact3: "Più fa caldo e c'è vento, più l'evaporazione è rapida.",
+        notation: "H₂O (liquido) + energia → H₂O (vapore)",
+        color: "#f59e0b"
+      },
+      condensazione: {
+        name: "Condensazione",
+        badge: "Fase 2",
+        badgeClass: "bg-sky-100 text-sky-700 border-sky-200",
+        description: "Il vapore acqueo sale, si raffredda e le molecole si uniscono formando minuscole goccioline o cristalli di ghiaccio. Così nascono le nuvole.",
+        fact1: "Serve una superficie (nuclei di condensazione: polvere, sale marino).",
+        fact2: "Le nuvole possono essere di acqua liquida o di ghiaccio.",
+        fact3: "Senza condensazione non esisterebbero pioggia né neve.",
+        notation: "H₂O (vapore) → H₂O (liquido / solido)",
+        color: "#0ea5e9"
+      },
+      precipitazione: {
+        name: "Precipitazione",
+        badge: "Fase 3",
+        badgeClass: "bg-blue-100 text-blue-700 border-blue-200",
+        description: "Quando le goccioline nelle nubi diventano abbastanza pesanti, cadono verso la Terra sotto forma di pioggia, neve, grandine o nevischio.",
+        fact1: "La forma dipende dalla temperatura dell'aria tra nuvola e suolo.",
+        fact2: "Circa il 78% delle precipitazioni cade direttamente sugli oceani.",
+        fact3: "È il modo principale con cui l'acqua torna sulla superficie terrestre.",
+        notation: "Nuvola → pioggia / neve / grandine",
+        color: "#2563eb"
+      },
+      infiltrazione: {
+        name: "Infiltrazione",
+        badge: "Fase 4",
+        badgeClass: "bg-emerald-100 text-emerald-700 border-emerald-200",
+        description: "Parte dell'acqua che cade penetra nel suolo e nelle rocce, alimentando le falde acquifere sotterranee. È una riserva preziosa di acqua dolce.",
+        fact1: "Dipende dal tipo di suolo (sabbia = veloce, argilla = lenta).",
+        fact2: "Le falde possono alimentare pozzi e sorgenti.",
+        fact3: "L'acqua sotterranea può rimanere nascosta per anni o secoli.",
+        notation: "Pioggia → suolo → falda acquifera",
+        color: "#059669"
+      },
+      traspirazione: {
+        name: "Traspirazione",
+        badge: "Fase 5",
+        badgeClass: "bg-green-100 text-green-700 border-green-200",
+        description: "Le piante assorbono acqua dalle radici e la rilasciano come vapore dalle foglie. È un contributo importante all'umidità atmosferica, soprattutto nelle foreste.",
+        fact1: "Una grande quercia può traspirare centinaia di litri al giorno.",
+        fact2: "Insieme all'evaporazione forma l'evapotraspirazione.",
+        fact3: "Aiuta a regolare il clima locale e globale.",
+        notation: "H₂O (radici) → H₂O (vapore dalle foglie)",
+        color: "#16a34a"
+      },
+      deflusso: {
+        name: "Deflusso e raccolta",
+        badge: "Fase 6",
+        badgeClass: "bg-teal-100 text-teal-700 border-teal-200",
+        description: "L'acqua che non infiltra scorre in superficie (ruscelli, fiumi) e torna ai laghi e agli oceani, chiudendo il ciclo e ricominciando il viaggio.",
+        fact1: "I fiumi trasportano anche sedimenti e nutrienti.",
+        fact2: "Gli oceani contengono circa il 97% di tutta l'acqua della Terra.",
+        fact3: "Il ciclo non ha un vero inizio né una fine: è continuo.",
+        notation: "Superficie → fiumi → oceani / laghi",
+        color: "#0d9488"
+      }
+    };
+
+    const QUIZ_DATA = [
+      {
+        q: "Quale processo trasforma l'acqua liquida in vapore grazie all'energia del Sole?",
+        options: ["Condensazione", "Evaporazione", "Precipitazione", "Infiltrazione"],
+        correct: 1,
+        explanation: "L'evaporazione avviene quando l'energia solare fornisce alle molecole d'acqua l'energia necessaria per passare dallo stato liquido a quello gassoso."
+      },
+      {
+        q: "Cosa succede al vapore acqueo quando sale in alta quota e si raffredda?",
+        options: ["Diventa pioggia subito", "Si condensa formando nuvole", "Scompare", "Si trasforma in ossigeno"],
+        correct: 1,
+        explanation: "Il raffreddamento fa sì che le molecole di vapore si uniscano in goccioline o cristalli, formando le nuvole (condensazione)."
+      },
+      {
+        q: "Quale percentuale approssimativa di acqua sulla Terra si trova negli oceani?",
+        options: ["Circa 50%", "Circa 70%", "Circa 97%", "Circa 30%"],
+        correct: 2,
+        explanation: "Circa il 97% di tutta l'acqua del pianeta è salata e si trova negli oceani. Solo una piccola parte è acqua dolce."
+      },
+      {
+        q: "Come si chiama il processo con cui le piante rilasciano vapore acqueo dalle foglie?",
+        options: ["Respirazione", "Traspirazione", "Fotosintesi", "Assorbimento"],
+        correct: 1,
+        explanation: "La traspirazione è il rilascio di vapore dalle foglie. Insieme all'evaporazione dal suolo forma l'evapotraspirazione."
+      },
+      {
+        q: "Perché le nuvole non cadono tutte insieme come un blocco unico?",
+        options: ["Perché sono fatte di gas leggeri", "Perché le goccioline sono piccolissime e tenute su dalle correnti d'aria", "Perché il Sole le attira", "Perché sono vuote"],
+        correct: 1,
+        explanation: "Le goccioline sono microscopiche e le correnti ascensionali le sostengono. Solo quando diventano abbastanza grandi e pesanti precipitano."
+      },
+      {
+        q: "Qual è il 'motore' principale che fa funzionare l'intero ciclo dell'acqua?",
+        options: ["Il vento", "La Luna", "Il Sole", "I vulcani"],
+        correct: 2,
+        explanation: "Il Sole fornisce l'energia che permette l'evaporazione. Senza di essa il ciclo si fermerebbe."
+      }
+    ];
+
+    const CLASSIFICATION_DATA = [
+      { id: "c1", label: "Il Sole riscalda il mare e l'acqua diventa vapore", options: ["Evaporazione", "Condensazione", "Precipitazione"], correct: 0 },
+      { id: "c2", label: "Si formano le nuvole in cielo", options: ["Evaporazione", "Condensazione", "Deflusso"], correct: 1 },
+      { id: "c3", label: "Cadono pioggia o neve", options: ["Infiltrazione", "Precipitazione", "Traspirazione"], correct: 1 },
+      { id: "c4", label: "L'acqua penetra nel terreno e alimenta le falde", options: ["Infiltrazione", "Deflusso", "Evaporazione"], correct: 0 },
+      { id: "c5", label: "Le foglie delle piante rilasciano vapore", options: ["Traspirazione", "Condensazione", "Precipitazione"], correct: 0 }
+    ];
+
+    // ========== STATE ==========
+    let currentItem = "evaporazione";
+    let isAnimating = true;
+    let animId = null;
+    let angleTime = 0;
+    let currentStep = 0;
+    let userAnswers = Array(QUIZ_DATA.length).fill(null);
+    let selections = {};
+
+    // ========== NAV ==========
+    function scrollToSection(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    function toggleMobileMenu() {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    }
+    function toggleView(which) {
+      const a = document.getElementById("viewAnalogy");
+      const t = document.getElementById("viewTech");
+      const btnA = document.getElementById("viewAnalogyBtn");
+      const btnT = document.getElementById("viewTechBtn");
+      if (which === "analogy") {
+        a.classList.remove("hidden");
+        t.classList.add("hidden");
+        btnA.className = "flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white transition";
+        btnT.className = "flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+      } else {
+        a.classList.add("hidden");
+        t.classList.remove("hidden");
+        btnT.className = "flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white transition";
+        btnA.className = "flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+      }
+    }
+
+    // ========== LAB ==========
+    function buildTabs() {
+      const container = document.getElementById("labTabs");
+      container.innerHTML = "";
+      Object.keys(ITEMS).forEach(key => {
+        const btn = document.createElement("button");
+        btn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-semibold transition " + (key === currentItem ? "active" : "bg-slate-100 text-slate-600");
+        btn.textContent = ITEMS[key].name;
+        btn.onclick = () => selectItem(key);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectItem(key) {
+      currentItem = key;
+      const item = ITEMS[key];
+      document.getElementById("itemName").textContent = item.name;
+      document.getElementById("itemBadge").textContent = item.badge;
+      document.getElementById("itemBadge").className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border " + item.badgeClass;
+      document.getElementById("itemDesc").textContent = item.description;
+      document.getElementById("fact1").textContent = item.fact1;
+      document.getElementById("fact2").textContent = item.fact2;
+      document.getElementById("fact3").textContent = item.fact3;
+      document.getElementById("itemNotation").textContent = item.notation;
+      buildTabs();
+    }
+
+    // ========== CANVAS ==========
+    const canvas = document.getElementById("labCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      const parent = canvas.parentElement;
+      const w = parent.clientWidth - 40;
+      canvas.width = w;
+      canvas.height = Math.round(w * 0.65);
+    }
+
+    function drawScene() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Sky gradient
+      const sky = ctx.createLinearGradient(0, 0, 0, h * 0.65);
+      sky.addColorStop(0, "#e0f2fe");
+      sky.addColorStop(1, "#f0f9ff");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h * 0.65);
+
+      // Sun
+      ctx.beginPath();
+      ctx.arc(w * 0.85, h * 0.15, 22, 0, Math.PI * 2);
+      ctx.fillStyle = "#fbbf24";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(w * 0.85, h * 0.15, 28, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(251, 191, 36, 0.25)";
+      ctx.fill();
+
+      // Ground / ocean
+      const ocean = ctx.createLinearGradient(0, h * 0.55, 0, h);
+      ocean.addColorStop(0, "#38bdf8");
+      ocean.addColorStop(1, "#0284c7");
+      ctx.fillStyle = ocean;
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.62);
+      ctx.quadraticCurveTo(w * 0.3, h * 0.58, w * 0.5, h * 0.63);
+      ctx.quadraticCurveTo(w * 0.7, h * 0.68, w, h * 0.60);
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Land patch
+      ctx.fillStyle = "#86efac";
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.70);
+      ctx.quadraticCurveTo(w * 0.15, h * 0.65, w * 0.28, h * 0.72);
+      ctx.lineTo(0, h * 0.78);
+      ctx.closePath();
+      ctx.fill();
+
+      // Simple tree
+      ctx.fillStyle = "#166534";
+      ctx.fillRect(w * 0.12, h * 0.62, 6, 28);
+      ctx.beginPath();
+      ctx.arc(w * 0.13, h * 0.60, 16, 0, Math.PI * 2);
+      ctx.fillStyle = "#22c55e";
+      ctx.fill();
+
+      // Animated elements based on currentItem
+      const item = ITEMS[currentItem];
+      if (currentItem === "evaporazione") {
+        for (let i = 0; i < 12; i++) {
+          const x = w * (0.25 + (i % 6) * 0.1);
+          const baseY = h * 0.58;
+          const y = baseY - ((angleTime * 40 + i * 25) % (h * 0.4));
+          ctx.beginPath();
+          ctx.arc(x, y, 3 + (i % 3), 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(147, 197, 253, 0.7)";
+          ctx.fill();
+        }
+      } else if (currentItem === "condensazione") {
+        // Clouds
+        drawCloud(w * 0.35, h * 0.22, 1 + 0.05 * Math.sin(angleTime));
+        drawCloud(w * 0.55, h * 0.18, 0.9 + 0.05 * Math.cos(angleTime * 0.8));
+        drawCloud(w * 0.70, h * 0.25, 0.85);
+      } else if (currentItem === "precipitazione") {
+        drawCloud(w * 0.4, h * 0.18, 1.1);
+        drawCloud(w * 0.6, h * 0.15, 1);
+        for (let i = 0; i < 18; i++) {
+          const x = w * (0.3 + (i % 9) * 0.05);
+          const y = h * 0.28 + ((angleTime * 60 + i * 18) % (h * 0.35));
+          ctx.strokeStyle = "#60a5fa";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x - 1, y + 10);
+          ctx.stroke();
+        }
+      } else if (currentItem === "infiltrazione") {
+        // Drops sinking into ground
+        for (let i = 0; i < 8; i++) {
+          const x = w * (0.08 + i * 0.03);
+          const y = h * 0.72 + ((angleTime * 20 + i * 15) % 30);
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#34d399";
+          ctx.fill();
+        }
+        // Underground water
+        ctx.fillStyle = "rgba(52, 211, 153, 0.25)";
+        ctx.fillRect(0, h * 0.82, w * 0.3, h * 0.18);
+      } else if (currentItem === "traspirazione") {
+        // Tree already drawn; add vapor from leaves
+        for (let i = 0; i < 6; i++) {
+          const x = w * 0.13 + Math.sin(angleTime + i) * 12;
+          const y = h * 0.52 - ((angleTime * 25 + i * 20) % 40);
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(134, 239, 172, 0.7)";
+          ctx.fill();
+        }
+      } else if (currentItem === "deflusso") {
+        // River flow lines
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 3;
+        for (let i = 0; i < 4; i++) {
+          const offset = (angleTime * 30 + i * 40) % 80;
+          ctx.beginPath();
+          ctx.moveTo(w * 0.28, h * 0.72);
+          ctx.quadraticCurveTo(w * 0.45, h * 0.68 + Math.sin(angleTime + i) * 5, w * 0.65 + offset * 0.3, h * 0.64);
+          ctx.stroke();
+        }
+      }
+
+      if (isAnimating) {
+        angleTime += 0.025;
+        animId = requestAnimationFrame(drawScene);
+      }
+    }
+
+    function drawCloud(cx, cy, scale) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+      ctx.fillStyle = "rgba(226, 232, 240, 0.95)";
+      ctx.beginPath();
+      ctx.arc(0, 0, 22, 0, Math.PI * 2);
+      ctx.arc(25, -5, 18, 0, Math.PI * 2);
+      ctx.arc(48, 2, 20, 0, Math.PI * 2);
+      ctx.arc(20, 12, 16, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function toggleAnimation() {
+      isAnimating = !isAnimating;
+      document.getElementById("playPauseIcon").className = isAnimating ? "fas fa-pause" : "fas fa-play";
+      if (isAnimating) drawScene();
+      else if (animId) cancelAnimationFrame(animId);
+    }
+
+    // ========== SIMULATOR ==========
+    function updateSimulation(val) {
+      const t = parseInt(val, 10);
+      document.getElementById("tempValue").textContent = t;
+      const label = document.getElementById("tempLabel");
+      const status = document.getElementById("evapStatus");
+      const sun = document.getElementById("sunIcon");
+      const vapor = document.getElementById("vaporCloud");
+      const drops = document.getElementById("risingDrops");
+
+      if (t < 10) {
+        label.textContent = "Freddo";
+        label.className = "ml-3 px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-700 border border-sky-200";
+        status.textContent = "Evaporazione molto lenta";
+        sun.style.transform = "scale(0.7)";
+        sun.style.opacity = "0.6";
+        vapor.style.opacity = "0.15";
+        drops.style.opacity = "0.25";
+      } else if (t < 25) {
+        label.textContent = "Temperato";
+        label.className = "ml-3 px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-700 border border-teal-200";
+        status.textContent = "Evaporazione moderata";
+        sun.style.transform = "scale(1)";
+        sun.style.opacity = "1";
+        vapor.style.opacity = "0.4";
+        drops.style.opacity = "0.7";
+      } else {
+        label.textContent = "Caldo";
+        label.className = "ml-3 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200";
+        status.textContent = "Evaporazione intensa!";
+        sun.style.transform = "scale(1.25)";
+        sun.style.opacity = "1";
+        vapor.style.opacity = "0.75";
+        drops.style.opacity = "1";
+      }
+    }
+    function setTemp(v) {
+      document.getElementById("tempSlider").value = v;
+      updateSimulation(v);
+    }
+
+    // ========== QUIZ ==========
+    function renderQuizStep() {
+      const data = QUIZ_DATA[currentStep];
+      const answered = userAnswers[currentStep];
+      document.getElementById("qNum").textContent = currentStep + 1;
+      document.getElementById("qTotal").textContent = QUIZ_DATA.length;
+      document.getElementById("progressBar").style.width = ((currentStep + 1) / QUIZ_DATA.length * 100) + "%";
+
+      let html = `<h3 class="font-outfit font-bold text-lg text-slate-800 mb-4">${data.q}</h3><div class="space-y-2">`;
+      data.options.forEach((opt, i) => {
+        let cls = "quiz-option w-full text-left px-4 py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition text-sm font-medium text-slate-700";
+        if (answered !== null) {
+          if (i === data.correct) cls += " correct";
+          else if (i === answered && answered !== data.correct) cls += " wrong";
+        }
+        html += `<button class="${cls}" onclick="selectOption(${i})" ${answered !== null ? "disabled" : ""}>${opt}</button>`;
+      });
+      html += "</div>";
+      if (answered !== null) {
+        const ok = answered === data.correct;
+        html += `<div class="mt-4 p-3 rounded-xl text-sm ${ok ? "bg-emerald-50 text-emerald-800 border border-emerald-100" : "bg-rose-50 text-rose-800 border border-rose-100"}">
+          <strong>${ok ? "Corretto!" : "Non esatto."}</strong> ${data.explanation}
+        </div>`;
+      }
+      document.getElementById("quizContent").innerHTML = html;
+
+      document.getElementById("prevBtn").disabled = currentStep === 0;
+      const nextBtn = document.getElementById("nextBtn");
+      if (currentStep === QUIZ_DATA.length - 1) {
+        nextBtn.innerHTML = '<i class="fas fa-rotate-right mr-1"></i> Ricomincia';
+      } else {
+        nextBtn.innerHTML = 'Prossima <i class="fas fa-arrow-right ml-1"></i>';
+      }
+
+      // score
+      let score = 0;
+      userAnswers.forEach((a, i) => { if (a === QUIZ_DATA[i].correct) score++; });
+      document.getElementById("scoreDisplay").textContent = score;
+    }
+
+    function selectOption(idx) {
+      if (userAnswers[currentStep] !== null) return;
+      userAnswers[currentStep] = idx;
+      renderQuizStep();
+    }
+    function nextQuestion() {
+      if (currentStep === QUIZ_DATA.length - 1) {
+        currentStep = 0;
+        userAnswers = Array(QUIZ_DATA.length).fill(null);
+      } else {
+        currentStep++;
+      }
+      renderQuizStep();
+    }
+    function prevQuestion() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderQuizStep();
+      }
+    }
+
+    // ========== CLASSIFICATION ==========
+    function renderClassification() {
+      const list = document.getElementById("classList");
+      list.innerHTML = "";
+      CLASSIFICATION_DATA.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "p-3 bg-slate-50 rounded-xl";
+        let btns = item.options.map((opt, i) => {
+          const sel = selections[item.id] === i ? "selected" : "";
+          return `<button class="class-btn px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white text-slate-600 transition ${sel}" onclick="selectClass('${item.id}', ${i})">${opt}</button>`;
+        }).join("");
+        div.innerHTML = `<div class="text-xs text-slate-700 font-medium mb-2">${item.label}</div><div class="flex flex-wrap gap-1.5">${btns}</div>`;
+        list.appendChild(div);
+      });
+    }
+    function selectClass(id, idx) {
+      selections[id] = idx;
+      renderClassification();
+      document.getElementById("classFeedback").classList.add("hidden");
+    }
+    function checkAnswers() {
+      let correct = 0;
+      CLASSIFICATION_DATA.forEach(item => {
+        if (selections[item.id] === item.correct) correct++;
+      });
+      const fb = document.getElementById("classFeedback");
+      fb.classList.remove("hidden");
+      if (correct === CLASSIFICATION_DATA.length) {
+        fb.className = "mt-3 text-sm font-medium text-center text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg py-2";
+        fb.textContent = `Perfetto! ${correct}/${CLASSIFICATION_DATA.length} corrette`;
+      } else {
+        fb.className = "mt-3 text-sm font-medium text-center text-amber-700 bg-amber-50 border border-amber-100 rounded-lg py-2";
+        fb.textContent = `${correct}/${CLASSIFICATION_DATA.length} corrette – riprova!`;
+      }
+      // visual feedback on buttons
+      const list = document.getElementById("classList");
+      list.querySelectorAll(".class-btn").forEach(btn => {
+        btn.classList.remove("right", "wrong");
+      });
+      CLASSIFICATION_DATA.forEach(item => {
+        const idx = selections[item.id];
+        if (idx === undefined) return;
+        // re-render would be cleaner but for feedback we can leave selected styles
+      });
+    }
+
+    // ========== INIT ==========
+    window.onload = function() {
+      resizeCanvas();
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        if (!isAnimating) drawScene();
+      });
+      selectItem("evaporazione");
+      drawScene();
+      updateSimulation(20);
+      renderQuizStep();
+      renderClassification();
+    };
+  </script>
+</body>
+</html>

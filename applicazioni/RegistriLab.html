@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RegistriLab — I Registri della CPU</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' }
+          },
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            jakarta: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body { background-color: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; }
+    h1,h2,h3,h4,.font-outfit { font-family: 'Outfit', sans-serif; }
+    .glass-panel { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border: 1px solid rgba(226,232,240,0.8); box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06); }
+    .glass-nav { background: rgba(255,255,255,0.9); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(226,232,240,0.9); }
+    .gradient-text { background: linear-gradient(135deg, #2563eb, #0d9488); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .cta-btn { background: linear-gradient(135deg, #2563eb, #0d9488); transition: all 0.2s ease; }
+    .cta-btn:hover { filter: brightness(0.95); transform: translateY(-1px); }
+    .glow-blue { box-shadow: 0 0 20px rgba(37,99,235,0.15); }
+    .glow-teal { box-shadow: 0 0 20px rgba(13,148,136,0.15); }
+    .glow-purple { box-shadow: 0 0 20px rgba(124,58,237,0.15); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    canvas { background: #ffffff; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- HEADER -->
+  <header class="glass-nav sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white shadow-md">
+          <i class="fas fa-microchip text-lg"></i>
+        </div>
+        <div>
+          <div class="font-outfit font-bold text-lg text-slate-800 leading-tight">RegistriLab</div>
+          <div class="text-xs text-slate-500 -mt-0.5">I registri della CPU spiegati</div>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-1">
+        <button onclick="scrollToSection('intro')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-2">
+          <i class="fas fa-home text-blue-500"></i> Intro
+        </button>
+        <button onclick="scrollToSection('mol-lab')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-teal-50 hover:text-teal-700 transition flex items-center gap-2">
+          <i class="fas fa-flask text-teal-500"></i> Laboratorio
+        </button>
+        <button onclick="scrollToSection('polarity')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50 hover:text-purple-700 transition flex items-center gap-2">
+          <i class="fas fa-sliders-h text-purple-500"></i> Simulatore
+        </button>
+        <button onclick="scrollToSection('quiz')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-700 transition flex items-center gap-2">
+          <i class="fas fa-question-circle text-rose-500"></i> Quiz
+        </button>
+      </nav>
+      <button id="menuBtn" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-100 bg-white">
+      <div class="px-4 py-3 flex flex-col gap-1">
+        <button onclick="scrollToSection('intro');toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-blue-50 text-left flex items-center gap-2">
+          <i class="fas fa-home text-blue-500 w-5"></i> Introduzione
+        </button>
+        <button onclick="scrollToSection('mol-lab');toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-teal-50 text-left flex items-center gap-2">
+          <i class="fas fa-flask text-teal-500 w-5"></i> Laboratorio
+        </button>
+        <button onclick="scrollToSection('polarity');toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-purple-50 text-left flex items-center gap-2">
+          <i class="fas fa-sliders-h text-purple-500 w-5"></i> Simulatore
+        </button>
+        <button onclick="scrollToSection('quiz');toggleMobileMenu()" class="px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-rose-50 text-left flex items-center gap-2">
+          <i class="fas fa-question-circle text-rose-500 w-5"></i> Quiz
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pb-16">
+
+    <!-- INTRO + ANALOGIA -->
+    <section id="intro" class="pt-8 pb-6">
+      <div class="glass-panel rounded-3xl p-8 md:p-10 relative overflow-hidden glow-blue">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-teal-50/50 to-white pointer-events-none"></div>
+        <div class="relative">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide mb-4">
+            <i class="fas fa-bolt"></i> Informatica · 14+ anni
+          </span>
+          <h1 class="font-outfit font-extrabold text-3xl md:text-4xl lg:text-5xl text-slate-900 leading-tight mb-4">
+            I <span class="gradient-text">registri della CPU</span>:<br>la memoria più veloce del computer
+          </h1>
+          <p class="text-slate-600 text-lg max-w-2xl mb-6 leading-relaxed">
+            La <strong>CPU</strong> (il “cervello” del computer) ha bisogno di posti ultraveloci dove tenere i numeri su cui sta lavorando in questo preciso istante.
+            Questi posti si chiamano <strong>registri</strong>: sono pochi, piccolissimi e <strong>milioni di volte più veloci</strong> della RAM.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="scrollToSection('mol-lab')" class="cta-btn text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/20">
+              <i class="fas fa-flask"></i> Vai al laboratorio
+            </button>
+            <button onclick="scrollToSection('analogy')" class="bg-white text-slate-700 font-semibold px-6 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+              <i class="fas fa-lightbulb text-amber-500"></i> L’analogia
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALOGIA -->
+      <div id="analogy" class="mt-8 grid md:grid-cols-2 gap-6">
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+              <i class="fas fa-sticky-note text-xl"></i>
+            </div>
+            <h2 class="font-outfit font-bold text-xl text-slate-800">L’analogia dei post-it</h2>
+          </div>
+          <p class="text-slate-600 leading-relaxed mb-4">
+            Immagina di fare i compiti a un tavolo. La <strong>RAM</strong> è come lo zaino: ci sono tanti fogli, ma ogni volta che ti serve un numero devi aprirlo, cercare e tirarlo fuori (lento).
+            I <strong>registri</strong> sono i <strong>post-it attaccati sul bordo del tavolo</strong>: ne hai pochi, ma li hai sempre sotto gli occhi e puoi leggerli o scrivere in un attimo.
+          </p>
+          <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
+            <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+            <div class="text-sm text-blue-800">
+              <strong>Differenza chiave:</strong> i registri sono dentro la CPU stessa, non sulla scheda madre. Per questo sono così veloci: non c’è quasi distanza da percorrere.
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex gap-2 mb-4">
+            <button id="btnAnalogy" onclick="toggleView('analogy')" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-100 text-blue-700 border border-blue-200">
+              Vista analogia
+            </button>
+            <button id="btnTech" onclick="toggleView('tech')" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+              Vista tecnica
+            </button>
+          </div>
+          <div id="viewAnalogy" class="space-y-3">
+            <div class="flex items-center gap-3 p-3 bg-amber-50 rounded-xl">
+              <i class="fas fa-sticky-note text-amber-500 text-2xl"></i>
+              <div>
+                <div class="font-semibold text-slate-800">Post-it sul tavolo</div>
+                <div class="text-sm text-slate-500">Pochi, sempre a portata di mano</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+              <i class="fas fa-backpack text-slate-400 text-2xl"></i>
+              <div>
+                <div class="font-semibold text-slate-800">Zaino (RAM)</div>
+                <div class="text-sm text-slate-500">Tanti fogli, ma lontano e lento</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl">
+              <i class="fas fa-hard-drive text-emerald-500 text-2xl"></i>
+              <div>
+                <div class="font-semibold text-slate-800">Armadio (SSD/HDD)</div>
+                <div class="text-sm text-slate-500">Enormi, ma ancora più lenti</div>
+              </div>
+            </div>
+          </div>
+          <div id="viewTech" class="hidden space-y-3">
+            <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+              <i class="fas fa-microchip text-blue-500 text-2xl"></i>
+              <div>
+                <div class="font-semibold text-slate-800">Registri (dentro la CPU)</div>
+                <div class="text-sm text-slate-500">Accesso in ~1 ciclo di clock</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-teal-50 rounded-xl">
+              <i class="fas fa-memory text-teal-500 text-2xl"></i>
+              <div>
+                <div class="font-semibold text-slate-800">Cache L1/L2/L3</div>
+                <div class="text-sm text-slate-500">Pochi cicli, ancora sulla CPU</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+              <i class="fas fa-server text-slate-400 text-2xl"></i>
+              <div>
+                <div class="font-semibold text-slate-800">RAM (memoria principale)</div>
+                <div class="text-sm text-slate-500">Centinaia di cicli di attesa</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LABORATORIO -->
+    <section id="mol-lab" class="py-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center">
+          <i class="fas fa-flask"></i>
+        </div>
+        <div>
+          <h2 class="font-outfit font-bold text-2xl text-slate-800">Laboratorio dei registri</h2>
+          <p class="text-slate-500 text-sm">Scegli un registro e guarda come funziona</p>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="flex flex-wrap gap-2 mb-6" id="labTabs">
+        <button onclick="selectItem('eax')" id="tab-eax" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border border-blue-200">Accumulatore</button>
+        <button onclick="selectItem('ebx')" id="tab-ebx" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 border border-slate-200">Base</button>
+        <button onclick="selectItem('ecx')" id="tab-ecx" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 border border-slate-200">Contatore</button>
+        <button onclick="selectItem('edx')" id="tab-edx" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 border border-slate-200">Dati</button>
+        <button onclick="selectItem('eip')" id="tab-eip" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 border border-slate-200">Puntatore istruzioni</button>
+        <button onclick="selectItem('flags')" id="tab-flags" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 border border-slate-200">Bandiere di stato</button>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- CANVAS -->
+        <div class="glass-panel rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-600">Visualizzazione animata</span>
+            <button id="playBtn" onclick="toggleAnimation()" class="px-3 py-1.5 rounded-lg bg-teal-100 text-teal-700 text-sm font-semibold flex items-center gap-1.5 hover:bg-teal-200 transition">
+              <i class="fas fa-pause" id="playIcon"></i> <span id="playText">Pausa</span>
+            </button>
+          </div>
+          <canvas id="labCanvas" width="480" height="320" class="w-full rounded-xl border border-slate-100"></canvas>
+          <div class="flex flex-wrap gap-3 mt-3 text-xs text-slate-500">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Registro attivo</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-300"></span> Altri registri</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-400"></span> Dato in movimento</span>
+          </div>
+        </div>
+
+        <!-- INFO PANEL -->
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span id="itemBadge" class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase">Generale</span>
+            <h3 id="itemName" class="font-outfit font-bold text-xl text-slate-800">EAX</h3>
+          </div>
+          <p id="itemDesc" class="text-slate-600 mb-5 leading-relaxed">Il registro accumulatore. È il “principale” dove finiscono i risultati delle operazioni aritmetiche.</p>
+          
+          <div class="space-y-3 mb-5">
+            <div class="flex gap-3 p-3 bg-slate-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-bolt text-sm"></i>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-slate-800" id="fact1Title">Ruolo principale</div>
+                <div class="text-sm text-slate-500" id="fact1">Contiene il risultato di somme, sottrazioni, moltiplicazioni…</div>
+              </div>
+            </div>
+            <div class="flex gap-3 p-3 bg-slate-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-ruler text-sm"></i>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-slate-800" id="fact2Title">Dimensione tipica</div>
+                <div class="text-sm text-slate-500" id="fact2">32 bit (EAX) o 64 bit (RAX nei processori moderni)</div>
+              </div>
+            </div>
+            <div class="flex gap-3 p-3 bg-slate-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-lightbulb text-sm"></i>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-slate-800" id="fact3Title">Curiosità</div>
+                <div class="text-sm text-slate-500" id="fact3">Il nome viene da “Accumulator” — accumula i risultati.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800 text-emerald-300 font-mono text-sm px-4 py-3 rounded-xl">
+            <span class="text-slate-400">// notazione</span><br>
+            <span id="itemNotation">EAX / RAX · Accumulator</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULATORE SLIDER -->
+    <section id="polarity" class="py-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-sliders-h"></i>
+        </div>
+        <div>
+          <h2 class="font-outfit font-bold text-2xl text-slate-800">Simulatore: quanti bit?</h2>
+          <p class="text-slate-500 text-sm">Cambia la larghezza del registro e osserva cosa succede</p>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 md:p-8">
+        <p class="text-slate-600 mb-6 max-w-2xl">
+          I registri moderni possono essere da <strong>8, 16, 32 o 64 bit</strong>. Più bit = numeri più grandi che puoi gestire in un colpo solo.
+          Muovi lo slider e guarda come cambia la capacità.
+        </p>
+
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-slate-600">Larghezza del registro</span>
+            <span id="bitValue" class="text-lg font-outfit font-bold text-purple-600">32 bit</span>
+          </div>
+          <input type="range" id="bitSlider" min="0" max="3" value="2" step="1"
+                 class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                 oninput="updateSimulation(this.value)">
+          <div class="flex justify-between text-xs text-slate-400 mt-1">
+            <span>8 bit</span><span>16 bit</span><span>32 bit</span><span>64 bit</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-8">
+          <button onclick="setPreset(0)" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition">8 bit (vecchio)</button>
+          <button onclick="setPreset(1)" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition">16 bit</button>
+          <button onclick="setPreset(2)" class="px-4 py-2 rounded-lg bg-purple-100 text-purple-700 text-sm font-semibold hover:bg-purple-200 transition">32 bit</button>
+          <button onclick="setPreset(3)" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition">64 bit (moderno)</button>
+        </div>
+
+        <!-- Visual -->
+        <div class="relative bg-slate-50 rounded-2xl p-6 mb-6 overflow-hidden">
+          <div class="flex items-center justify-center gap-4 md:gap-8">
+            <div class="text-center">
+              <div class="text-xs font-semibold text-slate-400 mb-2 uppercase">Numero massimo</div>
+              <div id="maxNum" class="font-mono text-2xl md:text-3xl font-bold text-slate-800">4 294 967 295</div>
+            </div>
+            <div class="w-px h-16 bg-slate-200"></div>
+            <div class="text-center">
+              <div class="text-xs font-semibold text-slate-400 mb-2 uppercase">Stato</div>
+              <div id="bitStatus" class="font-outfit text-xl font-bold text-purple-600">Standard (32 bit)</div>
+            </div>
+          </div>
+          <div class="mt-6 flex justify-center">
+            <div id="bitBar" class="h-4 rounded-full bg-gradient-to-r from-blue-400 to-teal-400 transition-all duration-300" style="width:60%"></div>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="fas fa-mobile-alt text-blue-500"></i>
+              <span class="font-semibold text-slate-800">8 / 16 bit</span>
+            </div>
+            <p class="text-sm text-slate-600">Usati nei primi PC (anni ’80) e ancora in microcontrollori. Numeri piccoli, ma sufficienti per molti compiti.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-teal-50 border border-teal-100">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="fas fa-laptop text-teal-500"></i>
+              <span class="font-semibold text-slate-800">32 / 64 bit</span>
+            </div>
+            <p class="text-sm text-slate-600">Oggi quasi tutti i computer usano 64 bit. Possono indirizzare enormi quantità di memoria e gestire numeri giganti.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="py-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+          <i class="fas fa-question-circle"></i>
+        </div>
+        <div>
+          <h2 class="font-outfit font-bold text-2xl text-slate-800">Metti alla prova</h2>
+          <p class="text-slate-500 text-sm">6 domande + un mini-gioco di classificazione</p>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-6">
+        <!-- QUIZ PRINCIPALE -->
+        <div class="lg:col-span-8 glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-sm font-semibold text-slate-500">
+              Domanda <span id="qNum">1</span> di <span id="qTotal">6</span>
+            </div>
+            <div class="text-sm font-semibold text-slate-500">
+              Punteggio: <span id="score">0</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 mb-6">
+            <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-teal-500 h-2 rounded-full transition-all duration-300" style="width:16.67%"></div>
+          </div>
+
+          <div id="quizContent">
+            <!-- popolato da JS -->
+          </div>
+
+          <div class="flex gap-3 mt-6">
+            <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-semibold text-sm hover:bg-slate-200 transition disabled:opacity-40" disabled>
+              <i class="fas fa-arrow-left mr-1"></i> Precedente
+            </button>
+            <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2.5 rounded-xl cta-btn text-white font-semibold text-sm flex-1">
+              Prossima <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- CLASSIFICATION -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-6">
+          <h3 class="font-outfit font-bold text-lg text-slate-800 mb-1">Classifica i registri</h3>
+          <p class="text-sm text-slate-500 mb-4">Assegna la categoria corretta a ciascuno</p>
+          <div id="classList" class="space-y-3 mb-4">
+            <!-- popolato da JS -->
+          </div>
+          <button onclick="checkAnswers()" class="w-full py-2.5 rounded-xl bg-rose-100 text-rose-700 font-semibold text-sm hover:bg-rose-200 transition">
+            <i class="fas fa-check-double mr-1"></i> Verifica
+          </button>
+          <div id="classFeedback" class="mt-3 text-sm font-medium hidden"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200 bg-white/80 py-8">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white">
+          <i class="fas fa-microchip text-sm"></i>
+        </div>
+        <span class="font-outfit font-bold text-slate-800">RegistriLab</span>
+      </div>
+      <p class="text-sm text-slate-500">I registri della CPU spiegati in modo interattivo · Per ragazzi di 14+ anni</p>
+    </div>
+  </footer>
+
+  <script>
+    // ========== DATI LABORATORIO ==========
+    const ITEMS = {
+      eax: {
+        name: 'Accumulatore (EAX)',
+        badge: 'Generale',
+        badgeClass: 'bg-blue-100 text-blue-700',
+        description: 'Il registro accumulatore. È il “principale” dove finiscono i risultati delle operazioni aritmetiche e logiche.',
+        fact1Title: 'Ruolo principale',
+        fact1: 'Contiene il risultato di somme, sottrazioni, moltiplicazioni e divisioni.',
+        fact2Title: 'Dimensione tipica',
+        fact2: '32 bit (EAX) oppure 64 bit (RAX) nei processori moderni.',
+        fact3Title: 'Curiosità',
+        fact3: 'Il nome inglese “Accumulator” significa proprio “accumulatore”: raccoglie i risultati.',
+        notation: 'EAX / RAX · Accumulatore',
+        color: '#3b82f6',
+        pos: 0
+      },
+      ebx: {
+        name: 'Base (EBX)',
+        badge: 'Generale',
+        badgeClass: 'bg-teal-100 text-teal-700',
+        description: 'Il registro base. Si usa spesso per tenere indirizzi di memoria o come puntatore a strutture di dati.',
+        fact1Title: 'Ruolo principale',
+        fact1: 'Puntatore a dati o base per calcolare indirizzi in memoria.',
+        fact2Title: 'Dimensione tipica',
+        fact2: '32 bit (EBX) / 64 bit (RBX).',
+        fact3Title: 'Curiosità',
+        fact3: 'Storicamente serviva come “base” per indirizzare array e tabelle.',
+        notation: 'EBX / RBX · Registro base',
+        color: '#0d9488',
+        pos: 1
+      },
+      ecx: {
+        name: 'Contatore (ECX)',
+        badge: 'Generale',
+        badgeClass: 'bg-purple-100 text-purple-700',
+        description: 'Il registro contatore. È perfetto per i cicli: ogni volta che si ripete un’operazione, ECX viene decrementato.',
+        fact1Title: 'Ruolo principale',
+        fact1: 'Conta quante volte ripetere un’istruzione (ciclo / loop).',
+        fact2Title: 'Dimensione tipica',
+        fact2: '32 bit (ECX) / 64 bit (RCX).',
+        fact3Title: 'Curiosità',
+        fact3: 'Le istruzioni di tipo LOOP usano automaticamente ECX come contatore.',
+        notation: 'ECX / RCX · Contatore',
+        color: '#7c3aed',
+        pos: 2
+      },
+      edx: {
+        name: 'Dati (EDX)',
+        badge: 'Generale',
+        badgeClass: 'bg-amber-100 text-amber-700',
+        description: 'Il registro dati. Spesso lavora in coppia con l’accumulatore per operazioni che producono risultati a 64 bit (es. moltiplicazioni).',
+        fact1Title: 'Ruolo principale',
+        fact1: 'Contiene la parte “alta” di risultati grandi o dati secondari.',
+        fact2Title: 'Dimensione tipica',
+        fact2: '32 bit (EDX) / 64 bit (RDX).',
+        fact3Title: 'Curiosità',
+        fact3: 'In una moltiplicazione 32×32 bit, il risultato a 64 bit finisce in EDX:EAX.',
+        notation: 'EDX / RDX · Registro dati',
+        color: '#d97706',
+        pos: 3
+      },
+      eip: {
+        name: 'Puntatore istruzioni (EIP)',
+        badge: 'Speciale',
+        badgeClass: 'bg-rose-100 text-rose-700',
+        description: 'Il puntatore alle istruzioni (Instruction Pointer o Program Counter). Contiene l’indirizzo della prossima istruzione da eseguire. È il “dito” che punta al codice.',
+        fact1Title: 'Ruolo principale',
+        fact1: 'Indica quale istruzione la CPU deve eseguire dopo.',
+        fact2Title: 'Dimensione tipica',
+        fact2: '32 bit (EIP) / 64 bit (RIP).',
+        fact3Title: 'Curiosità',
+        fact3: 'Se lo cambi, la CPU “salta” in un’altra parte del programma (jump/call).',
+        notation: 'EIP / RIP · Puntatore alle istruzioni',
+        color: '#e11d48',
+        pos: 4
+      },
+      flags: {
+        name: 'Bandiere di stato (FLAGS)',
+        badge: 'Stato',
+        badgeClass: 'bg-emerald-100 text-emerald-700',
+        description: 'Il registro delle bandierine (flag). Ogni bit indica uno stato: risultato zero, numero negativo, riporto, overflow…',
+        fact1Title: 'Ruolo principale',
+        fact1: 'Memorizza le condizioni dopo un’operazione (zero, segno, riporto…).',
+        fact2Title: 'Bit importanti',
+        fact2: 'ZF (Zero), SF (Segno), CF (Riporto), OF (Overflow), PF (Parità).',
+        fact3Title: 'Curiosità',
+        fact3: 'Le istruzioni di salto condizionato (JE, JNE, JG…) leggono proprio queste bandiere.',
+        notation: 'EFLAGS / RFLAGS · Bandiere di stato',
+        color: '#059669',
+        pos: 5
+      }
+    };
+
+    let currentItem = 'eax';
+    let isAnimating = true;
+    let animId = null;
+    let angleTime = 0;
+
+    // ========== CANVAS ==========
+    const canvas = document.getElementById('labCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(320 * dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = '320px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawScene() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = 320;
+      ctx.clearRect(0, 0, w, h);
+
+      // CPU box
+      ctx.fillStyle = '#f1f5f9';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2;
+      roundRect(ctx, 30, 40, w - 60, h - 80, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // CPU label
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'bold 13px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('CPU', w / 2, 62);
+
+      // Registers layout
+      const regs = ['eax','ebx','ecx','edx','eip','flags'];
+      const names = ['Accum.','Base','Cont.','Dati','Punt.','Band.'];
+      const cols = 3;
+      const boxW = 100;
+      const boxH = 48;
+      const startX = (w - cols * (boxW + 20) + 20) / 2;
+      const startY = 90;
+
+      regs.forEach((key, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = startX + col * (boxW + 20);
+        const y = startY + row * (boxH + 24);
+        const isActive = key === currentItem;
+        const item = ITEMS[key];
+
+        // box
+        ctx.fillStyle = isActive ? item.color : '#e2e8f0';
+        ctx.strokeStyle = isActive ? item.color : '#94a3b8';
+        ctx.lineWidth = isActive ? 2.5 : 1.5;
+        roundRect(ctx, x, y, boxW, boxH, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        // name
+        ctx.fillStyle = isActive ? '#ffffff' : '#475569';
+        ctx.font = 'bold 14px "Outfit", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(names[i], x + boxW / 2, y + 28);
+
+        // pulsing data dots for active
+        if (isActive && isAnimating) {
+          const pulse = 0.5 + 0.5 * Math.sin(angleTime * 0.008);
+          ctx.globalAlpha = 0.3 + 0.4 * pulse;
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath();
+          ctx.arc(x + boxW / 2, y - 12, 6 + 2 * pulse, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // small orbiting particles
+          for (let p = 0; p < 3; p++) {
+            const a = angleTime * 0.004 + p * (Math.PI * 2 / 3);
+            const px = x + boxW / 2 + Math.cos(a) * 28;
+            const py = y + boxH / 2 + Math.sin(a) * 22;
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(px, py, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      });
+
+      // bus line at bottom
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(50, h - 50);
+      ctx.lineTo(w - 50, h - 50);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '11px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Bus interno della CPU', w / 2, h - 32);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function animate(ts) {
+      if (!isAnimating) return;
+      angleTime = ts;
+      drawScene();
+      animId = requestAnimationFrame(animate);
+    }
+
+    function toggleAnimation() {
+      isAnimating = !isAnimating;
+      document.getElementById('playIcon').className = isAnimating ? 'fas fa-pause' : 'fas fa-play';
+      document.getElementById('playText').textContent = isAnimating ? 'Pausa' : 'Play';
+      if (isAnimating) {
+        animId = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(animId);
+        drawScene();
+      }
+    }
+
+    // ========== SELECT ITEM ==========
+    function selectItem(key) {
+      currentItem = key;
+      const item = ITEMS[key];
+
+      // tabs
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = 'tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 border border-slate-200';
+      });
+      const activeTab = document.getElementById('tab-' + key);
+      if (activeTab) {
+        activeTab.className = 'tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border border-blue-200';
+      }
+
+      // info
+      document.getElementById('itemName').textContent = item.name;
+      document.getElementById('itemBadge').textContent = item.badge;
+      document.getElementById('itemBadge').className = 'px-2.5 py-1 rounded-full text-xs font-bold uppercase ' + item.badgeClass;
+      document.getElementById('itemDesc').textContent = item.description;
+      document.getElementById('fact1Title').textContent = item.fact1Title;
+      document.getElementById('fact1').textContent = item.fact1;
+      document.getElementById('fact2Title').textContent = item.fact2Title;
+      document.getElementById('fact2').textContent = item.fact2;
+      document.getElementById('fact3Title').textContent = item.fact3Title;
+      document.getElementById('fact3').textContent = item.fact3;
+      document.getElementById('itemNotation').textContent = item.notation;
+
+      drawScene();
+    }
+
+    // ========== TOGGLE VIEW ==========
+    function toggleView(which) {
+      const a = document.getElementById('viewAnalogy');
+      const t = document.getElementById('viewTech');
+      const btnA = document.getElementById('btnAnalogy');
+      const btnT = document.getElementById('btnTech');
+      if (which === 'analogy') {
+        a.classList.remove('hidden');
+        t.classList.add('hidden');
+        btnA.className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-100 text-blue-700 border border-blue-200';
+        btnT.className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-500 border border-slate-200';
+      } else {
+        a.classList.add('hidden');
+        t.classList.remove('hidden');
+        btnA.className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-500 border border-slate-200';
+        btnT.className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-100 text-blue-700 border border-blue-200';
+      }
+    }
+
+    // ========== SLIDER ==========
+    const bitLabels = ['8 bit', '16 bit', '32 bit', '64 bit'];
+    const bitMax = ['255', '65 535', '4 294 967 295', '18 446 744 073 709 551 615'];
+    const bitStatus = ['Molto piccolo (8 bit)', 'Classico (16 bit)', 'Standard (32 bit)', 'Moderno (64 bit)'];
+    const bitWidths = ['25%', '40%', '60%', '100%'];
+
+    function updateSimulation(val) {
+      const v = parseInt(val);
+      document.getElementById('bitValue').textContent = bitLabels[v];
+      document.getElementById('maxNum').textContent = bitMax[v];
+      document.getElementById('bitStatus').textContent = bitStatus[v];
+      document.getElementById('bitBar').style.width = bitWidths[v];
+    }
+
+    function setPreset(v) {
+      document.getElementById('bitSlider').value = v;
+      updateSimulation(v);
+    }
+
+    // ========== QUIZ ==========
+    const QUIZ_DATA = [
+      {
+        q: 'A cosa servono i registri della CPU?',
+        options: [
+          'A memorizzare permanentemente i file',
+          'A tenere i dati su cui la CPU sta lavorando in questo momento',
+          'A raffreddare il processore',
+          'A collegare la stampante'
+        ],
+        correct: 1,
+        explanation: 'I registri sono la memoria più veloce e più vicina alla CPU: contengono solo i dati e le istruzioni su cui si sta operando adesso.'
+      },
+      {
+        q: 'Quale di questi è più veloce?',
+        options: [
+          'Il disco SSD',
+          'La RAM',
+          'I registri della CPU',
+          'Una chiavetta USB'
+        ],
+        correct: 2,
+        explanation: 'I registri sono dentro la CPU stessa, quindi l’accesso richiede solo 1 ciclo di clock (o pochissimi). Tutto il resto è molto più lento.'
+      },
+      {
+        q: 'Cosa indica il puntatore alle istruzioni (EIP / RIP)?',
+        options: [
+          'La temperatura della CPU',
+          'L’indirizzo della prossima istruzione da eseguire',
+          'Quanta RAM è libera',
+          'Il nome del programma in esecuzione'
+        ],
+        correct: 1,
+        explanation: 'Il puntatore alle istruzioni (EIP) è il “dito” che punta alla prossima istruzione del programma. Quando cambia, la CPU salta in un altro punto del codice.'
+      },
+      {
+        q: 'Perché i registri sono così pochi (solo qualche decina)?',
+        options: [
+          'Perché costano troppo',
+          'Perché devono essere ultraveloci e stare dentro la CPU',
+          'Perché non servono quasi mai',
+          'Perché la RAM è già abbastanza veloce'
+        ],
+        correct: 1,
+        explanation: 'Essere dentro il chip e così veloci costa spazio e energia. Si sacrificano quantità per guadagnare velocità estrema.'
+      },
+      {
+        q: 'Cosa fanno le bandiere di stato (FLAGS)?',
+        options: [
+          'Contengono la lista dei programmi aperti',
+          'Memorizzano le “bandierine” di stato dopo un’operazione (zero, overflow…)',
+          'Contano quanti cicli ha fatto la CPU',
+          'Salvano la password di Windows'
+        ],
+        correct: 1,
+        explanation: 'Dopo ogni operazione aritmetica, alcuni bit delle bandiere vengono aggiornati (es. ZF = risultato zero). I salti condizionati li leggono per decidere se saltare o no.'
+      },
+      {
+        q: 'Un registro a 32 bit può contenere al massimo…',
+        options: [
+          '255',
+          '65 535',
+          'Circa 4 miliardi',
+          'Infiniti numeri'
+        ],
+        correct: 2,
+        explanation: '2³² − 1 = 4 294 967 295. Con 64 bit si arriva a oltre 18 miliardi di miliardi!'
+      }
+    ];
+
+    let currentStep = 0;
+    let userAnswers = new Array(QUIZ_DATA.length).fill(null);
+    let score = 0;
+
+    function renderQuizStep() {
+      const d = QUIZ_DATA[currentStep];
+      document.getElementById('qNum').textContent = currentStep + 1;
+      document.getElementById('qTotal').textContent = QUIZ_DATA.length;
+      document.getElementById('score').textContent = score;
+      document.getElementById('progressBar').style.width = ((currentStep + 1) / QUIZ_DATA.length * 100) + '%';
+
+      let html = `<h3 class="font-outfit font-bold text-lg text-slate-800 mb-4">${d.q}</h3><div class="space-y-2">`;
+      d.options.forEach((opt, i) => {
+        let cls = 'w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition ';
+        if (userAnswers[currentStep] === null) {
+          cls += 'bg-white border-slate-200 hover:border-blue-300 hover:bg-blue-50 text-slate-700 cursor-pointer';
+        } else if (i === d.correct) {
+          cls += 'bg-emerald-50 border-emerald-300 text-emerald-800';
+        } else if (i === userAnswers[currentStep]) {
+          cls += 'bg-rose-50 border-rose-300 text-rose-800';
+        } else {
+          cls += 'bg-slate-50 border-slate-200 text-slate-400';
+        }
+        const icon = userAnswers[currentStep] !== null
+          ? (i === d.correct ? '<i class="fas fa-check text-emerald-500 mr-2"></i>' : (i === userAnswers[currentStep] ? '<i class="fas fa-times text-rose-500 mr-2"></i>' : ''))
+          : '';
+        html += `<button onclick="selectOption(${i})" class="${cls}" ${userAnswers[currentStep] !== null ? 'disabled' : ''}>${icon}${opt}</button>`;
+      });
+      html += '</div>';
+
+      if (userAnswers[currentStep] !== null) {
+        const ok = userAnswers[currentStep] === d.correct;
+        html += `<div class="mt-4 p-3 rounded-xl text-sm ${ok ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}">
+          <strong>${ok ? 'Corretto!' : 'Non esatto.'}</strong> ${d.explanation}
+        </div>`;
+      }
+
+      document.getElementById('quizContent').innerHTML = html;
+      document.getElementById('prevBtn').disabled = currentStep === 0;
+      const nextBtn = document.getElementById('nextBtn');
+      if (currentStep === QUIZ_DATA.length - 1) {
+        nextBtn.innerHTML = 'Ricomincia <i class="fas fa-redo ml-1"></i>';
+      } else {
+        nextBtn.innerHTML = 'Prossima <i class="fas fa-arrow-right ml-1"></i>';
+      }
+    }
+
+    function selectOption(idx) {
+      if (userAnswers[currentStep] !== null) return;
+      userAnswers[currentStep] = idx;
+      if (idx === QUIZ_DATA[currentStep].correct) score++;
+      renderQuizStep();
+    }
+
+    function nextQuestion() {
+      if (currentStep === QUIZ_DATA.length - 1) {
+        currentStep = 0;
+        userAnswers = new Array(QUIZ_DATA.length).fill(null);
+        score = 0;
+      } else {
+        currentStep++;
+      }
+      renderQuizStep();
+    }
+
+    function prevQuestion() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderQuizStep();
+      }
+    }
+
+    // ========== CLASSIFICATION ==========
+    const CLASSIFICATION_DATA = [
+      { id: 'c1', label: 'Accumulatore (EAX)', options: ['Accumulatore', 'Puntatore istruzioni', 'Bandiere di stato'], correct: 0 },
+      { id: 'c2', label: 'Puntatore istruzioni (EIP)', options: ['Contatore di cicli', 'Puntatore istruzioni', 'Registro dati'], correct: 1 },
+      { id: 'c3', label: 'Contatore (ECX)', options: ['Contatore (cicli)', 'Base di memoria', 'Bandiere di stato'], correct: 0 },
+      { id: 'c4', label: 'Bandiere di stato (FLAGS)', options: ['Accumulatore', 'Puntatore stack', 'Bandiere di stato'], correct: 2 },
+      { id: 'c5', label: 'Base (EBX)', options: ['Base / puntatore dati', 'Puntatore istruzioni', 'Contatore'], correct: 0 }
+    ];
+
+    let selections = {};
+
+    function renderClassification() {
+      let html = '';
+      CLASSIFICATION_DATA.forEach(item => {
+        html += `<div class="p-3 bg-slate-50 rounded-xl">
+          <div class="font-semibold text-slate-800 text-sm mb-2">${item.label}</div>
+          <div class="flex flex-wrap gap-1.5">`;
+        item.options.forEach((opt, i) => {
+          const sel = selections[item.id] === i;
+          html += `<button onclick="selectClass('${item.id}',${i})" class="px-2.5 py-1 rounded-lg text-xs font-medium border transition ${sel ? 'bg-purple-100 border-purple-300 text-purple-800' : 'bg-white border-slate-200 text-slate-600 hover:border-purple-200'}">${opt}</button>`;
+        });
+        html += `</div></div>`;
+      });
+      document.getElementById('classList').innerHTML = html;
+    }
+
+    function selectClass(id, idx) {
+      selections[id] = idx;
+      renderClassification();
+      document.getElementById('classFeedback').classList.add('hidden');
+    }
+
+    function checkAnswers() {
+      let correct = 0;
+      CLASSIFICATION_DATA.forEach(item => {
+        if (selections[item.id] === item.correct) correct++;
+      });
+      const fb = document.getElementById('classFeedback');
+      fb.classList.remove('hidden');
+      if (correct === CLASSIFICATION_DATA.length) {
+        fb.className = 'mt-3 text-sm font-medium text-emerald-700 bg-emerald-50 p-3 rounded-xl';
+        fb.innerHTML = `<i class="fas fa-trophy mr-1"></i> Perfetto! ${correct}/${CLASSIFICATION_DATA.length} corretti.`;
+      } else {
+        fb.className = 'mt-3 text-sm font-medium text-amber-700 bg-amber-50 p-3 rounded-xl';
+        fb.innerHTML = `<i class="fas fa-info-circle mr-1"></i> ${correct}/${CLASSIFICATION_DATA.length} corretti. Riprova!`;
+      }
+    }
+
+    // ========== NAV ==========
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    }
+
+    // ========== INIT ==========
+    window.onload = function() {
+      resizeCanvas();
+      selectItem('eax');
+      updateSimulation(2);
+      renderQuizStep();
+      renderClassification();
+      animId = requestAnimationFrame(animate);
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        drawScene();
+      });
+    };
+  </script>
+</body>
+</html>

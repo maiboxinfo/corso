@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Explorer Lab - Comprendere l'Intelligenza Artificiale</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e0ebff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base styles forcing explicit light theme */
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 25px -5px rgba(148, 163, 184, 0.1), 0 8px 10px -6px rgba(148, 163, 184, 0.05);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #0d9488 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Pulse glow animation */
+        @keyframes subtle-glow {
+            0%, 100% { box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15); }
+            50% { box-shadow: 0 4px 30px rgba(124, 58, 237, 0.25); }
+        }
+        .glow-active {
+            animation: subtle-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Header Sticky -->
+    <header class="sticky top-0 z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="scrollToSection('intro')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-200">
+                    <i class="fa-solid fa-brain text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-heading font-extrabold text-lg text-slate-900 tracking-tight block leading-none">AI<span class="text-blue-600">Lab</span></span>
+                    <span class="text-xs text-slate-500 font-medium">Guida Interattiva alle Architetture IA</span>
+                </div>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1">
+                <button onclick="scrollToSection('intro')" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-sitemap text-blue-500"></i> Panoramica
+                </button>
+                <button onclick="scrollToSection('analogy')" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-indigo-500"></i> Metafora
+                </button>
+                <button onclick="scrollToSection('ai-lab')" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-flask text-teal-500"></i> Laboratorio
+                </button>
+                <button onclick="scrollToSection('polarity')" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-purple-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-purple-500"></i> Simulatore
+                </button>
+                <button onclick="scrollToSection('reasoning-deepdive')" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-brain text-amber-500"></i> Reasoning
+                </button>
+                <button onclick="scrollToSection('quiz')" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i> Verifica
+                </button>
+            </nav>
+
+            <!-- Mobile Hamburger Button -->
+            <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 bg-white/95 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="scrollToSection('intro'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center gap-3">
+                <i class="fa-solid fa-sitemap text-blue-500 w-5"></i> Mappa Generale
+            </button>
+            <button onclick="scrollToSection('analogy'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center gap-3">
+                <i class="fa-solid fa-lightbulb text-indigo-500 w-5"></i> Metafora & Mente
+            </button>
+            <button onclick="scrollToSection('ai-lab'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center gap-3">
+                <i class="fa-solid fa-flask text-teal-500 w-5"></i> Laboratorio Architetture
+            </button>
+            <button onclick="scrollToSection('polarity'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center gap-3">
+                <i class="fa-solid fa-sliders text-purple-500 w-5"></i> Simulatore Paradigmi
+            </button>
+            <button onclick="scrollToSection('reasoning-deepdive'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center gap-3">
+                <i class="fa-solid fa-brain text-amber-500 w-5"></i> Anatomia del Reasoning
+            </button>
+            <button onclick="scrollToSection('quiz'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center gap-3">
+                <i class="fa-solid fa-circle-check text-emerald-500 w-5"></i> Quiz & Verifica
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECTION: INTRO & MAPPA -->
+        <section id="intro" class="space-y-8">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-microchip"></i> Architetture & Modelli Generativi
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Esplora l'universo dell'<span class="gradient-text">Intelligenza Artificiale</span>
+                    </h1>
+                    <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+                        Dal <strong>Machine Learning</strong> ai <strong>Transformer</strong>, dagli <strong>LLM</strong> ai modelli di <strong>Diffusion</strong> e <strong>Reasoning</strong>. Scopri come l'IA elabora dati, comprende il contesto e risolve problemi complessi.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <button onclick="scrollToSection('ai-lab')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-play"></i> Apri Laboratorio Interattivo
+                        </button>
+                        <button onclick="scrollToSection('analogy')" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 shadow-sm hover:scale-[1.02] transition flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-diagram-project"></i> Vedi Mappa Concettuale
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALOGY BLOCK -->
+            <div id="analogy" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Sinistra: Metafora -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-100 border border-indigo-200 text-indigo-700 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800">L'Analogia della Cucina Specializzata</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Immagina di voler preparare un piatto perfetto per una cena gourmet:
+                        </p>
+                        <ul class="text-sm text-slate-700 space-y-2">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-500 mt-1"></i>
+                                <span><strong>IA a Regole:</strong> Seguire alla lettera un libro di ricette scritto da uno chef. Se manca un ingrediente, il sistema si blocca.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-500 mt-1"></i>
+                                <span><strong>Machine Learning:</strong> Assaggiare 1.000 piatti diversi per imparare da soli quali spezie stanno bene insieme.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-500 mt-1"></i>
+                                <span><strong>Transformer & LLM:</strong> Un sommelier capace di capire al volo come ogni ingrediente interagisce con il contesto della serata.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-500 mt-1"></i>
+                                <span><strong>Diffusion:</strong> Un artista che parte da una tela piena di macchie caotiche di colore e rimuove il superfluo fino a rivelare un dipinto.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+                        <div class="font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation text-amber-600"></i> Differenza Concettuale Chiave
+                        </div>
+                        <p>L'IA non "pensa" come un essere umano: non possiede coscienza, emozioni o esperienze biologiche. Esegue elaborazioni matematiche e statistiche ad altissima complessità su vettori e contesti.</p>
+                    </div>
+                </div>
+
+                <!-- Destra: Toggle Vista Semplice vs Vista Tecnica -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-6 flex flex-col">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Visualizzazione Gerarchica</span>
+                        <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
+                            <button id="btnSimpleView" onclick="toggleAnalogyView('simple')" class="px-3 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm transition">
+                                <i class="fa-solid fa-cubes mr-1"></i> Vista Sintetica
+                            </button>
+                            <button id="btnTechView" onclick="toggleAnalogyView('tech')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+                                <i class="fa-solid fa-code-branch mr-1"></i> Vista Tecnica
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Div 1: Vista Sintetica -->
+                    <div id="analogy-view-simple" class="flex-grow flex flex-col justify-center space-y-3">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                            <div class="font-bold text-blue-900 text-sm">INTELLIGENZA ARTIFICIALE (Campo Generale)</div>
+                            <div class="text-xs text-blue-700">Percepire, Decidere, Generare</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pl-4 border-l-2 border-dashed border-blue-300">
+                            <div class="p-2.5 bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 text-center">
+                                IA basata su Regole Logiche
+                            </div>
+                            <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded-lg text-xs font-bold text-indigo-900 text-center">
+                                MACHINE LEARNING (Apprendimento dai Dati)
+                            </div>
+                        </div>
+                        <div class="pl-12 border-l-2 border-dashed border-indigo-300">
+                            <div class="p-2.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-bold text-purple-900 text-center">
+                                DEEP LEARNING (Reti Neurali Profonde)
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pl-20 border-l-2 border-dashed border-purple-300">
+                            <div class="p-2.5 bg-teal-50 border border-teal-200 rounded-lg text-xs font-bold text-teal-900 text-center">
+                                TRANSFORMER (Attention & LLM)
+                            </div>
+                            <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-xs font-bold text-rose-900 text-center">
+                                DIFFUSION (Denoising Generativo)
+                            </div>
+                        </div>
+                        <div class="pl-28 border-l-2 border-dashed border-teal-300">
+                            <div class="p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-900 text-center">
+                                REASONING & STRUMENTI (Scomposizione & Verifica)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Div 2: Vista Tecnica (Nascosto di default) -->
+                    <div id="analogy-view-tech" class="hidden flex-grow space-y-3 text-xs font-mono">
+                        <div class="p-3 bg-slate-900 text-slate-100 rounded-xl space-y-2">
+                            <div class="text-emerald-400 font-bold">// Flusso Dati & Architettura Tecnica</div>
+                            <div>• <span class="text-blue-300">ML:</span> Input (X) + Label (Y) → Ottimizzazione Funzione Costo → Peso (W)</div>
+                            <div>• <span class="text-purple-300">DL:</span> Layer₀ → H₁ → H₂ → ... → Hₙ → Feature Representation</div>
+                            <div>• <span class="text-teal-300">Transformer:</span> Attention(Q, K, V) = softmax(Q Kᵀ / √dₖ) V</div>
+                            <div>• <span class="text-rose-300">Diffusion:</span> xₜ = √(ᾱₜ) x₀ + √(1 - ᾱₜ) ε,  Predizione Rumore εθ(xₜ, t)</div>
+                            <div>• <span class="text-emerald-300">Reasoning:</span> Prompt → CoT (Chain of Thought) → Tool Call → Loop Verifica → Output</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MOL-LAB (LABORATORIO INTERATTIVO CON CANVAS) -->
+        <section id="ai-lab" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Laboratorio di Simulazione</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Architetture IA in Azione</h2>
+                </div>
+                <!-- Tabs Selector -->
+                <div class="flex flex-wrap gap-2" id="labTabsContainer">
+                    <!-- Popolato dinamicamente da JS -->
+                </div>
+            </div>
+
+            <!-- Grid 2 Colonne -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Sinistra: Canvas + Controlli (7/12) -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                        <span id="canvasTitle" class="font-bold text-slate-800 text-sm">Visualizzazione Animata</span>
+                        <button id="playPauseBtn" onclick="toggleCanvasAnim()" class="px-3 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-pause" id="playIcon"></i> <span id="playText">Pausa</span>
+                        </button>
+                    </div>
+
+                    <!-- HTML5 Canvas Container -->
+                    <div class="relative w-full aspect-video bg-white rounded-xl border border-slate-200 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="labCanvas" class="w-full h-full block"></canvas>
+                    </div>
+
+                    <!-- Legenda Canvas -->
+                    <div id="canvasLegend" class="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-600 pt-1">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- Destra: Info Panel Dinamico (5/12) -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-4">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span id="infoBadge" class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-800 border border-blue-200">
+                                Machine Learning
+                            </span>
+                            <span id="infoNotation" class="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                                Dati → Modello
+                            </span>
+                        </div>
+
+                        <h3 id="infoTitle" class="text-xl font-bold text-slate-900">
+                            Apprendimento dai Dati
+                        </h3>
+
+                        <p id="infoDesc" class="text-sm text-slate-600 leading-relaxed">
+                            Nel Machine Learning non si programmano regole esplicite punto per punto. Il sistema analizza esempi di input e output per trovare autonomamente le regolarità matematiche.
+                        </p>
+
+                        <!-- 3 Mini Card Fatti Chiave -->
+                        <div class="space-y-2 pt-2">
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0 text-xs">
+                                    <i class="fa-solid fa-database" id="factIcon1"></i>
+                                </div>
+                                <div class="text-xs">
+                                    <span class="font-bold text-slate-800 block" id="factTitle1">Dataset di Addestramento</span>
+                                    <span class="text-slate-600" id="factDesc1">Migliaia di immagini di cani e gatti con relative etichette.</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0 text-xs">
+                                    <i class="fa-solid fa-gears" id="factIcon2"></i>
+                                </div>
+                                <div class="text-xs">
+                                    <span class="font-bold text-slate-800 block" id="factTitle2">Ottimizzazione Parametri</span>
+                                    <span class="text-slate-600" id="factDesc2">Aggiustamento automatico dei pesi per minimizzare gli errori.</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center flex-shrink-0 text-xs">
+                                    <i class="fa-solid fa-chart-line" id="factIcon3"></i>
+                                </div>
+                                <div class="text-xs">
+                                    <span class="font-bold text-slate-800 block" id="factTitle3">Inferenza e Previsione</span>
+                                    <span class="text-slate-600" id="factDesc3">Valutazione immediata di nuovi dati mai visti prima.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Box Notazione/Formula Finale in Mono -->
+                    <div class="p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs space-y-1">
+                        <div class="text-slate-400 font-sans text-[10px] uppercase font-bold tracking-wider">Notazione Flusso Elaborazione</div>
+                        <div id="formulaBox" class="text-teal-300">
+                            X (Input) → [Fisico / Rete] → Y (Predizione = "Cane")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: POLARITY (SIMULATORE A SLIDER PARADIGMI) -->
+        <section id="polarity" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Simulatore Interattivo</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Lo Spettro della Complessità Computazionale</h2>
+                <p class="text-sm text-slate-600">
+                    Sposta lo slider per passare dall'approccio basato su regole rigide fino ai moderni cicli di Reasoning autonomo.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-8">
+                <!-- Controlli Slider + Preset -->
+                <div class="max-w-xl mx-auto space-y-4">
+                    <div class="flex items-center justify-between font-bold text-sm text-slate-700">
+                        <span>Regole Statiche (IF/THEN)</span>
+                        <span id="sliderValueDisplay" class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full font-mono text-xs">Livello 50%</span>
+                        <span>Reasoning & Strumenti</span>
+                    </div>
+
+                    <input type="range" id="paradigmSlider" min="0" max="100" value="50" oninput="updateParadigmSim(this.value)" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
+
+                    <!-- Bottoni Preset -->
+                    <div class="flex justify-center gap-2 pt-2">
+                        <button onclick="setParadigmPreset(0)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                            0% Regole Rigide
+                        </button>
+                        <button onclick="setParadigmPreset(50)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                            50% Transformer LLM
+                        </button>
+                        <button onclick="setParadigmPreset(100)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                            100% Reasoning + Tool
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modello Visivo Dinamico Nodi & Flusso -->
+                <div class="p-6 bg-white rounded-2xl border border-slate-200 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 min-h-[180px]">
+                    <!-- Nodo Input -->
+                    <div class="flex flex-col items-center gap-2 z-10">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 border-2 border-blue-400 flex items-center justify-center text-blue-600 text-xl font-bold shadow-sm">
+                            <i class="fa-solid fa-keyboard"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-700">Input / Problema</span>
+                    </div>
+
+                    <!-- Processore Centrale Cangiante -->
+                    <div class="flex-grow flex flex-col items-center justify-center space-y-2 z-10 w-full">
+                        <div id="simEngineBox" class="w-full max-w-xs p-4 rounded-xl border text-center transition-all duration-300 bg-purple-50 border-purple-300">
+                            <div id="simEngineTitle" class="font-bold text-sm text-purple-900">Architettura Transformer (LLM)</div>
+                            <div id="simEngineDesc" class="text-xs text-purple-700 mt-1">Calcolo matriciale pesi e attenzione su contesto esteso</div>
+                        </div>
+                        
+                        <!-- Indicatori Frecce Vettoriali -->
+                        <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+                            <span id="simFlowLeft">Contesto</span>
+                            <i class="fa-solid fa-arrow-right text-purple-500" id="simArrow"></i>
+                            <span id="simFlowRight">Probabilità</span>
+                        </div>
+                    </div>
+
+                    <!-- Nodo Output -->
+                    <div class="flex flex-col items-center gap-2 z-10">
+                        <div id="simOutputIconBox" class="w-14 h-14 rounded-2xl bg-teal-50 border-2 border-teal-400 flex items-center justify-center text-teal-600 text-xl font-bold shadow-sm">
+                            <i class="fa-solid fa-font"></i>
+                        </div>
+                        <span id="simOutputLabel" class="text-xs font-bold text-slate-700">Testo Generato</span>
+                    </div>
+                </div>
+
+                <!-- 2 Card Comparative sotto -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="flex items-center gap-2 font-bold text-sm text-slate-800">
+                            <i class="fa-solid fa-user text-blue-600"></i> Ragionamento Umano
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Basato su esperienze vissute, intenzionalità biologica, percezione sensoriale del mondo reale, emozioni, coscienza soggettiva ed evoluzione adattiva.
+                        </p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="flex items-center gap-2 font-bold text-sm text-slate-800">
+                            <i class="fa-solid fa-robot text-indigo-600"></i> Computazione IA
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Basato sulla manipolazione di rappresentazioni vettoriali, calcolo di probabilita nei Transformer, simulazione di passaggi intermedi (Reasoning) e chiamate a strumenti esterni.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: REASONING DEEP-DIVE (NUOVA SEZIONE APPROFONDIMENTO) -->
+        <section id="reasoning-deepdive" class="space-y-6">
+            <div class="text-center max-w-3xl mx-auto space-y-2">
+                <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Focus Concettuale Avanzato</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Anatomia del Reasoning nell'IA</h2>
+                <p class="text-sm text-slate-600">
+                    Il reasoning non è semplicemente "conoscere una risposta" o "generare più testo". È la capacità funzionale di elaborare informazioni disponibili per ricavare nuove conclusioni verificate attraverso passaggi intermedi.
+                </p>
+            </div>
+
+            <!-- Tabs Selettore Aspetti Reasoning -->
+            <div class="flex flex-wrap justify-center gap-2" id="reasoningTabButtons">
+                <button onclick="switchReasoningTab('types')" id="rtab-types" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-600 text-white shadow-md shadow-amber-200">
+                    <i class="fa-solid fa-diagram-project mr-1.5"></i> 1. Tipi di Inferenza (Deduzione, Induzione, Abduzione)
+                </button>
+                <button onclick="switchReasoningTab('techniques')" id="rtab-techniques" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">
+                    <i class="fa-solid fa-microchip mr-1.5"></i> 2. Tecniche Computazionali (CoT, Test-Time Compute, Search)
+                </button>
+                <button onclick="switchReasoningTab('tools')" id="rtab-tools" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">
+                    <i class="fa-solid fa-cubes-stacked mr-1.5"></i> 3. Generate → Verify & Uso Strumenti
+                </button>
+                <button onclick="switchReasoningTab('neuro')" id="rtab-neuro" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">
+                    <i class="fa-solid fa-brain-circuit mr-1.5 font-bold"></i> 4. Neuro-Simbolico & Umano vs IA
+                </button>
+            </div>
+
+            <!-- Contenitore dinamico della scheda attiva -->
+            <div id="reasoningTabContent" class="glass-panel rounded-3xl p-6 sm:p-8">
+                <!-- Popolato da JS -->
+            </div>
+        </section>
+
+        <!-- SECTION: QUIZ & GAME -->
+        <section id="quiz" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-1">
+                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Verifica Competenze</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Metti alla Prova la tua Preparazione</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Sinistra: Quiz a Step (8/12) -->
+                <div class="lg:col-span-8 glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-6">
+                    <div>
+                        <!-- Quiz Header & Progress Bar -->
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-500 mb-2">
+                            <span id="quizStepText">Domanda 1 di 6</span>
+                            <span id="quizScoreText" class="text-emerald-600">Punteggio: 0</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden mb-6">
+                            <div id="quizProgressBar" class="bg-emerald-500 h-full w-1/6 transition-all duration-300"></div>
+                        </div>
+
+                        <!-- Domanda e Opzioni -->
+                        <div id="quizContainer" class="space-y-4">
+                            <!-- Inserito via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Controlli Precedente / Prossima -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+                        <button id="btnPrevQuiz" onclick="prevQuizStep()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition disabled:opacity-50">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Precedente
+                        </button>
+                        <button id="btnNextQuiz" onclick="nextQuizStep()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-md shadow-emerald-200">
+                            Prossima <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Destra: Mini-gioco di Classificazione (4/12) -->
+                <div class="lg:col-span-4 glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fa-solid fa-tags text-indigo-600"></i>
+                            <h3 class="font-bold text-slate-800 text-sm">Classifica il Concetto</h3>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-4">
+                            Associa ogni tecnologia/concetto alla categoria corretta:
+                        </p>
+
+                        <!-- Elementi di classificazione -->
+                        <div id="classificationContainer" class="space-y-3">
+                            <!-- Inserito via JS -->
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200 space-y-2">
+                        <button onclick="checkClassification()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-md shadow-indigo-200">
+                            Verifica Risposte
+                        </button>
+                        <div id="classificationResult" class="text-center font-bold text-xs min-h-[20px]"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-3">
+            <div class="flex items-center justify-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <span class="font-heading font-bold text-slate-900 text-sm">AI Explorer Lab</span>
+            </div>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">
+                Web-app didattica interattiva per la spiegazione trasparente di Machine Learning, Transformer, LLM, Diffusion e Reasoning.
+            </p>
+            <div class="text-[11px] text-slate-400">
+                Sviluppato con Tailwind CSS, FontAwesome e Vanilla JavaScript. Nessuna libreria matematica esterna.
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT JS UNICO INTEGRATO -->
+    <script>
+        /* ==========================================================================
+           1. OGGETTI DATI DEL LABORATORIO (ITEMS)
+           ========================================================================== */
+        const ITEMS = {
+            ml: {
+                name: "Machine Learning",
+                badge: "Apprendimento Statistico",
+                notation: "Dati + Label → Apprendimento → Modello",
+                desc: "Nel Machine Learning il sistema non riceve regole rigide scritte a mano. Forniamo esempi ed etichette e il modello impara a riconoscere autonomamente i pattern minimizzando l'errore.",
+                fact1: { icon: "fa-database", title: "Dati di Esempio", desc: "Migliaia di esempi etichettati (es. foto di cani vs gatti)." },
+                fact2: { icon: "fa-sliders", title: "Pesi del Modello", desc: "Regolazione automatica dei parametri interni per ridurre gli errori." },
+                fact3: { icon: "fa-bullseye", title: "Generalizzazione", desc: "Capacità di classificare correttamente dati nuovi mai visti." },
+                formula: "Y = f_θ(X)   dove θ viene appreso dai dati",
+                type: "ml"
+            },
+            dl: {
+                name: "Deep Learning",
+                badge: "Reti Neurali Profonde",
+                notation: "Input → Layer₁ → Layer₂ → ... → Layerₙ → Output",
+                desc: "Il Deep Learning impiega reti neurali a molti strati. Ogni strato estrae rappresentazioni a livelli crescenti di astrazione: dai singoli pixel ai bordi, fino a forme e oggetti completi.",
+                fact1: { icon: "fa-layer-group", title: "Gerarchia Strati", desc: "Ogni livello sintetizza le informazioni del livello precedente." },
+                fact2: { icon: "fa-eye", title: "Feature Extraction", desc: "Non richiede ingegneria manuale delle caratteristiche." },
+                fact3: { icon: "fa-network-wired", title: "Milioni di Nodi", desc: "Reti complesse capaci di modellare funzioni non lineari." },
+                formula: "Hₖ = σ(Wₖ · Hₖ₋₁ + bₖ)   [Attivazione multistrato]",
+                type: "dl"
+            },
+            transformer: {
+                name: "Transformer & Attention",
+                badge: "Architettura Fondamentale",
+                notation: "Attention(Q, K, V) = Softmax(Q Kᵀ / √dₖ) V",
+                desc: "Introdotti nel 2017, i Transformer usano il meccansimo di Self-Attention per valutare le relazioni tra tutte le parole di una frase contemporaneamente, indipendentemente dalla loro distanza.",
+                fact1: { icon: "fa-arrows-split-up-and-left", title: "Self-Attention", desc: "Collega ogni parola al suo contesto specifico (es. 'era' legato a 'Luca')." },
+                fact2: { icon: "fa-cubes-stacked", title: "Multi-Head", desc: "Analizza contemporaneamente relazioni sintattiche, semantiche e grammaticali." },
+                fact3: { icon: "fa-bolt", title: "Parallelizzazione", desc: "Elaborazione simultanea dell'intera sequenza di testo." },
+                formula: "Attention_Weight = softmax(Query · Keyᵀ / √d)",
+                type: "transformer"
+            },
+            llm: {
+                name: "Large Language Models (LLM)",
+                badge: "Generazione Linguistica",
+                notation: "Token₁ → Token₂ → Token₃ → Previsione Token₄",
+                desc: "Grandi modelli linguistici basati su Transformer addestrati su enormi quantità di testo. Generano risposte calcolando in modo autoregressivo la probabilità del token successivo.",
+                fact1: { icon: "fa-font", title: "Tokenizzazione", desc: "Il testo viene convertito in frammenti numerici (token)." },
+                fact2: { icon: "fa-chart-pie", title: "Distribuzione Probabilità", desc: "Scelta del token successivo più coerente con il contesto." },
+                fact3: { icon: "fa-book-open", title: "Rappresentazione Concettuale", desc: "Sviluppo di una comprensione complessa di sintassi e concetti." },
+                formula: "P(Tokenₜ | Token₁, Token₂, ..., Tokenₜ₋₁)",
+                type: "llm"
+            },
+            diffusion: {
+                name: "Modelli Diffusion",
+                badge: "Generazione Immagini/Audio",
+                notation: "Rumore Casuale R₀ → Denoising Progressivo → Immagine I",
+                desc: "I modelli Diffusion apprendono ad invertire un processo di degrado. Partono da un'immagine di puro rumore causale e, guida dal prompt, rimuovono il rumore passo dopo passo fino a rivelare i dettagli.",
+                fact1: { icon: "fa-fill-drip", title: "Aggiunta Rumore (Forward)", desc: "Durante l'addestramento l'immagine viene gradualmente distrutta." },
+                fact2: { icon: "fa-wand-magic-sparkles", title: "Denoising (Reverse)", desc: "Il modello impara a predire e sottrarre il rumore in ogni step." },
+                fact3: { icon: "fa-image", title: "Dettagli Progressivi", desc: "Dalla macchia indistinta emergono forme, strutture e texture." },
+                formula: "Immagine_Finale = Reverse_Process(Rumore_Casuale, Prompt)",
+                type: "diffusion"
+            },
+            reasoning: {
+                name: "Reasoning & Tools",
+                badge: "Risoluzione Problemi & Inferenza",
+                notation: "Info → Decomposizione → Tree Search → Generate/Verify → Esito",
+                desc: "Il Reasoning artificiale consente di affrontare problemi complessi non limitandosi ad un'unica risposta immediata, ma esplorando passaggi intermedi, invocando strumenti (codice/calcolo/RAG) e verificando il risultato.",
+                fact1: { icon: "fa-diagram-successor", title: "Infeze Multi-Tipo", desc: "Supporto a deduzione (regole), induzione (esempi) e abduzione (migliore ipotesi)." },
+                fact2: { icon: "fa-hourglass-half", title: "Test-Time Compute", desc: "Maggiore tempo e calcolo allocati all'inferenza per esplorare più percorsi di soluzione." },
+                fact3: { icon: "fa-circle-check", title: "Generate & Verify", desc: "Generazione di candidati seguita da esecuzione/verifica esatta prima dell'output finale." },
+                formula: "Sistema = LLM + CoT + Search + Verificatore + Strumenti Esterni",
+                type: "reasoning"
+            }
+        };
+
+        /* ==========================================================================
+           2. DATI DEL QUIZ
+           ========================================================================== */
+        const QUIZ_DATA = [
+            {
+                q: "Qual è la differenza fondamentale tra Machine Learning tradizionale e IA basata su regole?",
+                options: [
+                    "Nel Machine Learning le regole sono scritte manualmente da programmatori.",
+                    "Nel Machine Learning il sistema impara autonomamente i pattern dai dati.",
+                    "L'IA a regole richiede sempre modelli di Diffusion per funzionare.",
+                    "Non c'è alcuna differenza, sono termini identici."
+                ],
+                correct: 1,
+                explanation: "Nel Machine Learning il modello ricava le regolarità matematiche e le regole direttamente dai dati di esempio forniti, anziché riceverle già programmate."
+            },
+            {
+                q: "Cosa rende unica l'architettura Transformer rispetto alle reti precedenti?",
+                options: [
+                    "Utilizza esclusivamente chip quantistici per elaborare il testo.",
+                    "L'algoritmo di Self-Attention, che valuta le relazioni tra tutte le parole contemporaneamente.",
+                    "Genera immagini a partire da rumore senza usare testo.",
+                    "Funziona solo se collegata a un database di regole rigide."
+                ],
+                correct: 1,
+                explanation: "La Self-Attention permette al Transformer di collegare istantaneamente parole vicine e lontane nella frase, calcolando l'importanza contestuale reciproca."
+            },
+            {
+                q: "Come genera una risposta un Modello Linguistico di Grandi Dimensioni (LLM)?",
+                options: [
+                    "Copia e incolla frasi intere da Wikipedia senza modifiche.",
+                    "Prevede in modo autoregressivo il token successivo con la probabilità più coerente.",
+                    "Disegna una mappa di pixel prima di convertirla in testo.",
+                    "Esegue un algoritmo di ordinamento su un elenco prefissato di risposte."
+                ],
+                correct: 1,
+                explanation: "Gli LLM generano il testo elemento per elemento (token), valutando ad ogni passo qual è la continuazione più probabile in base al contesto."
+            },
+            {
+                q: "Qual è il principio chiave di un modello di Diffusion per la generazione di immagini?",
+                options: [
+                    "Partire da puro rumore e rimuoverlo gradualmente (Denoising) guidato dal prompt.",
+                    "Scansionare una foto vera ed applicare filtri di colore predefiniti.",
+                    "Moltiplicare la risoluzione di un'immagine vettoriale senza addestramento.",
+                    "Memorizzare tutte le immagini di Internet su disco rigido."
+                ],
+                correct: 0,
+                explanation: "I modelli Diffusion apprendono il processo inverso del degrado: sottraggono rumore casuale step dopo step per far emergere forme e dettagli nitidi."
+            },
+            {
+                q: "Cosa si intende per 'Reasoning' nei moderni sistemi IA?",
+                options: [
+                    "Avere coscienza, sentimenti ed emozioni umane.",
+                    "Scomporre problemi complessi in passaggi intermedi, usare strumenti esterni e verificare i risultati.",
+                    "Eseguire soltanto calcoli aritmetici elementari a ciclo continuo.",
+                    "Generare risposte casuali senza considerare la domanda dell'utente."
+                ],
+                correct: 1,
+                explanation: "Il Reasoning artificiale si riferisce alla capacità procedurale di suddividere un problema, verificare i passaggi intermedi, invocare strumenti (es. calcolatrice, codice) e autocorreggersi."
+            },
+            {
+                q: "A cosa serve la tecnica RAG (Retrieval-Augmented Generation)?",
+                options: [
+                    "A ridurre il consumo di corrente del monitor.",
+                    "A cercare informazioni aggiornate o specifiche in documenti esterni prima di generare la risposta con l'LLM.",
+                    "A convertire i modelli Diffusion in modelli audio.",
+                    "A cancellare la memoria del modello dopo ogni frase."
+                ],
+                correct: 1,
+                explanation: "La tecnica RAG permette al modello di consultare fonti e documenti specifici al momento della domanda per fornire risposte precise e aggiornate."
+            }
+        ];
+
+        /* ==========================================================================
+           3. DATI DEL MINI-GIOCO DI CLASSIFICAZIONE
+           ========================================================================== */
+        const CLASSIFICATION_DATA = [
+            { id: "c1", label: "Self-Attention (Q, K, V)", correct: "transformer" },
+            { id: "c2", label: "Denoising progressivo da rumore", correct: "diffusion" },
+            { id: "c3", label: "Catena di pensiero (Chain-of-Thought) + Tools", correct: "reasoning" },
+            { id: "c4", label: "Classificazione foto cani/gatti tramite pesi", correct: "ml" },
+            { id: "c5", label: "Generazione token per token (Probabilità)", correct: "llm" }
+        ];
+
+        const CATEGORY_OPTIONS = [
+            { val: "ml", label: "ML / DL" },
+            { val: "transformer", label: "Transformer" },
+            { val: "llm", label: "LLM" },
+            { val: "diffusion", label: "Diffusion" },
+            { val: "reasoning", label: "Reasoning" }
+        ];
+
+        /* ==========================================================================
+           4. STATO DELL'APPLICAZIONE
+           ========================================================================== */
+        let currentItemKey = 'ml';
+        let isAnimating = true;
+        let animFrameId = null;
+        let animTime = 0;
+
+        let quizCurrentStep = 0;
+        let quizScore = 0;
+        let userQuizAnswers = new Array(QUIZ_DATA.length).fill(null);
+
+        let userClassification = {};
+
+        /* ==========================================================================
+           5. INIZIALIZZAZIONE & EVENTI ONLOAD
+           ========================================================================== */
+        window.onload = function() {
+            renderLabTabs();
+            selectLabItem('ml');
+            initCanvas();
+            updateParadigmSim(50);
+            renderReasoningDeepDive('types');
+            renderQuizStep();
+            renderClassificationGame();
+        };
+
+        window.onresize = function() {
+            resizeCanvas();
+        };
+
+        /* ==========================================================================
+           6. NAVIGAZIONE E TOGGLE DI VISTA
+           ========================================================================== */
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleAnalogyView(view) {
+            const simpleDiv = document.getElementById('analogy-view-simple');
+            const techDiv = document.getElementById('analogy-view-tech');
+            const btnSimple = document.getElementById('btnSimpleView');
+            const btnTech = document.getElementById('btnTechView');
+
+            if (view === 'simple') {
+                simpleDiv.classList.remove('hidden');
+                techDiv.classList.add('hidden');
+                btnSimple.className = "px-3 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm transition font-bold";
+                btnTech.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+            } else {
+                simpleDiv.classList.add('hidden');
+                techDiv.classList.remove('hidden');
+                btnTech.className = "px-3 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm transition font-bold";
+                btnSimple.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+            }
+        }
+
+        /* ==========================================================================
+           7. LABORATORIO INTERATTIVO (MOL-LAB LOGIC)
+           ========================================================================== */
+        function renderLabTabs() {
+            const container = document.getElementById('labTabsContainer');
+            if (!container) return;
+
+            let html = '';
+            for (const key in ITEMS) {
+                const item = ITEMS[key];
+                html += `
+                    <button id="tab-${key}" onclick="selectLabItem('${key}')" 
+                        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">
+                        ${item.name}
+                    </button>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function selectLabItem(key) {
+            if (!ITEMS[key]) return;
+            currentItemKey = key;
+            const item = ITEMS[key];
+
+            // Aggiorna classi bottoni Tab
+            for (const k in ITEMS) {
+                const btn = document.getElementById(`tab-${k}`);
+                if (btn) {
+                    if (k === key) {
+                        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-blue-600 text-white shadow-md shadow-blue-200 border border-blue-600";
+                    } else {
+                        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50";
+                    }
+                }
+            }
+
+            // Popola pannello destro
+            document.getElementById('infoBadge').innerText = item.badge;
+            document.getElementById('infoNotation').innerText = item.notation;
+            document.getElementById('infoTitle').innerText = item.name;
+            document.getElementById('infoDesc').innerText = item.desc;
+
+            // Fact 1
+            document.getElementById('factIcon1').className = `fa-solid ${item.fact1.icon}`;
+            document.getElementById('factTitle1').innerText = item.fact1.title;
+            document.getElementById('factDesc1').innerText = item.fact1.desc;
+
+            // Fact 2
+            document.getElementById('factIcon2').className = `fa-solid ${item.fact2.icon}`;
+            document.getElementById('factTitle2').innerText = item.fact2.title;
+            document.getElementById('factDesc2').innerText = item.fact2.desc;
+
+            // Fact 3
+            document.getElementById('factIcon3').className = `fa-solid ${item.fact3.icon}`;
+            document.getElementById('factTitle3').innerText = item.fact3.title;
+            document.getElementById('factDesc3').innerText = item.fact3.desc;
+
+            // Formula box
+            document.getElementById('formulaBox').innerText = item.formula;
+
+            // Legenda Canvas
+            updateCanvasLegend(key);
+        }
+
+        function updateCanvasLegend(key) {
+            const legend = document.getElementById('canvasLegend');
+            if (!legend) return;
+
+            if (key === 'ml') {
+                legend.innerHTML = `
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Dati Cane</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Dati Gatto</span>
+                    <span class="flex items-center gap-1"><span class="w-4 h-0.5 bg-indigo-600 inline-block"></span> Iperpiano di Separazione (Modello)</span>
+                `;
+            } else if (key === 'dl') {
+                legend.innerHTML = `
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Input Pixel</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> Layer Nodi Nascosti</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Output Classificazione</span>
+                `;
+            } else if (key === 'transformer') {
+                legend.innerHTML = `
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-teal-500 inline-block"></span> Token Parola</span>
+                    <span class="flex items-center gap-1"><span class="w-4 h-0.5 bg-indigo-500 inline-block"></span> Archi di Attention (Spessore = Peso)</span>
+                `;
+            } else if (key === 'llm') {
+                legend.innerHTML = `
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span> Prompt di Contesto</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Token in Generazione</span>
+                `;
+            } else if (key === 'diffusion') {
+                legend.innerHTML = `
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-400 inline-block"></span> Rumore Casuale</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Dettagli Strutturati Emergenti</span>
+                `;
+            } else if (key === 'reasoning') {
+                legend.innerHTML = `
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Problema Iniziale</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> Sotto-Passaggio CoT</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Verifica / Tool</span>
+                `;
+            }
+        }
+
+        /* ==========================================================================
+           8. CANVAS ANIMATION ENGINE (HTML5 CANVAS)
+           ========================================================================== */
+        let canvas, ctx;
+
+        function initCanvas() {
+            canvas = document.getElementById('labCanvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            animLoop();
+        }
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        function toggleCanvasAnim() {
+            isAnimating = !isAnimating;
+            const playIcon = document.getElementById('playIcon');
+            const playText = document.getElementById('playText');
+
+            if (isAnimating) {
+                playIcon.className = "fa-solid fa-pause";
+                playText.innerText = "Pausa";
+                animLoop();
+            } else {
+                playIcon.className = "fa-solid fa-play";
+                playText.innerText = "Avvia";
+                if (animFrameId) cancelAnimationFrame(animFrameId);
+            }
+        }
+
+        function animLoop() {
+            if (!isAnimating) return;
+            animTime += 0.02;
+
+            drawScene();
+            animFrameId = requestAnimationFrame(animLoop);
+        }
+
+        function drawScene() {
+            if (!ctx || !canvas) return;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Sfondo bianco pulito
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+
+            // Disegna griglia soffusa
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            const gridSize = 30;
+            for (let x = 0; x < w; x += gridSize) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += gridSize) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // Rendering differenziato in base all'item attivo
+            if (currentItemKey === 'ml') {
+                drawMLScene(w, h);
+            } else if (currentItemKey === 'dl') {
+                drawDLScene(w, h);
+            } else if (currentItemKey === 'transformer') {
+                drawTransformerScene(w, h);
+            } else if (currentItemKey === 'llm') {
+                drawLLMScene(w, h);
+            } else if (currentItemKey === 'diffusion') {
+                drawDiffusionScene(w, h);
+            } else if (currentItemKey === 'reasoning') {
+                drawReasoningScene(w, h);
+            }
+        }
+
+        // --- 1. ML Canvas ---
+        function drawMLScene(w, h) {
+            // Punti Classe A (Cani - Blu)
+            const pointsA = [
+                {x: 0.2*w, y: 0.3*h}, {x: 0.25*w, y: 0.2*h}, {x: 0.35*w, y: 0.35*h}, {x: 0.15*w, y: 0.45*h}, {x: 0.3*w, y: 0.5*h}
+            ];
+            // Punti Classe B (Gatti - Rossi)
+            const pointsB = [
+                {x: 0.65*w, y: 0.6*h}, {x: 0.75*w, y: 0.8*h}, {x: 0.8*w, y: 0.55*h}, {x: 0.6*w, y: 0.75*h}, {x: 0.85*w, y: 0.7*h}
+            ];
+
+            // Linea decisionale che oscillando trova l'ottimo
+            const angle = Math.sin(animTime) * 0.15;
+            ctx.save();
+            ctx.translate(w/2, h/2);
+            ctx.rotate(angle);
+
+            ctx.strokeStyle = '#4f46e5';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.moveTo(-w/2, h/3);
+            ctx.lineTo(w/2, -h/3);
+            ctx.stroke();
+            ctx.restore();
+
+            // Disegna Punti
+            pointsA.forEach(p => {
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI*2); ctx.fill();
+            });
+            pointsB.forEach(p => {
+                ctx.fillStyle = '#f43f5e';
+                ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI*2); ctx.fill();
+            });
+
+            // Testo etichetta canvas
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px Plus Jakarta Sans';
+            ctx.fillText('Separazione Lineare dei Dati', 15, 25);
+        }
+
+        // --- 2. DL Canvas ---
+        function drawDLScene(w, h) {
+            const layers = [3, 5, 5, 2];
+            const layerX = [0.15*w, 0.38*w, 0.62*w, 0.85*w];
+
+            // Connessioni animate
+            layers.forEach((count, lIdx) => {
+                if (lIdx === layers.length - 1) return;
+                const nextCount = layers[lIdx+1];
+                const x1 = layerX[lIdx];
+                const x2 = layerX[lIdx+1];
+
+                for (let i = 0; i < count; i++) {
+                    const y1 = (h / (count + 1)) * (i + 1);
+                    for (let j = 0; j < nextCount; j++) {
+                        const y2 = (h / (nextCount + 1)) * (j + 1);
+                        const alpha = 0.15 + 0.1 * Math.sin(animTime*3 + i + j);
+                        ctx.strokeStyle = `rgba(124, 58, 237, ${alpha})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+                    }
+                }
+            });
+
+            // Nodi
+            const layerColors = ['#3b82f6', '#8b5cf6', '#8b5cf6', '#10b981'];
+            layers.forEach((count, lIdx) => {
+                const x = layerX[lIdx];
+                for (let i = 0; i < count; i++) {
+                    const y = (h / (count + 1)) * (i + 1);
+                    ctx.fillStyle = layerColors[lIdx];
+                    ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+                }
+            });
+
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px Plus Jakarta Sans';
+            ctx.fillText('Flusso Attivazione Multistrato (Deep Neural Mesh)', 15, 25);
+        }
+
+        // --- 3. Transformer Canvas ---
+        function drawTransformerScene(w, h) {
+            const words = ["Marco", "ha", "parlato", "con", "Luca", "perché", "era", "preoccupato"];
+            const count = words.length;
+            const startX = 0.1 * w;
+            const endX = 0.9 * w;
+            const stepX = (endX - startX) / (count - 1);
+            const posY = h * 0.65;
+
+            // Archi di Attention da "era" (index 6) e "preoccupato" (index 7) verso "Luca" (index 4) e "Marco" (index 0)
+            const highlightIdx = 6; // "era"
+            const targetIdx = 4;    // "Luca"
+
+            words.forEach((wStr, idx) => {
+                const x1 = startX + idx * stepX;
+                if (idx !== highlightIdx) {
+                    const x2 = startX + highlightIdx * stepX;
+                    const weight = (idx === targetIdx || idx === 0) ? 0.8 : 0.15;
+                    const arcH = Math.abs(idx - highlightIdx) * 18 + 20;
+
+                    ctx.strokeStyle = (idx === targetIdx) ? 'rgba(13, 148, 136, 0.9)' : `rgba(148, 163, 184, ${weight})`;
+                    ctx.lineWidth = (idx === targetIdx) ? 3 : 1;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, posY - 15);
+                    ctx.quadraticCurveTo((x1 + x2)/2, posY - 15 - arcH - Math.sin(animTime*2)*5, x2, posY - 15);
+                    ctx.stroke();
+                }
+            });
+
+            // Disegna parole come Nodi
+            words.forEach((wStr, idx) => {
+                const x = startX + idx * stepX;
+                const isHighlight = (idx === highlightIdx || idx === targetIdx);
+
+                ctx.fillStyle = isHighlight ? (idx === targetIdx ? '#0d9488' : '#2563eb') : '#e2e8f0';
+                ctx.beginPath(); ctx.arc(x, posY, 12, 0, Math.PI*2); ctx.fill();
+
+                ctx.fillStyle = isHighlight ? '#0f172a' : '#64748b';
+                ctx.font = isHighlight ? 'bold 12px Plus Jakarta Sans' : '11px Plus Jakarta Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText(wStr, x, posY + 30);
+            });
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px Plus Jakarta Sans';
+            ctx.fillText('Self-Attention: Collegamento del Contesto Contestuale', 15, 25);
+        }
+
+        // --- 4. LLM Canvas ---
+        function drawLLMScene(w, h) {
+            const promptTokens = ["L'IA", "è", "una", "tecnologia"];
+            const genTokens = ["rivoluzionaria", "per", "il", "futuro"];
+
+            // Progressivo conteggio di generazione
+            const totalGen = Math.floor((animTime * 1.5) % (genTokens.length + 1));
+
+            let currentX = 0.08 * w;
+            const posY = h * 0.5;
+
+            // Disegna Prompt
+            promptTokens.forEach((tok) => {
+                ctx.fillStyle = '#dbeafe';
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.roundRect(currentX, posY - 20, 70, 35, 8); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#1e40af';
+                ctx.font = 'bold 11px Plus Jakarta Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText(tok, currentX + 35, posY + 2);
+                currentX += 80;
+            });
+
+            // Disegna Generati
+            for (let i = 0; i < totalGen; i++) {
+                const tok = genTokens[i];
+                ctx.fillStyle = '#fef3c7';
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.roundRect(currentX, posY - 20, 85, 35, 8); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#92400e';
+                ctx.font = 'bold 11px Plus Jakarta Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText(tok, currentX + 42.5, posY + 2);
+                currentX += 95;
+            }
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px Plus Jakarta Sans';
+            ctx.fillText('Generazione Autoregressiva Token per Token', 15, 25);
+        }
+
+        // --- 5. Diffusion Canvas ---
+        function drawDiffusionScene(w, h) {
+            const size = 120;
+            const startX = (w - size) / 2;
+            const startY = (h - size) / 2 + 10;
+
+            // Denoising factor da 0 (puro rumore) a 1 (immagine nitida)
+            const denoiseProgress = (Math.sin(animTime * 1.2) + 1) / 2;
+
+            // Disegna forma sottostante (Gatto/Palla)
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(startX, startY, size, size);
+            ctx.clip();
+
+            // Immagine nitida sottostante
+            ctx.fillStyle = '#ffe4e6';
+            ctx.fillRect(startX, startY, size, size);
+
+            ctx.fillStyle = '#e11d48';
+            ctx.beginPath(); ctx.arc(startX + size/2, startY + size/2, 35, 0, Math.PI*2); ctx.fill();
+
+            ctx.fillStyle = '#9f1239';
+            ctx.font = 'bold 14px Outfit';
+            ctx.textAlign = 'center';
+            ctx.fillText('OGGETTO', startX + size/2, startY + size/2 + 5);
+
+            // Sovrapponi matrice di rumore con opacità decrescente
+            const noiseAlpha = 1 - denoiseProgress;
+            if (noiseAlpha > 0.05) {
+                const pixelSize = 6;
+                for (let x = startX; x < startX + size; x += pixelSize) {
+                    for (let y = startY; y < startY + size; y += pixelSize) {
+                        const rand = Math.random();
+                        ctx.fillStyle = `rgba(${Math.floor(rand*255)}, ${Math.floor(rand*255)}, ${Math.floor(rand*255)}, ${noiseAlpha})`;
+                        ctx.fillRect(x, y, pixelSize, pixelSize);
+                    }
+                }
+            }
+            ctx.restore();
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(startX, startY, size, size);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px Plus Jakarta Sans';
+            ctx.fillText(`Denoising Progressivo (Nitidezza: ${Math.floor(denoiseProgress*100)}%)`, 15, 25);
+        }
+
+        // --- 6. Reasoning Canvas ---
+        function drawReasoningScene(w, h) {
+            // Visualizzazione avanzata: Tree Search e Ciclo Generate -> Verify
+            const startX = 0.12 * w;
+            const posY = h * 0.5;
+
+            // Nodo Problema
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath(); ctx.arc(startX, posY, 14, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#1e293b'; ctx.font = 'bold 10px Plus Jakarta Sans'; ctx.textAlign = 'center';
+            ctx.fillText("Problema", startX, posY + 26);
+
+            // Ramificazione Test-Time Compute / Tree Search (Rami A, B, C)
+            const branchX = 0.45 * w;
+            const branches = [
+                { y: posY - 50, label: "Ipotesi A (Errore)", status: "err", color: "#f43f5e" },
+                { y: posY,      label: "Ipotesi B (CoT + Tool)", status: "ok",  color: "#10b981" },
+                { y: posY + 50, label: "Ipotesi C (Scartata)", status: "err", color: "#f43f5e" }
+            ];
+
+            const activeBranchIdx = Math.floor((animTime * 1.5) % 3);
+
+            branches.forEach((br, idx) => {
+                const isActive = (idx === activeBranchIdx);
+
+                // Linee di ramo
+                ctx.strokeStyle = isActive ? br.color : '#cbd5e1';
+                ctx.lineWidth = isActive ? 2.5 : 1;
+                ctx.beginPath();
+                ctx.moveTo(startX, posY);
+                ctx.lineTo(branchX, br.y);
+                ctx.stroke();
+
+                // Nodi intermedi
+                ctx.fillStyle = br.color;
+                ctx.beginPath(); ctx.arc(branchX, br.y, isActive ? 10 : 7, 0, Math.PI*2); ctx.fill();
+
+                if (isActive) {
+                    ctx.strokeStyle = br.color;
+                    ctx.beginPath(); ctx.arc(branchX, br.y, 15 + Math.sin(animTime*6)*3, 0, Math.PI*2); ctx.stroke();
+                }
+
+                ctx.fillStyle = '#475569'; ctx.font = '9px Plus Jakarta Sans'; ctx.textAlign = 'center';
+                ctx.fillText(br.label, branchX, br.y - 12);
+            });
+
+            // Nodo Verifica & Convergenza Finale
+            const verifyX = 0.78 * w;
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(branchX, posY); ctx.lineTo(verifyX, posY); ctx.stroke();
+
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(verifyX, posY, 14, 0, Math.PI*2); ctx.fill();
+
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px FontAwesome'; ctx.textAlign = 'center';
+            ctx.fillText("\uf00c", verifyX, posY + 4); // Checkmark icon
+
+            ctx.fillStyle = '#065f46'; ctx.font = 'bold 10px Plus Jakarta Sans';
+            ctx.fillText("Risposta Verificata", verifyX, posY + 28);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px Plus Jakarta Sans';
+            ctx.fillText('Esplorazione Rami (Tree Search) & Ciclo Generate → Verify', 15, 25);
+        }
+
+        /* ==========================================================================
+           8.1 LOGICA SCHEDE REASONING DEEP-DIVE
+           ========================================================================== */
+        function switchReasoningTab(tabKey) {
+            const tabs = ['types', 'techniques', 'tools', 'neuro'];
+            tabs.forEach(k => {
+                const btn = document.getElementById(`rtab-${k}`);
+                if (btn) {
+                    if (k === tabKey) {
+                        btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-600 text-white shadow-md shadow-amber-200 border border-amber-600";
+                    } else {
+                        btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-white border border-slate-200 text-slate-600 hover:bg-slate-50";
+                    }
+                }
+            });
+
+            renderReasoningDeepDive(tabKey);
+        }
+
+        function renderReasoningDeepDive(tabKey) {
+            const container = document.getElementById('reasoningTabContent');
+            if (!container) return;
+
+            if (tabKey === 'types') {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="border-b border-slate-200 pb-3 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-diagram-project text-amber-600"></i> Le Tre Forme Fondamentali di Inferenza
+                            </h3>
+                            <span class="text-xs font-mono bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg">Premesse → Processo → Conclusione</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Deduzione -->
+                            <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-blue-900 text-sm">1. Deduzione</span>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Certezza Assoluta</span>
+                                </div>
+                                <p class="text-xs text-slate-600">Dalle regole generali al caso particolare. Se le premesse sono vere, la conclusione è necessariamente vera.</p>
+                                <div class="p-3 bg-white rounded-xl border border-blue-100 text-xs font-mono text-slate-700 space-y-1">
+                                    <div class="text-blue-600 font-bold">// Esempio</div>
+                                    <div>Premessa 1: Tutti i MAMMIFERI respirano aria.</div>
+                                    <div>Premessa 2: Il DELFINO è un mammifero.</div>
+                                    <div class="border-t border-slate-200 pt-1 font-bold text-slate-900">⇒ Conclusione: Il delfino respira aria.</div>
+                                </div>
+                            </div>
+
+                            <!-- Induzione -->
+                            <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-indigo-900 text-sm">2. Induzione</span>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">Probabilità</span>
+                                </div>
+                                <p class="text-xs text-slate-600">Da molti esempi osservati si ricava una regolarità o regola generale. La risposta è probabile ma non garantita.</p>
+                                <div class="p-3 bg-white rounded-xl border border-indigo-100 text-xs font-mono text-slate-700 space-y-1">
+                                    <div class="text-indigo-600 font-bold">// Esempio</div>
+                                    <div>Osservazione 1: Cane A abbaia.</div>
+                                    <div>Osservazione 2: Cane B abbaia.</div>
+                                    <div class="border-t border-slate-200 pt-1 font-bold text-slate-900">⇒ Conclusione: "Probabilmente tutti i cani abbaiano."</div>
+                                </div>
+                            </div>
+
+                            <!-- Abduzione -->
+                            <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-amber-900 text-sm">3. Abduzione</span>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">Spiegazione Migliore</span>
+                                </div>
+                                <p class="text-xs text-slate-600">Si osserva un risultato o problema e si formula l'ipotesi o causa più plausibile che lo ha generato.</p>
+                                <div class="p-3 bg-white rounded-xl border border-amber-100 text-xs font-mono text-slate-700 space-y-1">
+                                    <div class="text-amber-600 font-bold">// Esempio</div>
+                                    <div>Osservazione: Erba del giardino bagnata.</div>
+                                    <div>Ipotesi possibili: Pioggia? Irrigatore?</div>
+                                    <div class="border-t border-slate-200 pt-1 font-bold text-slate-900">⇒ Conclusione: "Ha piovuto stanotte."</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-200 text-xs space-y-1">
+                            <span class="font-bold text-amber-400">Punto chiave:</span> Nel contesto dell'IA, questi tre tipi di inferenza permettono al sistema di estrarre conclusioni non esplicitamente scritte nel testo di input originale.
+                        </div>
+                    </div>
+                `;
+            } else if (tabKey === 'techniques') {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="border-b border-slate-200 pb-3 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-microchip text-amber-600"></i> Tecniche di Calcolo e Architettura
+                            </h3>
+                            <span class="text-xs font-mono bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg">Inference & Planning</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Chain of Thought -->
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                                <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
+                                    <i class="fa-solid fa-list-check text-blue-600"></i> Chain-of-Thought (CoT)
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Scomposizione del problema in una sequenza esplicita di passaggi intermedi prima di fornire l'output finale. <br>
+                                    <em class="text-slate-500 font-serif">Nota: Il testo della CoT generato dal modello non è necessariamente la trascrizione esatta dei suoi processi neurali interni, ma un'elaborazione guidata.</em>
+                                </p>
+                            </div>
+
+                            <!-- Test-Time Compute -->
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                                <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
+                                    <i class="fa-solid fa-hourglass-half text-amber-600"></i> Test-Time Compute
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Invece di richiedere una risposta in un unico passaggio rapido, si alloca più potenza computazionale durante la fase di risposta per esplorare opzioni, verificare vincoli e auto-correggersi.
+                                </p>
+                            </div>
+
+                            <!-- Tree Search -->
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                                <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
+                                    <i class="fa-solid fa-network-wired text-purple-600"></i> Search & Tree Search
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Esplorazione sistematica dello spazio delle soluzioni attraverso l'analisi di percorsi alternativi (rami A, B, C) e valutazione delle possibilità migliori.
+                                </p>
+                            </div>
+
+                            <!-- Self-Consistency -->
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                                <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
+                                    <i class="fa-solid fa-arrows-split-up-and-left text-teal-600"></i> Self-Consistency & Planning
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Generazione di molteplici linee di ragionamento indipendenti per verificare se convergono sulla medesima soluzione, pianificando vincoli complessi (tempo, budget, risorse).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tabKey === 'tools') {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="border-b border-slate-200 pb-3 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-cubes-stacked text-amber-600"></i> Ciclo Generate → Verify e Strumenti Esterni
+                            </h3>
+                            <span class="text-xs font-mono bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg">Sistema Distribuito</span>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Nei sistemi reali il reasoning non risiede soltanto nei pesi del LLM, ma viene distribuito tra il modello e vari moduli esterni:
+                        </p>
+
+                        <!-- Diagramma architettura integrata -->
+                        <div class="p-5 bg-white rounded-2xl border border-slate-200 space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-center text-xs">
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <i class="fa-solid fa-calculator text-blue-600 text-base mb-1"></i>
+                                    <div class="font-bold text-slate-800">Calcolatore / Codice</div>
+                                    <div class="text-[10px] text-slate-500">Calcoli aritmetici esatti</div>
+                                </div>
+                                <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl">
+                                    <i class="fa-solid fa-terminal text-indigo-600 text-base mb-1"></i>
+                                    <div class="font-bold text-slate-800">Esecutore Codice</div>
+                                    <div class="text-[10px] text-slate-500">Test e debug automatico</div>
+                                </div>
+                                <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl">
+                                    <i class="fa-solid fa-magnifying-glass text-teal-600 text-base mb-1"></i>
+                                    <div class="font-bold text-slate-800">Ricerca RAG</div>
+                                    <div class="text-[10px] text-slate-500">Documenti ed API aggiornate</div>
+                                </div>
+                                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <i class="fa-solid fa-database text-amber-600 text-base mb-1"></i>
+                                    <div class="font-bold text-slate-800">Memoria Esterna</div>
+                                    <div class="text-[10px] text-slate-500">Archivio contesto utente</div>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-slate-900 text-slate-100 rounded-xl font-mono text-xs flex items-center justify-between">
+                                <span>LLM (Ipotesi) → Esecutore (Verifica Errore) → Loop Modifica → Soluzione Finale</span>
+                                <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tabKey === 'neuro') {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="border-b border-slate-200 pb-3 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-brain-circuit text-amber-600"></i> Neuro-Simbolico & Pattern Matching vs Reasoning
+                            </h3>
+                            <span class="text-xs font-mono bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg">Modelli Concettuali</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                                <div class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-cube text-indigo-600"></i> Reasoning Simbolico (Logica)
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Manipolazione esplicita di simboli e regole deterministiche. Estremamente preciso e verificabile, ma rigido di fronte all'ambiguità.
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                                <div class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-network-wired text-purple-600"></i> Reasoning Neurale (Pattern)
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Rappresentazioni probabilistiche apprese dai dati. Estremamente flessibile con il linguaggio naturale, ma soggetto ad allucinazioni senza verifica.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                            <div class="font-bold flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Il Distinguo Filosofico Fondamentale
+                            </div>
+                            <p class="leading-relaxed">
+                                Un sistema di Reasoning IA esegue una <strong>capacità funzionale di risoluzione problemi</strong> attraverso calcolo e verifiche. Questo non implica in alcun modo che il sistema possieda coscienza, sentimenti, motivazioni biologiche o un'esperienza soggettiva del mondo pari a quella umana.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        /* ==========================================================================
+           9. SIMULATORE A SLIDER (POLARITY SIMULATOR)
+           ========================================================================== */
+        function updateParadigmSim(val) {
+            const display = document.getElementById('sliderValueDisplay');
+            const engineBox = document.getElementById('simEngineBox');
+            const engineTitle = document.getElementById('simEngineTitle');
+            const engineDesc = document.getElementById('simEngineDesc');
+            const outputLabel = document.getElementById('simOutputLabel');
+            const flowLeft = document.getElementById('simFlowLeft');
+            const flowRight = document.getElementById('simFlowRight');
+
+            if (display) display.innerText = `Livello ${val}%`;
+
+            if (val < 35) {
+                // Paradigma A: Regole Statiche
+                engineBox.className = "w-full max-w-xs p-4 rounded-xl border text-center transition-all duration-300 bg-slate-100 border-slate-300";
+                engineTitle.innerText = "Motore a Regole (IF / THEN)";
+                engineTitle.className = "font-bold text-sm text-slate-800";
+                engineDesc.innerText = "Albero logico rigido pre-programmato manualmente";
+                outputLabel.innerText = "Risposta Deterministica";
+                flowLeft.innerText = "Condizione";
+                flowRight.innerText = "Azione Fissa";
+            } else if (val < 75) {
+                // Paradigma B: Transformer / LLM Generativo
+                engineBox.className = "w-full max-w-xs p-4 rounded-xl border text-center transition-all duration-300 bg-purple-50 border-purple-300";
+                engineTitle.innerText = "Architettura Transformer (LLM)";
+                engineTitle.className = "font-bold text-sm text-purple-900";
+                engineDesc.innerText = "Calcolo matriciale pesi e attenzione su contesto esteso";
+                outputLabel.innerText = "Testo Generato (Token)";
+                flowLeft.innerText = "Contesto";
+                flowRight.innerText = "Probabilità";
+            } else {
+                // Paradigma C: Reasoning + Tools
+                engineBox.className = "w-full max-w-xs p-4 rounded-xl border text-center transition-all duration-300 bg-emerald-50 border-emerald-300";
+                engineTitle.innerText = "Sistema di Reasoning Multi-Step";
+                engineTitle.className = "font-bold text-sm text-emerald-900";
+                engineDesc.innerText = "Chain-of-thought, chiamate ad API, codice e ciclo di verifica";
+                outputLabel.innerText = "Soluzione Verificata";
+                flowLeft.innerText = "Problema";
+                flowRight.innerText = "Loop Tools";
+            }
+        }
+
+        function setParadigmPreset(val) {
+            const slider = document.getElementById('paradigmSlider');
+            if (slider) {
+                slider.value = val;
+                updateParadigmSim(val);
+            }
+        }
+
+        /* ==========================================================================
+           10. QUIZ ENGINE LOGIC
+           ========================================================================== */
+        function renderQuizStep() {
+            const container = document.getElementById('quizContainer');
+            const stepText = document.getElementById('quizStepText');
+            const scoreText = document.getElementById('quizScoreText');
+            const progressBar = document.getElementById('quizProgressBar');
+            const btnPrev = document.getElementById('btnPrevQuiz');
+            const btnNext = document.getElementById('btnNextQuiz');
+
+            if (!container) return;
+
+            const q = QUIZ_DATA[quizCurrentStep];
+            stepText.innerText = `Domanda ${quizCurrentStep + 1} di ${QUIZ_DATA.length}`;
+            scoreText.innerText = `Punteggio: ${quizScore}`;
+            progressBar.style.width = `${((quizCurrentStep + 1) / QUIZ_DATA.length) * 100}%`;
+
+            btnPrev.disabled = (quizCurrentStep === 0);
+            if (quizCurrentStep === QUIZ_DATA.length - 1) {
+                btnNext.innerHTML = 'Ricomincia <i class="fa-solid fa-rotate-right ml-1"></i>';
+            } else {
+                btnNext.innerHTML = 'Prossima <i class="fa-solid fa-arrow-right ml-1"></i>';
+            }
+
+            const currentAns = userQuizAnswers[quizCurrentStep];
+
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                let btnStyle = "w-full text-left p-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 font-medium text-xs text-slate-700 transition flex items-center justify-between";
+
+                if (currentAns !== null) {
+                    if (idx === q.correct) {
+                        btnStyle = "w-full text-left p-3.5 rounded-xl border border-emerald-300 bg-emerald-50 font-bold text-xs text-emerald-800 transition flex items-center justify-between";
+                    } else if (idx === currentAns) {
+                        btnStyle = "w-full text-left p-3.5 rounded-xl border border-rose-300 bg-rose-50 font-bold text-xs text-rose-800 transition flex items-center justify-between";
+                    }
+                }
+
+                let iconHtml = '';
+                if (currentAns !== null) {
+                    if (idx === q.correct) iconHtml = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>';
+                    else if (idx === currentAns) iconHtml = '<i class="fa-solid fa-circle-xmark text-rose-600 text-sm"></i>';
+                }
+
+                optionsHtml += `
+                    <button onclick="selectQuizOption(${idx})" ${currentAns !== null ? 'disabled' : ''} class="${btnStyle}">
+                        <span>${opt}</span>
+                        ${iconHtml}
+                    </button>
+                `;
+            });
+
+            let feedbackHtml = '';
+            if (currentAns !== null) {
+                const isCorrect = (currentAns === q.correct);
+                feedbackHtml = `
+                    <div class="mt-4 p-4 rounded-xl ${isCorrect ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-rose-50 border border-rose-200 text-rose-900'} text-xs space-y-1">
+                        <div class="font-bold flex items-center gap-2">
+                            <i class="fa-solid ${isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600'}"></i>
+                            ${isCorrect ? 'Risposta Corretta!' : 'Risposta Non Corretta'}
+                        </div>
+                        <p>${q.explanation}</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <h3 class="font-bold text-slate-900 text-base mb-3">${q.q}</h3>
+                <div class="space-y-2.5">${optionsHtml}</div>
+                ${feedbackHtml}
+            `;
+        }
+
+        function selectQuizOption(idx) {
+            if (userQuizAnswers[quizCurrentStep] !== null) return;
+
+            userQuizAnswers[quizCurrentStep] = idx;
+            if (idx === QUIZ_DATA[quizCurrentStep].correct) {
+                quizScore += 10;
+            }
+            renderQuizStep();
+        }
+
+        function nextQuizStep() {
+            if (quizCurrentStep < QUIZ_DATA.length - 1) {
+                quizCurrentStep++;
+                renderQuizStep();
+            } else {
+                // Ricomincia
+                quizCurrentStep = 0;
+                quizScore = 0;
+                userQuizAnswers.fill(null);
+                renderQuizStep();
+            }
+        }
+
+        function prevQuizStep() {
+            if (quizCurrentStep > 0) {
+                quizCurrentStep--;
+                renderQuizStep();
+            }
+        }
+
+        /* ==========================================================================
+           11. MINI-GIOCO DI CLASSIFICAZIONE LOGIC
+           ========================================================================== */
+        function renderClassificationGame() {
+            const container = document.getElementById('classificationContainer');
+            if (!container) return;
+
+            let html = '';
+            CLASSIFICATION_DATA.forEach(item => {
+                const selectedVal = userClassification[item.id] || '';
+
+                let optionsBtns = '';
+                CATEGORY_OPTIONS.forEach(opt => {
+                    const isSelected = (selectedVal === opt.val);
+                    const btnClass = isSelected 
+                        ? 'px-2 py-1 rounded text-[10px] font-bold bg-indigo-600 text-white'
+                        : 'px-2 py-1 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600';
+
+                    optionsBtns += `
+                        <button onclick="setClassificationChoice('${item.id}', '${opt.val}')" class="${btnClass}">
+                            ${opt.label}
+                        </button>
+                    `;
+                });
+
+                html += `
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="text-xs font-bold text-slate-800">${item.label}</div>
+                        <div class="flex flex-wrap gap-1">${optionsBtns}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function setClassificationChoice(itemId, catVal) {
+            userClassification[itemId] = catVal;
+            renderClassificationGame();
+            document.getElementById('classificationResult').innerText = '';
+        }
+
+        function checkClassification() {
+            let correctCount = 0;
+            const total = CLASSIFICATION_DATA.length;
+
+            CLASSIFICATION_DATA.forEach(item => {
+                if (userClassification[item.id] === item.correct) {
+                    correctCount++;
+                }
+            });
+
+            const resDiv = document.getElementById('classificationResult');
+            if (correctCount === total) {
+                resDiv.className = "text-center font-bold text-xs text-emerald-600";
+                resDiv.innerText = `Eccellente! ${correctCount}/${total} abbinamenti corretti!`;
+            } else {
+                resDiv.className = "text-center font-bold text-xs text-amber-600";
+                resDiv.innerText = `Completato: ${correctCount}/${total} corretti. Riprova gli abbinamenti errati!`;
+            }
+        }
+    </script>
+</body>
+</html>

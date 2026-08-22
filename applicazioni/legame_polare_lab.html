@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CovalentePolareLab - Il Tiro alla Fune Atomico</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#2563eb',
+                            teal: '#0d9488',
+                            purple: '#7c3aed',
+                            rose: '#e11d48',
+                            amber: '#d97706',
+                            emerald: '#059669',
+                            dark: '#0f172a'
+                        }
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 25px -5px rgba(37, 99, 235, 0.3)',
+                        'glow-purple': '0 0 25px -5px rgba(124, 58, 237, 0.3)',
+                        'glow-teal': '0 0 25px -5px rgba(13, 148, 136, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #2563eb 0%, #0d9488 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom range slider styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 10px;
+            cursor: pointer;
+            background: linear-gradient(to right, #10b981 0%, #3b82f6 40%, #8b5cf6 70%, #ef4444 100%);
+            border-radius: 5px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            border: 2px solid #2563eb;
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- HEADER STICKY -->
+    <header class="sticky top-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToSection('intro')">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-teal-500 flex items-center justify-center text-white shadow-glow-blue">
+                        <i class="fa-solid fa-magnet text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold font-heading text-slate-900 tracking-tight block">Polare<span class="text-blue-600">Lab</span></span>
+                        <span class="text-xs text-slate-500 font-medium block -mt-1">Laboratorio Interattivo Chimico</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-2">
+                    <button onclick="scrollToSection('intro')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/80 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-users-line text-blue-500"></i>
+                        <span>Analogia</span>
+                    </button>
+                    <button onclick="scrollToSection('mol-lab')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-teal-600 hover:bg-teal-50/80 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-flask text-teal-500"></i>
+                        <span>Molecole</span>
+                    </button>
+                    <button onclick="scrollToSection('polarity')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-purple-600 hover:bg-purple-50/80 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-sliders text-purple-500"></i>
+                        <span>Simulatore ΔEN</span>
+                    </button>
+                    <button onclick="scrollToSection('quiz')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-rose-600 hover:bg-rose-50/80 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-graduation-cap text-rose-500"></i>
+                        <span>Verifica</span>
+                    </button>
+                </nav>
+
+                <!-- Mobile Hamburger Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200/80 bg-white/95 px-4 pt-3 pb-6 space-y-2 shadow-lg">
+            <button onclick="scrollToSection('intro'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center space-x-3">
+                <i class="fa-solid fa-users-line text-blue-500 w-5"></i>
+                <span>Tiro alla Fune (Analogia)</span>
+            </button>
+            <button onclick="scrollToSection('mol-lab'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-teal-50 hover:text-teal-600 flex items-center space-x-3">
+                <i class="fa-solid fa-flask text-teal-500 w-5"></i>
+                <span>Laboratorio Molecole</span>
+            </button>
+            <button onclick="scrollToSection('polarity'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-purple-50 hover:text-purple-600 flex items-center space-x-3">
+                <i class="fa-solid fa-sliders text-purple-500 w-5"></i>
+                <span>Simulatore ΔEN</span>
+            </button>
+            <button onclick="scrollToSection('quiz'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 flex items-center space-x-3">
+                <i class="fa-solid fa-graduation-cap text-rose-500 w-5"></i>
+                <span>Quiz e Sfida</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- SECTION 1: INTRO & ANALOGIA -->
+        <section id="intro" class="scroll-mt-28 space-y-8">
+            <!-- Hero Card -->
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden bg-gradient-to-br from-blue-900/5 via-white to-teal-900/5 border border-blue-100">
+                <div class="max-w-3xl space-y-6 relative z-10">
+                    <span class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-700 font-bold text-xs uppercase tracking-wider">
+                        <i class="fa-solid fa-atom text-blue-600"></i>
+                        <span>Chimica Generale & Legami</span>
+                    </span>
+                    
+                    <h1 class="text-3xl sm:text-5xl font-extrabold font-heading text-slate-900 leading-tight">
+                        Il legame polare: immaginalo come un <span class="gradient-text">“tiro alla fune”</span>
+                    </h1>
+                    
+                    <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+                        Quando gli atomi condividono gli elettroni formano un <strong>legame covalente</strong>. Ma attenzione: non sempre i due atomi attirano gli elettroni con la stessa forza! L'atomo con la maggiore <strong>elettronegatività</strong> tenderà ad attrarre la nuvola elettronica verso di sé, creando cariche parziali (<span class="font-mono text-blue-600 font-bold">δ⁺</span> e <span class="font-mono text-rose-600 font-bold">δ⁻</span>).
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="scrollToSection('mol-lab')" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transform hover:-translate-y-0.5 transition flex items-center space-x-2">
+                            <span>Esplora il Lab Interattivo</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="scrollToSection('analogy')" class="px-6 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-sm shadow-sm transition flex items-center space-x-2">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            <span>Vedi l'Analogia</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Decorative backdrop element -->
+                <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
+            </div>
+
+            <!-- Analogy Block -->
+            <div id="analogy" class="grid grid-cols-1 lg:grid-cols-2 gap-8 scroll-mt-28">
+                <!-- Left Column: Analogy Text Explanation -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-people-pulling text-lg"></i>
+                        </div>
+                        <h2 class="text-xl font-bold font-heading text-slate-900">La Metafora del Tiro alla Fune</h2>
+                    </div>
+
+                    <div class="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed">
+                        <p>
+                            Immagina due persone che tirano le estremità di una corda con un nodo centrale:
+                        </p>
+                        <ul class="space-y-3 font-medium">
+                            <li class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <span class="text-slate-800">Forza uguale (Elettronegatività pari):</span>
+                                <span class="font-mono font-bold text-emerald-600">👤 A ── 🪢 ── 👤 B</span>
+                            </li>
+                            <li class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <span class="text-slate-800">Persona B più forte (B più elettronegativo):</span>
+                                <span class="font-mono font-bold text-rose-600">👤 A ──── 🪢─→ 💪 B</span>
+                            </li>
+                        </ul>
+                        <p>
+                            Nel legame chimico succede esattamente questo: gli elettroni condivisi vengono attratti maggiormente dall'atomo più "forte" (elettronegativo).
+                        </p>
+                    </div>
+
+                    <!-- Key difference info box -->
+                    <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-900 text-sm space-y-1">
+                        <div class="font-bold flex items-center space-x-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                            <span>Differenza Chiave: Carica Parziale vs Ionica</span>
+                        </div>
+                        <p class="text-amber-800 text-xs sm:text-sm leading-snug">
+                            Il simbolo <strong>δ</strong> (delta) indica una carica parziale (<span class="font-mono">δ⁺ / δ⁻</span>). Gli elettroni sono <em>ancora condivisi</em>, non c'è stato un trasferimento completo come nei legami ionici (<span class="font-mono">+ / −</span>).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Analogy Switcher -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                            <h3 class="text-lg font-bold font-heading text-slate-900">Visualizzatore Interattivo</h3>
+                            <!-- Toggle buttons -->
+                            <div class="inline-flex p-1 bg-slate-100 rounded-xl">
+                                <button id="btn-view-analogy" onclick="setAnalogyView('analogy')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-600 shadow-sm">
+                                    Vista Analogia
+                                </button>
+                                <button id="btn-view-tech" onclick="setAnalogyView('tech')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">
+                                    Vista Chimica
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- DIV 1: Analogy Display -->
+                        <div id="view-analogy" class="p-8 rounded-2xl bg-gradient-to-r from-blue-50 via-teal-50 to-indigo-50 border border-slate-200 min-h-[220px] flex flex-col items-center justify-center space-y-6 transition-all">
+                            <div class="flex items-center justify-between w-full max-w-md px-4">
+                                <div class="text-center">
+                                    <div class="w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center text-2xl font-bold shadow-md">
+                                        👤 A
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-600 mt-2 block">Standard</span>
+                                </div>
+
+                                <div class="flex-grow mx-4 relative flex items-center justify-center">
+                                    <div class="h-2 w-full bg-amber-700/40 rounded-full"></div>
+                                    <div class="absolute right-4 w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-xs shadow animate-pulse">
+                                        🪢
+                                    </div>
+                                    <i class="fa-solid fa-arrow-right text-rose-500 absolute right-12 -top-6 text-sm font-bold">Tiro!</i>
+                                </div>
+
+                                <div class="text-center">
+                                    <div class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg ring-4 ring-rose-200">
+                                        💪 B
+                                    </div>
+                                    <span class="text-xs font-bold text-rose-600 mt-2 block">Molto Forte</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-center text-slate-500 italic">La corda (gli elettroni) viene sbilanciata verso il concorrente più forte B.</p>
+                        </div>
+
+                        <!-- DIV 2: Technical Chemical Display -->
+                        <div id="view-tech" class="hidden p-8 rounded-2xl bg-slate-900 text-white border border-slate-800 min-h-[220px] flex flex-col items-center justify-center space-y-6 transition-all">
+                            <div class="flex items-center justify-between w-full max-w-md px-4">
+                                <!-- Atom A -->
+                                <div class="text-center relative">
+                                    <div class="w-12 h-12 rounded-full bg-slate-700 border-2 border-blue-400 text-blue-300 flex items-center justify-center font-bold text-lg">
+                                        H
+                                    </div>
+                                    <span class="text-xs font-mono font-bold text-blue-400 mt-1 block">δ⁺ (Parz. Positivo)</span>
+                                </div>
+
+                                <!-- Asymmetric Electron Cloud -->
+                                <div class="flex-grow mx-3 relative h-16 flex items-center">
+                                    <div class="w-full h-12 bg-gradient-to-r from-blue-500/20 via-teal-400/40 to-rose-500/80 rounded-full border border-teal-400/30 flex items-center justify-end pr-4">
+                                        <div class="flex space-x-1">
+                                            <span class="w-3 h-3 bg-amber-300 rounded-full animate-ping"></span>
+                                            <span class="w-3 h-3 bg-amber-300 rounded-full"></span>
+                                        </div>
+                                    </div>
+                                    <!-- Dipole Arrow -->
+                                    <div class="absolute -top-3 left-0 w-full flex items-center justify-center text-teal-300 text-xs font-mono">
+                                        <span> vett. dipolo ↦ </span>
+                                    </div>
+                                </div>
+
+                                <!-- Atom B -->
+                                <div class="text-center relative">
+                                    <div class="w-16 h-16 rounded-full bg-rose-900/80 border-2 border-rose-500 text-rose-200 flex items-center justify-center font-bold text-xl shadow-lg">
+                                        Cl
+                                    </div>
+                                    <span class="text-xs font-mono font-bold text-rose-400 mt-1 block">δ⁻ (Parz. Negativo)</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-center text-slate-400 italic">Rappresentazione molecolare H-Cl: nuvola elettronica spostata sul Cloro.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> Usa i bottoni per alternare la vista.</span>
+                        <span class="font-mono text-slate-400">EN(H)=2.2 | EN(Cl)=3.16</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MOLECULE LAB -->
+        <section id="mol-lab" class="scroll-mt-28 space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Laboratorio di Esplorazione</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold font-heading text-slate-900">Molecole e Geometrie a Confronto</h2>
+                </div>
+                
+                <!-- Molecule selector tabs -->
+                <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none" id="molecule-tabs">
+                    <!-- Tabs rendered via JS -->
+                </div>
+            </div>
+
+            <!-- Lab Grid: Canvas + Info Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left 7 cols: Interactive HTML5 Canvas -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-5 sm:p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span id="canvas-title" class="font-bold text-slate-800 text-sm">Visualizzazione Dinamica Orbitale</span>
+                        </div>
+                        <button id="btn-play-pause" onclick="toggleCanvasAnimation()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center space-x-1.5">
+                            <i id="play-icon" class="fa-solid fa-pause"></i>
+                            <span id="play-text">Pausa</span>
+                        </button>
+                    </div>
+
+                    <!-- Canvas Container -->
+                    <div class="relative w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="molCanvas" class="w-full h-full block cursor-pointer"></canvas>
+
+                        <!-- Canvas Overlay Legend -->
+                        <div class="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur border border-slate-800 px-3 py-2 rounded-xl text-[11px] text-slate-300 flex items-center space-x-3">
+                            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 mr-1.5"></span> e⁻ condivisi</span>
+                            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span> Nucleo/Atomo</span>
+                            <span class="flex items-center"><span class="w-2.5 h-2.5 bg-teal-400/40 mr-1.5 rounded"></span> Nuvola densità</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-500 text-center italic">
+                        Trascina il mouse sul canvas per esplorare le cariche parziali e la nuvola elettronica in tempo reale.
+                    </p>
+                </div>
+
+                <!-- Right 5 cols: Info Panel -->
+                <div class="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <!-- Molecule Name & Badge -->
+                        <div class="flex items-center justify-between">
+                            <h3 id="info-mol-name" class="text-2xl font-bold font-heading text-slate-900">Molecola</h3>
+                            <span id="info-mol-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700">
+                                Tipo Legame
+                            </span>
+                        </div>
+
+                        <p id="info-mol-desc" class="text-slate-600 text-sm leading-relaxed">
+                            Descrizione dettagliata della molecola selezionata.
+                        </p>
+
+                        <!-- 3 Key Facts Cards -->
+                        <div class="space-y-2.5 pt-2">
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">
+                                    <i class="fa-solid fa-scale-balanced"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Diff. Elettronegatività</span>
+                                    <span id="info-fact-en" class="text-sm font-semibold text-slate-800">ΔEN = 0.0</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">
+                                    <i class="fa-solid fa-draw-polygon"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Geometria e Polarità Globale</span>
+                                    <span id="info-fact-geom" class="text-sm font-semibold text-slate-800">Lineare</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Stato Cariche</span>
+                                    <span id="info-fact-charges" class="text-sm font-semibold text-slate-800">Distribuzione Simmetrica</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notation/Formula Box -->
+                    <div class="mt-6 p-4 rounded-2xl bg-slate-900 text-white font-mono text-center flex items-center justify-between">
+                        <span class="text-xs text-slate-400 font-sans">Formula & Cariche:</span>
+                        <span id="info-mol-notation" class="text-base font-bold text-teal-300">H — H</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: POLARITY SIMULATOR -->
+        <section id="polarity" class="scroll-mt-28 space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Simulatore Interattivo</span>
+                <h2 class="text-2xl sm:text-3xl font-bold font-heading text-slate-900">Varia la Differenza di Elettronegatività (ΔEN)</h2>
+                <p class="text-slate-600 text-sm">
+                    Sposta lo slider per osservare la transizione continua da legame covalente apolare a legame fortemente polare e infine ionico.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 space-y-8">
+                
+                <!-- Slider & Controls -->
+                <div class="max-w-2xl mx-auto space-y-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Apolare (ΔEN &lt; 0.4)</span>
+                        <div class="text-center">
+                            <span class="text-3xl font-extrabold font-heading text-slate-900" id="slider-val-display">0.9</span>
+                            <span class="text-xs font-bold text-slate-500 block">Differenza ΔEN</span>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Ionico (ΔEN &gt; 1.9)</span>
+                    </div>
+
+                    <!-- Slider Input -->
+                    <input type="range" id="en-slider" min="0.0" max="3.3" step="0.1" value="0.9" oninput="updateSliderSimulation(this.value)">
+
+                    <!-- Preset Quick Buttons -->
+                    <div class="flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
+                        <button onclick="setSliderPreset(0.0)" class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition">
+                            H–H (ΔEN 0.0)
+                        </button>
+                        <button onclick="setSliderPreset(0.9)" class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition">
+                            H–Cl (ΔEN 0.9)
+                        </button>
+                        <button onclick="setSliderPreset(1.4)" class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition">
+                            O–H (ΔEN 1.4)
+                        </button>
+                        <button onclick="setSliderPreset(2.1)" class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition">
+                            Na⁺Cl⁻ (ΔEN 2.1)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Dynamic Node Visualization -->
+                <div class="p-8 sm:p-12 rounded-3xl bg-slate-900 text-white relative overflow-hidden flex flex-col items-center justify-center space-y-8 min-h-[260px]">
+                    
+                    <!-- Dynamic Label Badge -->
+                    <div id="sim-type-badge" class="px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-blue-500 text-white shadow-lg">
+                        Legame Covalente Polare
+                    </div>
+
+                    <!-- Nodes Container -->
+                    <div class="flex items-center justify-between w-full max-w-lg relative z-10 px-4">
+                        <!-- Atom A -->
+                        <div class="text-center relative">
+                            <div id="sim-atom-a" class="w-16 h-16 rounded-full bg-slate-800 border-2 border-blue-400 flex items-center justify-center font-bold text-xl shadow-lg transition-all duration-300">
+                                A
+                            </div>
+                            <span id="sim-charge-a" class="text-xs font-mono font-bold text-blue-300 mt-2 block">
+                                δ⁺
+                            </span>
+                        </div>
+
+                        <!-- Dynamic Electron Cloud / Vector -->
+                        <div class="flex-grow mx-4 relative h-16 flex items-center justify-center">
+                            <!-- Background cloud gradient -->
+                            <div id="sim-cloud" class="w-full h-14 bg-gradient-to-r from-blue-500/30 to-rose-500/80 rounded-full transition-all duration-300 border border-teal-500/30"></div>
+                            
+                            <!-- Dipole vector arrow -->
+                            <div id="sim-arrow" class="absolute -top-4 w-full flex items-center justify-center text-amber-300 font-mono text-xs font-bold transition-all duration-300">
+                                <span>Momentum Dipolo ➔</span>
+                            </div>
+                        </div>
+
+                        <!-- Atom B -->
+                        <div class="text-center relative">
+                            <div id="sim-atom-b" class="w-16 h-16 rounded-full bg-rose-900 border-2 border-rose-500 flex items-center justify-center font-bold text-xl shadow-lg transition-all duration-300">
+                                B
+                            </div>
+                            <span id="sim-charge-b" class="text-xs font-mono font-bold text-rose-300 mt-2 block">
+                                δ⁻
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Explanation Text -->
+                    <p id="sim-explanation" class="text-xs sm:text-sm text-slate-300 text-center max-w-md font-medium">
+                        Gli elettroni sono condivisi ma attratti maggiormente verso l'atomo B.
+                    </p>
+                </div>
+
+                <!-- 2 Comparative Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                    <div class="p-5 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500 text-white flex-shrink-0 flex items-center justify-center text-lg font-bold">
+                            δ
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-slate-900 text-sm">Cariche Parziali (δ⁺ / δ⁻)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tipiche dei <strong>legami covalenti polari</strong>. Gli elettroni rimangono in condivisione, ma trascorsi con maggiore probabilità vicino all'atomo più elettronegativo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-rose-50/60 border border-rose-100 flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500 text-white flex-shrink-0 flex items-center justify-center text-lg font-bold">
+                            ±
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-slate-900 text-sm">Cariche Complete (+ / −)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tipiche dei <strong>legami ionici</strong>. Quando ΔEN è elevato (&gt;1.9), l'elettrone si considera ceduto/trasferito del tutto, formando due ioni distinti.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: QUIZ & CLASSIFICATION GAME -->
+        <section id="quiz" class="scroll-mt-28 space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Verifica e Allenamento</span>
+                <h2 class="text-2xl sm:text-3xl font-bold font-heading text-slate-900">Metti alla Prova le tue Conoscenze</h2>
+                <p class="text-slate-600 text-sm"> Rispondi al quiz interattivo e completa la sfida di classificazione rapida. </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left 8 Cols: Interactive Quiz Engine -->
+                <div class="lg:col-span-8 glass-panel rounded-3xl p-6 sm:p-8 space-y-6">
+                    <!-- Quiz Header & Progress Bar -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-500">
+                            <span id="quiz-step-counter">Domanda 1 di 6</span>
+                            <span id="quiz-score-counter" class="text-blue-600">Punti: 0</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-gradient-to-r from-blue-500 to-teal-500 h-full w-1/6 transition-all duration-300"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Question Box -->
+                    <div id="quiz-card-content" class="space-y-6">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200/80">
+                        <button id="btn-prev-quiz" onclick="prevQuizStep()" class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition disabled:opacity-40" disabled>
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Precedente
+                        </button>
+                        <button id="btn-next-quiz" onclick="nextQuizStep()" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition shadow-sm">
+                            Prossima <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right 4 Cols: Classification Mini-Game -->
+                <div class="lg:col-span-4 glass-panel rounded-3xl p-6 space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold font-heading text-slate-900 text-base">Mini-Sfida</h3>
+                            <span class="text-xs text-slate-500 block">Classifica i legami molecolari</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-600">
+                        Assegna a ciascuna sostanza la giusta tipologia di legame prevalente:
+                    </p>
+
+                    <!-- Classification Rows Container -->
+                    <div id="classification-container" class="space-y-3">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <button onclick="checkClassificationAnswers()" class="w-full py-3 rounded-2xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition shadow-md flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-check-double text-teal-400"></i>
+                        <span>Verifica Risposte</span>
+                    </button>
+
+                    <div id="classification-feedback" class="hidden p-3 rounded-xl text-xs text-center font-bold"></div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-slate-200/80 bg-white/60 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+            <div class="flex items-center justify-center space-x-2">
+                <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                    <i class="fa-solid fa-magnet"></i>
+                </div>
+                <span class="font-bold font-heading text-slate-800 text-base">PolareLab Interattivo</span>
+            </div>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">
+                Sviluppato per spiegare il legame covalente polare, l'elettronegatività e le cariche parziali con simulazione in tempo reale.
+            </p>
+            <p class="text-[11px] text-slate-400 font-mono">
+                &copy; 2026 App Didattica Scientifico-Tecnica — Single-Page Lab
+            </p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // DATA STRUCTURES
+        // ==========================================
+
+        const MOLECULES = {
+            'H2': {
+                name: 'Idrogeno (H₂)',
+                badge: 'Covalente Apolare',
+                badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                desc: 'In H₂, entrambi gli atomi di idrogeno hanno identica elettronegatività (2.2). La differenza ΔEN è esattamente zero. Gli elettroni orbitano in modo perfettamente simmetrico.',
+                enDiff: 'ΔEN = 0.0 (Puro)',
+                geometry: 'Lineare / Apolare',
+                charges: 'Nessuna carica parziale (δ = 0)',
+                notation: 'H ── H',
+                type: 'apolar',
+                nodes: [
+                    { x: -70, y: 0, label: 'H', en: 2.2, color: '#3b82f6', radius: 24, delta: '' },
+                    { x: 70, y: 0, label: 'H', en: 2.2, color: '#3b82f6', radius: 24, delta: '' }
+                ]
+            },
+            'HCl': {
+                name: 'Cloruro di Idrogeno (HCl)',
+                badge: 'Covalente Polare',
+                badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
+                desc: 'Il Cloro (EN 3.16) è nettamente più elettronegativo dell\'Idrogeno (EN 2.2). Attrarre la coppia condivisa crea un momento di dipolo permanente verso il Cloro.',
+                enDiff: 'ΔEN = 0.96 (Polare)',
+                geometry: 'Lineare / Molecola Polare',
+                charges: 'H (δ⁺) ── Cl (δ⁻)',
+                notation: 'H δ⁺ ────── Cl δ⁻',
+                type: 'polar',
+                nodes: [
+                    { x: -90, y: 0, label: 'H', en: 2.2, color: '#60a5fa', radius: 22, delta: 'δ⁺' },
+                    { x: 60, y: 0, label: 'Cl', en: 3.16, color: '#f43f5e', radius: 36, delta: 'δ⁻' }
+                ]
+            },
+            'H2O': {
+                name: 'Acqua (H₂O)',
+                badge: 'Molecola Polare Angolare',
+                badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+                desc: 'L\'Ossigeno atterra fortemente gli elettroni dei due legami O-H. Poiché la geometria è angolare (104.5°), i due dipoli non si annullano, rendendo l\'acqua altamente polare.',
+                enDiff: 'ΔEN(O-H) = 1.24',
+                geometry: 'Angolare ~104.5° (Polare)',
+                charges: 'O (δ⁻⁻) in cima, 2x H (δ⁺) in basso',
+                notation: 'H δ⁺ — O δ⁻⁻ — H δ⁺',
+                type: 'angular',
+                nodes: [
+                    { x: 0, y: -45, label: 'O', en: 3.44, color: '#e11d48', radius: 34, delta: 'δ⁻' },
+                    { x: -75, y: 45, label: 'H', en: 2.2, color: '#3b82f6', radius: 20, delta: 'δ⁺' },
+                    { x: 75, y: 45, label: 'H', en: 2.2, color: '#3b82f6', radius: 20, delta: 'δ⁺' }
+                ]
+            },
+            'CO2': {
+                name: 'Anidride Carbonica (CO₂)',
+                badge: 'Legami Polari / Apolare Globale',
+                badgeClass: 'bg-amber-100 text-amber-800 border-amber-300',
+                desc: 'I due legami C=O sono polari (l\'Ossigeno è più elettronegativo del Carbonio). Tuttavia, la molecola è perfettamente lineare (180°), quindi i due vettori si annullano esattamente.',
+                enDiff: 'ΔEN(C=O) = 0.89',
+                geometry: 'Lineare Simmetrica (180°)',
+                charges: 'Vettori di dipolo opposti (Σμ = 0)',
+                notation: 'O δ⁻ ═ C δ⁺ ═ O δ⁻',
+                type: 'linear-cancel',
+                nodes: [
+                    { x: -110, y: 0, label: 'O', en: 3.44, color: '#e11d48', radius: 30, delta: 'δ⁻' },
+                    { x: 0, y: 0, label: 'C', en: 2.55, color: '#64748b', radius: 26, delta: 'δ⁺' },
+                    { x: 110, y: 0, label: 'O', en: 3.44, color: '#e11d48', radius: 30, delta: 'δ⁻' }
+                ]
+            },
+            'NaCl': {
+                name: 'Cloruro di Sodio (NaCl)',
+                badge: 'Legame Ionico Completo',
+                badgeClass: 'bg-rose-100 text-rose-800 border-rose-300',
+                desc: 'La differenza ΔEN (2.23) è così elevata che l\'elettrone viene ceduto completamente dal Sodio al Cloro, formando il catione Na⁺ e l\'anione Cl⁻.',
+                enDiff: 'ΔEN = 2.23 (Ionico > 1.9)',
+                geometry: 'Reticolo Cristallino / Ioni',
+                charges: 'Trasferimento Completo (Na⁺ Cl⁻)',
+                notation: '[ Na ]⁺  [ Cl ]⁻',
+                type: 'ionic',
+                nodes: [
+                    { x: -80, y: 0, label: 'Na⁺', en: 0.93, color: '#10b981', radius: 22, delta: '+' },
+                    { x: 80, y: 0, label: 'Cl⁻', en: 3.16, color: '#e11d48', radius: 38, delta: '-' }
+                ]
+            }
+        };
+
+        const QUIZ_DATA = [
+            {
+                question: "1. Nel legame tra Idrogeno e Cloro (H–Cl), quale atomo presenta la carica parziale negativa (δ⁻)?",
+                options: ["L'Idrogeno (H)", "Il Cloro (Cl)", "Entrambi in modo identico", "Nessuno dei due"],
+                correct: 1,
+                explanation: "Il Cloro è più elettronegativo dell'Idrogeno, quindi attira maggiormente verso di sé gli elettroni condivisi, assumendo una carica parziale δ⁻."
+            },
+            {
+                question: "2. Quale tra le seguenti affermazioni descrive correttamente un legame covalente polare?",
+                options: [
+                    "Gli elettroni vengono completamente trasferiti da un atomo all'altro.",
+                    "Gli elettroni sono condivisi in modo non uniforme tra i due atomi.",
+                    "Non vi sono elettroni condivisi tra i due atomi.",
+                    "L'atomo meno elettronegativo diventa sempre un anione."
+                ],
+                correct: 1,
+                explanation: "In un legame covalente polare gli elettroni rimangono condivisi, ma trascorsi più tempo vicino all'atomo più elettronegativo."
+            },
+            {
+                question: "3. Che cos'è l'Elettronegatività di un atomo?",
+                options: [
+                    "La carica elettrica totale presente nel suo nucleo.",
+                    "La capacità di un atomo di attirare a sé gli elettroni di legame.",
+                    "Il numero totale di orbite elettroniche dell'atomo.",
+                    "La velocità con cui gli elettroni ruotano intorno al nucleo."
+                ],
+                correct: 1,
+                explanation: "L'elettronegatività misura la forza con cui un atomo attira verso di sé la coppia di elettroni condivisa nel legame."
+            },
+            {
+                question: "4. Perché la molecola d'acqua (H₂O) è considerata polare nel suo complesso?",
+                options: [
+                    "Perché è formata da tre ioni caricati elettricamente.",
+                    "Perché ha legami polari O-H e una geometria angolare non simmetrica.",
+                    "Perché l'idrogeno è più elettronegativo dell'ossigeno.",
+                    "Perché è una molecola lineare in cui i carichi si sommano."
+                ],
+                correct: 1,
+                explanation: "L'acqua ha sia legami polari O-H sia una forma angolare, che impedisce ai vettori di dipolo di annullarsi a vicenda."
+            },
+            {
+                question: "5. Cosa rappresenta il simbolo δ⁺ (delta positivo)?",
+                options: [
+                    "Una carica positiva completa derivante dalla perdita di un elettrone.",
+                    "Una carica parziale positiva sull'atomo meno elettronegativo.",
+                    "Un protone isolato privo di elettroni.",
+                    "L'energia totale del legame chimico."
+                ],
+                correct: 1,
+                explanation: "Il simbolo δ⁺ indica una carica parziale positiva, presente sull'atomo attorno al quale c'è una minore densità elettronica."
+            },
+            {
+                question: "6. La molecola di CO₂ contiene legami C=O polari. Perché la molecola è apolare?",
+                options: [
+                    "Perché i legami diventano ionici in presenza di ossigeno.",
+                    "Perché gli elettroni non vengono mai condivisi.",
+                    "Perché la sua geometria è lineare e i due dipoli opposti si annullano.",
+                    "Perché l'ossigeno ha la stessa elettronegatività del carbonio."
+                ],
+                correct: 2,
+                explanation: "Essendo una molecola lineare (180°), i due momenti di dipolo uguali e opposti si annullano vettorialmente (Σμ = 0)."
+            }
+        ];
+
+        const CLASSIFICATION_DATA = [
+            { id: 'c1', label: 'H₂ (Idrogeno)', options: ['Apolare', 'Polare', 'Ionico'], correct: 0 },
+            { id: 'c2', label: 'HCl (Acido Cloridrico)', options: ['Apolare', 'Polare', 'Ionico'], correct: 1 },
+            { id: 'c3', label: 'NaCl (Sale da cucina)', options: ['Apolare', 'Polare', 'Ionico'], correct: 2 },
+            { id: 'c4', label: 'H₂O (Acqua)', options: ['Apolare', 'Polare', 'Ionico'], correct: 1 },
+            { id: 'c5', label: 'O₂ (Ossigeno molecolare)', options: ['Apolare', 'Polare', 'Ionico'], correct: 0 }
+        ];
+
+        // ==========================================
+        // STATE VARIABLES
+        // ==========================================
+        let selectedMoleculeKey = 'H2';
+        let isAnimating = true;
+        let animFrameId = null;
+        let animTime = 0;
+
+        // Quiz State
+        let currentQuizStep = 0;
+        let userQuizAnswers = new Array(QUIZ_DATA.length).fill(null);
+        let quizScore = 0;
+
+        // Classification State
+        let classificationUserSelections = {};
+
+        // ==========================================
+        // CANVAS ANIMATION LOGIC
+        // ==========================================
+        const canvas = document.getElementById('molCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            if (!canvas.parentElement) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        function drawMoleculeScene() {
+            if (!canvas || !ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const molData = MOLECULES[selectedMoleculeKey];
+
+            if (!molData) return;
+
+            animTime += 0.03;
+
+            // 1. Draw electron density cloud / background field
+            if (molData.type === 'polar' || molData.type === 'angular') {
+                const cloudGrad = ctx.createRadialGradient(
+                    centerX + 30, centerY, 10,
+                    centerX + 30, centerY, 120
+                );
+                cloudGrad.addColorStop(0, 'rgba(244, 63, 94, 0.35)');
+                cloudGrad.addColorStop(1, 'rgba(244, 63, 94, 0)');
+                ctx.fillStyle = cloudGrad;
+                ctx.beginPath();
+                ctx.arc(centerX + 30, centerY, 120, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (molData.type === 'apolar') {
+                const cloudGrad = ctx.createRadialGradient(
+                    centerX, centerY, 10,
+                    centerX, centerY, 110
+                );
+                cloudGrad.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
+                cloudGrad.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                ctx.fillStyle = cloudGrad;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 110, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 2. Draw Bond lines / Double bonds
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 4;
+            if (molData.nodes.length === 2) {
+                ctx.beginPath();
+                ctx.moveTo(centerX + molData.nodes[0].x, centerY + molData.nodes[0].y);
+                ctx.lineTo(centerX + molData.nodes[1].x, centerY + molData.nodes[1].y);
+                ctx.stroke();
+            } else if (molData.nodes.length === 3) {
+                ctx.beginPath();
+                ctx.moveTo(centerX + molData.nodes[1].x, centerY + molData.nodes[1].y);
+                ctx.lineTo(centerX + molData.nodes[0].x, centerY + molData.nodes[0].y);
+                ctx.lineTo(centerX + molData.nodes[2].x, centerY + molData.nodes[2].y);
+                ctx.stroke();
+            }
+
+            // 3. Draw Orbiting Shared Electrons
+            const eCount = 4;
+            for (let i = 0; i < eCount; i++) {
+                let angle = animTime + (i * Math.PI / 2);
+                let ex = centerX, ey = centerY;
+
+                if (molData.type === 'apolar') {
+                    ex = centerX + Math.cos(angle) * 35;
+                    ey = centerY + Math.sin(angle) * 20;
+                } else if (molData.type === 'polar') {
+                    // Shifted towards Cl
+                    ex = centerX + 25 + Math.cos(angle) * 30;
+                    ey = centerY + Math.sin(angle) * 22;
+                } else if (molData.type === 'angular') {
+                    ex = centerX + Math.cos(angle) * 25;
+                    ey = centerY - 20 + Math.sin(angle) * 25;
+                } else if (molData.type === 'ionic') {
+                    // Electrons fully localized on anion
+                    ex = centerX + molData.nodes[1].x + Math.cos(angle) * 32;
+                    ey = centerY + molData.nodes[1].y + Math.sin(angle) * 32;
+                } else {
+                    ex = centerX + Math.cos(angle) * 50;
+                    ey = centerY + Math.sin(angle) * 15;
+                }
+
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(ex, ey, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowColor = '#f59e0b';
+                ctx.shadowBlur = 8;
+                ctx.shadowBlur = 0; // reset
+            }
+
+            // 4. Draw Atom Nodes
+            molData.nodes.forEach(node => {
+                const nx = centerX + node.x;
+                const ny = centerY + node.y;
+
+                // Pulsing outer ring
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(nx, ny, node.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Atom symbol
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 15px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.label, nx, ny);
+
+                // Delta Charge Badges
+                if (node.delta) {
+                    ctx.fillStyle = node.delta.includes('⁻') || node.delta === '-' ? '#f43f5e' : '#3b82f6';
+                    ctx.font = 'bold 13px font-mono, monospace';
+                    ctx.fillText(node.delta, nx, ny - node.radius - 12);
+                }
+            });
+
+            if (isAnimating) {
+                animFrameId = requestAnimationFrame(drawMoleculeScene);
+            }
+        }
+
+        function toggleCanvasAnimation() {
+            isAnimating = !isAnimating;
+            const playText = document.getElementById('play-text');
+            const playIcon = document.getElementById('play-icon');
+
+            if (isAnimating) {
+                playText.textContent = 'Pausa';
+                playIcon.className = 'fa-solid fa-pause';
+                drawMoleculeScene();
+            } else {
+                playText.textContent = 'Avvia';
+                playIcon.className = 'fa-solid fa-play';
+                if (animFrameId) cancelAnimationFrame(animFrameId);
+            }
+        }
+
+        // ==========================================
+        // MOLECULE TAB LOGIC
+        // ==========================================
+        function renderMoleculeTabs() {
+            const container = document.getElementById('molecule-tabs');
+            container.innerHTML = '';
+
+            Object.keys(MOLECULES).forEach(key => {
+                const mol = MOLECULES[key];
+                const btn = document.createElement('button');
+                btn.onclick = () => selectMolecule(key);
+                btn.className = `px-3.5 py-2 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap ${
+                    selectedMoleculeKey === key
+                        ? 'bg-slate-900 text-white shadow-md'
+                        : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                }`;
+                btn.innerHTML = `<span>${mol.name.split(' ')[0]}</span>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectMolecule(key) {
+            selectedMoleculeKey = key;
+            renderMoleculeTabs();
+
+            const mol = MOLECULES[key];
+            document.getElementById('info-mol-name').textContent = mol.name;
+            
+            const badge = document.getElementById('info-mol-badge');
+            badge.textContent = mol.badge;
+            badge.className = `px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${mol.badgeClass}`;
+
+            document.getElementById('info-mol-desc').textContent = mol.desc;
+            document.getElementById('info-fact-en').textContent = mol.enDiff;
+            document.getElementById('info-fact-geom').textContent = mol.geometry;
+            document.getElementById('info-fact-charges').textContent = mol.charges;
+            document.getElementById('info-mol-notation').textContent = mol.notation;
+
+            if (!isAnimating) {
+                drawMoleculeScene();
+            }
+        }
+
+        // ==========================================
+        // ANALOGY TOGGLE & SLIDER SIMULATOR
+        // ==========================================
+        function setAnalogyView(view) {
+            const viewAnalogy = document.getElementById('view-analogy');
+            const viewTech = document.getElementById('view-tech');
+            const btnAnalogy = document.getElementById('btn-view-analogy');
+            const btnTech = document.getElementById('btn-view-tech');
+
+            if (view === 'analogy') {
+                viewAnalogy.classList.remove('hidden');
+                viewTech.classList.add('hidden');
+                btnAnalogy.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-600 shadow-sm';
+                btnTech.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+            } else {
+                viewAnalogy.classList.add('hidden');
+                viewTech.classList.remove('hidden');
+                btnTech.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-blue-600 shadow-sm';
+                btnAnalogy.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+            }
+        }
+
+        function updateSliderSimulation(val) {
+            const num = parseFloat(val);
+            document.getElementById('slider-val-display').textContent = num.toFixed(1);
+
+            const badge = document.getElementById('sim-type-badge');
+            const chargeA = document.getElementById('sim-charge-a');
+            const chargeB = document.getElementById('sim-charge-b');
+            const cloud = document.getElementById('sim-cloud');
+            const arrow = document.getElementById('sim-arrow');
+            const exp = document.getElementById('sim-explanation');
+
+            if (num < 0.4) {
+                badge.textContent = 'Legame Covalente Apolare (Puro)';
+                badge.className = 'px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-emerald-500 text-white shadow-lg';
+                chargeA.textContent = 'δ⁰ (Equilibrato)';
+                chargeB.textContent = 'δ⁰ (Equilibrato)';
+                chargeA.className = 'text-xs font-mono font-bold text-emerald-300 mt-2 block';
+                chargeB.className = 'text-xs font-mono font-bold text-emerald-300 mt-2 block';
+                cloud.style.background = 'linear-gradient(to right, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.4))';
+                arrow.style.opacity = '0';
+                exp.textContent = 'La densità elettronica è equamente distribuita tra i due atomi.';
+            } else if (num <= 1.9) {
+                badge.textContent = 'Legame Covalente Polare';
+                badge.className = 'px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-blue-600 text-white shadow-lg';
+                chargeA.textContent = 'δ⁺ (Parz. Positivo)';
+                chargeB.textContent = 'δ⁻ (Parz. Negativo)';
+                chargeA.className = 'text-xs font-mono font-bold text-blue-300 mt-2 block';
+                chargeB.className = 'text-xs font-mono font-bold text-rose-400 mt-2 block';
+                const opacityB = 0.3 + (num / 1.9) * 0.6;
+                cloud.style.background = `linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(244, 63, 94, ${opacityB}))`;
+                arrow.style.opacity = '1';
+                exp.textContent = 'Gli elettroni sono condivisi ma sbilanciati verso l\'atomo B più elettronegativo.';
+            } else {
+                badge.textContent = 'Legame Ionico (Trasferimento Completo)';
+                badge.className = 'px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-rose-600 text-white shadow-lg';
+                chargeA.textContent = '+1 (Catione Ionico)';
+                chargeB.textContent = '-1 (Anione Ionico)';
+                chargeA.className = 'text-xs font-mono font-bold text-amber-300 mt-2 block';
+                chargeB.className = 'text-xs font-mono font-bold text-rose-300 mt-2 block';
+                cloud.style.background = 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(244, 63, 94, 0.9))';
+                arrow.style.opacity = '0.5';
+                exp.textContent = 'L\'elettrone è stato trasferito del tutto. Si formano due ioni con cariche nette formate.';
+            }
+        }
+
+        function setSliderPreset(val) {
+            const slider = document.getElementById('en-slider');
+            slider.value = val;
+            updateSliderSimulation(val);
+        }
+
+        // ==========================================
+        // QUIZ ENGINE LOGIC
+        // ==========================================
+        function renderQuizStep() {
+            const data = QUIZ_DATA[currentQuizStep];
+            const container = document.getElementById('quiz-card-content');
+            
+            document.getElementById('quiz-step-counter').textContent = `Domanda ${currentQuizStep + 1} di ${QUIZ_DATA.length}`;
+            document.getElementById('quiz-score-counter').textContent = `Punti: ${quizScore}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuizStep + 1) / QUIZ_DATA.length) * 100}%`;
+
+            const selectedIdx = userQuizAnswers[currentQuizStep];
+            const isAnswered = selectedIdx !== null;
+
+            let optionsHTML = '';
+            data.options.forEach((opt, idx) => {
+                let btnStyle = 'bg-slate-50 border-slate-200/90 text-slate-800 hover:bg-slate-100';
+                
+                if (isAnswered) {
+                    if (idx === data.correct) {
+                        btnStyle = 'bg-emerald-100 border-emerald-400 text-emerald-900 font-bold';
+                    } else if (idx === selectedIdx) {
+                        btnStyle = 'bg-rose-100 border-rose-400 text-rose-900';
+                    } else {
+                        btnStyle = 'bg-slate-50 border-slate-200 opacity-50';
+                    }
+                }
+
+                optionsHTML += `
+                    <button onclick="selectQuizOption(${idx})" ${isAnswered ? 'disabled' : ''} 
+                        class="w-full text-left p-4 rounded-2xl border text-sm transition flex items-center justify-between ${btnStyle}">
+                        <span>${opt}</span>
+                        ${isAnswered && idx === data.correct ? '<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>' : ''}
+                        ${isAnswered && idx === selectedIdx && idx !== data.correct ? '<i class="fa-solid fa-circle-xmark text-rose-600 text-base"></i>' : ''}
+                    </button>
+                `;
+            });
+
+            let feedbackHTML = '';
+            if (isAnswered) {
+                const isCorrect = selectedIdx === data.correct;
+                feedbackHTML = `
+                    <div class="p-4 rounded-2xl ${isCorrect ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-rose-50 border border-rose-200 text-rose-900'} space-y-1">
+                        <div class="font-bold text-xs uppercase flex items-center space-x-2">
+                            <i class="fa-solid ${isCorrect ? 'fa-check' : 'fa-xmark'}"></i>
+                            <span>${isCorrect ? 'Risposta Corretta!' : 'Risposta Errata'}</span>
+                        </div>
+                        <p class="text-xs leading-relaxed">${data.explanation}</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <h3 class="text-base sm:text-lg font-bold font-heading text-slate-900 leading-snug">
+                    ${data.question}
+                </h3>
+                <div class="space-y-3">
+                    ${optionsHTML}
+                </div>
+                ${feedbackHTML}
+            `;
+
+            document.getElementById('btn-prev-quiz').disabled = currentQuizStep === 0;
+            const nextBtn = document.getElementById('btn-next-quiz');
+            if (currentQuizStep === QUIZ_DATA.length - 1) {
+                nextBtn.innerHTML = 'Ricomincia <i class="fa-solid fa-rotate-right ml-1"></i>';
+            } else {
+                nextBtn.innerHTML = 'Prossima <i class="fa-solid fa-arrow-right ml-1"></i>';
+            }
+        }
+
+        function selectQuizOption(optIdx) {
+            if (userQuizAnswers[currentQuizStep] !== null) return;
+            userQuizAnswers[currentQuizStep] = optIdx;
+
+            if (optIdx === QUIZ_DATA[currentQuizStep].correct) {
+                quizScore += 10;
+            }
+            renderQuizStep();
+        }
+
+        function nextQuizStep() {
+            if (currentQuizStep === QUIZ_DATA.length - 1) {
+                // Reset Quiz
+                currentQuizStep = 0;
+                userQuizAnswers.fill(null);
+                quizScore = 0;
+            } else {
+                currentQuizStep++;
+            }
+            renderQuizStep();
+        }
+
+        function prevQuizStep() {
+            if (currentQuizStep > 0) {
+                currentQuizStep--;
+                renderQuizStep();
+            }
+        }
+
+        // ==========================================
+        // CLASSIFICATION MINI-GAME LOGIC
+        // ==========================================
+        function renderClassificationGame() {
+            const container = document.getElementById('classification-container');
+            container.innerHTML = '';
+
+            CLASSIFICATION_DATA.forEach(item => {
+                const userSel = classificationUserSelections[item.id];
+                
+                let btnsHTML = '';
+                item.options.forEach((opt, idx) => {
+                    const isSelected = userSel === idx;
+                    btnsHTML += `
+                        <button onclick="setClassificationSelection('${item.id}', ${idx})" 
+                            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                                isSelected 
+                                    ? 'bg-purple-600 text-white shadow-sm' 
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                const row = document.createElement('div');
+                row.className = 'p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col space-y-2';
+                row.innerHTML = `
+                    <span class="text-xs font-bold text-slate-800">${item.label}</span>
+                    <div class="flex items-center space-x-1.5 flex-wrap">
+                        ${btnsHTML}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function setClassificationSelection(itemId, optIdx) {
+            classificationUserSelections[itemId] = optIdx;
+            renderClassificationGame();
+        }
+
+        function checkClassificationAnswers() {
+            let correctCount = 0;
+            CLASSIFICATION_DATA.forEach(item => {
+                if (classificationUserSelections[item.id] === item.correct) {
+                    correctCount++;
+                }
+            });
+
+            const feedback = document.getElementById('classification-feedback');
+            feedback.classList.remove('hidden');
+
+            if (correctCount === CLASSIFICATION_DATA.length) {
+                feedback.className = 'p-3 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+                feedback.innerHTML = `<i class="fa-solid fa-trophy mr-1"></i> Perfetto! Hai classificato correttamente tutte le sostanze (${correctCount}/${CLASSIFICATION_DATA.length}).`;
+            } else {
+                feedback.className = 'p-3 rounded-xl text-xs text-center font-bold bg-amber-100 text-amber-800 border border-amber-300';
+                feedback.innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i> Hai azzeccato ${correctCount} su ${CLASSIFICATION_DATA.length}. Riprova a controllare le differenze di elettronegatività!`;
+            }
+        }
+
+        // ==========================================
+        // UTILITY & NAVIGATION FUNCTIONS
+        // ==========================================
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.onload = function() {
+            // Setup canvas
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                if (!isAnimating) drawMoleculeScene();
+            });
+
+            // Init Lab Tabs & Info
+            selectMolecule('H2');
+
+            // Start Canvas Render Loop
+            drawMoleculeScene();
+
+            // Init Slider Simulation
+            updateSliderSimulation(0.9);
+
+            // Init Quiz
+            renderQuizStep();
+
+            // Init Classification Game
+            renderClassificationGame();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VonNeumannLab – Il modello di von Neumann</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              blue: '#2563eb',
+              teal: '#0d9488',
+              violet: '#7c3aed',
+              rose: '#e11d48',
+              amber: '#d97706',
+              emerald: '#059669',
+            }
+          },
+          boxShadow: {
+            'glow-blue': '0 0 25px rgba(37, 99, 235, 0.25)',
+            'glow-purple': '0 0 25px rgba(124, 58, 237, 0.25)',
+            'glow-teal': '0 0 20px rgba(13, 148, 136, 0.2)',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    h1, h2, h3, h4, .font-outfit { font-family: 'Outfit', sans-serif; }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cta-btn {
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      transition: all 0.25s ease;
+    }
+    .cta-btn:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+    }
+    .badge {
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    canvas { display: block; max-width: 100%; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- ========== HEADER ========== -->
+  <header class="glass-nav sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white shadow-glow-blue">
+            <i class="fas fa-microchip text-lg"></i>
+          </div>
+          <div>
+            <div class="font-outfit font-bold text-slate-900 leading-tight">VonNeumannLab</div>
+            <div class="text-xs text-slate-500 -mt-0.5">Architettura dei computer</div>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-1">
+          <button onclick="scrollToSection('intro')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-1.5">
+            <i class="fas fa-home text-blue-500"></i> Intro
+          </button>
+          <button onclick="scrollToSection('mol-lab')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-teal-50 hover:text-teal-700 transition flex items-center gap-1.5">
+            <i class="fas fa-flask text-teal-500"></i> Laboratorio
+          </button>
+          <button onclick="scrollToSection('polarity')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-700 transition flex items-center gap-1.5">
+            <i class="fas fa-sliders text-violet-500"></i> Bottleneck
+          </button>
+          <button onclick="scrollToSection('quiz')" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-700 transition flex items-center gap-1.5">
+            <i class="fas fa-question-circle text-rose-500"></i> Quiz
+          </button>
+        </nav>
+
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+
+      <div id="mobileMenu" class="hidden md:hidden pb-4 space-y-1">
+        <button onclick="scrollToSection('intro'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-blue-50 flex items-center gap-2">
+          <i class="fas fa-home text-blue-500 w-5"></i> Introduzione
+        </button>
+        <button onclick="scrollToSection('mol-lab'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-teal-50 flex items-center gap-2">
+          <i class="fas fa-flask text-teal-500 w-5"></i> Laboratorio
+        </button>
+        <button onclick="scrollToSection('polarity'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-violet-50 flex items-center gap-2">
+          <i class="fas fa-sliders text-violet-500 w-5"></i> Bottleneck
+        </button>
+        <button onclick="scrollToSection('quiz'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-rose-50 flex items-center gap-2">
+          <i class="fas fa-question-circle text-rose-500 w-5"></i> Quiz
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-16">
+
+    <!-- ========== INTRO ========== -->
+    <section id="intro" class="scroll-mt-24">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-teal-500 p-8 sm:p-12 text-white shadow-glow-blue">
+        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+        <div class="relative z-10 max-w-2xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+            <i class="fas fa-graduation-cap"></i> Lezione interattiva
+          </span>
+          <h1 class="font-outfit text-3xl sm:text-4xl lg:text-5xl font-extrabold mt-4 leading-tight">
+            Il modello di <span class="text-teal-200">von Neumann</span>
+          </h1>
+          <p class="mt-4 text-blue-50 text-base sm:text-lg leading-relaxed">
+            Scopri l’architettura che sta alla base di quasi tutti i computer moderni:
+            un’unità di elaborazione, una <strong>memoria condivisa</strong> per istruzioni e dati,
+            dispositivi di <strong>input/output</strong> e un <strong>bus</strong> di comunicazione.
+            Capirai perché funziona… e dove si crea il famoso “collo di bottiglia”.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <button onclick="scrollToSection('mol-lab')" class="cta-btn px-5 py-2.5 rounded-xl text-white font-semibold text-sm shadow-lg flex items-center gap-2">
+              <i class="fas fa-play"></i> Vai al laboratorio
+            </button>
+            <button onclick="scrollToSection('analogy')" class="px-5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold text-sm transition flex items-center gap-2">
+              <i class="fas fa-lightbulb"></i> Vedi l’analogia
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analogia -->
+      <div id="analogy" class="mt-10 scroll-mt-24">
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Testo analogia -->
+          <div class="glass-panel rounded-2xl p-6 sm:p-8">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                <i class="fas fa-utensils text-lg"></i>
+              </div>
+              <h2 class="font-outfit text-xl font-bold text-slate-900">Analogia: la cucina organizzata</h2>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+              Immagina una <strong>cucina</strong> in cui un cuoco (la <strong>CPU</strong>) prepara i piatti.
+              Il ricettario e gli ingredienti stanno <strong>nello stesso armadio</strong> (la memoria).
+              Il cuoco deve continuamente andare all’armadio per leggere la prossima istruzione della ricetta
+              e poi prendere gli ingredienti. C’è un solo corridoio (il <strong>bus</strong>) tra il piano di lavoro e l’armadio.
+            </p>
+            <div class="mt-5 p-4 rounded-xl bg-blue-50 border border-blue-100">
+              <div class="flex gap-2">
+                <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold text-blue-800 text-sm">Differenza chiave</div>
+                  <p class="text-blue-700 text-sm mt-1">
+                    Nel modello di von Neumann istruzioni e dati condividono la stessa memoria e lo stesso canale.
+                    Questo rende il computer programmabile e flessibile, ma crea un collo di bottiglia quando il cuoco
+                    deve aspettare di poter usare il corridoio.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Toggle vista -->
+          <div class="glass-panel rounded-2xl p-6 sm:p-8">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="font-outfit font-bold text-slate-900">Due punti di vista</h3>
+              <div class="flex rounded-full bg-slate-100 p-1">
+                <button id="btnAnalogy" onclick="toggleView('analogy')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white shadow text-slate-800 transition">
+                  Analogia
+                </button>
+                <button id="btnTech" onclick="toggleView('tech')" class="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-500 transition">
+                  Tecnico
+                </button>
+              </div>
+            </div>
+
+            <div id="viewAnalogy" class="space-y-4">
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-amber-50">
+                <div class="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center text-2xl">👨‍🍳</div>
+                <div>
+                  <div class="font-semibold text-slate-800">Il cuoco</div>
+                  <div class="text-sm text-slate-500">CPU: legge ricette e prepara</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-blue-50">
+                <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center text-2xl">🗄️</div>
+                <div>
+                  <div class="font-semibold text-slate-800">L’armadio</div>
+                  <div class="text-sm text-slate-500">Memoria: ricette + ingredienti</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-teal-50">
+                <div class="w-12 h-12 rounded-full bg-teal-200 flex items-center justify-center text-2xl">🚪</div>
+                <div>
+                  <div class="font-semibold text-slate-800">Il corridoio</div>
+                  <div class="text-sm text-slate-500">Bus: un solo passaggio</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-violet-50">
+                <div class="w-12 h-12 rounded-full bg-violet-200 flex items-center justify-center text-2xl">📥📤</div>
+                <div>
+                  <div class="font-semibold text-slate-800">Porta d’ingresso/uscita</div>
+                  <div class="text-sm text-slate-500">I/O: clienti e piatti pronti</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="viewTech" class="hidden space-y-4">
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-blue-50">
+                <div class="w-12 h-12 rounded-xl bg-blue-500 text-white flex items-center justify-center">
+                  <i class="fas fa-microchip"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">CPU (CU + ALU)</div>
+                  <div class="text-sm text-slate-500">Control Unit + Arithmetic Logic Unit</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-teal-50">
+                <div class="w-12 h-12 rounded-xl bg-teal-500 text-white flex items-center justify-center">
+                  <i class="fas fa-memory"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Memoria principale</div>
+                  <div class="text-sm text-slate-500">Istruzioni e dati nello stesso spazio</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-violet-50">
+                <div class="w-12 h-12 rounded-xl bg-violet-500 text-white flex items-center justify-center">
+                  <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Bus di sistema</div>
+                  <div class="text-sm text-slate-500">Dati, indirizzi e controlli condivisi</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 p-3 rounded-xl bg-rose-50">
+                <div class="w-12 h-12 rounded-xl bg-rose-500 text-white flex items-center justify-center">
+                  <i class="fas fa-keyboard"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Dispositivi I/O</div>
+                  <div class="text-sm text-slate-500">Input e Output verso l’esterno</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== LABORATORIO ========== -->
+    <section id="mol-lab" class="scroll-mt-24">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+        <div>
+          <h2 class="font-outfit text-2xl sm:text-3xl font-bold text-slate-900">Laboratorio interattivo</h2>
+          <p class="text-slate-500 mt-1 text-sm">Esplora i componenti del modello di von Neumann</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-2 mb-6" id="itemTabs">
+        <!-- generati da JS -->
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <!-- Canvas -->
+        <div class="glass-panel rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-700">Visualizzazione dinamica</span>
+            <button id="playPauseBtn" onclick="toggleAnimation()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-medium flex items-center gap-1.5 transition">
+              <i class="fas fa-pause" id="playPauseIcon"></i>
+              <span id="playPauseText">Pausa</span>
+            </button>
+          </div>
+          <div class="rounded-xl overflow-hidden bg-slate-900 relative">
+            <canvas id="labCanvas" width="560" height="380" class="w-full"></canvas>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-3 text-xs text-slate-500" id="canvasLegend">
+            <!-- legenda dinamica -->
+          </div>
+        </div>
+
+        <!-- Info panel -->
+        <div class="glass-panel rounded-2xl p-6 flex flex-col">
+          <div class="flex items-center gap-2 mb-3">
+            <span id="itemBadge" class="badge px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200">CPU</span>
+          </div>
+          <h3 id="itemName" class="font-outfit text-xl font-bold text-slate-900 mb-2">Central Processing Unit</h3>
+          <p id="itemDescription" class="text-slate-600 text-sm leading-relaxed mb-5 flex-grow">
+            La CPU è il “cervello” del computer: controlla l’esecuzione e svolge i calcoli.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div class="text-blue-500 mb-1"><i class="fas fa-cog" id="factIcon0"></i></div>
+              <div class="text-xs font-semibold text-slate-800" id="factTitle0">Fatto 1</div>
+              <div class="text-xs text-slate-500 mt-0.5" id="factText0">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div class="text-teal-500 mb-1"><i class="fas fa-bolt" id="factIcon1"></i></div>
+              <div class="text-xs font-semibold text-slate-800" id="factTitle1">Fatto 2</div>
+              <div class="text-xs text-slate-500 mt-0.5" id="factText1">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div class="text-violet-500 mb-1"><i class="fas fa-link" id="factIcon2"></i></div>
+              <div class="text-xs font-semibold text-slate-800" id="factTitle2">Fatto 3</div>
+              <div class="text-xs text-slate-500 mt-0.5" id="factText2">—</div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900 text-center">
+            <div class="text-xs text-slate-400 mb-1 uppercase tracking-wider">Notazione / Ruolo</div>
+            <div id="itemFormula" class="font-mono text-teal-300 text-sm sm:text-base font-medium">CPU = CU + ALU + Registri</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== BOTTLENECK SLIDER ========== -->
+    <section id="polarity" class="scroll-mt-24">
+      <div class="mb-6">
+        <h2 class="font-outfit text-2xl sm:text-3xl font-bold text-slate-900">Simulatore: il collo di bottiglia</h2>
+        <p class="text-slate-500 mt-1 text-sm max-w-2xl">
+          Sposta lo slider per vedere come la <strong>condivisione del bus</strong> tra istruzioni e dati
+          limita le prestazioni. Più il bus è “occupato”, più la CPU resta in attesa.
+        </p>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <div class="text-sm font-medium text-slate-500">Carico sul bus (0–100%)</div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="sliderValue" class="font-outfit text-3xl font-bold text-violet-600">35</span>
+              <span class="text-slate-400 text-sm">%</span>
+              <span id="sliderLabel" class="ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Fluido</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="setSlider(15)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition">Leggero</button>
+            <button onclick="setSlider(50)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">Medio</button>
+            <button onclick="setSlider(85)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">Saturato</button>
+          </div>
+        </div>
+
+        <input type="range" id="simSlider" min="0" max="100" value="35" class="w-full h-2 rounded-full appearance-none bg-slate-200 accent-violet-600 cursor-pointer" oninput="updateSimulation(this.value)" />
+
+        <!-- Visual -->
+        <div class="mt-8 relative h-40 sm:h-48 rounded-2xl bg-gradient-to-r from-slate-100 to-slate-50 border border-slate-200 overflow-hidden">
+          <!-- CPU node -->
+          <div id="nodeCPU" class="absolute left-6 top-1/2 -translate-y-1/2 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-blue-500 text-white flex flex-col items-center justify-center shadow-lg z-10 transition-all duration-300">
+            <i class="fas fa-microchip text-xl sm:text-2xl"></i>
+            <span class="text-[10px] sm:text-xs font-bold mt-1">CPU</span>
+          </div>
+          <!-- Memory node -->
+          <div id="nodeMEM" class="absolute right-6 top-1/2 -translate-y-1/2 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-teal-500 text-white flex flex-col items-center justify-center shadow-lg z-10 transition-all duration-300">
+            <i class="fas fa-memory text-xl sm:text-2xl"></i>
+            <span class="text-[10px] sm:text-xs font-bold mt-1">MEM</span>
+          </div>
+          <!-- Bus cloud -->
+          <div id="busCloud" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-16 sm:w-40 sm:h-20 rounded-full bg-violet-200/70 blur-sm transition-all duration-300"></div>
+          <!-- Arrow / wait indicator -->
+          <div id="waitArrow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-300 text-rose-500 font-bold text-sm flex items-center gap-1">
+            <i class="fas fa-hourglass-half"></i> ATTESA
+          </div>
+          <!-- Labels -->
+          <div id="labelInstr" class="absolute top-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-blue-600 opacity-70 transition-opacity">Istruzioni</div>
+          <div id="labelData" class="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-teal-600 opacity-70 transition-opacity">Dati</div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4 mt-6">
+          <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="fas fa-check-circle text-emerald-500"></i>
+              <span class="font-semibold text-emerald-800 text-sm">Basso carico</span>
+            </div>
+            <p class="text-sm text-emerald-700">Il bus ha capacità sufficiente: la CPU riceve istruzioni e dati quasi senza attese. Prestazioni elevate.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-rose-50 border border-rose-100">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="fas fa-exclamation-triangle text-rose-500"></i>
+              <span class="font-semibold text-rose-800 text-sm">Alto carico (bottleneck)</span>
+            </div>
+            <p class="text-sm text-rose-700">Istruzioni e dati competono per lo stesso canale. La CPU resta spesso in stallo in attesa del bus.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== QUIZ ========== -->
+    <section id="quiz" class="scroll-mt-24">
+      <div class="mb-6">
+        <h2 class="font-outfit text-2xl sm:text-3xl font-bold text-slate-900">Metti alla prova le conoscenze</h2>
+        <p class="text-slate-500 mt-1 text-sm">Quiz a scelta multipla + mini-gioco di classificazione</p>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-6">
+        <!-- Quiz principale -->
+        <div class="lg:col-span-8 glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-sm font-medium text-slate-500">
+              Domanda <span id="qNum">1</span> di <span id="qTotal">6</span>
+            </div>
+            <div class="text-sm font-semibold text-violet-600">
+              Punteggio: <span id="qScore">0</span>
+            </div>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-100 mb-6">
+            <div id="qProgress" class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 transition-all duration-300" style="width:16.67%"></div>
+          </div>
+
+          <div id="quizContent">
+            <!-- generato da JS -->
+          </div>
+
+          <div class="flex justify-between mt-6">
+            <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition disabled:opacity-40" disabled>
+              <i class="fas fa-arrow-left mr-1"></i> Precedente
+            </button>
+            <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 rounded-xl text-sm font-semibold text-white cta-btn">
+              Prossima <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Classification game -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-6">
+          <h3 class="font-outfit font-bold text-slate-900 mb-1">Classifica i componenti</h3>
+          <p class="text-xs text-slate-500 mb-4">Assegna ogni elemento alla categoria corretta</p>
+
+          <div id="classifList" class="space-y-3 mb-5">
+            <!-- generato da JS -->
+          </div>
+
+          <button onclick="checkAnswers()" class="w-full py-2.5 rounded-xl text-sm font-semibold text-white cta-btn">
+            <i class="fas fa-check-double mr-1"></i> Verifica
+          </button>
+          <div id="classifFeedback" class="mt-3 text-center text-sm font-medium hidden"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="mt-16 border-t border-slate-200 bg-white/60">
+    <div class="max-w-6xl mx-auto px-4 py-8 text-center">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white text-sm">
+          <i class="fas fa-microchip"></i>
+        </div>
+        <span class="font-outfit font-bold text-slate-800">VonNeumannLab</span>
+      </div>
+      <p class="text-sm text-slate-500">App didattica interattiva sul modello di von Neumann · Single-Page Lab</p>
+    </div>
+  </footer>
+
+  <script>
+    /* =========================================================
+       DATI LABORATORIO
+       ========================================================= */
+    const ITEMS = {
+      cpu: {
+        name: "Central Processing Unit (CPU)",
+        badge: "Processore",
+        badgeClass: "bg-blue-100 text-blue-700 border-blue-200",
+        description: "La CPU è il cervello del computer. Contiene la Control Unit (che decide cosa fare) e l’ALU (che esegue calcoli aritmetici e logici). I registri forniscono memoria ultra-veloce all’interno della CPU.",
+        facts: [
+          { icon: "fa-cogs", title: "CU + ALU", text: "Controllo e calcolo integrati" },
+          { icon: "fa-tachometer-alt", title: "Registri", text: "Memoria lavorativa veloce" },
+          { icon: "fa-sync", title: "Ciclo FDE", text: "Fetch → Decode → Execute" }
+        ],
+        formula: "CPU = CU + ALU + Registri",
+        visual: { type: "cpu", color: "#2563eb" }
+      },
+      memory: {
+        name: "Memoria principale (RAM)",
+        badge: "Memoria",
+        badgeClass: "bg-teal-100 text-teal-700 border-teal-200",
+        description: "Nella architettura di von Neumann la memoria contiene sia le istruzioni del programma sia i dati su cui operare. Ogni cella ha un indirizzo univoco. È volatile: perde il contenuto senza alimentazione.",
+        facts: [
+          { icon: "fa-map-marker-alt", title: "Addressable", text: "Ogni cella ha un indirizzo" },
+          { icon: "fa-database", title: "Shared", text: "Istruzioni e dati insieme" },
+          { icon: "fa-bolt", title: "Accesso", text: "Lettura/scrittura diretta dalla CPU" }
+        ],
+        formula: "Mem[addr] = istruzione | dato",
+        visual: { type: "memory", color: "#0d9488" }
+      },
+      bus: {
+        name: "Bus di sistema",
+        badge: "Comunicazione",
+        badgeClass: "bg-violet-100 text-violet-700 border-violet-200",
+        description: "Il bus è l’insieme di linee elettriche che collegano CPU, memoria e I/O. Trasporta indirizzi, dati e segnali di controllo. In von Neumann è condiviso: un solo canale per istruzioni e dati → potenziale bottleneck.",
+        facts: [
+          { icon: "fa-road", title: "Condiviso", text: "Un solo percorso principale" },
+          { icon: "fa-exchange-alt", title: "Tre tipi", text: "Address + Data + Control" },
+          { icon: "fa-exclamation", title: "Bottleneck", text: "Limite di banda verso la CPU" }
+        ],
+        formula: "Bus = Address + Data + Control",
+        visual: { type: "bus", color: "#7c3aed" }
+      },
+      alu: {
+        name: "Arithmetic Logic Unit (ALU)",
+        badge: "Calcolo",
+        badgeClass: "bg-amber-100 text-amber-700 border-amber-200",
+        description: "L’ALU esegue le operazioni aritmetiche (somma, sottrazione, …) e logiche (AND, OR, NOT, confronti). Riceve operandi dai registri e scrive il risultato di nuovo nei registri o in memoria.",
+        facts: [
+          { icon: "fa-plus", title: "Aritmetica", text: "+ − × ÷ e shift" },
+          { icon: "fa-code-branch", title: "Logica", text: "AND OR XOR confronti" },
+          { icon: "fa-flag", title: "Flags", text: "Zero, Carry, Overflow…" }
+        ],
+        formula: "ALU(op, A, B) → Result + Flags",
+        visual: { type: "alu", color: "#d97706" }
+      },
+      control: {
+        name: "Control Unit (CU)",
+        badge: "Controllo",
+        badgeClass: "bg-rose-100 text-rose-700 border-rose-200",
+        description: "La Control Unit orchestra l’intera macchina: preleva l’istruzione (fetch), la decodifica e genera i segnali di controllo che attivano ALU, memoria e bus al momento giusto.",
+        facts: [
+          { icon: "fa-list-ol", title: "Sequenza", text: "Gestisce il ciclo di istruzione" },
+          { icon: "fa-key", title: "Segnali", text: "Abilita lettura/scrittura e ops" },
+          { icon: "fa-clock", title: "Timing", text: "Sincronizza con il clock" }
+        ],
+        formula: "CU: IR → segnali di controllo",
+        visual: { type: "control", color: "#e11d48" }
+      },
+      io: {
+        name: "Dispositivi di Input / Output",
+        badge: "I/O",
+        badgeClass: "bg-emerald-100 text-emerald-700 border-emerald-200",
+        description: "I dispositivi di input portano dati e comandi dall’esterno (tastiera, sensori…); quelli di output restituiscono risultati (schermo, stampante…). Si collegano tramite controller e bus.",
+        facts: [
+          { icon: "fa-keyboard", title: "Input", text: "Dati dal mondo esterno" },
+          { icon: "fa-desktop", title: "Output", text: "Risultati verso l’utente" },
+          { icon: "fa-plug", title: "Controller", text: "Interfaccia verso il bus" }
+        ],
+        formula: "I/O ↔ Bus ↔ CPU / Memoria",
+        visual: { type: "io", color: "#059669" }
+      }
+    };
+
+    /* =========================================================
+       QUIZ DATA
+       ========================================================= */
+    const QUIZ_DATA = [
+      {
+        q: "Nel modello di von Neumann, dove sono memorizzate le istruzioni del programma?",
+        options: [
+          "In una memoria separata dedicata solo al codice",
+          "Nella stessa memoria che contiene anche i dati",
+          "Solo nei registri della CPU",
+          "Su un dispositivo di input"
+        ],
+        correct: 1,
+        explanation: "La caratteristica distintiva è la memoria unica (stored-program) che contiene sia istruzioni sia dati."
+      },
+      {
+        q: "Quale componente decide quali operazioni eseguire e genera i segnali di controllo?",
+        options: ["ALU", "Bus di sistema", "Control Unit", "Memoria secondaria"],
+        correct: 2,
+        explanation: "La Control Unit (CU) preleva, decodifica e orchestra l’esecuzione delle istruzioni."
+      },
+      {
+        q: "Cosa si intende per “von Neumann bottleneck”?",
+        options: [
+          "La CPU è troppo lenta rispetto alla memoria",
+          "Il bus condiviso limita il trasferimento di istruzioni e dati",
+          "I dispositivi I/O sono sempre più lenti della CPU",
+          "I registri sono insufficienti"
+        ],
+        correct: 1,
+        explanation: "Istruzioni e dati condividono lo stesso bus: quando il traffico è alto la CPU resta in attesa."
+      },
+      {
+        q: "Quale delle seguenti NON è tipicamente parte della CPU nel modello classico?",
+        options: ["ALU", "Control Unit", "Registri", "Hard disk"],
+        correct: 3,
+        explanation: "L’hard disk è memoria secondaria esterna; la CPU contiene ALU, CU e registri."
+      },
+      {
+        q: "Il ciclo base di esecuzione di un’istruzione è:",
+        options: [
+          "Execute → Store → Fetch",
+          "Fetch → Decode → Execute",
+          "Decode → Fetch → Write-back",
+          "Input → Process → Output"
+        ],
+        correct: 1,
+        explanation: "Il ciclo classico è Fetch (preleva), Decode (interpreta), Execute (esegue)."
+      },
+      {
+        q: "Perché il modello di von Neumann è stato rivoluzionario?",
+        options: [
+          "Perché ha introdotto la memoria cache",
+          "Perché ha permesso di cambiare il programma senza modificare l’hardware",
+          "Perché ha eliminato i dispositivi di input",
+          "Perché ha reso i computer esclusivamente analogici"
+        ],
+        correct: 1,
+        explanation: "Con il concetto di stored-program il comportamento della macchina si cambia caricando un nuovo programma in memoria."
+      }
+    ];
+
+    /* =========================================================
+       CLASSIFICATION DATA
+       ========================================================= */
+    const CLASSIFICATION_DATA = [
+      { id: "c1", label: "ALU", options: ["CPU", "Memoria", "Bus", "I/O"], correct: "CPU" },
+      { id: "c2", label: "RAM", options: ["CPU", "Memoria", "Bus", "I/O"], correct: "Memoria" },
+      { id: "c3", label: "Address bus", options: ["CPU", "Memoria", "Bus", "I/O"], correct: "Bus" },
+      { id: "c4", label: "Tastiera", options: ["CPU", "Memoria", "Bus", "I/O"], correct: "I/O" },
+      { id: "c5", label: "Program Counter", options: ["CPU", "Memoria", "Bus", "I/O"], correct: "CPU" }
+    ];
+
+    /* =========================================================
+       STATO GLOBALE
+       ========================================================= */
+    let currentItem = "cpu";
+    let isAnimating = true;
+    let animId = null;
+    let angleTime = 0;
+    let lastTs = 0;
+
+    // Quiz
+    let currentStep = 0;
+    let userAnswers = new Array(QUIZ_DATA.length).fill(null);
+    let score = 0;
+
+    // Classification
+    let selections = {};
+
+    /* =========================================================
+       NAVIGAZIONE
+       ========================================================= */
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    }
+
+    /* =========================================================
+       TOGGLE ANALOGIA / TECNICO
+       ========================================================= */
+    function toggleView(mode) {
+      const a = document.getElementById("viewAnalogy");
+      const t = document.getElementById("viewTech");
+      const ba = document.getElementById("btnAnalogy");
+      const bt = document.getElementById("btnTech");
+      if (mode === "analogy") {
+        a.classList.remove("hidden");
+        t.classList.add("hidden");
+        ba.classList.add("bg-white", "shadow", "text-slate-800");
+        ba.classList.remove("text-slate-500");
+        bt.classList.remove("bg-white", "shadow", "text-slate-800");
+        bt.classList.add("text-slate-500");
+      } else {
+        t.classList.remove("hidden");
+        a.classList.add("hidden");
+        bt.classList.add("bg-white", "shadow", "text-slate-800");
+        bt.classList.remove("text-slate-500");
+        ba.classList.remove("bg-white", "shadow", "text-slate-800");
+        ba.classList.add("text-slate-500");
+      }
+    }
+
+    /* =========================================================
+       LABORATORIO: SELEZIONE ITEM
+       ========================================================= */
+    function selectItem(key) {
+      currentItem = key;
+      const item = ITEMS[key];
+
+      // tabs
+      document.querySelectorAll("#itemTabs button").forEach(btn => {
+        btn.classList.remove("bg-blue-600", "text-white", "shadow");
+        btn.classList.add("bg-white", "text-slate-600", "border", "border-slate-200");
+        if (btn.dataset.key === key) {
+          btn.classList.add("bg-blue-600", "text-white", "shadow");
+          btn.classList.remove("bg-white", "text-slate-600", "border", "border-slate-200");
+        }
+      });
+
+      // info panel
+      document.getElementById("itemBadge").textContent = item.badge;
+      document.getElementById("itemBadge").className = "badge px-2.5 py-1 rounded-full border " + item.badgeClass;
+      document.getElementById("itemName").textContent = item.name;
+      document.getElementById("itemDescription").textContent = item.description;
+      document.getElementById("itemFormula").textContent = item.formula;
+
+      item.facts.forEach((f, i) => {
+        document.getElementById("factIcon" + i).className = "fas " + f.icon;
+        document.getElementById("factTitle" + i).textContent = f.title;
+        document.getElementById("factText" + i).textContent = f.text;
+      });
+
+      updateLegend(key);
+    }
+
+    function buildTabs() {
+      const container = document.getElementById("itemTabs");
+      container.innerHTML = "";
+      Object.keys(ITEMS).forEach(key => {
+        const btn = document.createElement("button");
+        btn.dataset.key = key;
+        btn.textContent = ITEMS[key].badge;
+        btn.className = "px-4 py-2 rounded-full text-sm font-semibold transition bg-white text-slate-600 border border-slate-200 hover:border-blue-300";
+        btn.onclick = () => selectItem(key);
+        container.appendChild(btn);
+      });
+    }
+
+    function updateLegend(key) {
+      const legends = {
+        cpu: [
+          { color: "#2563eb", label: "CPU" },
+          { color: "#0d9488", label: "Memoria" },
+          { color: "#7c3aed", label: "Bus / flusso" }
+        ],
+        memory: [
+          { color: "#0d9488", label: "Celle di memoria" },
+          { color: "#2563eb", label: "Accesso CPU" },
+          { color: "#f59e0b", label: "Istruzioni / Dati" }
+        ],
+        bus: [
+          { color: "#7c3aed", label: "Bus" },
+          { color: "#2563eb", label: "CPU" },
+          { color: "#0d9488", label: "Memoria" }
+        ],
+        alu: [
+          { color: "#d97706", label: "ALU" },
+          { color: "#2563eb", label: "Operandi" },
+          { color: "#059669", label: "Risultato" }
+        ],
+        control: [
+          { color: "#e11d48", label: "Control Unit" },
+          { color: "#2563eb", label: "Segnali" },
+          { color: "#64748b", label: "Componenti" }
+        ],
+        io: [
+          { color: "#059669", label: "I/O" },
+          { color: "#2563eb", label: "CPU" },
+          { color: "#7c3aed", label: "Bus" }
+        ]
+      };
+      const el = document.getElementById("canvasLegend");
+      el.innerHTML = (legends[key] || []).map(l =>
+        `<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:${l.color}"></span>${l.label}</span>`
+      ).join("");
+    }
+
+    /* =========================================================
+       CANVAS ANIMATION
+       ========================================================= */
+    const canvas = document.getElementById("labCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      const parent = canvas.parentElement;
+      const w = parent.clientWidth;
+      const ratio = 560 / 380;
+      canvas.width = w;
+      canvas.height = Math.round(w / ratio);
+    }
+
+    function drawScene(ts) {
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min((ts - lastTs) / 1000, 0.05);
+      lastTs = ts;
+      if (isAnimating) angleTime += dt;
+
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // background grid
+      ctx.strokeStyle = "rgba(148,163,184,0.12)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 28) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 0; y < h; y += 28) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      const item = ITEMS[currentItem];
+      const type = item.visual.type;
+
+      if (type === "cpu") drawCPU(w, h);
+      else if (type === "memory") drawMemory(w, h);
+      else if (type === "bus") drawBus(w, h);
+      else if (type === "alu") drawALU(w, h);
+      else if (type === "control") drawControl(w, h);
+      else if (type === "io") drawIO(w, h);
+
+      if (isAnimating) animId = requestAnimationFrame(drawScene);
+    }
+
+    function roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawCPU(w, h) {
+      const cx = w * 0.5, cy = h * 0.45;
+      // CPU box
+      ctx.fillStyle = "#2563eb";
+      roundRect(cx - 70, cy - 45, 140, 90, 12);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 14px Outfit, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("CPU", cx, cy - 8);
+      ctx.font = "11px Plus Jakarta Sans, sans-serif";
+      ctx.fillText("CU + ALU", cx, cy + 12);
+
+      // Memory
+      ctx.fillStyle = "#0d9488";
+      roundRect(cx - 50, h - 70, 100, 45, 8);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 12px Outfit, sans-serif";
+      ctx.fillText("MEMORIA", cx, h - 43);
+
+      // Bus line with moving packets
+      ctx.strokeStyle = "#7c3aed";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + 45);
+      ctx.lineTo(cx, h - 70);
+      ctx.stroke();
+
+      // packets
+      for (let i = 0; i < 3; i++) {
+        const t = (angleTime * 0.6 + i * 0.33) % 1;
+        const y = cy + 45 + t * (h - 70 - cy - 45);
+        ctx.fillStyle = i % 2 === 0 ? "#60a5fa" : "#2dd4bf";
+        ctx.beginPath();
+        ctx.arc(cx, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawMemory(w, h) {
+      const cols = 6, rows = 4;
+      const cellW = 42, cellH = 32;
+      const startX = (w - cols * cellW) / 2;
+      const startY = (h - rows * cellH) / 2 - 10;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * cellW;
+          const y = startY + r * cellH;
+          const isInstr = (r + c) % 3 === 0;
+          ctx.fillStyle = isInstr ? "#2563eb" : "#0d9488";
+          ctx.globalAlpha = 0.75 + 0.25 * Math.sin(angleTime * 2 + r + c);
+          roundRect(x + 3, y + 3, cellW - 6, cellH - 6, 4);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = "#fff";
+          ctx.font = "9px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(isInstr ? "I" : "D", x + cellW / 2, y + cellH / 2 + 3);
+        }
+      }
+      // CPU pointer
+      const ptr = Math.floor(angleTime * 2) % (cols * rows);
+      const pr = Math.floor(ptr / cols), pc = ptr % cols;
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      roundRect(startX + pc * cellW + 1, startY + pr * cellH + 1, cellW - 2, cellH - 2, 4);
+      ctx.stroke();
+    }
+
+    function drawBus(w, h) {
+      const cpuX = 80, memX = w - 80, cy = h * 0.5;
+      // nodes
+      ctx.fillStyle = "#2563eb";
+      roundRect(cpuX - 35, cy - 30, 70, 60, 10);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 12px Outfit, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("CPU", cpuX, cy + 4);
+
+      ctx.fillStyle = "#0d9488";
+      roundRect(memX - 35, cy - 30, 70, 60, 10);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.fillText("MEM", memX, cy + 4);
+
+      // bus
+      ctx.strokeStyle = "#7c3aed";
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(cpuX + 35, cy);
+      ctx.lineTo(memX - 35, cy);
+      ctx.stroke();
+
+      // moving dots both directions
+      for (let i = 0; i < 4; i++) {
+        const t = (angleTime * 0.5 + i * 0.25) % 1;
+        const x = cpuX + 35 + t * (memX - 35 - cpuX - 35);
+        ctx.fillStyle = i % 2 ? "#a78bfa" : "#c4b5fd";
+        ctx.beginPath();
+        ctx.arc(x, cy + (i % 2 ? -8 : 8), 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawALU(w, h) {
+      const cx = w * 0.5, cy = h * 0.5;
+      // inputs
+      ctx.fillStyle = "#2563eb";
+      roundRect(cx - 120, cy - 50, 50, 35, 6);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "11px Outfit, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("A", cx - 95, cy - 28);
+
+      roundRect(cx - 120, cy + 15, 50, 35, 6);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.fillText("B", cx - 95, cy + 37);
+
+      // ALU
+      ctx.fillStyle = "#d97706";
+      roundRect(cx - 40, cy - 45, 80, 90, 12);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 14px Outfit, sans-serif";
+      ctx.fillText("ALU", cx, cy + 5);
+
+      // result
+      const pulse = 0.7 + 0.3 * Math.sin(angleTime * 3);
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle = "#059669";
+      roundRect(cx + 70, cy - 20, 55, 40, 8);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "#fff";
+      ctx.font = "11px Outfit, sans-serif";
+      ctx.fillText("OUT", cx + 97, cy + 5);
+
+      // arrows
+      ctx.strokeStyle = "#94a3b8";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - 70, cy - 32); ctx.lineTo(cx - 40, cy - 20);
+      ctx.moveTo(cx - 70, cy + 32); ctx.lineTo(cx - 40, cy + 20);
+      ctx.moveTo(cx + 40, cy); ctx.lineTo(cx + 70, cy);
+      ctx.stroke();
+    }
+
+    function drawControl(w, h) {
+      const cx = w * 0.5, cy = h * 0.4;
+      ctx.fillStyle = "#e11d48";
+      roundRect(cx - 55, cy - 35, 110, 70, 12);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 13px Outfit, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("CONTROL", cx, cy - 5);
+      ctx.font = "11px Plus Jakarta Sans, sans-serif";
+      ctx.fillText("UNIT", cx, cy + 14);
+
+      // signal rays
+      const targets = [
+        { x: cx - 120, y: h - 60, label: "ALU" },
+        { x: cx, y: h - 60, label: "MEM" },
+        { x: cx + 120, y: h - 60, label: "BUS" }
+      ];
+      targets.forEach((t, i) => {
+        const pulse = (Math.sin(angleTime * 2.5 + i) + 1) / 2;
+        ctx.strokeStyle = `rgba(225, 29, 72, ${0.3 + pulse * 0.7})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 35);
+        ctx.lineTo(t.x, t.y - 20);
+        ctx.stroke();
+        ctx.fillStyle = "#64748b";
+        roundRect(t.x - 28, t.y - 18, 56, 30, 6);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.font = "10px Outfit, sans-serif";
+        ctx.fillText(t.label, t.x, t.y + 2);
+      });
+    }
+
+    function drawIO(w, h) {
+      const cy = h * 0.5;
+      // input
+      ctx.fillStyle = "#059669";
+      roundRect(40, cy - 40, 70, 80, 10);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 12px Outfit, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("INPUT", 75, cy + 4);
+
+      // CPU
+      ctx.fillStyle = "#2563eb";
+      roundRect(w / 2 - 40, cy - 35, 80, 70, 10);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.fillText("CPU", w / 2, cy + 4);
+
+      // output
+      ctx.fillStyle = "#059669";
+      roundRect(w - 110, cy - 40, 70, 80, 10);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.fillText("OUTPUT", w - 75, cy + 4);
+
+      // flowing particles
+      for (let i = 0; i < 3; i++) {
+        const t1 = (angleTime * 0.4 + i * 0.3) % 1;
+        const x1 = 110 + t1 * (w / 2 - 40 - 110);
+        ctx.fillStyle = "#34d399";
+        ctx.beginPath(); ctx.arc(x1, cy - 10, 4, 0, Math.PI * 2); ctx.fill();
+
+        const t2 = (angleTime * 0.4 + i * 0.3 + 0.5) % 1;
+        const x2 = w / 2 + 40 + t2 * (w - 110 - (w / 2 + 40));
+        ctx.fillStyle = "#6ee7b7";
+        ctx.beginPath(); ctx.arc(x2, cy + 10, 4, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    function toggleAnimation() {
+      isAnimating = !isAnimating;
+      document.getElementById("playPauseIcon").className = isAnimating ? "fas fa-pause" : "fas fa-play";
+      document.getElementById("playPauseText").textContent = isAnimating ? "Pausa" : "Play";
+      if (isAnimating) {
+        lastTs = 0;
+        animId = requestAnimationFrame(drawScene);
+      } else {
+        cancelAnimationFrame(animId);
+      }
+    }
+
+    /* =========================================================
+       SLIDER / BOTTLENECK
+       ========================================================= */
+    function updateSimulation(val) {
+      val = Number(val);
+      document.getElementById("sliderValue").textContent = val;
+
+      const label = document.getElementById("sliderLabel");
+      if (val < 30) {
+        label.textContent = "Fluido";
+        label.className = "ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700";
+      } else if (val < 65) {
+        label.textContent = "Congestionato";
+        label.className = "ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700";
+      } else {
+        label.textContent = "Saturato";
+        label.className = "ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700";
+      }
+
+      // visual effects
+      const cloud = document.getElementById("busCloud");
+      const scale = 0.8 + (val / 100) * 1.4;
+      const opacity = 0.4 + (val / 100) * 0.5;
+      cloud.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      cloud.style.opacity = opacity;
+      cloud.style.background = val > 60
+        ? `rgba(225, 29, 72, ${0.35 + val / 200})`
+        : `rgba(124, 58, 237, ${0.3 + val / 250})`;
+
+      const wait = document.getElementById("waitArrow");
+      wait.style.opacity = val > 55 ? Math.min(1, (val - 55) / 30) : 0;
+
+      // subtle node pulse
+      const pulse = 1 + (val > 70 ? 0.05 * Math.sin(Date.now() / 200) : 0);
+      document.getElementById("nodeCPU").style.transform = `translateY(-50%) scale(${pulse})`;
+    }
+
+    function setSlider(v) {
+      document.getElementById("simSlider").value = v;
+      updateSimulation(v);
+    }
+
+    /* =========================================================
+       QUIZ ENGINE
+       ========================================================= */
+    function renderQuizStep() {
+      const data = QUIZ_DATA[currentStep];
+      const answered = userAnswers[currentStep];
+      let html = `<h3 class="font-outfit text-lg font-bold text-slate-900 mb-4">${data.q}</h3><div class="space-y-2">`;
+
+      data.options.forEach((opt, idx) => {
+        let cls = "w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition ";
+        if (answered === null) {
+          cls += "border-slate-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer";
+        } else if (idx === data.correct) {
+          cls += "border-emerald-400 bg-emerald-50 text-emerald-800";
+        } else if (idx === answered) {
+          cls += "border-rose-400 bg-rose-50 text-rose-800";
+        } else {
+          cls += "border-slate-100 text-slate-400";
+        }
+        const icon = answered !== null
+          ? (idx === data.correct ? '<i class="fas fa-check text-emerald-500 mr-2"></i>'
+            : idx === answered ? '<i class="fas fa-times text-rose-500 mr-2"></i>' : '')
+          : '';
+        html += `<button class="${cls}" onclick="selectOption(${idx})" ${answered !== null ? "disabled" : ""}>${icon}${opt}</button>`;
+      });
+      html += "</div>";
+
+      if (answered !== null) {
+        const ok = answered === data.correct;
+        html += `<div class="mt-4 p-3 rounded-xl text-sm ${ok ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-800"}">
+          <strong>${ok ? "Corretto!" : "Non esatto."}</strong> ${data.explanation}
+        </div>`;
+      }
+
+      document.getElementById("quizContent").innerHTML = html;
+      document.getElementById("qNum").textContent = currentStep + 1;
+      document.getElementById("qTotal").textContent = QUIZ_DATA.length;
+      document.getElementById("qScore").textContent = score;
+      document.getElementById("qProgress").style.width = ((currentStep + 1) / QUIZ_DATA.length * 100) + "%";
+      document.getElementById("prevBtn").disabled = currentStep === 0;
+
+      const nextBtn = document.getElementById("nextBtn");
+      if (currentStep === QUIZ_DATA.length - 1) {
+        nextBtn.innerHTML = '<i class="fas fa-redo mr-1"></i> Ricomincia';
+      } else {
+        nextBtn.innerHTML = 'Prossima <i class="fas fa-arrow-right ml-1"></i>';
+      }
+    }
+
+    function selectOption(idx) {
+      if (userAnswers[currentStep] !== null) return;
+      userAnswers[currentStep] = idx;
+      if (idx === QUIZ_DATA[currentStep].correct) score++;
+      renderQuizStep();
+    }
+
+    function nextQuestion() {
+      if (currentStep === QUIZ_DATA.length - 1) {
+        // reset
+        currentStep = 0;
+        userAnswers = new Array(QUIZ_DATA.length).fill(null);
+        score = 0;
+      } else {
+        currentStep++;
+      }
+      renderQuizStep();
+    }
+
+    function prevQuestion() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderQuizStep();
+      }
+    }
+
+    /* =========================================================
+       CLASSIFICATION GAME
+       ========================================================= */
+    function renderClassification() {
+      const list = document.getElementById("classifList");
+      list.innerHTML = "";
+      CLASSIFICATION_DATA.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "p-3 rounded-xl bg-slate-50 border border-slate-100";
+        row.innerHTML = `<div class="text-xs font-bold text-slate-700 mb-2">${item.label}</div>`;
+        const btns = document.createElement("div");
+        btns.className = "flex flex-wrap gap-1.5";
+        item.options.forEach(opt => {
+          const b = document.createElement("button");
+          b.textContent = opt;
+          b.className = "px-2.5 py-1 rounded-lg text-xs font-semibold border transition " +
+            (selections[item.id] === opt
+              ? "bg-violet-600 text-white border-violet-600"
+              : "bg-white text-slate-600 border-slate-200 hover:border-violet-300");
+          b.onclick = () => {
+            selections[item.id] = opt;
+            renderClassification();
+            document.getElementById("classifFeedback").classList.add("hidden");
+          };
+          btns.appendChild(b);
+        });
+        row.appendChild(btns);
+        list.appendChild(row);
+      });
+    }
+
+    function checkAnswers() {
+      let correct = 0;
+      CLASSIFICATION_DATA.forEach(item => {
+        if (selections[item.id] === item.correct) correct++;
+      });
+      const fb = document.getElementById("classifFeedback");
+      fb.classList.remove("hidden");
+      if (correct === CLASSIFICATION_DATA.length) {
+        fb.className = "mt-3 text-center text-sm font-medium text-emerald-600";
+        fb.textContent = `Perfetto! ${correct}/${CLASSIFICATION_DATA.length} corretti`;
+      } else {
+        fb.className = "mt-3 text-center text-sm font-medium text-amber-600";
+        fb.textContent = `${correct}/${CLASSIFICATION_DATA.length} corretti — riprova!`;
+      }
+    }
+
+    /* =========================================================
+       INIT
+       ========================================================= */
+    window.onload = () => {
+      buildTabs();
+      selectItem("cpu");
+      resizeCanvas();
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        if (!isAnimating) drawScene(performance.now());
+      });
+      animId = requestAnimationFrame(drawScene);
+      updateSimulation(35);
+      renderQuizStep();
+      renderClassification();
+    };
+  </script>
+</body>
+</html>

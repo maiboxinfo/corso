@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FotosintesiLab — Laboratorio Interattivo sulla Fotosintesi Clorofilliana</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                        },
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base Light Theme Enforcement */
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glassmorphism Panels for Light Mode */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Light Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Gradient Glow Effects */
+        .glow-emerald {
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+        }
+        .glow-amber {
+            box-shadow: 0 0 25px -5px rgba(217, 119, 6, 0.25);
+        }
+
+        /* Canvas Styles */
+        canvas {
+            background-color: #ffffff;
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToSection('intro')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+                    <i class="fa-solid fa-seedling text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold font-heading text-slate-800 tracking-tight flex items-center gap-1.5">
+                        Fotosintesi<span class="text-emerald-600">Lab</span>
+                    </span>
+                    <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Laboratorio Bio-Chimico</span>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <button onclick="scrollToSection('intro')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/60 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-emerald-500"></i> Introduzione
+                </button>
+                <button onclick="scrollToSection('mol-lab')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/60 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-flask text-teal-500"></i> Fasi & Cloroplasto
+                </button>
+                <button onclick="scrollToSection('simulation')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/60 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-amber-500"></i> Simulatore Fattori
+                </button>
+                <button onclick="scrollToSection('quiz')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/60 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-purple-500"></i> Quiz & Sfida
+                </button>
+            </nav>
+
+            <!-- Mobile Hamburger Button -->
+            <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 bg-white/95 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="scrollToSection('intro'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-emerald-50 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-emerald-500"></i> Introduzione
+            </button>
+            <button onclick="scrollToSection('mol-lab'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-emerald-50 flex items-center gap-2">
+                <i class="fa-solid fa-flask text-teal-500"></i> Fasi & Cloroplasto
+            </button>
+            <button onclick="scrollToSection('simulation'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-emerald-50 flex items-center gap-2">
+                <i class="fa-solid fa-sliders text-amber-500"></i> Simulatore Fattori
+            </button>
+            <button onclick="scrollToSection('quiz'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-emerald-50 flex items-center gap-2">
+                <i class="fa-solid fa-trophy text-purple-500"></i> Quiz & Sfida
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- SECTION 1: Intro & Hero -->
+        <section id="intro" class="space-y-8">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-emerald-50/80 via-teal-50/50 to-amber-50/40 relative overflow-hidden">
+                <div class="max-w-3xl space-y-5">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-sun text-amber-500 animate-spin-slow"></i> Trasformazione Energetica Globale
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold font-heading text-slate-900 leading-tight">
+                        La <span class="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">Fotosintesi Clorofilliana</span>: Luce che diventa Vita
+                    </h1>
+                    <p class="text-slate-700 text-base sm:text-lg leading-relaxed">
+                        La fotosintesi è il processo biochimico fondamentale mediante il quale piante, alghe e cianobatteri catturano l'<strong>energia luminosa del Sole</strong> per convertire molecole inorganiche di <strong>anidride carbonica (CO₂)</strong> e <strong>acqua (H₂O)</strong> in <strong>materia organica (zuccheri)</strong> e <strong>ossigeno (O₂)</strong>.
+                    </p>
+                    
+                    <!-- Global Chemical Reaction Box -->
+                    <div class="p-4 rounded-2xl bg-white/90 border border-emerald-200 shadow-sm font-mono text-center text-slate-800 text-sm sm:text-base font-semibold">
+                        <span class="text-amber-600">6 CO₂</span> + <span class="text-sky-600">6 H₂O</span> + <span class="text-amber-500 font-bold">Luce</span> 
+                        <i class="fa-solid fa-arrow-right mx-2 text-emerald-600"></i> 
+                        <span class="text-emerald-700 font-extrabold">C₆H₁₂O₆</span> + <span class="text-teal-600 font-bold">6 O₂</span>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="scrollToSection('mol-lab')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <i class="fa-solid fa-microscope"></i> Esplora il Laboratorio
+                        </button>
+                        <button onclick="scrollToSection('analogy')" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-sm shadow-sm transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> Scopri l'Analogia
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analogy Block -->
+            <div id="analogy" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left: Metaphor Text -->
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-4 border-l-4 border-l-amber-500">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-solar-panel"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold font-heading text-slate-900">L'Analogia: La Fabbrica Bio-Solare</h3>
+                            <p class="text-xs text-slate-500">Comprendere la fotosintesi con una metafora di vita quotidiana</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Immagina una <strong>fabbrica completamente ecologica</strong> situata sul tetto di una foglia:
+                    </p>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-amber-500 mt-1"></i>
+                            <span><strong>Pannelli Solari (Clorofilla / Fotosistemi):</strong> Catturano i fotoni del Sole e generano corrente ad alta energia.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-amber-500 mt-1"></i>
+                            <span><strong>Batterie Ricaricabili (ATP & NADPH):</strong> Immagazzinano temporaneamente l'energia della corrente per alimentarne i macchinari.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-amber-500 mt-1"></i>
+                            <span><strong>Cucina Robotizzata (Ciclo di Calvin):</strong> Prende l'aria dall'esterno (CO₂) e, usando l'energia delle batterie, prepara scatole di cibo (Glucosio).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-amber-500 mt-1"></i>
+                            <span><strong>Scarto di Lavaggio (Ossigeno O₂):</strong> L'acqua viene usata per pulire il sistema e rilascia bolle d'aria pura.</span>
+                        </li>
+                    </ul>
+                    <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-amber-600 text-base"></i>
+                        <span><strong>Differenza Chiave:</strong> L'ossigeno viene estratto dalla scissione dell'acqua (H₂O), non dall'anidride carbonica!</span>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive Toggle View -->
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-base font-bold font-heading text-slate-900">Confronto Concettuale</h4>
+                            <div class="inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200 text-xs font-semibold">
+                                <button id="btnViewAnalogy" onclick="setAnalogyView('analogy')" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-emerald-700 font-bold transition-all">
+                                    <i class="fa-solid fa-industry"></i> Vista Analogia
+                                </button>
+                                <button id="btnViewTechnical" onclick="setAnalogyView('technical')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                                    <i class="fa-solid fa-dna"></i> Vista Biologica
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Panel A: Analogy View -->
+                        <div id="viewAnalogyContent" class="space-y-3">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-sun"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800">Luce Solare Ingressante</h5>
+                                    <p class="text-xs text-slate-600">Alimenta i pannelli fotosensibili per ricaricare le batterie interne.</p>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-faucet-drip"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800">Materia Prima: Acqua & Aria</h5>
+                                    <p class="text-xs text-slate-600">L'acqua viene frammentata; il carbonio dell'aria viene assemblato.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel B: Technical View -->
+                        <div id="viewTechnicalContent" class="hidden space-y-3">
+                            <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-leaf"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-emerald-900">Fase Luminosa (Tilacoidi)</h5>
+                                    <p class="text-xs text-emerald-800">PSII e PSI convertono fotoni in ATP e NADPH tramite fotolisi di H₂O.</p>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-arrows-spin"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-teal-900">Fase Oscura / Ciclo di Calvin (Stroma)</h5>
+                                    <p class="text-xs text-teal-800">Fissazione di CO₂ via RuBisCO per sintetizzare G3P e Glucosio.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Interactive Lab (mol-lab) -->
+        <section id="mol-lab" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-slate-900">
+                        Laboratorio Virtuale delle Fasi Fotosintetiche
+                    </h2>
+                    <p class="text-slate-600 text-sm">Seleziona una fase per analizzare i meccanismi molecolari e l'animazione dinamica.</p>
+                </div>
+            </div>
+
+            <!-- Horizontal Tab Buttons -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <button id="tab-ps2" onclick="selectItem('ps2')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-600 text-white shadow-md">
+                    <i class="fa-solid fa-bolt"></i> 1. PSII & Fotolisi H₂O
+                </button>
+                <button id="tab-etc" onclick="selectItem('etc')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
+                    <i class="fa-solid fa-route"></i> 2. Catena Trasporto & ATP
+                </button>
+                <button id="tab-ps1" onclick="selectItem('ps1')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
+                    <i class="fa-solid fa-atom"></i> 3. PSI & NADPH
+                </button>
+                <button id="tab-calvin" onclick="selectItem('calvin')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
+                    <i class="fa-solid fa-rotate text-amber-500"></i> 4. Ciclo di Calvin
+                </button>
+                <button id="tab-g3p" onclick="selectItem('g3p')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
+                    <i class="fa-solid fa-cubes"></i> 5. Sintesi Zuccheri
+                </button>
+                <button id="tab-stomata" onclick="selectItem('stomata')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
+                    <i class="fa-solid fa-wind"></i> 6. Stomi & Scambi
+                </button>
+            </div>
+
+            <!-- Lab Main Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Left: HTML5 Animated Canvas (7 cols) -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-4 sm:p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-600" id="canvasTitle">Visualizzazione Dinamica</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="btnPlayPause" onclick="toggleAnimation()" class="px-3 py-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold transition-all flex items-center gap-1.5">
+                                <i class="fa-solid fa-pause" id="playIcon"></i> <span id="playText">Pausa</span>
+                            </button>
+                            <button onclick="resetAnimation()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all">
+                                <i class="fa-solid fa-rotate-right"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Container -->
+                    <div class="relative w-full aspect-video sm:aspect-[4/3] rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-white">
+                        <canvas id="labCanvas" class="w-full h-full"></canvas>
+                    </div>
+
+                    <!-- Canvas Legend Footer -->
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-2" id="canvasLegend">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Right: Text Info Panel (5 cols) -->
+                <div class="lg:col-span-5 glass-panel rounded-3xl p-6 space-y-5">
+                    <div>
+                        <span id="itemBadge" class="inline-block px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wide">
+                            Fase Luminosa
+                        </span>
+                        <h3 id="itemName" class="text-2xl font-extrabold font-heading text-slate-900 mt-2">
+                            Fotosistema II & Fotolisi dell'Acqua
+                        </h3>
+                    </div>
+
+                    <p id="itemDescription" class="text-slate-600 text-sm leading-relaxed">
+                        I fotoni solari colpiscono le molecole di clorofilla nel Fotosistema II (PSII). Gli elettroni vengono eccitati ad alto livello energetico. Per rimpiazzare gli elettroni persi, la pianta scinde le molecole d'acqua in protoni, elettroni e gas ossigeno.
+                    </p>
+
+                    <!-- Key Facts (3 Mini Cards) -->
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Punti Chiave del Meccanismo</h4>
+                        <div id="fact1" class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-sun text-amber-500 mt-0.5 text-base"></i>
+                            <span class="text-xs text-slate-700"><strong>Assorbimento Fotoni:</strong> La clorofilla cattura onde blu e rosse.</span>
+                        </div>
+                        <div id="fact2" class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-droplet text-sky-500 mt-0.5 text-base"></i>
+                            <span class="text-xs text-slate-700"><strong>Scissione dell'Acqua:</strong> H₂O → 2H⁺ + 2e⁻ + ½O₂.</span>
+                        </div>
+                        <div id="fact3" class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-wind text-teal-500 mt-0.5 text-base"></i>
+                            <span class="text-xs text-slate-700"><strong>Rilascio Ossigeno:</strong> L'O₂ gassoso fuoriesce attraverso gli stomi.</span>
+                        </div>
+                    </div>
+
+                    <!-- Formula Box -->
+                    <div class="p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono text-center text-xs sm:text-sm font-semibold shadow-md">
+                        <span class="text-slate-400 text-[10px] block font-sans uppercase mb-1">Equazione Chimica di Reazione</span>
+                        <span id="itemFormula">2 H₂O + luce → 4 H⁺ + 4 e⁻ + O₂</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: Factor Simulator (simulation) -->
+        <section id="simulation" class="space-y-6">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 space-y-8 bg-gradient-to-br from-white via-slate-50/50 to-emerald-50/30">
+                <div class="max-w-2xl">
+                    <span class="px-3 py-1 rounded-full bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold uppercase tracking-wide">
+                        Simulatore Parametrico
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold font-heading text-slate-900 mt-2">
+                        Fattori Ambientali & Tasso Fotosintetico
+                    </h2>
+                    <p class="text-slate-600 text-sm">
+                        Modifica l'intensità della luce solare, la concentrazione di CO₂ e lo stato idrico per osservare la legge dei fattori limitanti.
+                    </p>
+                </div>
+
+                <!-- Controls & Slider Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- Slider & Selectors Controls (6 cols) -->
+                    <div class="lg:col-span-6 space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        
+                        <!-- Slider Light Intensity -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="lightSlider" class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-sun text-amber-500"></i> Intensità Luminosa (Fotoni)
+                                </label>
+                                <span id="lightValueText" class="text-sm font-extrabold text-amber-600 font-mono">60%</span>
+                            </div>
+                            <input type="range" id="lightSlider" min="0" max="100" value="60" oninput="updateSimulation()" class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                        </div>
+
+                        <!-- CO2 Level Toggle -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-cloud text-teal-500"></i> Disponibilità CO₂ Atmosferica
+                            </label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setCo2Level('low')" id="co2LowBtn" class="co2-btn py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">Bassa</button>
+                                <button onclick="setCo2Level('normal')" id="co2NormalBtn" class="co2-btn py-2 rounded-xl bg-teal-600 text-white text-xs font-bold shadow-sm">Normale</button>
+                                <button onclick="setCo2Level('high')" id="co2HighBtn" class="co2-btn py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">Elevata</button>
+                            </div>
+                        </div>
+
+                        <!-- Water Status Toggle -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-droplet text-sky-500"></i> Stato Idrico & Stomi
+                            </label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="setWaterStatus('optimum')" id="waterOptBtn" class="water-btn py-2 rounded-xl bg-sky-600 text-white text-xs font-bold shadow-sm">Abbondante (Aperti)</button>
+                                <button onclick="setWaterStatus('drought')" id="waterDroughtBtn" class="water-btn py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">Siccità (Chiusi)</button>
+                            </div>
+                        </div>
+
+                        <!-- Presets Quick Buttons -->
+                        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-2">
+                            <span class="text-xs font-bold text-slate-400 self-center">Preset Rapidi:</span>
+                            <button onclick="applyPreset('cloudy')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Giorno Nuvoloso</button>
+                            <button onclick="applyPreset('ideal')" class="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-semibold">Condizioni Ideali</button>
+                            <button onclick="applyPreset('dry')" class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold">Caldo Secco</button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Output & Yield Meter (6 cols) -->
+                    <div class="lg:col-span-6 space-y-6 flex flex-col justify-center">
+                        
+                        <!-- Rate Display Card -->
+                        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-md space-y-4 text-center relative overflow-hidden">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500 block">Tasso Fotosintetico Calcolato</span>
+                            
+                            <!-- Large Rate Percentage -->
+                            <div class="text-5xl sm:text-6xl font-black font-heading text-emerald-600 tracking-tight" id="rateOutputText">
+                                78%
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden border border-slate-200 p-0.5">
+                                <div id="rateProgressBar" class="h-full bg-gradient-to-r from-amber-500 via-teal-500 to-emerald-500 rounded-full transition-all duration-300" style="width: 78%;"></div>
+                            </div>
+
+                            <!-- Limiting Factor Badge -->
+                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200" id="limitingFactorBadge">
+                                <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Fattore Limitante: Nessuno
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Vector & Cloud Visualizer -->
+                        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 flex items-center justify-around text-center">
+                            <div class="space-y-1">
+                                <div class="text-2xl text-amber-500" id="sunVisualIcon"><i class="fa-solid fa-sun"></i></div>
+                                <span class="text-[11px] font-bold text-slate-600 block">Flusso Fotoni</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-right text-slate-400 text-xl transition-all duration-300" id="flowArrow"></i>
+                            <div class="space-y-1">
+                                <div class="text-2xl text-emerald-600" id="leafVisualIcon"><i class="fa-solid fa-leaf"></i></div>
+                                <span class="text-[11px] font-bold text-slate-600 block">Sintesi G3P</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Comparative Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+                    <div class="p-4 rounded-xl bg-white border border-slate-200 flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-base shrink-0">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">Reazioni Dipendenti dalla Luce (Tilacoidi)</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">Convertono la luce in ATP e NADPH rilascando O₂. Richiedono acqua costante e fotoni suffienti.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-xl bg-white border border-slate-200 flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-base shrink-0">
+                            <i class="fa-solid fa-arrows-spin"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">Ciclo di Calvin Indipendente dalla Luce (Stroma)</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">Usa ATP, NADPH e CO₂ per sintetizzare zuccheri organici. Rallenta se la CO₂ è scarsa per stomi chiusi.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: Quiz & Challenge (quiz) -->
+        <section id="quiz" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left 8 cols: Interactive Quiz Step Engine -->
+                <div class="lg:col-span-8 glass-panel rounded-3xl p-6 sm:p-8 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-purple-100 border border-purple-200 text-purple-800 text-xs font-bold uppercase tracking-wide">
+                                Valutazione Concettuale
+                            </span>
+                            <h3 class="text-2xl font-extrabold font-heading text-slate-900 mt-1">Quiz sulla Fotosintesi</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-slate-400 block">Punteggio</span>
+                            <span class="text-lg font-extrabold text-purple-700 font-mono" id="quizScoreText">0 / 6</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div id="quizProgressBar" class="h-full bg-purple-600 transition-all duration-300" style="width: 16.6%;"></div>
+                    </div>
+
+                    <!-- Question Container -->
+                    <div id="quizQuestionBox" class="space-y-4">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Quiz Navigation Footer -->
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                        <button id="btnQuizPrev" onclick="prevQuestion()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all disabled:opacity-40">
+                            <i class="fa-solid fa-arrow-left"></i> Precedente
+                        </button>
+                        <span id="quizCounterText" class="text-xs font-bold text-slate-500">Domanda 1 di 6</span>
+                        <button id="btnQuizNext" onclick="nextQuestion()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-all shadow-md">
+                            Prossima <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right 4 cols: Classification Game -->
+                <div class="lg:col-span-4 glass-panel rounded-3xl p-6 space-y-5 border-t-4 border-t-teal-500">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-teal-100 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wide">
+                            Mini-Gioco
+                        </span>
+                        <h3 class="text-xl font-extrabold font-heading text-slate-900 mt-1">Smista le Molecole</h3>
+                        <p class="text-xs text-slate-600">Assegna ciascuna specie chimica alla fase fotosintetica di appartenenza.</p>
+                    </div>
+
+                    <!-- Classification List -->
+                    <div id="classificationList" class="space-y-3">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Check Button -->
+                    <button onclick="checkClassification()" class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs tracking-wider uppercase transition-all shadow-md">
+                        Verifica Classificazione
+                    </button>
+
+                    <!-- Classification Feedback Box -->
+                    <div id="classificationFeedback" class="hidden p-3 rounded-xl text-xs font-semibold text-center">
+                        <!-- Dynamic result -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-white border-t border-slate-200 py-8 text-center text-slate-500 text-xs space-y-2">
+        <div class="flex items-center justify-center gap-2 font-heading font-extrabold text-slate-800 text-base">
+            <i class="fa-solid fa-seedling text-emerald-600"></i> FotosintesiLab
+        </div>
+        <p class="max-w-md mx-auto text-slate-600">
+            Modulo interattivo didattico per la biologia delle scuole superiori e università. Nessuna dipendenza server.
+        </p>
+        <p class="text-slate-400">© 2026 FotosintesiLab — Tutti i contenuti scientifici rispettano la notazione Unicode nativa.</p>
+    </footer>
+
+    <script>
+        const ITEMS = {
+            ps2: {
+                name: "Fotosistema II e Fotolisi H₂O",
+                badge: "Fase Luminosa",
+                description: "La luce solare eccita gli elettroni della clorofilla P680 nel Fotosistema II. Per sostituire gli elettroni persi, il complesso enzimatico scinde l'acqua in protoni H⁺, elettroni e ossigeno O₂.",
+                fact1: "<strong>Assorbimento Fotoni:</strong> Clorofilla assorbe luce blu e rossa.",
+                fact2: "<strong>Fotolisi dell'Acqua:</strong> 2 H₂O → 4 H⁺ + 4 e⁻ + O₂.",
+                fact3: "<strong>Rilascio Ossigeno:</strong> L'O₂ viene liberato dagli stomi nell'aria.",
+                formula: "2 H₂O + luce → 4 H⁺ + 4 e⁻ + O₂",
+                legend: "🟡 Fotoni Solari | 💧 Molecole H₂O | 🔵 Protoni H⁺ | 💨 Bolle O₂"
+            },
+            etc: {
+                name: "Catena Trasporto & ATP Sintasi",
+                badge: "Membrana Tilacoide",
+                description: "Gli elettroni ad alta energia fluiscono attraverso i citocromi pompando protoni H⁺ dall'esterno all'interno del tilacoide. Il gradiente protonico aziona l'ATP sintasi generatrice di energia.",
+                fact1: "<strong>Gradiente Protonico:</strong> Accumulo di H⁺ nel lume tilacoidale.",
+                fact2: "<strong>Chemiosmosi:</strong> Il flusso passivo di H⁺ fa ruotare l'ATP sintasi.",
+                fact3: "<strong>Sintesi Energetica:</strong> ADP + Pᵢ + gradiente → ATP.",
+                formula: "ADP + Pᵢ + gradiente H⁺ → ATP",
+                legend: "⚡ Elettroni e⁻ | 🔵 Protoni H⁺ | 🔋 Molecola ATP Sintetizzata"
+            },
+            ps1: {
+                name: "Fotosistema I e Produzione NADPH",
+                badge: "Fase Luminosa",
+                description: "Gli elettroni giungono al Fotosistema I (P700) dove vengono nuovamente ri-eccitati dalla luce solare. L'enzima NADP⁺ reduttasi li trasferisce al NADP⁺ producendo NADPH ad alto potere riducente.",
+                fact1: "<strong>Seconda Eccitazione:</strong> La luce ricarica l'energia degli elettroni.",
+                fact2: "<strong>Riduzione NADP⁺:</strong> NADP⁺ + 2 e⁻ + H⁺ → NADPH.",
+                fact3: "<strong>Vettori di Energia:</strong> ATP e NADPH migrano verso lo stroma.",
+                formula: "NADP⁺ + 2 e⁻ + H⁺ → NADPH",
+                legend: "🟡 Fotoni Solari | ⚡ Elettroni | 🌿 NADPH Carico pronto"
+            },
+            calvin: {
+                name: "Ciclo di Calvin: Fissazione CO₂",
+                badge: "Stroma Cloroplastico",
+                description: "Nel ciclo di Calvin, l'enzima RuBisCO cattura l'anidride carbonica (CO₂) dall'aria e la lega al RuBP (5 atomi di C). Si forma 3-PGA, che viene poi ridotto consumando ATP e NADPH.",
+                fact1: "<strong>Enzima RuBisCO:</strong> Proteina più abbondante della Terra.",
+                fact2: "<strong>Fissazione Carbonio:</strong> CO₂ inorganica entra nella biosfera.",
+                fact3: "<strong>Consumo Energetico:</strong> Utilizzo di ATP e NADPH della fase luminosa.",
+                formula: "CO₂ + RuBP (5C) + RuBisCO → 2 (3-PGA)",
+                legend: "☁️ Molecole CO₂ | 🔄 Ruota Ciclo RuBisCO | 🧪 Intermedio 3-PGA"
+            },
+            g3p: {
+                name: "Sintesi G3P e Zuccheri Organici",
+                badge: "Prodotti Biosintetici",
+                description: "Il 3-PGA viene convertito in G3P (Gliceraldeide-3-fosfato). Da 6 giri di ciclo esce una molecola netta di zucchero a 6 atomi di carbonio, usata per formare glucosio, amido e cellulosa.",
+                fact1: "<strong>Prodotto G3P:</strong> Mattoncino base a 3 atomi di Carbonio.",
+                fact2: "<strong>Rigenerazione RuBP:</strong> La maggior parte del G3P ricicla il RuBP.",
+                fact3: "<strong>Glucosio & Amido:</strong> C₆H₁₂O₆ immagazzina energia chimica a lungo termine.",
+                formula: "6 CO₂ + 12 NADPH + 18 ATP → C₆H₁₂O₆ + 6 H₂O",
+                legend: "💎 Zucchero G3P | 🍬 Anello Glucosio C₆H₁₂O₆ | 🌳 Amido"
+            },
+            stomata: {
+                name: "Stomi e Scambi Gassosi Fogliari",
+                badge: "Regolazione Fisiologica",
+                description: "Gli stomi sono microscopici pori delimitati da cellule guardia. Regolano l'entrata della CO₂, l'uscita dell'O₂ prodotto e la perdita d'acqua per traspirazione.",
+                fact1: "<strong>Cellule Guardia:</strong> Cambiano turgore regolando l'apertura.",
+                fact2: "<strong>Equilibrio Idrico:</strong> In siccità gli stomi si chiudono per non essiccarsi.",
+                fact3: "<strong>Effetto Limite:</strong> Stomi chiusi = arresto dell'ingresso di CO₂.",
+                formula: "CO₂ (ingresso) ⇌ O₂ (uscita) + H₂O (traspirazione)",
+                legend: "🟢 Cellule Guardia Stoma | ☁️ CO₂ in ingresso | 💨 O₂ in uscita"
+            }
+        };
+
+        /* STATE VARIABLES */
+        let currentItemKey = 'ps2';
+        let isAnimating = true;
+        let animationFrameId = null;
+        let angleTime = 0;
+
+        const canvas = document.getElementById('labCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            if (!canvas.parentElement) return;
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            drawScene();
+        });
+
+        /* MAIN CANVAS ANIMATION DRAWING FUNCTION */
+        function drawScene() {
+            if (!canvas.width) resizeCanvas();
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Clear Canvas
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw Background Chloroplast Texture
+            ctx.fillStyle = '#f0fdf4';
+            ctx.fillRect(0, 0, w, h);
+
+            // Render specific phase animation based on selected item
+            switch (currentItemKey) {
+                case 'ps2':
+                    drawPS2Scene(w, h);
+                    break;
+                case 'etc':
+                    drawETCScene(w, h);
+                    break;
+                case 'ps1':
+                    drawPS1Scene(w, h);
+                    break;
+                case 'calvin':
+                    drawCalvinScene(w, h);
+                    break;
+                case 'g3p':
+                    drawG3PScene(w, h);
+                    break;
+                case 'stomata':
+                    drawStomataScene(w, h);
+                    break;
+            }
+
+            if (isAnimating) {
+                angleTime += 0.03;
+                animationFrameId = requestAnimationFrame(drawScene);
+            }
+        }
+
+        /* 1. PS2 Drawing Function */
+        function drawPS2Scene(w, h) {
+            // Membrane line
+            ctx.fillStyle = '#a7f3d0';
+            ctx.fillRect(0, h * 0.55, w, h * 0.15);
+            ctx.fillStyle = '#047857';
+            ctx.font = 'bold 12px Plus Jakarta Sans';
+            ctx.fillText('Membrana del Tilacoide', 15, h * 0.63);
+
+            // PSII Complex
+            const psX = w * 0.35;
+            const psY = h * 0.55;
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.roundRect(psX - 40, psY - 40, 80, 80, 16);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Outfit';
+            ctx.textAlign = 'center';
+            ctx.fillText('PS II', psX, psY + 5);
+
+            // Photons (Yellow light rays coming from top)
+            for (let i = 0; i < 3; i++) {
+                const py = (h * 0.1) + ((angleTime * 40 + i * 30) % (h * 0.4));
+                const px = psX - 50 + (i * 50);
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(px, py, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(px, py - 10);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+            }
+
+            // Water Splitting (H2O -> H+ + O2)
+            const h2oX = psX - 80;
+            const h2oY = psY + 70;
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.arc(h2oX, h2oY, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px Plus Jakarta Sans';
+            ctx.fillText('H₂O', h2oX, h2oY + 3);
+
+            // Bubbles O2 rising
+            const bubbleY = (h2oY - ((angleTime * 30) % 80));
+            ctx.fillStyle = 'rgba(20, 184, 166, 0.8)';
+            ctx.beginPath();
+            ctx.arc(h2oX + 60, bubbleY, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('O₂', h2oX + 60, bubbleY + 3);
+
+            // Protons H+ accumulation
+            ctx.fillStyle = '#2563eb';
+            for (let i = 0; i < 4; i++) {
+                const hx = psX + 40 + (i * 25);
+                const hy = psY + 65 + Math.sin(angleTime + i) * 5;
+                ctx.beginPath();
+                ctx.arc(hx, hy, 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('H⁺', hx, hy + 3);
+                ctx.fillStyle = '#2563eb';
+            }
+        }
+
+        /* 2. ETC Drawing Function */
+        function drawETCScene(w, h) {
+            // Membrane
+            ctx.fillStyle = '#a7f3d0';
+            ctx.fillRect(0, h * 0.45, w, h * 0.15);
+
+            // Complexes
+            const complexes = [w * 0.2, w * 0.5, w * 0.8];
+            const names = ['Cyt b6f', 'ATP Sintasi', 'Lume'];
+            
+            complexes.forEach((cx, idx) => {
+                ctx.fillStyle = idx === 1 ? '#7c3aed' : '#0d9488';
+                ctx.beginPath();
+                ctx.roundRect(cx - 30, h * 0.4, 60, 70, 12);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px Outfit';
+                ctx.textAlign = 'center';
+                ctx.fillText(names[idx], cx, h * 0.48);
+            });
+
+            // Electron Flow
+            const eX = w * 0.15 + ((angleTime * 60) % (w * 0.65));
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(eX, h * 0.43, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px Plus Jakarta Sans';
+            ctx.fillText('e⁻', eX, h * 0.46);
+
+            // Proton H+ pumping through ATP Synthase (middle complex)
+            const atpX = complexes[1];
+            const pY = h * 0.2 + ((angleTime * 40) % (h * 0.5));
+            ctx.fillStyle = '#2563eb';
+            ctx.beginPath();
+            ctx.arc(atpX, pY, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('H⁺', atpX, pY + 3);
+
+            // ATP Generation icon
+            if (Math.sin(angleTime * 3) > 0) {
+                ctx.fillStyle = '#d97706';
+                ctx.font = 'bold 14px Outfit';
+                ctx.fillText('⚡ ATP!', atpX + 45, h * 0.8);
+            }
+        }
+
+        /* 3. PS1 Drawing Function */
+        function drawPS1Scene(w, h) {
+            const ps1X = w * 0.5;
+            const ps1Y = h * 0.5;
+
+            // PSI Center
+            ctx.fillStyle = '#059669';
+            ctx.beginPath();
+            ctx.arc(ps1X, ps1Y, 45, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Outfit';
+            ctx.textAlign = 'center';
+            ctx.fillText('PS I', ps1X, ps1Y - 5);
+            ctx.font = 'bold 11px Plus Jakarta Sans';
+            ctx.fillText('(P700)', ps1X, ps1Y + 12);
+
+            // Re-excitation Photons
+            const py = (h * 0.1) + ((angleTime * 35) % (h * 0.35));
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(ps1X, py, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            // NADP+ Reductase
+            const nadpX = ps1X + 100;
+            const nadpY = ps1Y;
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.roundRect(nadpX - 25, nadpY - 25, 50, 50, 10);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px Outfit';
+            ctx.fillText('NADP⁺', nadpX, nadpY - 5);
+            ctx.fillText('Reduttasi', nadpX, nadpY + 10);
+
+            // NADPH Output
+            const nadphX = nadpX + 50 + Math.cos(angleTime * 2) * 10;
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.roundRect(nadphX, nadpY - 15, 55, 30, 8);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px Plus Jakarta Sans';
+            ctx.fillText('NADPH', nadphX + 27, nadpY + 4);
+        }
+
+        /* 4. Calvin Cycle Drawing Function */
+        function drawCalvinScene(w, h) {
+            const cx = w * 0.5;
+            const cy = h * 0.5;
+            const radius = Math.min(w, h) * 0.28;
+
+            // Rotating Cycle Ring
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // RuBisCO Enzyme Center
+            ctx.fillStyle = '#14b8a6';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 35, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Outfit';
+            ctx.textAlign = 'center';
+            ctx.fillText('RuBisCO', cx, cy + 4);
+
+            // 3 Key Cycle Steps on Perimeter
+            const steps = [
+                { name: '1. Fissazione CO₂', angle: -Math.PI / 2 + angleTime * 0.3 },
+                { name: '2. Riduzione (ATP)', angle: Math.PI / 6 + angleTime * 0.3 },
+                { name: '3. Rigenerazione RuBP', angle: (5 * Math.PI) / 6 + angleTime * 0.3 }
+            ];
+
+            steps.forEach(st => {
+                const sx = cx + Math.cos(st.angle) * radius;
+                const sy = cy + Math.sin(st.angle) * radius;
+
+                ctx.fillStyle = '#047857';
+                ctx.beginPath();
+                ctx.arc(sx, sy, 16, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = 'bold 11px Plus Jakarta Sans';
+                ctx.fillText(st.name, sx, sy > cy ? sy + 28 : sy - 22);
+            });
+
+            // CO2 Incoming Arrow
+            ctx.fillStyle = '#d97706';
+            ctx.font = 'bold 12px Plus Jakarta Sans';
+            ctx.fillText('☁️ Ingressi CO₂', cx, cy - radius - 20);
+        }
+
+        /* 5. G3P & Sugar Synthesis Drawing */
+        function drawG3PScene(w, h) {
+            const cx = w * 0.5;
+            const cy = h * 0.5;
+
+            // Hexagon Glucose Ring
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const a = (i * Math.PI) / 3 + angleTime * 0.2;
+                const gx = cx + Math.cos(a) * 50;
+                const gy = cy + Math.sin(a) * 50;
+                if (i === 0) ctx.moveTo(gx, gy);
+                else ctx.lineTo(gx, gy);
+
+                // Carbon atom circles
+                ctx.fillStyle = '#065f46';
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(gx, gy, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 9px Plus Jakarta Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText('C', gx, gy + 3);
+                ctx.restore();
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            // Center Sugar Label
+            ctx.fillStyle = '#047857';
+            ctx.font = 'bold 16px Outfit';
+            ctx.textAlign = 'center';
+            ctx.fillText('Glucosio', cx, cy - 5);
+            ctx.font = 'bold 11px Plus Jakarta Sans';
+            ctx.fillText('C₆H₁₂O₆', cx, cy + 12);
+        }
+
+        /* 6. Stomata Drawing Function */
+        function drawStomataScene(w, h) {
+            const cx = w * 0.5;
+            const cy = h * 0.5;
+
+            // Stoma Pore Gap modulation
+            const gap = 15 + Math.sin(angleTime) * 10;
+
+            // Guard Cell Left
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.ellipse(cx - gap - 25, cy, 30, 60, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Guard Cell Right
+            ctx.beginPath();
+            ctx.ellipse(cx + gap + 25, cy, 30, 60, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pore Center
+            ctx.fillStyle = '#f0fdf4';
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, gap, 50, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Gases entering/exiting
+            ctx.fillStyle = '#d97706';
+            ctx.font = 'bold 12px Plus Jakarta Sans';
+            ctx.textAlign = 'center';
+            ctx.fillText('CO₂ ➔ (In)', cx - 80, cy);
+
+            ctx.fillStyle = '#0d9488';
+            ctx.fillText('➔ O₂ (Out)', cx + 80, cy - 15);
+            ctx.fillStyle = '#0284c7';
+            ctx.fillText('➔ H₂O (Vapore)', cx + 80, cy + 15);
+        }
+
+        function selectItem(key) {
+            if (!ITEMS[key]) return;
+            currentItemKey = key;
+
+            // Update Tab UI Buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200';
+            });
+            const activeTab = document.getElementById('tab-' + key);
+            if (activeTab) {
+                activeTab.className = 'tab-btn px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-600 text-white shadow-md';
+            }
+
+            // Populate Info Panel
+            const item = ITEMS[key];
+            document.getElementById('itemBadge').innerText = item.badge;
+            document.getElementById('itemName').innerText = item.name;
+            document.getElementById('itemDescription').innerText = item.description;
+            document.getElementById('fact1').innerHTML = `<i class="fa-solid fa-sun text-amber-500 mt-0.5 text-base"></i><span class="text-xs text-slate-700">${item.fact1}</span>`;
+            document.getElementById('fact2').innerHTML = `<i class="fa-solid fa-droplet text-sky-500 mt-0.5 text-base"></i><span class="text-xs text-slate-700">${item.fact2}</span>`;
+            document.getElementById('fact3').innerHTML = `<i class="fa-solid fa-wind text-teal-500 mt-0.5 text-base"></i><span class="text-xs text-slate-700">${item.fact3}</span>`;
+            document.getElementById('itemFormula').innerText = item.formula;
+            document.getElementById('canvasLegend').innerText = item.legend;
+
+            // Redraw scene
+            drawScene();
+        }
+
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            const playIcon = document.getElementById('playIcon');
+            const playText = document.getElementById('playText');
+            if (isAnimating) {
+                playIcon.className = 'fa-solid fa-pause';
+                playText.innerText = 'Pausa';
+                drawScene();
+            } else {
+                playIcon.className = 'fa-solid fa-play';
+                playText.innerText = 'Avvia';
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            }
+        }
+
+        function resetAnimation() {
+            angleTime = 0;
+            drawScene();
+        }
+
+        function setAnalogyView(mode) {
+            const btnAnalogy = document.getElementById('btnViewAnalogy');
+            const btnTechnical = document.getElementById('btnViewTechnical');
+            const contentAnalogy = document.getElementById('viewAnalogyContent');
+            const contentTechnical = document.getElementById('viewTechnicalContent');
+
+            if (mode === 'analogy') {
+                btnAnalogy.className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-emerald-700 font-bold transition-all';
+                btnTechnical.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+                contentAnalogy.classList.remove('hidden');
+                contentTechnical.classList.add('hidden');
+            } else {
+                btnTechnical.className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-emerald-700 font-bold transition-all';
+                btnAnalogy.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+                contentTechnical.classList.remove('hidden');
+                contentAnalogy.classList.add('hidden');
+            }
+        }
+
+        let simState = {
+            light: 60,
+            co2: 'normal', // low, normal, high
+            water: 'optimum' // optimum, drought
+        };
+
+        function updateSimulation() {
+            const slider = document.getElementById('lightSlider');
+            if (slider) simState.light = parseInt(slider.value);
+
+            document.getElementById('lightValueText').innerText = simState.light + '%';
+
+            // Calculate Photosynthetic Rate based on limiting factors
+            let co2Factor = simState.co2 === 'low' ? 0.35 : (simState.co2 === 'normal' ? 0.85 : 1.0);
+            let waterFactor = simState.water === 'drought' ? 0.25 : 1.0;
+            let lightFactor = simState.light / 100.0;
+
+            // Rate is dictated by the minimum (limiting) factor
+            let rawRate = Math.min(lightFactor, co2Factor) * waterFactor * 100;
+            let finalRate = Math.round(Math.max(5, Math.min(100, rawRate)));
+
+            // Update UI Output
+            document.getElementById('rateOutputText').innerText = finalRate + '%';
+            document.getElementById('rateProgressBar').style.width = finalRate + '%';
+
+            // Limiting factor diagnosis
+            const badge = document.getElementById('limitingFactorBadge');
+            if (simState.water === 'drought') {
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Fattore Limitante: Siccità (Stomi Chiusi)`;
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-200';
+            } else if (lightFactor < co2Factor) {
+                badge.innerHTML = `<i class="fa-solid fa-sun text-amber-500"></i> Fattore Limitante: Intensità Luminosa Scarsa`;
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200';
+            } else if (co2Factor < 1.0) {
+                badge.innerHTML = `<i class="fa-solid fa-cloud text-teal-500"></i> Fattore Limitante: Concentrazione CO₂`;
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 text-teal-800 text-xs font-bold border border-teal-200';
+            } else {
+                badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Condizioni Ottimali di Rendimento`;
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200';
+            }
+
+            // Arrow transform
+            const arrow = document.getElementById('flowArrow');
+            if (arrow) {
+                arrow.style.transform = `scale(${0.5 + (finalRate / 200)})`;
+                arrow.style.opacity = finalRate / 100;
+            }
+        }
+
+        function setCo2Level(level) {
+            simState.co2 = level;
+            document.querySelectorAll('.co2-btn').forEach(btn => btn.className = 'co2-btn py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50');
+            if (level === 'low') document.getElementById('co2LowBtn').className = 'co2-btn py-2 rounded-xl bg-teal-600 text-white text-xs font-bold shadow-sm';
+            if (level === 'normal') document.getElementById('co2NormalBtn').className = 'co2-btn py-2 rounded-xl bg-teal-600 text-white text-xs font-bold shadow-sm';
+            if (level === 'high') document.getElementById('co2HighBtn').className = 'co2-btn py-2 rounded-xl bg-teal-600 text-white text-xs font-bold shadow-sm';
+            updateSimulation();
+        }
+
+        function setWaterStatus(status) {
+            simState.water = status;
+            document.querySelectorAll('.water-btn').forEach(btn => btn.className = 'water-btn py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50');
+            if (status === 'optimum') document.getElementById('waterOptBtn').className = 'water-btn py-2 rounded-xl bg-sky-600 text-white text-xs font-bold shadow-sm';
+            if (status === 'drought') document.getElementById('waterDroughtBtn').className = 'water-btn py-2 rounded-xl bg-sky-600 text-white text-xs font-bold shadow-sm';
+            updateSimulation();
+        }
+
+        function applyPreset(preset) {
+            const slider = document.getElementById('lightSlider');
+            if (preset === 'cloudy') {
+                slider.value = 25;
+                setCo2Level('normal');
+                setWaterStatus('optimum');
+            } else if (preset === 'ideal') {
+                slider.value = 85;
+                setCo2Level('high');
+                setWaterStatus('optimum');
+            } else if (preset === 'dry') {
+                slider.value = 95;
+                setCo2Level('normal');
+                setWaterStatus('drought');
+            }
+        }
+
+        const QUIZ_DATA = [
+            {
+                q: "Da quale molecola proviene l'ossigeno (O₂) liberato durante la fotosintesi?",
+                options: [
+                    "Dall'anidride carbonica (CO₂)",
+                    "Dalla scissione dell'acqua (H₂O)",
+                    "Dal glucosio (C₆H₁₂O₆)",
+                    "Dall'ATP sintasi"
+                ],
+                correct: 1,
+                explanation: "L'ossigeno viene liberato nella fase luminosa mediante la fotolisi dell'acqua nel Fotosistema II per rimpiazzare gli elettroni persi dalla clorofilla."
+            },
+            {
+                q: "Dove avvengono esattamente le reazioni dipendenti dalla luce?",
+                options: [
+                    "Nello stroma del cloroplasto",
+                    "Nelle membrane dei tilacoidi",
+                    "Nel citoplasma cellulare",
+                    "Nei mitocondri"
+                ],
+                correct: 1,
+                explanation: "I fotosistemi e le catene di trasporto degli elettroni si trovano ancorati nelle membrane dei tilacoidi dentro i cloroplasti."
+            },
+            {
+                q: "Qual è il ruolo principale dell'enzima RuBisCO nel ciclo di Calvin?",
+                options: [
+                    "Scindere la molecola d'acqua",
+                    "Produrre molecole di ATP",
+                    "Fissare la CO₂ legandola al RuBP",
+                    "Assorbire i fotoni della luce rossa"
+                ],
+                correct: 2,
+                explanation: "La RuBisCO catalizza il primo passaggio del ciclo di Calvin, incorporando la CO₂ inorganica nella molecola organica RuBP."
+            },
+            {
+                q: "Quali prodotti energetici della fase luminosa alimentano il ciclo di Calvin?",
+                options: [
+                    "Glucosio e Ossigeno",
+                    "ATP e NADPH",
+                    "Acqua e CO₂",
+                    "ADP e NADP⁺"
+                ],
+                correct: 1,
+                explanation: "ATP (fornitore di energia) e NADPH (fornitore di elettroni ad alta energia) vengono prodotti nella fase luminosa e consumati nello stroma."
+            },
+            {
+                q: "Cosa accade al tasso fotosintetico se la pianta chiude gli stomi per siccità?",
+                options: [
+                    "Aumenta perché non perde acqua",
+                    "Diminuisce perché si riduce l'ingresso di CO₂",
+                    "Rimane invariato",
+                    "Si produce più ossigeno"
+                ],
+                correct: 1,
+                explanation: "La chiusura degli stomi blocca l'ingresso di anidride carbonica (CO₂), rendendola il fattore limitante per il ciclo di Calvin."
+            },
+            {
+                q: "Qual è la prima molecola zucchero a 3 atomi di carbonio prodotta dal ciclo di Calvin?",
+                options: [
+                    "Glucosio",
+                    "Saccarosio",
+                    "G3P (Gliceraldeide-3-fosfato)",
+                    "Amido"
+                ],
+                correct: 2,
+                explanation: "Il G3P è il prodotto trioso diretto della fotosintesi, dal quale la pianta sintetizza poi glucosio, amido e cellulosa."
+            }
+        ];
+
+        let quizStep = 0;
+        let quizAnswers = new Array(QUIZ_DATA.length).fill(null);
+
+        function renderQuizStep() {
+            const data = QUIZ_DATA[quizStep];
+            const box = document.getElementById('quizQuestionBox');
+            if (!box) return;
+
+            let html = `
+                <div class="space-y-3">
+                    <h4 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">${quizStep + 1}. ${data.q}</h4>
+                    <div class="space-y-2">
+            `;
+
+            data.options.forEach((opt, idx) => {
+                let btnStyle = 'w-full text-left p-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 font-medium text-xs sm:text-sm text-slate-800 transition-all flex items-center justify-between';
+                
+                if (quizAnswers[quizStep] !== null) {
+                    if (idx === data.correct) {
+                        btnStyle = 'w-full text-left p-3.5 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-900 font-bold text-xs sm:text-sm flex items-center justify-between';
+                    } else if (idx === quizAnswers[quizStep]) {
+                        btnStyle = 'w-full text-left p-3.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-900 font-medium text-xs sm:text-sm flex items-center justify-between';
+                    }
+                }
+
+                html += `
+                    <button onclick="selectQuizOption(${idx})" ${quizAnswers[quizStep] !== null ? 'disabled' : ''} class="${btnStyle}">
+                        <span>${opt}</span>
+                        ${quizAnswers[quizStep] !== null && idx === data.correct ? '<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>' : ''}
+                        ${quizAnswers[quizStep] !== null && idx === quizAnswers[quizStep] && idx !== data.correct ? '<i class="fa-solid fa-circle-xmark text-rose-500 text-base"></i>' : ''}
+                    </button>
+                `;
+            });
+
+            html += `</div>`;
+
+            if (quizAnswers[quizStep] !== null) {
+                html += `
+                    <div class="p-4 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 space-y-1">
+                        <span class="font-bold block flex items-center gap-1.5"><i class="fa-solid fa-lightbulb text-amber-500"></i> Spiegazione:</span>
+                        <p>${data.explanation}</p>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            box.innerHTML = html;
+
+            // Progress text
+            document.getElementById('quizCounterText').innerText = `Domanda ${quizStep + 1} di ${QUIZ_DATA.length}`;
+            document.getElementById('quizProgressBar').style.width = ((quizStep + 1) / QUIZ_DATA.length * 100) + '%';
+            document.getElementById('btnQuizPrev').disabled = (quizStep === 0);
+
+            // Update Next / Finish button
+            const nextBtn = document.getElementById('btnQuizNext');
+            if (quizStep === QUIZ_DATA.length - 1) {
+                nextBtn.innerHTML = 'Ricomincia <i class="fa-solid fa-rotate-right"></i>';
+            } else {
+                nextBtn.innerHTML = 'Prossima <i class="fa-solid fa-arrow-right"></i>';
+            }
+
+            // Update score
+            let score = quizAnswers.reduce((acc, ans, idx) => (ans === QUIZ_DATA[idx].correct ? acc + 1 : acc), 0);
+            document.getElementById('quizScoreText').innerText = `${score} / ${QUIZ_DATA.length}`;
+        }
+
+        function selectQuizOption(idx) {
+            quizAnswers[quizStep] = idx;
+            renderQuizStep();
+        }
+
+        function nextQuestion() {
+            if (quizStep < QUIZ_DATA.length - 1) {
+                quizStep++;
+                renderQuizStep();
+            } else {
+                // Restart quiz
+                quizStep = 0;
+                quizAnswers.fill(null);
+                renderQuizStep();
+            }
+        }
+
+        function prevQuestion() {
+            if (quizStep > 0) {
+                quizStep--;
+                renderQuizStep();
+            }
+        }
+
+        const CLASSIFICATION_DATA = [
+            { id: 'o2', label: 'Ossigeno (O₂)', correct: 'luminosa' },
+            { id: 'co2', label: 'Anidride Carbonica (CO₂)', correct: 'calvin' },
+            { id: 'atp', label: 'ATP e NADPH', correct: 'luminosa' },
+            { id: 'g3p', label: 'G3P / Glucosio', correct: 'calvin' },
+            { id: 'h2o', label: 'Acqua (H₂O)', correct: 'luminosa' },
+            { id: 'rubisco', label: 'Enzima RuBisCO', correct: 'calvin' }
+        ];
+
+        let classSelections = {};
+
+        function renderClassification() {
+            const list = document.getElementById('classificationList');
+            if (!list) return;
+
+            let html = '';
+            CLASSIFICATION_DATA.forEach(item => {
+                const sel = classSelections[item.id];
+                html += `
+                    <div class="p-3 rounded-xl bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-xs font-bold text-slate-800">${item.label}</span>
+                        <div class="flex items-center gap-1">
+                            <button onclick="setClassSelection('${item.id}', 'luminosa')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${sel === 'luminosa' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                Fase Luminosa
+                            </button>
+                            <button onclick="setClassSelection('${item.id}', 'calvin')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${sel === 'calvin' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                Ciclo Calvin
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+        }
+
+        function setClassSelection(id, choice) {
+            classSelections[id] = choice;
+            renderClassification();
+        }
+
+        function checkClassification() {
+            let correctCount = 0;
+            CLASSIFICATION_DATA.forEach(item => {
+                if (classSelections[item.id] === item.correct) correctCount++;
+            });
+
+            const fb = document.getElementById('classificationFeedback');
+            fb.classList.remove('hidden');
+
+            if (correctCount === CLASSIFICATION_DATA.length) {
+                fb.className = 'p-3 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold text-center';
+                fb.innerText = `Eccellente! Hai classificato correttamente tutte le ${correctCount} molecole!`;
+            } else {
+                fb.className = 'p-3 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold text-center';
+                fb.innerText = `Hai indovinato ${correctCount} su ${CLASSIFICATION_DATA.length} molecole. Riprova!`;
+            }
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        window.onload = function() {
+            resizeCanvas();
+            selectItem('ps2');
+            updateSimulation();
+            renderQuizStep();
+            renderClassification();
+        };
+    </script>
+</body>
+</html>
