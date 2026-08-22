@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoPrompt AI - Metodologie Didattiche per la Geografia (Scuola Sec. II Grado)</title>
+  <style>
+    /* ==========================================
+       1. CSS VARIABLES & RESET
+       ========================================== */
+    :root {
+      --bg-main: #f8f6f0;
+      --bg-sidebar: #1b242a;
+      --sidebar-text: #e2e8f0;
+      --sidebar-active: #293742;
+      --card-bg: #ffffff;
+      --text-color: #2d3748;
+      --text-muted: #64748b;
+      --primary: #c85a32; /* Warm Terracotta */
+      --primary-hover: #b04924;
+      --primary-light: #fdf3ef;
+      --secondary: #2e6f40; /* Forest Sage */
+      --secondary-light: #f0f7f2;
+      --accent: #d97706; /* Amber */
+      --accent-light: #fffbe2;
+      --border-color: #e2ebd8;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-color);
+      line-height: 1.5;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* ==========================================
+       2. LAYOUT STRUCTURE
+       ========================================== */
+    .app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-sidebar);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 20;
+      transition: transform 0.3s ease;
+    }
+
+    .brand {
+      padding: 20px 20px 15px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-text p {
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    .search-box-sidebar {
+      padding: 16px 20px 12px 20px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      color: #ffffff;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input-wrapper input::placeholder {
+      color: #94a3b8;
+    }
+
+    .search-input-wrapper input:focus {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(200, 90, 50, 0.25);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+    }
+
+    .menu-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #64748b;
+      margin: 14px 10px 6px 10px;
+      font-weight: 700;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      margin-bottom: 3px;
+      border-radius: var(--radius-sm);
+      color: #cbd5e1;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .menu-item.active {
+      background: var(--sidebar-active);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid var(--primary);
+    }
+
+    .menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .menu-item-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .menu-item-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .menu-item.active .badge {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .sidebar-footer {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.75rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Main Area */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--bg-main);
+    }
+
+    .topbar {
+      height: 64px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 2px 6px rgba(200, 90, 50, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .btn-accent {
+      background-color: var(--secondary-light);
+      color: var(--secondary);
+      border-color: #bbf7d0;
+    }
+    .btn-accent:hover {
+      background-color: #dcfce7;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px 40px 28px;
+    }
+
+    /* Filter Bar inside Main Content */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: #ffffff;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid #e2e8f0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chip {
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: #f1f5f9;
+      color: #475569;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+      transition: all 0.15s ease;
+    }
+
+    .chip:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* ==========================================
+       3. PROMPT CARDS & GRID
+       ========================================== */
+    .prompts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .prompt-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid #e2e8f0;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      position: relative;
+    }
+
+    .prompt-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .card-header {
+      padding: 16px 18px 12px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-title-group {
+      flex: 1;
+    }
+
+    .card-category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.35;
+    }
+
+    .fav-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: color 0.15s ease, transform 0.15s ease;
+      padding: 2px;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .fav-btn.active {
+      color: #f59e0b;
+    }
+
+    .card-body {
+      padding: 14px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-description {
+      font-size: 0.85rem;
+      color: #475569;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .prompt-preview-box {
+      background-color: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      color: #334155;
+      max-height: 110px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .prompt-preview-box::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(transparent, #f8fafc);
+    }
+
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .meta-tag {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background-color: #f1f5f9;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .meta-tag.target {
+      background-color: var(--secondary-light);
+      color: var(--secondary);
+    }
+
+    .meta-tag.method {
+      background-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .card-footer {
+      padding: 10px 18px 14px 18px;
+      background-color: #fafafa;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-card {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      justify-content: center;
+    }
+
+    /* Welcome / Dashboard View */
+    .dashboard-hero {
+      background: linear-gradient(135deg, #1b242a, #2d3748);
+      color: #ffffff;
+      padding: 28px 32px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dashboard-hero::after {
+      content: '🌍';
+      position: absolute;
+      right: 20px;
+      bottom: -10px;
+      font-size: 120px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      max-width: 680px;
+      margin-bottom: 18px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-icon {
+      font-size: 26px;
+    }
+
+    .stat-number {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .section-header {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 24px 0 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .quick-categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .quick-cat-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .quick-cat-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quick-cat-icon {
+      font-size: 26px;
+      background: var(--primary-light);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .quick-cat-info h3 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 2px;
+    }
+
+    .quick-cat-info p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Highlight Search Match */
+    mark {
+      background-color: #fef08a;
+      color: #854d0e;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    /* ==========================================
+       4. MODALS & OVERLAYS
+       ========================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background-color: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 780px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(15px);
+      transition: transform 0.2s ease;
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafafa;
+    }
+
+    .modal-title-group h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .modal-title-group p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .close-btn:hover {
+      color: #0f172a;
+      background: #e2e8f0;
+    }
+
+    .modal-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .vars-form {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .vars-form-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .form-field input, .form-field select {
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-field input:focus, .form-field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(200, 90, 50, 0.15);
+    }
+
+    /* Editable Textarea Prompt Box */
+    .prompt-full-box {
+      background-color: #1e293b;
+      color: #f1f5f9;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 200px;
+      max-height: 320px;
+      overflow-y: auto;
+      border: 1px solid #334155;
+      width: 100%;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .prompt-full-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(200, 90, 50, 0.25);
+    }
+
+    .modal-footer {
+      padding: 14px 24px;
+      border-top: 1px solid #e2e8f0;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      color: #4ade80;
+      font-size: 18px;
+    }
+
+    /* Mobile Elements */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-color);
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 15;
+    }
+
+    /* ==========================================
+       5. RESPONSIVE DESIGN
+       ========================================== */
+    @media (max-width: 868px) {
+      .hamburger {
+        display: block;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .content {
+        padding: 16px 16px 30px 16px;
+      }
+
+      .prompts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-hero {
+        padding: 20px;
+      }
+      .hero-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🗺️</div>
+        <div class="brand-text">
+          <h1>GeoPrompt II Grado</h1>
+          <p>Metodologie Didattiche & IA</p>
+        </div>
+      </div>
+
+      <div class="search-box-sidebar">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Cerca metodologia o prompt..." oninput="handleSearch()">
+        </div>
+      </div>
+
+      <nav class="sidebar-menu" id="sidebarMenu">
+        <!-- Generato Dinamicamente -->
+      </nav>
+
+      <div class="sidebar-footer">
+        <span>Framework: <strong>PROMPT-D</strong></span>
+        <span>Solo II Grado</span>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" onclick="toggleMobileSidebar()" aria-label="Apri Menu">☰</button>
+          <div class="page-title" id="pageTitle">
+            <span>🏠</span> Dashboard Metodologie
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-accent" onclick="showRandomPrompt()">
+            <span>🎲</span> Prompt Casuale
+          </button>
+          <button class="btn btn-secondary" onclick="copyVisiblePrompts()">
+            <span>📋</span> Copia Visibili
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Content Area -->
+      <div class="content" id="contentArea">
+        <!-- Contenuto dinamico della pagina -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Customizer Modal -->
+  <div class="modal-overlay" id="customizerModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="modalTitle">Personalizza Prompt</h2>
+          <p id="modalCategoryTag">Metodologia</p>
+        </div>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="vars-form" id="varsFormWrapper">
+          <div class="vars-form-title">
+            <span>⚙️</span> Campi Variabile (Compilazione Rapida)
+          </div>
+          <div class="vars-grid" id="varsGrid">
+            <!-- Campi dinamici generati -->
+          </div>
+        </div>
+
+        <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #475569;">ANTEPRIMA E TESTO PROMPT EDITABILE:</span>
+            <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.72rem; border-radius: 4px;" onclick="resetPromptToVars()" title="Ripristina il prompt compilando dai campi variabile">
+              🔄 Rigenera da campi
+            </button>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--primary); font-weight: 600;">✏️ Puoi digitare e modificare liberamente il testo qui sotto</span>
+        </div>
+
+        <!-- Textarea liberamente modificabile dall'utente -->
+        <textarea class="prompt-full-box" id="modalPromptOutput" rows="10" oninput="handleDirectPromptEdit()" placeholder="Il testo del prompt apparirà qui e sarà completamente modificabile..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Chiudi</button>
+        <button class="btn btn-primary" onclick="copyCompiledPrompt()">
+          <span>📋</span> Copia Prompt Personalizzato
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span id="toastMessage">Testo copiato negli appunti!</span>
+  </div>
+
+  <script>
+    /* ==========================================
+       DATA: METHODOLOGY CATEGORIES & PROMPTS
+       (Esclusivamente Scuola Sec. di II Grado)
+       ========================================== */
+    const categories = [
+      {
+        id: "ibse",
+        title: "IBSE & Didattica di Laboratorio",
+        icon: "🔬",
+        description: "Inquiry-Based Learning: indagine guidata, formulazione di ipotesi, esperimenti e simulazioni geomorfologiche."
+      },
+      {
+        id: "debate",
+        title: "Debate Geopolitico & Argomentazione",
+        icon: "🗣️",
+        description: "Dibattito regolato e oratoria critica su risorse strategiche, confini, sovranità e conflitti globali."
+      },
+      {
+        id: "problem_solving",
+        title: "Problem-Solving & Case Study",
+        icon: "🧩",
+        description: "Analisi di casi reali di attualità: rischio idrogeologico, overtourism, transizione energetica e crisi idriche."
+      },
+      {
+        id: "digital_gis",
+        title: "GIS, Satelliti & Spatial Thinking",
+        icon: "📡",
+        description: "Telerilevamento, mappe coroplete, consumo del suolo, isola di calore urbana e software cartografici."
+      },
+      {
+        id: "uda_compiti",
+        title: "UDA & Compiti di Realtà",
+        icon: "📐",
+        description: "Unità di Apprendimento transdisciplinari, sviluppo di Smart Cities e piani di riqualificazione territoriale."
+      },
+      {
+        id: "storytelling",
+        title: "Geo-Storytelling & Podcasting",
+        icon: "🎙️",
+        description: "Narrazione del territorio, itinerari geo-letterari, mappe parlanti e podcast culturali/paesaggistici."
+      },
+      {
+        id: "udl_inclusione",
+        title: "Inclusione UDL, DSA & NAI L2",
+        icon: "♿",
+        description: "Universal Design for Learning: alta leggibilità, scaffolding visivo, mappe e glossari multilingue per NAI."
+      },
+      {
+        id: "data_analysis",
+        title: "Data Analysis & Geostatistica",
+        icon: "📊",
+        description: "Interpretazione di piramidi delle età, climogrammi, matrici SWOT e indicatori socio-economici (PIL vs ISU/HDI)."
+      }
+    ];
+
+    const promptsData = [
+      /* --- 1. IBSE & DIDATTICA DI LABORATORIO --- */
+      {
+        id: "geo-ibse-01",
+        catId: "ibse",
+        title: "Laboratorio IBSE: Tettonica, Subduzione e Rischio Sismico",
+        description: "Esperimento guidato in 4 fasi per simulare la dinamica delle placche e valutare il rischio sismico locale.",
+        target: "Biennio / Triennio II Grado",
+        method: "Inquiry-Based (IBSE)",
+        tags: ["Tettonica", "Sismicità", "Laboratorio", "Scienze della Terra"],
+        template: `[P - PROFILO] Agisci come un docente esperto di Didattica della Geografia Fisica e Geologia per la Scuola Secondaria di II Grado.
+[R - RISULTATO] Progetta un percorso laboratoriale di 2 ore basato sulla metodologia IBSE (Inquiry-Based Science Education) intitolato "Meccanismi di Subduzione e Rischio Sismico".
+[O - OBIETTIVI]
+1. Comprendere la cinematica dei margini di placca convergenti e trasformi.
+2. Analizzare il rischio sismico relativo alla regione [REGIONE_O_PAESE] correlando la sismicità storica alla struttura tettonica.
+[M - MATERIALI] Dati sismici INGV, carte geomorfologiche e modelli analogici con materiali poveri (spugne, pongo o strati di sabbia).
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO, es. Liceo Scientifico / Ist. Tecnico]). Durata: 120 minuti.
+[T - TIPO DI OUTPUT] Struttura l'UDA nelle 4 fasi IBSE (Ingaggio, Esplorazione, Formalizzazione, Applicazione) includendo:
+- Domanda stimolo iniziale su una scossa recente.
+- Protocollo dell'esperimento simulato.
+- Griglia d'indagine per gli studenti.
+[D - DIAGNOSI] Inserisci una scheda di autovalutazione finale per verificare il superamento dei misconcetti sulla formazione dei terremoti.`
+      },
+      {
+        id: "geo-ibse-02",
+        catId: "ibse",
+        title: "Laboratorio IBSE: Modellizzazione del Bilancio Idrico Fluviale",
+        description: "Indagine sperimentale sulle dinamiche di portata dei fiumi e sulle cause delle piene.",
+        target: "Biennio II Grado",
+        method: "Inquiry-Based (IBSE)",
+        tags: ["Idrografia", "Fiumi", "Erosione", "Esperimento"],
+        template: `[P - PROFILO] Agisci come un docente di Geografia e Scienze della Terra degli Istituti Tecnici.
+[R - RISULTATO] Elabora una scheda laboratorio IBSE sul ciclo idrologico e sulla risposta del bacino idrografico del fiume [NOME_FIUME] agli eventi meteorici estremi.
+[O - OBIETTIVI]
+1. Calcolare l'indice di permeabilità del suolo e il tempo di corrivazione.
+2. Formulare ipotesi sull'impatto della cementificazione sulle piene improvvise (Flash Floods) nella zona di [LOCALITA].
+[M - MATERIALI] Dati pluviometrici ARPA e modelli topografici.
+[P - PARAMETRI] Target: Classe [CLASSE].
+[T - TIPO DI OUTPUT]
+- Fasi operative del laboratorio: Ingaggio tramite analisi di un climogramma di pioggia intensa -> Esperimento di permeabilità su 3 campioni di suolo -> Formalizzazione delle equazioni di portata -> Applicazione al territorio locale.
+- 4 Domande guida a stimolo chiuso per la stesura della relazione finale.
+[D - DIAGNOSI] Assicurati che i calcoli di idrologia siano adeguati alle competenze matematiche del biennio.`
+      },
+
+      /* --- 2. DEBATE GEOPOLITICO & ARGOMENTAZIONE --- */
+      {
+        id: "geo-deb-01",
+        catId: "debate",
+        title: "Debate Geopolitico: Sovranità e Transizione sulle Terre Rare",
+        description: "Dibattito regolato sul monopolio della raffinazione dei minerali critici e transizione ecologica.",
+        target: "Triennio Licei / Tecnici",
+        method: "Debate Regolato",
+        tags: ["Geopolitica", "Terre Rare", "Transizione Ecologica", "Debate"],
+        template: `[P - PROFILO] Agisci come un docente di Geopolitica e formatore accreditato di Debate scolastico per la Scuola Secondaria di II Grado.
+[R - RISULTATO] Progetta la struttura di un Debate regolato sulla mozione: "L'Unione Europea dovrebbe imporre dazi protezionistici sulle risorse minerarie strategiche provenienti da [PAESE_MONOPOLISTA] per tutelare la propria sovranità industriale".
+[O - OBIETTIVI] Sviluppare il pensiero critico, l'analisi delle catene di approvvigionamento globali e la capacità argomentativa.
+[M - MATERIALI] Dossier sintetici di geopolitica energetica con mappe delle miniere di litio e cobalto.
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO]). Durata: 90 minuti.
+[T - TIPO DI OUTPUT]
+1. Schede argomentative sintetiche per la squadra PRO (Autonomia strategica) e CONTRO (Costi economici e ritorsioni).
+2. Cronoprogramma degli interventi (Apertura, Replica, Difesa, Conclusione) secondo il formato World Schools Debate.
+3. Rubrica valutativa analitica a 4 livelli sulle competenze oratorie e sui contenuti geografici.
+[D - DIAGNOSI] Verifica che le tesi economiche e geopolitiche di entrambe le fazioni siano bilanciate ed equamente sostenibili.`
+      },
+      {
+        id: "geo-deb-02",
+        catId: "debate",
+        title: "Debate Geopolitico: Riforma di Schengen e Governance dei Confini",
+        description: "Simulazione dibattimentale sulle tensioni tra libera circolazione e sovranismo transfrontaliero.",
+        target: "Triennio II Grado",
+        method: "Debate Regolato",
+        tags: ["Unione Europea", "Confini", "Schengen", "Educazione Civica"],
+        template: `[P - PROFILO] Agisci come uno specialista di Diritto Internazionale e Geopolitica Europea.
+[R - RISULTATO] Progetta una sessione di Debate scolastico sulla mozione: "La sospensione dei trattati di Schengen lungo la linea di confine tra [PAESE_A] e [PAESE_B] è una misura giustificata dalla sicurezza nazionale".
+[O - OBIETTIVI]
+1. Comprendere la struttura giuridica e territoriale dello Spazio Schengen.
+2. Valutare gli impatti socio-economici della reintroduzione dei controlli di frontiera sulle regioni transfrontaliere.
+[M - MATERIALI] Mappe ufficiali Eurostat e risoluzioni del Parlamento Europeo.
+[P - PARAMETRI] Target: Classe [CLASSE].
+[T - TIPO DI OUTPUT]
+- Linee guida per i giudici di gara.
+- 3 evidenze empiriche/statistiche fornite sia alla squadra PRO sia a quella CONTRO.
+- Griglia per la valutazione dei confutatori.
+[D - DIAGNOSI] Garantire il rigore terminologico per concetti come Diritto d'Asilo, Confine Naturale, Confine Politico e Frontex.`
+      },
+
+      /* --- 3. PROBLEM-SOLVING & CASE STUDY --- */
+      {
+        id: "geo-ps-01",
+        catId: "problem_solving",
+        title: "Case Study: Overtourism e Spopolamento nei Centri Storici",
+        description: "Analisi di un caso studio urbano per bilanciare indotto turistico e vivibilità dei residenti.",
+        target: "Biennio / Triennio",
+        method: "Problem-Solving & SWOT",
+        tags: ["Overtourism", "Città d'Arte", "Economia", "SWOT Analysis"],
+        template: `[P - PROFILO] Agisci come un docente di Geografia Economico-Politica ed esperto di pianificazione territoriale.
+[R - RISULTATO] Sviluppa un caso di studio operativo incentrato sul fenomeno dell'Overtourism nella città di [CITTA_TURISTICA].
+[O - OBIETTIVI]
+1. Analizzare i benefici del settore terziario avanzato e le esternalità negative (aumento affitti, desertificazione commerciale).
+2. Applicare la matrice SWOT per pianificare strategie di destagionalizzazione.
+[M - MATERIALI] Dati ISTAT sui flussi turistici e articoli di cronaca economica locale.
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO]).
+[T - TIPO DI OUTPUT]
+- Testo del caso di studio con dati quantitativi (300 parole).
+- Griglia per la Matrice SWOT da far compilare agli studenti.
+- Role-play di Problem-Solving: "Crea una proposta regolatoria in 3 punti da presentare alla giunta comunale".
+[D - DIAGNOSI] Verificare che le soluzioni emerse contemperino gli interessi degli imprenditori turistici e della popolazione residente.`
+      },
+      {
+        id: "geo-ps-02",
+        catId: "problem_solving",
+        title: "Problem-Solving: Consumo di Suolo e Mitigazione del Rischio Idrogeologico",
+        description: "Analisi territoriale su dati ISPRA per progettare interventi di infrastruttura verde.",
+        target: "Quinquennio II Grado",
+        method: "Problem-Solving Operativo",
+        tags: ["Dissesto Idrogeologico", "Consumo Suolo", "ISPRA", "Protezione Civile"],
+        template: `[P - PROFILO] Agisci come un geografo ambientale e consulente di ingegneria naturalistica.
+[R - RISULTATO] Progetta una simulazione di problem-solving territoriale incentrata sul consumo di suolo nel comune di [NOME_COMUNE].
+[O - OBIETTIVI]
+1. Analizzare le mappe di pericolosità da frana e alluvione dell'ISPRA.
+2. Identificare gli interventi di de-paving (desigillatura del suolo) e rinaturalizzazione delle sponde.
+[M - MATERIALI] Rapporto nazionale "Consumo di suolo, dinamiche territoriali e servizi ecosistemici" ISPRA.
+[P - PARAMETRI] Target: Classe [CLASSE].
+[T - TIPO DI OUTPUT]
+- Dossier informativo sul caso di emergenza idrogeologica simulata.
+- Scheda di lavoro in gruppi con 3 scenari opzionali di intervento a budget limitato.
+- Rubrica di valutazione delle competenze geografiche ed ecologiche.
+[D - DIAGNOSI] Assicurati che le proposte siano sostenibili sul piano economico e tecnico.`
+      },
+
+      /* --- 4. GIS, SATELLITI & SPATIAL THINKING --- */
+      {
+        id: "geo-gis-01",
+        catId: "digital_gis",
+        title: "Decodifica Satellitare ESA/Copernicus: Isola di Calore Urbana",
+        description: "Analisi di immagini termiche e telerilevamento satellitare per studiare il microclima cittadino.",
+        target: "Triennio Tecnici / Licei",
+        method: "GIS & Telerilevamento",
+        tags: ["GIS", "Copernicus", "Satelliti", "Isola di Calore", "Remote Sensing"],
+        template: `[P - PROFILO] Agisci come un docente specializzato in GIS (Geographic Information Systems) e Cartografia Digitale per la Scuola Secondaria di II Grado.
+[R - RISULTATO] Crea una guida di laboratorio per l'utilizzo di piattaforme aperte di telerilevamento (es. EO Browser / Sentinel Hub) sull'area metropolitana di [CITTA_METROPOLITANA].
+[O - OBIETTIVI]
+1. Decodificare la riflettanza nelle bande dell'infrarosso termico e calcolare l'indice di vegetazione (NDVI).
+2. Mappare l'intensità dell'Isola di Calore Urbana (Urban Heat Island) in relazione alle superfici asfaltate.
+[M - MATERIALI] Dati satellitari Sentinel-2 o Landsat 8-9 liberamente accessibili.
+[P - PARAMETRI] Target: Classe [CLASSE]. Durata: 2 ore in laboratorio di informatica.
+[T - TIPO DI OUTPUT]
+- Guida passo-passo con screenshot concettuali e parametri di banda da selezionare.
+- Scheda d'osservazione con tabella di correlazione tra copertura del suolo e temperatura superficiale.
+- Quiz di verifica sullo Spatial Thinking (scala, risoluzione radiometrica, banda spettrale).
+[D - DIAGNOSI] Verificare che i comandi del software/web-app siano chiari anche a studenti privi di basi pregresse di coding.`
+      },
+      {
+        id: "geo-gis-02",
+        catId: "digital_gis",
+        title: "Cartografia Coropleta e Rappresentazione dei Divari Socio-Economici",
+        description: "Costruzione e decodifica di mappe tematiche interattive sugli indicatori di sviluppo.",
+        target: "Biennio II Grado",
+        method: "Cartografia & Spatial Thinking",
+        tags: ["Cartografia", "Mappe Tematiche", "Coroplete", "Geostatistica"],
+        template: `[P - PROFILO] Agisci come un geografo cartografo.
+[R - RISULTATO] Elabora una lezione pratica sulla costruzione e interpretazione di una Carta Coropleta focalizzata sulla distribuzione del reddito o della densità abitativa in [REGIONE_O_STATO].
+[O - OBIETTIVI]
+1. Comprendere i metodi di classificazione dei dati (intervalli uguali, quantili).
+2. Riconoscere come la scelta dei colori e delle classi possa alterare la percezione visiva del dato geografico (decomposizione della manipolazione cartografica).
+[M - MATERIALI] Software GIS open-source (QGIS) o tool web (Datawrapper / Google My Maps).
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO]).
+[T - TIPO DI OUTPUT]
+- Esercizio guidato di decodifica visiva in 3 fasi (Osservazione, Decomposizione, Sintesi).
+- 3 Tranelli cartografici spiegati agli studenti.
+- Griglia per la valutazione della mappa prodotta dallo studente.
+[D - DIAGNOSI] Controllare che l'uso della legenda sia rigoroso e conforme agli standard cartografici IGU.`
+      },
+
+      /* --- 5. UDA & COMPITI DI REALTÀ --- */
+      {
+        id: "geo-uda-01",
+        catId: "uda_compiti",
+        title: "UDA Transdisciplinare: Smart City e Pianificazione Urbana 2050",
+        description: "Griglia ministeriale per un'Unità di Apprendimento tra Geografia, Tecnologia, Civica ed Economia.",
+        target: "Quinquennio II Grado",
+        method: "UDA Transdisciplinare",
+        tags: ["UDA", "Smart City", "Agenda 2030", "Educazione Civica", "Transizione"],
+        template: `[P - PROFILO] Agisci come un docente coordinatore di Dipartimento di Geografia per la Scuola Sec. di II Grado.
+[R - RISULTATO] Progetta un'Unità di Apprendimento (UDA) transdisciplinare intitolata "Smart Cities & Transizione Ecologica: Ridisegnare [CITTA_MODELLO]".
+[O - OBIETTIVI] Allineati alle Competenze Chiave Europee 2018 (Competenza matematica, scientifica e STEM, Competenza digitale, Competenza in materia di cittadinanza).
+[M - MATERIALI] Linee guida Ministeriali e Obiettivi 9, 11 e 13 dell'Agenda 2030.
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO]). Durata: 20 ore complessive.
+[T - TIPO DI OUTPUT]
+1. Schema Progettuale Generale (Titolo, Materie coinvoge, Ore, Prodotto finale).
+2. Articolazione in 4 Fasi Didattiche dettagliate.
+3. Compito di Realtà: "Redazione del Masterplan per il nuovo quartiere a zero emissioni".
+4. Rubrica Valutativa Analitica del Prodotto e del Processo su 4 livelli (Avanzato, Intermedio, Base, Iniziale).
+[D - DIAGNOSI] Verificare il perfetto bilanciamento orario tra le discipline coinvolte (Geografia, Economia, Tecnologia, Italiano).`
+      },
+      {
+        id: "geo-uda-02",
+        catId: "uda_compiti",
+        title: "Compito di Realtà: Piano di Riqualificazione Turistico-Sostenibile",
+        description: "Project work per la creazione di un itinerario turistico ad impatto zero in un'area interna.",
+        target: "Triennio Istituti Tecnici / Professionali",
+        method: "Compito di Realtà / Project Work",
+        tags: ["Turismo Sostenibile", "Project Work", "Aree Interne", "Economia"],
+        template: `[P - PROFILO] Agisci come un docente di Geografia Turistica negli Istituti Tecnici del Settore Economico.
+[R - RISULTATO] Elabora un Compito di Realtà professionale focalizzato sulla valorizzazione delle Aree Interne della regione [REGIONE].
+[O - OBIETTIVI]
+1. Progettare un itinerario turistico esperienziale e sostenibile integrando patrimonio naturale ed enogastronomia.
+2. Redigere un budget preventivo di sostenibilità economica e calcolare l'impronta ecologica del tour.
+[M - MATERIALI] Mappe del SNAI (Strategia Nazionale Aree Interne) e dati del Ministero della Cultura.
+[P - PARAMETRI] Target: Classe [CLASSE]. Lavoro a gruppi di 4 studenti con ruoli aziendali assegnati (Project Manager, Geografo, Responsabile Marketing, Budget Analyst).
+[T - TIPO DI OUTPUT]
+- Briefing iniziale del cliente/ente pubblico commissionante.
+- Template della scheda prodotto turistico.
+- Rubrica di valutazione delle competenze professionali e geografiche.
+[D - DIAGNOSI] Assicurati che le tappe dell'itinerario rispettino i tempi reali di percorrenza e la ricettività locale.`
+      },
+
+      /* --- 6. GEO-STORYTELLING & PODCASTING --- */
+      {
+        id: "geo-st-01",
+        catId: "storytelling",
+        title: "Geo-Podcast: Deindustrializzazione e Paesaggi Industriali",
+        description: "Format di storytelling audio per raccontare le trasformazioni del paesaggio industriale dismesso.",
+        target: "Triennio II Grado",
+        method: "Digital Storytelling",
+        tags: ["Storytelling", "Podcast", "Paesaggio Industriale", "Deindustrializzazione"],
+        template: `[P - PROFILO] Agisci come un geografo culturale e conduttore di podcast di divulgazione territoriale.
+[R - RISULTATO] Progetta una guida operativa per la realizzazione di una serie Podcast intitolata "Cattedrali nel Deserto: Storie di Deindustrializzazione a [CITTA_O_SITO_INDUSTRIALE]".
+[O - OBIETTIVI]
+1. Comprendere le dinamiche della deindustrializzazione e della riconversione urbana (es. Brownfield redevelopment).
+2. Sviluppare competenze di scrittura radiofonica e ricerca storica-geografica sulle fonti orali e visive.
+[M - MATERIALI] Archivi fotografici storici e software gratuiti di editing audio (Audacity / Soundtrap).
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO]).
+[T - TIPO DI OUTPUT]
+- Scaletta tipo per un episodio da 5 minuti (Intro, Intervista simulata, Analisi geografica, Outro con suoni d'ambiente).
+- Griglia d'ispezione del paesaggio industriale per la ricerca sul campo.
+- Rubrica di valutazione dell'efficacia comunicativa e scientifica del podcast.
+[D - DIAGNOSI] Verificare che l'analisi storica sia strettamente legata all'evoluzione della geografia urbana.`
+      },
+      {
+        id: "geo-st-02",
+        catId: "storytelling",
+        title: "Mappe Parlanti e Itinerari Geo-Letterari del Territorio",
+        description: "Integrazione tra spazio geografico e testo letterario mediante mappe narrate e geolocalizzate.",
+        target: "Biennio Licei",
+        method: "Geo-Storytelling",
+        tags: ["Mappe Parlanti", "Geografia e Letteratura", "Territorio", "Storytelling"],
+        template: `[P - PROFILO] Agisci come un docente di Geografia e Lettere per i Licei.
+[R - RISULTATO] Progetta un'attività didattica per la creazione di una "Mappa Parlante Geo-Letteraria" dedicata all'autore [NOME_AUTORE] e ai luoghi descritti nelle sue opere nella regione [REGIONE].
+[O - OBIETTIVI]
+1. Mappare lo "spazio vissuto" e le rappresentazioni percettive del paesaggio nell'opera letteraria.
+2. Creare punti di interesse (POI) geolocalizzati integrando testo, citazioni, coordinate e immagini d'epoca.
+[M - MATERIALI] Google My Maps, StoryMap JS o ArcGIS StoryMaps.
+[P - PARAMETRI] Target: Classe [CLASSE].
+[T - TIPO DI OUTPUT]
+- Guida alla selezione dei passi letterari geograficamente rilevanti.
+- Modello di scheda POI (Coordinate, Descrizione geografica, Analisi del testo, Immagine).
+- Griglia di valutazione dell'accuratezza geografica e letteraria.
+[D - DIAGNOSI] Assicurati che l'analisi non si limiti alla letteratura ma approfondisca le trasformazioni reali del paesaggio dal passato ad oggi.`
+      },
+
+      /* --- 7. INCLUSIONE UDL, DSA & NAI L2 --- */
+      {
+        id: "geo-udl-01",
+        catId: "udl_inclusione",
+        title: "Adattamento UDL in Alta Leggibilità: Geopolitica dell'Unione Europea",
+        description: "Semplificazione con scaffolding visivo e strutturale secondo i principi dell'Universal Design for Learning.",
+        target: "Biennio / Triennio II Grado",
+        method: "UDL & Alta Leggibilità (DSA)",
+        tags: ["UDL", "DSA", "Alta Leggibilità", "Scaffolding", "Inclusione"],
+        template: `[P - PROFILO] Agisci come un docente di sostegno specializzato in Didattica Inclusiva e UDL (Universal Design for Learning) per la Scuola Sec. di II Grado.
+[R - RISULTATO] Rielabora il capitolo di geografia politica incentrato su "I Trattati fondativi e le Istituzioni dell'Unione Europea" rendendolo accessibile a studenti con Dislessia (DSA) o deficit di attenzione.
+[O - OBIETTIVI] Garantire l'acquisizione dei concetti chiave (Commissione, Consiglio, Parlamento, Bce, Spazio Economico) riducendo il carico cognitivo di lettura.
+[M - MATERIALI] Principi della linea guida UDL (Fornire molteplici mezzi di rappresentazione, azione ed espressione).
+[P - PARAMETRI] Target: Studente con DSA di classe [CLASSE] ([INDIRIZZO_SCOLASTICO]).
+[T - TIPO DI OUTPUT]
+1. Testo rielaborato in font ad alta leggibilità virtuale (frasi brevi <15 parole, struttura SVO, evidenziazioni in grassetto dei termini chiave).
+2. Schema grafico concettuale ad albero per rappresentare il potere legislativo ed esecutivo dell'UE.
+3. Glossario dei termini tecnici di geopolitica con definizioni lineari di massimo 12 parole.
+[D - DIAGNOSI] Verificare che la semplificazione linguistica non comprometta la precisione del lessico specifico di Diritto e Geografia Politica.`
+      },
+      {
+        id: "geo-udl-02",
+        catId: "udl_inclusione",
+        title: "Glottodidattica L2 e Glossario Multilingue per Studenti NAI in Geografia Economica",
+        description: "Adattamento di livello B1 QCER del settore terziario e globalizzazione per studenti stranieri neo-arrivati.",
+        target: "Quinquennio II Grado",
+        method: "Glottodidattica L2 / NAI",
+        tags: ["L2", "NAI", "Glossario Multilingue", "Semplificazione QCER"],
+        template: `[P - PROFILO] Agisci come un esperto di Glottodidattica dell'Italiano L2 per studenti stranieri inseriti nella Scuola Secondaria di II Grado.
+[R - RISULTATO] Semplifica il testo di geografia economica sul tema "I Processi di Globalizzazione e le Catene Globali del Valore" portandolo ad un livello linguistico B1 del QCER.
+[O - OBIETTIVI] Consentire allo studente NAI di acquisire le nozioni fondamentali di economia geografica sviluppando contemporaneamente il lessico disciplinare in italiano.
+[M - MATERIALI] Quadro Comune Europeo di Riferimento per le Lingue (QCER).
+[P - PARAMETRI] Target: Studente NAI di lingua madre [LINGUA_MADRE, es. Spagnolo / Ucraino / Cinese / Arabo] iscritto alla classe [CLASSE].
+[T - TIPO DI OUTPUT]
+- Testo semplificato in italiano con verbi al presente/passato prossimo indicativo e connettivi chiari.
+- Tabella Glossario Multilingue a 4 colonne: Termine chiave in Italiano, Spiegazione semplice, Traduzione in [LINGUA_MADRE], Traduzione in Inglese.
+- 4 Domande di comprensione a risposta chiusa con scelta multipla.
+[D - DIAGNOSI] Assicurati che la traduzione dei termini economico-geografici sia tecnicamente esatta anche nella lingua di provenienza.`
+      },
+
+      /* --- 8. DATA ANALYSIS & GEOSTATISTICA --- */
+      {
+        id: "geo-data-01",
+        catId: "data_analysis",
+        title: "Analisi Geostatistica: Piramidi delle Età e Transizione Demografica",
+        description: "Studio quantitativo delle strutture per età e sesso e previsione dei trend di invecchiamento.",
+        target: "Biennio / Triennio II Grado",
+        method: "Data Analysis & Demografia",
+        tags: ["Demografia", "Piramidi Età", "ISTAT", "Transizione Demografica"],
+        template: `[P - PROFILO] Agisci come un demografo e docente di Geografia Umana della Scuola Sec. di II Grado.
+[R - RISULTATO] Progetta un'esercitazione di analisi dati comparativa sulle Piramidi delle Età tra due contesti: [PAESE_IN_INVECCHIAMENTO] (es. Italia/Giappone) e [PAESE_GIOVANE] (es. Nigeria/Uganda).
+[O - OBIETTIVI]
+1. Interpretare la forma dei grafici (a piramide, a campana, a bulbo) e calcolare l'indice di dipendenza strutturale.
+2. Correlare la struttura demografica ai costi sociali (spesa sanitaria, sistema pensionistico, formazione scolastica).
+[M - MATERIALI] Dati quantitativi UN Population Division / ISTAT.
+[P - PARAMETRI] Target: Classe [CLASSE] ([INDIRIZZO_SCOLASTICO]).
+[T - TIPO DI OUTPUT]
+- Scheda di analisi dati con 5 quesiti di interpretazione grafica.
+- Schema teorico riassuntivo del Modello di Transizione Demografica (fasi 1-5).
+- Esercizio di proiezione demografica al 2050 con calcolo del tasso di fecondità totale.
+[D - DIAGNOSI] Verificare l'esattezza delle formule per l'Indice di Vecchiaia e l'Indice di Dipendenza Giovanile.`
+      },
+      {
+        id: "geo-data-02",
+        catId: "data_analysis",
+        title: "Analisi Indicatori: PIL pro-capite vs Indice di Sviluppo Umano (ISU/HDI)",
+        description: "Studio critico degli indici di benessere e disuguaglianza spaziale mediante report UNDP.",
+        target: "Triennio II Grado",
+        method: "Data Analysis & Indicatori",
+        tags: ["PIL", "ISU", "HDI", "UNDP", "Geo-Economia"],
+        template: `[P - PROFILO] Agisci come un economista e geografo dello sviluppo.
+[R - RISULTATO] Progetta una lezione di laboratorio geostatistico per confrontare le classifiche mondiali basate sul PIL (Prodotto Interno Lordo) e sull'ISU (Indice di Sviluppo Umano / Human Development Index).
+[O - OBIETTIVI]
+1. Comprendere la composizione tripartita dell'ISU (Speranza di vita, Anni attesi di scolarizzazione, RNLS pro-capite).
+2. Spiegare le anomalie statistiche: perché Paesi con elevato PIL petrolifero (es. [PAESE_ANOMALO_A]) possono avere un ISU inferiore rispetto a Paesi con PIL moderato (es. [PAESE_ANOMALO_B])?
+[M - MATERIALI] Rapporto sullo Sviluppo Umano dell'UNDP.
+[P - PARAMETRI] Target: Classe [CLASSE].
+[T - TIPO DI OUTPUT]
+- Tabella dati comparativa a 6 colonne di 5 Paesi campione.
+- 4 Quesiti d'analisi critica sui limiti del PIL come misuratore di benessere.
+- Traccia per una relazione scritta di sintesi di 300 parole.
+[D - DIAGNOSI] Assicurati che il concetto di Parità di Potere d'Acquisto (PPA / PPP) sia spiegato in modo accessibile.`
+      }
+    ];
+
+    /* ==========================================
+       APP STATE
+       ========================================== */
+    let currentCategory = "all";
+    let currentTargetFilter = "all";
+    let searchQuery = "";
+    let favorites = JSON.parse(localStorage.getItem("geo_prompt_favs_v2") || "[]");
+    let activeCompiledPromptText = "";
+
+    /* ==========================================
+       DOM ELEMENTS
+       ========================================== */
+    const sidebarMenu = document.getElementById("sidebarMenu");
+    const contentArea = document.getElementById("contentArea");
+    const pageTitle = document.getElementById("pageTitle");
+    const searchInput = document.getElementById("searchInput");
+    const customizerModal = document.getElementById("customizerModal");
+    const toast = document.getElementById("toast");
+    const toastMessage = document.getElementById("toastMessage");
+
+    /* ==========================================
+       INIT & ROUTING
+       ========================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      renderSidebar();
+      renderDashboard();
+      notifyResize();
+    });
+
+    function notifyResize() {
+      if (window.parent) {
+        window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+      }
+    }
+
+    /* ==========================================
+       RENDER SIDEBAR
+       ========================================== */
+    function renderSidebar() {
+      let html = `
+        <div class="menu-item ${currentCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all')">
+          <div class="menu-item-left">
+            <span class="menu-item-icon">🏠</span>
+            <span class="menu-item-text">Dashboard Metodologie</span>
+          </div>
+          <span class="badge">${promptsData.length}</span>
+        </div>
+
+        <div class="menu-item ${currentCategory === 'favs' ? 'active' : ''}" onclick="selectCategory('favs')">
+          <div class="menu-item-left">
+            <span class="menu-item-icon">⭐</span>
+            <span class="menu-item-text">I Miei Preferiti</span>
+          </div>
+          <span class="badge" id="favBadgeCount">${favorites.length}</span>
+        </div>
+
+        <div class="menu-section-title">Metodologie Didattiche</div>
+      `;
+
+      categories.forEach(cat => {
+        const count = promptsData.filter(p => p.catId === cat.id).length;
+        const isActive = currentCategory === cat.id;
+        html += `
+          <div class="menu-item ${isActive ? 'active' : ''}" onclick="selectCategory('${cat.id}')">
+            <div class="menu-item-left">
+              <span class="menu-item-icon">${cat.icon}</span>
+              <span class="menu-item-text">${cat.title}</span>
+            </div>
+            <span class="badge">${count}</span>
+          </div>
+        `;
+      });
+
+      sidebarMenu.innerHTML = html;
+    }
+
+    function selectCategory(catId) {
+      currentCategory = catId;
+      searchQuery = "";
+      searchInput.value = "";
+      renderSidebar();
+
+      if (window.innerWidth <= 868) {
+        toggleMobileSidebar(false);
+      }
+
+      if (catId === 'all') {
+        renderDashboard();
+      } else if (catId === 'favs') {
+        renderFavoritesView();
+      } else {
+        renderCategoryView(catId);
+      }
+      notifyResize();
+    }
+
+    /* ==========================================
+       RENDER DASHBOARD
+       ========================================== */
+    function renderDashboard() {
+      pageTitle.innerHTML = `<span>🏠</span> Metodologie Didattiche per il Secondo Grado`;
+
+      const totalPrompts = promptsData.length;
+      const totalCategories = categories.length;
+
+      let html = `
+        <div class="dashboard-hero">
+          <div class="hero-title">GeoPrompt AI · Didattica per la Scuola Sec. di II Grado</div>
+          <div class="hero-subtitle">
+            Archivio di strutture di prompt trasformabili basate sul framework <strong>PROMPT-D</strong>, progettate per organizzare lezioni, UDA, laboratori IBSE, Debate geopolitici e analisi GIS nei Licei e Istituti Tecnici/Professionali.
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-icon">📚</div>
+              <div>
+                <div class="stat-number">${totalPrompts}</div>
+                <div class="stat-label">Prompt Metodologici</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🎓</div>
+              <div>
+                <div class="stat-number">II Grado</div>
+                <div class="stat-label">Licei, Tecnici & Prof.</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⭐</div>
+              <div>
+                <div class="stat-number">${favorites.length}</div>
+                <div class="stat-label">Salvati nei Preferiti</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <span>Esplora per Metodologia Didattica</span>
+        </div>
+
+        <div class="quick-categories-grid">
+      `;
+
+      categories.forEach(cat => {
+        const count = promptsData.filter(p => p.catId === cat.id).length;
+        html += `
+          <div class="quick-cat-card" onclick="selectCategory('${cat.id}')">
+            <div class="quick-cat-icon">${cat.icon}</div>
+            <div class="quick-cat-info">
+              <h3>${cat.title}</h3>
+              <p>${count} Prompt · ${cat.description}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+        </div>
+
+        <div class="section-header">
+          <span>Tutti i Prompt Metodologici Disponibili</span>
+          <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">
+            Filtra per classe/indirizzo o usa la ricerca
+          </span>
+        </div>
+      `;
+
+      html += renderFilterBar();
+      html += `<div class="prompts-grid" id="promptsGrid">`;
+      
+      const filtered = getFilteredPrompts();
+      if (filtered.length === 0) {
+        html += `<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-muted);">Nessun prompt trovato con i filtri selezionati.</div>`;
+      } else {
+        filtered.forEach(p => {
+          html += createPromptCardHtml(p);
+        });
+      }
+
+      html += `</div>`;
+      contentArea.innerHTML = html;
+    }
+
+    /* ==========================================
+       RENDER CATEGORY & FAVS VIEWS
+       ========================================== */
+    function renderCategoryView(catId) {
+      const cat = categories.find(c => c.id === catId);
+      if (!cat) return;
+
+      pageTitle.innerHTML = `<span>${cat.icon}</span> ${cat.title}`;
+
+      let html = `
+        <div style="background: #ffffff; padding: 20px 24px; border-radius: var(--radius-md); border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: var(--shadow-sm);">
+          <h2 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">${cat.title}</h2>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">${cat.description}</p>
+        </div>
+      `;
+
+      html += renderFilterBar();
+      html += `<div class="prompts-grid" id="promptsGrid">`;
+
+      const filtered = getFilteredPrompts().filter(p => p.catId === catId);
+
+      if (filtered.length === 0) {
+        html += `<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-muted);">Nessun prompt trovato in questa metodologia con i criteri inseriti.</div>`;
+      } else {
+        filtered.forEach(p => {
+          html += createPromptCardHtml(p);
+        });
+      }
+
+      html += `</div>`;
+      contentArea.innerHTML = html;
+    }
+
+    function renderFavoritesView() {
+      pageTitle.innerHTML = `<span>⭐</span> I Miei Prompt Preferiti`;
+
+      let html = renderFilterBar();
+      html += `<div class="prompts-grid" id="promptsGrid">`;
+
+      const favPrompts = promptsData.filter(p => favorites.includes(p.id));
+      const filtered = favPrompts.filter(p => {
+        if (currentTargetFilter !== "all" && !p.target.toLowerCase().includes(currentTargetFilter.toLowerCase())) return false;
+        if (searchQuery && !matchesSearch(p, searchQuery)) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        html += `
+          <div style="grid-column: 1/-1; padding: 50px; text-align: center; color: var(--text-muted); background: #ffffff; border-radius: var(--radius-md); border: 1px solid #e2e8f0;">
+            <div style="font-size: 40px; margin-bottom: 10px;">⭐</div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Nessun Preferito Salvato</h3>
+            <p style="font-size: 0.85rem;">Clicca sulla stella in alto a destra in qualsiasi scheda per salvarla nei tuoi preferiti.</p>
+          </div>
+        `;
+      } else {
+        filtered.forEach(p => {
+          html += createPromptCardHtml(p);
+        });
+      }
+
+      html += `</div>`;
+      contentArea.innerHTML = html;
+    }
+
+    /* ==========================================
+       FILTER & CARD COMPONENT
+       ========================================== */
+    function renderFilterBar() {
+      return `
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Target II Grado:</span>
+            <span class="chip ${currentTargetFilter === 'all' ? 'active' : ''}" onclick="setTargetFilter('all')">Tutti (II Grado)</span>
+            <span class="chip ${currentTargetFilter === 'Biennio' ? 'active' : ''}" onclick="setTargetFilter('Biennio')">Biennio</span>
+            <span class="chip ${currentTargetFilter === 'Triennio' ? 'active' : ''}" onclick="setTargetFilter('Triennio')">Triennio</span>
+            <span class="chip ${currentTargetFilter === 'Licei' ? 'active' : ''}" onclick="setTargetFilter('Licei')">Licei & Tecnici</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function createPromptCardHtml(prompt) {
+      const isFav = favorites.includes(prompt.id);
+      const cat = categories.find(c => c.id === prompt.catId);
+
+      let highlightedTitle = highlightText(prompt.title, searchQuery);
+      let highlightedDesc = highlightText(prompt.description, searchQuery);
+      let previewSnippet = highlightText(prompt.template.substring(0, 180) + '...', searchQuery);
+
+      return `
+        <div class="prompt-card" id="card-${prompt.id}">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-category-tag">
+                <span>${cat ? cat.icon : '🗺️'}</span>
+                <span>${cat ? cat.title : 'Metodologia'}</span>
+              </div>
+              <h3 class="card-title">${highlightedTitle}</h3>
+            </div>
+            <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${prompt.id}')" title="Aggiungi ai preferiti">
+              ★
+            </button>
+          </div>
+
+          <div class="card-body">
+            <p class="card-description">${highlightedDesc}</p>
+
+            <div class="prompt-preview-box">
+              ${previewSnippet}
+            </div>
+
+            <div class="meta-tags">
+              <span class="meta-tag target">🎓 ${prompt.target}</span>
+              <span class="meta-tag method">🛠️ ${prompt.method}</span>
+              ${prompt.tags.map(t => `<span class="meta-tag">#${t}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn btn-secondary btn-card" onclick="copyPromptDirect('${prompt.id}')">
+              <span>📋</span> Copia
+            </button>
+            <button class="btn btn-primary btn-card" onclick="openCustomizerModal('${prompt.id}')">
+              <span>⚙️</span> Personalizza
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================
+       SEARCH & FILTER LOGIC
+       ========================================== */
+    function handleSearch() {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      refreshCurrentView();
+    }
+
+    function setTargetFilter(target) {
+      currentTargetFilter = target;
+      refreshCurrentView();
+    }
+
+    function refreshCurrentView() {
+      if (currentCategory === 'all') renderDashboard();
+      else if (currentCategory === 'favs') renderFavoritesView();
+      else renderCategoryView(currentCategory);
+      notifyResize();
+    }
+
+    function getFilteredPrompts() {
+      return promptsData.filter(p => {
+        if (currentCategory !== "all" && currentCategory !== "favs" && p.catId !== currentCategory) {
+          return false;
+        }
+        if (currentTargetFilter !== "all" && !p.target.toLowerCase().includes(currentTargetFilter.toLowerCase()) && !p.tags.some(t => t.toLowerCase().includes(currentTargetFilter.toLowerCase()))) {
+          return false;
+        }
+        if (searchQuery && !matchesSearch(p, searchQuery)) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function matchesSearch(prompt, query) {
+      const q = query.toLowerCase();
+      return prompt.title.toLowerCase().includes(q) ||
+             prompt.description.toLowerCase().includes(q) ||
+             prompt.template.toLowerCase().includes(q) ||
+             prompt.method.toLowerCase().includes(q) ||
+             prompt.tags.some(t => t.toLowerCase().includes(q));
+    }
+
+    function highlightText(text, query) {
+      if (!query) return escHtml(text);
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escapedQuery})`, 'gi');
+      return escHtml(text).replace(regex, '<mark>$1</mark>');
+    }
+
+    function escHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /* ==========================================
+       FAVORITES SYSTEM
+       ========================================== */
+    function toggleFavorite(promptId) {
+      const index = favorites.indexOf(promptId);
+      if (index === -1) {
+        favorites.push(promptId);
+        showToast("Prompt aggiunto ai preferiti! ⭐");
+      } else {
+        favorites.splice(index, 1);
+        showToast("Prompt rimosso dai preferiti.");
+      }
+
+      localStorage.setItem("geo_prompt_favs_v2", JSON.stringify(favorites));
+      document.getElementById("favBadgeCount").innerText = favorites.length;
+      refreshCurrentView();
+    }
+
+    /* ==========================================
+       CUSTOMIZER MODAL & VAR COMPILATION
+       ========================================== */
+    let activePromptObj = null;
+
+    function openCustomizerModal(promptId) {
+      activePromptObj = promptsData.find(p => p.id === promptId);
+      if (!activePromptObj) return;
+
+      const cat = categories.find(c => c.id === activePromptObj.catId);
+
+      document.getElementById("modalTitle").innerText = activePromptObj.title;
+      document.getElementById("modalCategoryTag").innerText = `${cat ? cat.icon : '🗺️'} ${cat ? cat.title : 'Metodologia'} · Target: ${activePromptObj.target}`;
+
+      // Estraggo tutte le variabili tra parentesi quadre [...]
+      const matches = activePromptObj.template.match(/\[([A-Z0-9_]+)(?:,\s*([^\]]+))?\]/g) || [];
+      // Filtro i tag fissi del modello PROMPT-D
+      const promptDTags = ["[P - PROFILO]", "[R - RISULTATO]", "[O - OBIETTIVI]", "[M - MATERIALI]", "[P - PARAMETRI]", "[T - TIPO DI OUTPUT]", "[D - DIAGNOSI]"];
+      
+      const vars = [...new Set(matches)].filter(m => !promptDTags.includes(m));
+
+      const varsGrid = document.getElementById("varsGrid");
+      varsGrid.innerHTML = "";
+
+      if (vars.length === 0) {
+        document.getElementById("varsFormWrapper").style.display = "none";
+      } else {
+        document.getElementById("varsFormWrapper").style.display = "block";
+
+        vars.forEach((v, idx) => {
+          const varCleanName = v.replace("[", "").replace("]", "");
+          const fieldId = `var_input_${idx}`;
+
+          const div = document.createElement("div");
+          div.className = "form-field";
+
+          const label = document.createElement("label");
+          label.setAttribute("for", fieldId);
+          label.innerText = formatVarLabel(varCleanName);
+
+          const input = document.createElement("input");
+          input.type = "text";
+          input.id = fieldId;
+          input.dataset.varKey = v;
+          input.placeholder = getVarPlaceholder(varCleanName);
+          input.addEventListener("input", updateCompiledOutput);
+
+          div.appendChild(label);
+          div.appendChild(input);
+          varsGrid.appendChild(div);
+        });
+      }
+
+      updateCompiledOutput();
+      customizerModal.classList.add("active");
+    }
+
+    function formatVarLabel(varName) {
+      return varName.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function getVarPlaceholder(varName) {
+      const placeholders = {
+        "CLASSE": "es. 2ª Liceo Scientifico / 4ª Ist. Tecnico",
+        "INDIRIZZO_SCOLASTICO": "es. Liceo delle Scienze Umane",
+        "REGIONE": "es. Emilia-Romagna / Sicilia",
+        "REGIONE_O_PAESE": "es. Appennino Tosco-Emiliano",
+        "CITTA": "es. Milano / Torino / Rotterdam",
+        "CITTA_TURISTICA": "es. Firenze / Venezia / Barcellona",
+        "CITTA_METROPOLITANA": "es. Roma Capitale",
+        "CITTA_O_SITO_INDUSTRIALE": "es. Taranto / Bagnoli",
+        "CITTA_MODELLO": "es. Amsterdam / Singapore",
+        "NOME_FIUME": "es. Po / Arno / Danubio",
+        "LOCALITA": "es. Bassa Padana",
+        "NOME_AUTORE": "es. Eugenio Montale",
+        "PAESE_A": "es. Italia",
+        "PAESE_B": "es. Slovenia",
+        "PAESE_MONOPOLISTA": "es. Cina",
+        "PAESE_IN_INVECCHIAMENTO": "es. Italia",
+        "PAESE_GIOVANE": "es. Nigeria",
+        "PAESE_ANOMALO_A": "es. Qatar",
+        "PAESE_ANOMALO_B": "es. Portogallo",
+        "LINGUA_MADRE": "es. Ucraino / Spagnolo"
+      };
+      return placeholders[varName] || `Inserisci ${varName.toLowerCase()}`;
+    }
+
+    function updateCompiledOutput() {
+      if (!activePromptObj) return;
+
+      let compiled = activePromptObj.template;
+      const inputs = document.querySelectorAll("#varsGrid input");
+
+      inputs.forEach(input => {
+        const key = input.dataset.varKey;
+        const val = input.value.trim();
+        if (val) {
+          compiled = compiled.replaceAll(key, val);
+        }
+      });
+
+      activeCompiledPromptText = compiled;
+      const textarea = document.getElementById("modalPromptOutput");
+      if (textarea) {
+        textarea.value = compiled;
+      }
+    }
+
+    function handleDirectPromptEdit() {
+      const textarea = document.getElementById("modalPromptOutput");
+      if (textarea) {
+        activeCompiledPromptText = textarea.value;
+      }
+    }
+
+    function resetPromptToVars() {
+      updateCompiledOutput();
+      showToast("Testo del prompt rigenerato dai campi variabili! 🔄");
+    }
+
+    function closeModal() {
+      customizerModal.classList.remove("active");
+    }
+
+    /* ==========================================
+       CLIPBOARD ACTIONS & UTILS
+       ========================================== */
+    function copyPromptDirect(promptId) {
+      const prompt = promptsData.find(p => p.id === promptId);
+      if (prompt) {
+        copyToClipboard(prompt.template);
+        showToast("Prompt copiato negli appunti! 📋");
+      }
+    }
+
+    function copyCompiledPrompt() {
+      const textarea = document.getElementById("modalPromptOutput");
+      const textToCopy = textarea ? textarea.value : activeCompiledPromptText;
+      if (textToCopy) {
+        copyToClipboard(textToCopy);
+        showToast("Prompt personalizzato copiato negli appunti! 🚀");
+        closeModal();
+      }
+    }
+
+    function copyVisiblePrompts() {
+      const visible = getFilteredPrompts();
+      if (visible.length === 0) {
+        showToast("Nessun prompt visibile da copiare.");
+        return;
+      }
+
+      const fullText = visible.map((p, i) => `=== PROMPT ${i+1}: ${p.title} ===\n\n${p.template}\n\n`).join("\n---\n\n");
+      copyToClipboard(fullText);
+      showToast(`${visible.length} Prompt visibili copiati negli appunti! 📋`);
+    }
+
+    function showRandomPrompt() {
+      const randomIndex = Math.floor(Math.random() * promptsData.length);
+      const prompt = promptsData[randomIndex];
+      openCustomizerModal(prompt.id);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('Fallback copy failed', err);
+        }
+        document.body.removeChild(textarea);
+      }
+    }
+
+    function showToast(msg) {
+      toastMessage.innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    function toggleMobileSidebar(forceState) {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+
+      if (typeof forceState === "boolean") {
+        if (forceState) {
+          sidebar.classList.add("open");
+          overlay.classList.add("open");
+        } else {
+          sidebar.classList.remove("open");
+          overlay.classList.remove("open");
+        }
+      } else {
+        sidebar.classList.toggle("open");
+        overlay.classList.toggle("open");
+      }
+    }
+  </script>
+</body>
+</html>

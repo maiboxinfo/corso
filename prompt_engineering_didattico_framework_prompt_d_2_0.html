@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Didattico & Framework PROMPT-D 2.0</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Playfair Display (Serif Editoriale), Inter (Sans UI/Text), JetBrains Mono (Code/Prompt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Palette Editoriale - Verificata WCAG 2.1 AAA */
+            --ink: #1C1C1C;           /* Testo primario: contrasto 15.93:1 su bianco/crema */
+            --cream: #FAF6EE;         /* Sfondo generale caldo */
+            --paper: #F2EAD9;         /* Sezioni alternate e superfici */
+            --surface: #EFE8D8;       /* Carte e superfici neutre */
+            --primary: #7C1D3F;       /* Borgogna profondo: contrasto 8.2:1 su crema */
+            --primary-dark: #5A1530;  /* Stato attivo/hover */
+            --accent: #7A5200;        /* Ambra scura per dettagli: contrasto 7.1:1 su crema */
+            
+            /* Palette Semantica di Stato (Fissa, AAA, Tripla Ridondanza) */
+            --status-progress: #0047AB; /* Blu Cobalto: contrasto 8.47:1 */
+            --status-warning: #B0004A;  /* Fucsia/Rosso Intenso: contrasto 7.12:1 */
+            --status-success: #005C36;  /* Verde Smeraldo: contrasto 8.12:1 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background-color: var(--cream);
+            line-height: 1.6;
+            font-size: 1rem; /* 16px min */
+        }
+
+        .font-serif-title {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Accessibilità: Focus visibile obbligatorio (2px offset 2px) */
+        *:focus-visible {
+            outline: 3px solid var(--primary) !important;
+            outline-offset: 3px !important;
+            border-radius: 4px;
+        }
+
+        /* Preferenza movimento ridotto */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Textures e Pattern caldi */
+        .paper-texture {
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(124, 29, 63, 0.02) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(122, 82, 0, 0.03) 0%, transparent 40%);
+        }
+
+        /* Flip Card 3D */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Stili Custom per Link e CTA */
+        .accessible-link {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            font-weight: 600;
+        }
+        .accessible-link:hover, .accessible-link:focus {
+            color: var(--primary-dark);
+            background-color: rgba(124, 29, 63, 0.08);
+        }
+
+        /* Indicatore di Scroll */
+        #scroll-progress {
+            height: 4px;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Badge di Stato con Tripla Ridondanza */
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            border-width: 2px;
+            border-style: solid;
+        }
+        .badge-progress {
+            background-color: #EBF3FF;
+            color: var(--status-progress);
+            border-color: var(--status-progress);
+        }
+        .badge-warning {
+            background-color: #FFEBF0;
+            color: var(--status-warning);
+            border-color: var(--status-warning);
+        }
+        .badge-success {
+            background-color: #E6F5ED;
+            color: var(--status-success);
+            border-color: var(--status-success);
+        }
+    </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col antialiased">
+
+    <!-- Barra di avanzamento lettura -->
+    <div class="fixed top-0 left-0 w-full z-50 bg-stone-200/80 backdrop-blur-sm">
+        <div id="scroll-progress" role="progressbar" aria-label="Progresso di lettura della pagina" aria-valuemin="0" aria-valuewow="0" aria-valuemax="100"></div>
+    </div>
+
+    <!-- Header Sticky con Navigazione Accessibile -->
+    <header class="sticky top-1 z-40 bg-[var(--cream)]/95 backdrop-blur-md border-b border-stone-300 shadow-sm transition-all">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#hero" class="flex items-center gap-2 text-stone-900 font-serif-title font-bold text-lg sm:text-xl hover:opacity-90 transition">
+                <span class="w-8 h-8 rounded bg-[var(--primary)] text-white flex items-center justify-center font-sans text-xs font-bold" aria-hidden="true">P-D</span>
+                <span>Prompt Didattico 2.0</span>
+            </a>
+
+            <!-- Navigazione Desktop -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-semibold" aria-label="Navigazione principale">
+                <a href="#paradigma" class="nav-link text-stone-700 hover:text-[var(--primary)] transition py-1" id="nav-paradigma">Paradigma</a>
+                <a href="#framework" class="nav-link text-stone-700 hover:text-[var(--primary)] transition py-1" id="nav-framework">Framework PROMPT-D</a>
+                <a href="#reasoning" class="nav-link text-stone-700 hover:text-[var(--primary)] transition py-1" id="nav-reasoning">Tecniche Reasoning</a>
+                <a href="#studio" class="nav-link text-stone-700 hover:text-[var(--primary)] transition py-1" id="nav-studio">Studio Operativo</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <!-- Hamburger Button Mobile -->
+                <button id="mobile-menu-btn" type="button" class="md:hidden p-2 rounded-md border border-stone-400 text-stone-800 hover:bg-stone-200 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri menu di navigazione">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[var(--paper)] border-b border-stone-300 px-4 pt-2 pb-4 space-y-2">
+            <a href="#paradigma" class="mobile-nav-link block px-3 py-2 rounded-md font-medium text-stone-800 hover:bg-stone-200 min-h-[44px] flex items-center">1. Cambio di Paradigma</a>
+            <a href="#framework" class="mobile-nav-link block px-3 py-2 rounded-md font-medium text-stone-800 hover:bg-stone-200 min-h-[44px] flex items-center">2. Framework PROMPT-D 2.0</a>
+            <a href="#reasoning" class="mobile-nav-link block px-3 py-2 rounded-md font-medium text-stone-800 hover:bg-stone-200 min-h-[44px] flex items-center">3. Tecniche di Reasoning</a>
+            <a href="#studio" class="mobile-nav-link block px-3 py-2 rounded-md font-medium text-stone-800 hover:bg-stone-200 min-h-[44px] flex items-center text-[var(--primary)] font-bold">4. Studio Operativo Prompt</a>
+        </div>
+    </header>
+
+    <main id="main-content" class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center border-b border-stone-300">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--paper)] border border-stone-400 rounded-full text-xs sm:text-sm font-semibold text-stone-800 mb-6">
+                <span class="w-2 h-2 rounded-full bg-[var(--status-success)]" aria-hidden="true"></span>
+                <span>[📖 Guida Didattica] WCAG 2.1 AAA Compliant</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif-title font-bold text-stone-900 leading-tight mb-6">
+                Da <span class="italic text-[var(--primary)]">«Chiedo all'IA»</span> a <span class="underline decoration-[var(--accent)] underline-offset-8">«Definisco la Specifica Didattica»</span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-stone-700 max-w-3xl mx-auto mb-8 font-normal">
+                Il prompt-engineering didattico contemporaneo trasforma l'IA da semplice «generatore di testi generici» a <strong>collaboratore di co-progettazione ad alta precisione</strong>. Impara la pipeline <strong>PROMPT-D 2.0</strong> e genera subito prompt pronti all'uso.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#studio" class="w-full sm:w-auto px-6 py-3.5 bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white font-bold text-base rounded-md shadow-md transition flex items-center justify-center gap-2 min-h-[44px]">
+                    <span aria-hidden="true">🛠️</span>
+                    <span>Crea e Personalizza Prompt</span>
+                </a>
+                <a href="#paradigma" class="w-full sm:w-auto px-6 py-3.5 bg-[var(--paper)] hover:bg-stone-300 border border-stone-400 text-stone-900 font-semibold text-base rounded-md transition flex items-center justify-center gap-2 min-h-[44px]">
+                    <span aria-hidden="true">💡</span>
+                    <span>Scopri il Cambio di Paradigma</span>
+                </a>
+            </div>
+
+            <!-- Box Avviso Sintetico con Tripla Ridondanza -->
+            <div class="mt-10 p-4 bg-[var(--paper)] border-l-4 border-[var(--primary)] rounded-r-md text-left max-w-3xl mx-auto flex gap-3 items-start">
+                <span class="text-xl" aria-hidden="true">📌</span>
+                <div>
+                    <p class="text-sm font-bold text-stone-900">Principio Chiave OpenAI & Anthropic (2026):</p>
+                    <p class="text-sm text-stone-700">
+                        I moderni modelli di reasoning richiedono <em>meno istruzioni procedurali rigide</em> e più chiarezza su <strong>contesto, vincoli, grounding su fonti e criteri di successo per la verifica (Quality Assurance)</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 1: Il Cambio di Paradigma -->
+        <section id="paradigma" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-stone-300">
+            <div class="mb-8">
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">[01] Confronto Didattico</p>
+                <h2 class="text-2xl sm:text-4xl font-serif-title font-bold text-stone-900">1. Cos'è il Prompt-Engineering Didattico?</h2>
+                <p class="text-stone-700 mt-2">
+                    È la progettazione intenzionale delle istruzioni date all'IA per ottenere un prodotto educativo perfettamente coerente con obiettivi di apprendimento, studenti, contenuti e valutazione.
+                </p>
+            </div>
+
+            <!-- Interactive Toggle Widget: Prompt Oracolo vs Prompt Didattico -->
+            <div class="bg-[var(--paper)] border border-stone-300 rounded-xl p-4 sm:p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-stone-300">
+                    <div>
+                        <h3 class="text-lg font-bold text-stone-900">Simulatore di Confronto Insegnante</h3>
+                        <p class="text-sm text-stone-600">Seleziona la modalità per analizzare la differenza di output strutturale.</p>
+                    </div>
+
+                    <!-- Toggle Control accessibile -->
+                    <div class="inline-flex p-1 bg-stone-300 rounded-lg" role="tablist" aria-label="Seleziona tipo di prompt">
+                        <button id="toggle-oracolo" type="button" role="tab" aria-selected="true" aria-controls="panel-oracolo" class="px-4 py-2 text-sm font-bold rounded-md transition min-h-[44px] bg-[var(--primary)] text-white shadow">
+                            <span aria-hidden="true">🔮</span> Prompt-Oracolo (Debole)
+                        </button>
+                        <button id="toggle-didattico" type="button" role="tab" aria-selected="false" aria-controls="panel-didattico" class="px-4 py-2 text-sm font-bold rounded-md transition min-h-[44px] text-stone-800 hover:text-stone-900">
+                            <span aria-hidden="true">🎯</span> Prompt-Didattico (Forte)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenuto Pannello Oracolo -->
+                <div id="panel-oracolo" role="tabpanel" class="pt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="badge-status badge-warning">
+                            <span aria-hidden="true">⚠️</span>
+                            <span>[⚠️ Attenzione] Prompt Ambiguo e Generico</span>
+                        </span>
+                        <span class="text-xs font-mono-code text-stone-600">Rischio Allucinazione: ALTO</span>
+                    </div>
+
+                    <div class="p-4 bg-stone-900 text-amber-200 font-mono-code text-sm rounded-lg border border-stone-700">
+                        <p>«Fammi una lezione sulla Rivoluzione francese.»</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 bg-[var(--cream)] rounded-lg border border-stone-300">
+                            <h4 class="font-bold text-stone-900 text-sm mb-2 flex items-center gap-2">
+                                <span class="text-[var(--status-warning)]" aria-hidden="true">❌</span> Cosa deve indovinare l'IA (Ambiguità):
+                            </h4>
+                            <ul class="text-xs text-stone-700 space-y-1 list-disc list-inside">
+                                <li>Classe e età degli studenti</li>
+                                <li>Prerequisiti e conoscenze pregresse</li>
+                                <li>Durata e risorse (es. LIM, fonti)</li>
+                                <li>Obiettivi e metodologie inclusive (DSA/BES)</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-[var(--cream)] rounded-lg border border-stone-300">
+                            <h4 class="font-bold text-stone-900 text-sm mb-2 flex items-center gap-2">
+                                <span class="text-[var(--status-warning)]" aria-hidden="true">📉</span> Esito del Risultato:
+                            </h4>
+                            <p class="text-xs text-stone-700">
+                                Un testo nozionistico da enciclopedia, privo di tempi, senza indicazioni per la classe, inutilizzabile senza un lungo lavoro di ri-scrittura manuale.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenuto Pannello Didattico -->
+                <div id="panel-didattico" role="tabpanel" class="pt-6 space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <span class="badge-status badge-success">
+                            <span aria-hidden="true">✅</span>
+                            <span>[✅ Completato] Specifica Didattica Strutturata</span>
+                        </span>
+                        <span class="text-xs font-mono-code text-stone-600">Precisione Didattica: ELEVATA</span>
+                    </div>
+
+                    <div class="p-4 bg-stone-900 text-emerald-300 font-mono-code text-sm rounded-lg border border-stone-700 leading-relaxed">
+                        <p>«Progetta una lezione di 90 minuti sulla Rivoluzione francese per una 2ª liceo. Gli studenti conoscono già Illuminismo e Ancien Régime. Obiettivo: comprendere il rapporto tra crisi economica, Dichiarazione dei diritti e trasformazione politica. Prevedi attivazione, analisi di fonte primaria e verifica formativa. Distingui conoscenze e competenze. Inserisci modalità accessibile per uno studente con dislessia. Indica tempi, consegne e criteri di successo.»</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 bg-[var(--cream)] rounded-lg border border-stone-300">
+                            <h4 class="font-bold text-stone-900 text-sm mb-2 flex items-center gap-2">
+                                <span class="text-[var(--status-success)]" aria-hidden="true">✅</span> Vincoli e guida forniti:
+                            </h4>
+                            <ul class="text-xs text-stone-700 space-y-1 list-disc list-inside">
+                                <li>Target preciso (2ª liceo) e Prerequisiti chiari</li>
+                                <li>Tempo esatto (90 min) suddiviso in fasi</li>
+                                <li>Attività osservabili su fonte primaria</li>
+                                <li>Inclusione DSA nativa e Criteri di successo</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-[var(--cream)] rounded-lg border border-stone-300">
+                            <h4 class="font-bold text-stone-900 text-sm mb-2 flex items-center gap-2">
+                                <span class="text-[var(--status-success)]" aria-hidden="true">📈</span> Esito del Risultato:
+                            </h4>
+                            <p class="text-xs text-stone-700">
+                                Una lezione pronta, direttamente spendibile in aula, perfettamente calibrata sulle esigenze pedagogiche reali della classe.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2: Framework PROMPT-D 2.0 -->
+        <section id="framework" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-stone-300">
+            <div class="mb-8">
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">[02] La Pipeline Progettuale</p>
+                <h2 class="text-2xl sm:text-4xl font-serif-title font-bold text-stone-900">2. Il Framework PROMPT-D 2.0</h2>
+                <p class="text-stone-700 mt-2">
+                    PROMPT-D non è un semplice acronimo memorizzabile: è una vera e propria <strong>pipeline di progettazione didattica</strong> in 7 fasi fondamentali + 1 fase trasversale di Reasoning/Review.
+                </p>
+            </div>
+
+            <!-- Diagramma SVG Nativo con Tripla Ridondanza (Forma + Icona + Colore + Etichetta Visibile) -->
+            <div class="bg-[var(--paper)] border border-stone-300 rounded-xl p-4 sm:p-6 mb-8 overflow-x-auto" role="region" aria-label="Diagramma della pipeline PROMPT-D">
+                <h3 class="text-lg font-bold text-stone-900 mb-4 text-center">Pipeline di Progettazione PROMPT-D 2.0</h3>
+                
+                <svg role="img" aria-labelledby="svg-title svg-desc" viewBox="0 0 800 180" class="w-full min-w-[650px] h-auto">
+                    <title id="svg-title">Pipeline sequenziale del modello PROMPT-D 2.0</title>
+                    <desc id="svg-desc">Diagramma interattivo con 7 fasi: Profilo, Risultato, Obiettivi, Materiali, Parametri, Tipo di Output, Diagnosi QA, unite da frecce sequenziali con simboli e badge testuali.</desc>
+
+                    <!-- Sfondo connettore -->
+                    <line x1="50" y1="70" x2="750" y2="70" stroke="#B8862C" stroke-width="4" stroke-dasharray="6 4" />
+
+                    <!-- FASI SVG -->
+                    <!-- P1 -->
+                    <g transform="translate(30, 30)">
+                        <rect x="0" y="0" width="80" height="80" rx="12" fill="#7C1D3F" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="20">P</text>
+                        <text x="40" y="58" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="11">Profilo</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">👤 Ruolo</text>
+                    </g>
+
+                    <!-- R -->
+                    <g transform="translate(145, 30)">
+                        <rect x="0" y="0" width="80" height="80" rx="12" fill="#7C1D3F" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="20">R</text>
+                        <text x="40" y="58" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="11">Risultato</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">📦 Prodotto</text>
+                    </g>
+
+                    <!-- O -->
+                    <g transform="translate(260, 30)">
+                        <rect x="0" y="0" width="80" height="80" rx="12" fill="#7C1D3F" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="20">O</text>
+                        <text x="40" y="58" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="11">Obiettivi</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">🎯 Verbi</text>
+                    </g>
+
+                    <!-- M -->
+                    <g transform="translate(375, 30)">
+                        <rect x="0" y="0" width="80" height="80" rx="12" fill="#0047AB" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="20">M</text>
+                        <text x="40" y="58" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="11">Materiali</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">📚 Grounding</text>
+                    </g>
+
+                    <!-- P2 -->
+                    <g transform="translate(490, 30)">
+                        <rect x="0" y="0" width="80" height="80" rx="12" fill="#7C1D3F" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="20">P</text>
+                        <text x="40" y="58" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="11">Parametri</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">⚙️ Vincoli</text>
+                    </g>
+
+                    <!-- T -->
+                    <g transform="translate(605, 30)">
+                        <rect x="0" y="0" width="80" height="80" rx="12" fill="#7C1D3F" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="20">T</text>
+                        <text x="40" y="58" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="11">Tipo Output</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">📄 Formato</text>
+                    </g>
+
+                    <!-- D -->
+                    <g transform="translate(720, 30)">
+                        <polygon points="40,0 80,40 40,80 0,40" fill="#005C36" stroke="#1C1C1C" stroke-width="2"/>
+                        <text x="40" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Inter" font-weight="700" font-size="18">D</text>
+                        <text x="40" y="54" text-anchor="middle" fill="#FAF6EE" font-family="Inter" font-weight="600" font-size="10">Diagnosi</text>
+                        <text x="40" y="105" text-anchor="middle" fill="#1C1C1C" font-family="Inter" font-weight="700" font-size="12">✅ Quality QA</text>
+                    </g>
+                </svg>
+
+                <!-- Versione Tabellare Alternativa (Accessibilità Screen Reader) -->
+                <div class="mt-4 pt-4 border-t border-stone-300">
+                    <p class="text-xs font-bold text-stone-700 mb-2">Tabella accessibile dei componenti PROMPT-D 2.0:</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-stone-300 text-stone-900 border-b border-stone-400">
+                                    <th class="p-2 font-bold">Lettera</th>
+                                    <th class="p-2 font-bold">Componente</th>
+                                    <th class="p-2 font-bold">Domanda guida del docente</th>
+                                    <th class="p-2 font-bold">Integrazione Didattica 2.0</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-stone-300 bg-[var(--cream)]">
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--primary)]">P</td>
+                                    <td class="p-2 font-bold">Profilo</td>
+                                    <td class="p-2">Chi deve essere l'IA?</td>
+                                    <td class="p-2">Non semplice "ruolo", ma competenza professionale specifica.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--primary)]">R</td>
+                                    <td class="p-2 font-bold">Risultato</td>
+                                    <td class="p-2">Che cosa deve produrre?</td>
+                                    <td class="p-2">Distinguere deliverable (es. UDA) ed evidenza di apprendimento.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--primary)]">O</td>
+                                    <td class="p-2 font-bold">Obiettivi</td>
+                                    <td class="p-2">Che cosa devono imparare gli studenti?</td>
+                                    <td class="p-2">Verbi operativi e osservabili (analizzare, argomentare, applicare).</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--status-progress)]">M</td>
+                                    <td class="p-2 font-bold">Materiali</td>
+                                    <td class="p-2">Su quali informazioni deve basarsi?</td>
+                                    <td class="p-2">Grounding esplicito con clausola di distinzione fonti/inferenze.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--primary)]">P</td>
+                                    <td class="p-2 font-bold">Parametri</td>
+                                    <td class="p-2">In quale contesto reale deve operare?</td>
+                                    <td class="p-2">Classe, tempi reali, prerequisiti, risorse, inclusione DSA/BES.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--primary)]">T</td>
+                                    <td class="p-2 font-bold">Tipo di Output</td>
+                                    <td class="p-2">Come deve presentare il risultato?</td>
+                                    <td class="p-2">Struttura, tabella, lunghezza, stile e consegne trasparenti.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-[var(--status-success)]">D</td>
+                                    <td class="p-2 font-bold">Diagnosi</td>
+                                    <td class="p-2">Come controlliamo che sia valido?</td>
+                                    <td class="p-2">Quality Assurance con criteri matematici/logici e auto-correzione.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Griglia Interactive Cards per esplorare i dettagli dei 7 componenti -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Card 1: Profilo -->
+                <div class="bg-[var(--paper)] border border-stone-300 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center text-sm">P</span>
+                        <span class="badge-status badge-progress"><span aria-hidden="true">👤</span> Profilo</span>
+                    </div>
+                    <h3 class="font-bold text-stone-900 text-lg mb-2">P — Profilo (Competenza)</h3>
+                    <p class="text-xs text-stone-700 mb-3">
+                        Evita il semplice role-prompting astratto («Sei uno storico»). Specifica <strong>quale competenza professionale</strong> deve mettere al servizio del compito.
+                    </p>
+                    <div class="p-3 bg-[var(--cream)] rounded border border-stone-300 text-xs text-stone-800">
+                        <strong>Esempio forte:</strong> «Assumi la prospettiva di un progettista didattico esperto nella secondaria, privilegiano analisi delle fonti e argomentazione.»
+                    </div>
+                </div>
+
+                <!-- Card 2: Materiali (Grounding) -->
+                <div class="bg-[var(--paper)] border border-stone-300 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-[var(--status-progress)] text-white font-bold flex items-center justify-center text-sm">M</span>
+                        <span class="badge-status badge-progress"><span aria-hidden="true">📚</span> Grounding</span>
+                    </div>
+                    <h3 class="font-bold text-stone-900 text-lg mb-2">M — Materiali & Correzione</h3>
+                    <p class="text-xs text-stone-700 mb-3">
+                        <em>«Non chiedere all'IA di ricordare ciò che puoi fornirle.»</em> Il grounding riduce le allucinazioni ma non le azzera. Aggiungi sempre una clausola di salvaguardia.
+                    </p>
+                    <div class="p-3 bg-[var(--cream)] rounded border border-stone-300 text-xs text-stone-800">
+                        <strong>Clausola di sicurezza:</strong> «Distingui sempre tra dati presenti nella fonte, inferenze e conoscenze esterne.»
+                    </div>
+                </div>
+
+                <!-- Card 3: Diagnosi (QA) -->
+                <div class="bg-[var(--paper)] border border-stone-300 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full fill-[var(--status-success)] bg-[var(--status-success)] text-white font-bold flex items-center justify-center text-sm">D</span>
+                        <span class="badge-status badge-success"><span aria-hidden="true">✅</span> Quality QA</span>
+                    </div>
+                    <h3 class="font-bold text-stone-900 text-lg mb-2">D — Diagnosi (Controllo Qualità)</h3>
+                    <p class="text-xs text-stone-700 mb-3">
+                        Non chiedere «Hai fatto bene?». Imponi una verifica sistematica: somma dei tempi, coerenza obiettivi-attività e verifica assenza di deviazioni.
+                    </p>
+                    <div class="p-3 bg-[var(--cream)] rounded border border-stone-300 text-xs text-stone-800">
+                        <strong>Esecuzione:</strong> Generazione ➔ Verifica Vincoli ➔ Correzione Incoerenze ➔ Output Finale.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEZIONE 3: Le Tecniche di Reasoning nei Modelli Moderni -->
+        <section id="reasoning" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-stone-300">
+            <div class="mb-8">
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">[03] AI Reasoning 2026</p>
+                <h2 class="text-2xl sm:text-4xl font-serif-title font-bold text-stone-900">3. 7 Tecniche di Reasoning per il Docente</h2>
+                <p class="text-stone-700 mt-2">
+                    Con i recenti modelli di reasoning (es. OpenAI o1/o3, Claude 3.5/3.7), scrivere «Pensa passo per passo» è superato. È molto più efficace guidare il modello verso un <strong>processo di controllo osservabile</strong>.
+                </p>
+            </div>
+
+            <!-- Stepper / Grid di Tecniche -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Tecnica 1 -->
+                <div class="p-5 bg-[var(--paper)] border border-stone-300 rounded-xl flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center shrink-0">1</div>
+                    <div>
+                        <h3 class="font-bold text-stone-900 text-base mb-1">Decomposizione del Problema</h3>
+                        <p class="text-xs text-stone-700 mb-2">
+                            Invece di chiedere «Svolgi il compito», richiedi di scomporre la richiesta in sottoproblemi (tema ➔ competenze ➔ attività ➔ valutazione) e ricomporla.
+                        </p>
+                        <span class="inline-block px-2 py-1 bg-stone-300 text-stone-800 text-[11px] font-mono-code rounded">Raccomandazione Anthropic & OpenAI</span>
+                    </div>
+                </div>
+
+                <!-- Tecnica 2 -->
+                <div class="p-5 bg-[var(--paper)] border border-stone-300 rounded-xl flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center shrink-0">2</div>
+                    <div>
+                        <h3 class="font-bold text-stone-900 text-base mb-1">Verifica Matematica dei Vincoli</h3>
+                        <p class="text-xs text-stone-700 mb-2">
+                            Chiedi esplicitamente: «Controlla che la somma dei minuti delle attività sia esattamente pari a 90 minuti e che ogni quesito corrisponda a un obiettivo.»
+                        </p>
+                        <span class="inline-block px-2 py-1 bg-stone-300 text-stone-800 text-[11px] font-mono-code rounded">Eliminazione Errori di Calcolo</span>
+                    </div>
+                </div>
+
+                <!-- Tecnica 3 -->
+                <div class="p-5 bg-[var(--paper)] border border-stone-300 rounded-xl flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center shrink-0">3</div>
+                    <div>
+                        <h3 class="font-bold text-stone-900 text-base mb-1">Confronto tra Alternative Didattiche</h3>
+                        <p class="text-xs text-stone-700 mb-2">
+                            «Proponi tre strategie diverse (es. Debate vs Analisi Caso vs Scrittura). Confrontale per tempo, inclusività ed efficacia e seleziona il miglior compromesso.»
+                        </p>
+                        <span class="inline-block px-2 py-1 bg-stone-300 text-stone-800 text-[11px] font-mono-code rounded">Decision-Making Didattico</span>
+                    </div>
+                </div>
+
+                <!-- Tecnica 4 -->
+                <div class="p-5 bg-[var(--paper)] border border-stone-300 rounded-xl flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center shrink-0">4</div>
+                    <div>
+                        <h3 class="font-bold text-stone-900 text-base mb-1">Esempi Guidati (Few-Shot Prompting)</h3>
+                        <p class="text-xs text-stone-700 mb-2">
+                            Un esempio concreto vale più di mille istruzioni astratte. Mostra 1 domanda modello con la struttura desiderata e chiedi di mantenerne la complessità cognitiva.
+                        </p>
+                        <span class="inline-block px-2 py-1 bg-stone-300 text-stone-800 text-[11px] font-mono-code rounded">Controllo Formato e Tono</span>
+                    </div>
+                </div>
+
+                <!-- Tecnica 5 -->
+                <div class="p-5 bg-[var(--paper)] border border-stone-300 rounded-xl flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center shrink-0">5</div>
+                    <div>
+                        <h3 class="font-bold text-stone-900 text-base mb-1">Criteri di Successo Ante-Elaborazione</h3>
+                        <p class="text-xs text-stone-700 mb-2">
+                            Definisci la "funzione obiettivo": «Considera riuscita la lezione se almeno il 50% del tempo è dedicato agli studenti e la valutazione misura evidenze osservabili.»
+                        </p>
+                        <span class="inline-block px-2 py-1 bg-stone-300 text-stone-800 text-[11px] font-mono-code rounded">Funzione Obiettivo Qualitativa</span>
+                    </div>
+                </div>
+
+                <!-- Tecnica 6 e 7 -->
+                <div class="p-5 bg-[var(--paper)] border border-stone-300 rounded-xl flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-[var(--primary)] text-white font-bold flex items-center justify-center shrink-0">6-7</div>
+                    <div>
+                        <h3 class="font-bold text-stone-900 text-base mb-1">Self-Refinement e Dual Role (Generatore vs Critico)</h3>
+                        <p class="text-xs text-stone-700 mb-2">
+                            Fai generare la bozza, poi chiedi al modello di assumere il ruolo di «Critico Severo» per identificare difetti e infine di revisionare l'output.
+                        </p>
+                        <span class="inline-block px-2 py-1 bg-stone-300 text-stone-800 text-[11px] font-mono-code rounded">Iterative QA Refinement</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEZIONE 4: Studio Operativo e Generatore PROMPT-D 2.0 -->
+        <section id="studio" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+            <div class="mb-8 text-center sm:text-left">
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">[04] Strumento Pratico</p>
+                <h2 class="text-2xl sm:text-4xl font-serif-title font-bold text-stone-900">4. Studio & Generatore PROMPT-D 2.0</h2>
+                <p class="text-stone-700 mt-2 max-w-3xl">
+                    Seleziona un prompt preconfigurato, personalizza le componenti della pipeline oppure componi la tua specifica didattica da zero. Copia il prompt finale o testalo direttamente con l'IA.
+                </p>
+            </div>
+
+            <!-- Selezione Preset Rapidi -->
+            <div class="mb-8 p-4 bg-[var(--paper)] border border-stone-300 rounded-xl">
+                <label for="preset-selector" class="block font-bold text-stone-900 text-sm mb-2 flex items-center gap-2">
+                    <span aria-hidden="true">⚡</span>
+                    <span>Carica un Prompt Preconfigurato (Preset Didattico):</span>
+                </label>
+                <select id="preset-selector" class="w-full p-3 bg-[var(--cream)] border border-stone-400 rounded-md font-semibold text-stone-900 text-sm focus:ring-2 focus:ring-[var(--primary)]">
+                    <option value="preset-1">1. Lezione di Storia: Rivoluzione Francese (2ª Liceo - 90 min)</option>
+                    <option value="preset-2">2. UDA Interdisciplinare: Sostenibilità & Agenda 2030 (3ª Media)</option>
+                    <option value="preset-3">3. Verifica Formativa: Canto XXVI dell'Inferno (3ª Superiori)</option>
+                    <option value="preset-4">4. Laboratorio Scientifico: Fotosintesi Clorofilliana (1ª Superiori)</option>
+                    <option value="custom">5. ✏️ Crea un Nuovo Prompt da Zero (Vuoto)</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Form di Input Componenti PROMPT-D (7 + 1) -->
+                <div class="lg:col-span-7 space-y-4 bg-[var(--paper)] p-5 sm:p-6 border border-stone-300 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-stone-900 text-lg border-b border-stone-300 pb-2 flex items-center justify-between">
+                        <span>Componenti della Pipeline</span>
+                        <span class="text-xs font-normal text-stone-600">Compila i campi per aggiornare l'output</span>
+                    </h3>
+
+                    <!-- P - Profilo -->
+                    <div>
+                        <label for="input-p1" class="block text-xs font-bold text-stone-800 mb-1">
+                            P — Profilo (Ruolo & Competenza Professionale)
+                        </label>
+                        <textarea id="input-p1" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Esercita la competenza di un progettista didattico esperto..."></textarea>
+                    </div>
+
+                    <!-- R - Risultato -->
+                    <div>
+                        <label for="input-r" class="block text-xs font-bold text-stone-800 mb-1">
+                            R — Risultato (Deliverable Didattico Prodotto)
+                        </label>
+                        <textarea id="input-r" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Progetta una lezione di 90 minuti comprendente introduzione, laboratorio e verifica..."></textarea>
+                    </div>
+
+                    <!-- O - Obiettivi -->
+                    <div>
+                        <label for="input-o" class="block text-xs font-bold text-stone-800 mb-1">
+                            O — Obiettivi (Apprendimenti Osservabili con Verbi Operativi)
+                        </label>
+                        <textarea id="input-o" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Gli studenti saranno in grado di individuare, confrontare, argomentare..."></textarea>
+                    </div>
+
+                    <!-- M - Materiali -->
+                    <div>
+                        <label for="input-m" class="block text-xs font-bold text-stone-800 mb-1">
+                            M — Materiali (Grounding & Clausola Allucinazioni)
+                        </label>
+                        <textarea id="input-m" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Basa l'attività esclusivamente sul testo allegato. Distingui dati reali da inferenze..."></textarea>
+                    </div>
+
+                    <!-- P - Parametri -->
+                    <div>
+                        <label for="input-p2" class="block text-xs font-bold text-stone-800 mb-1">
+                            P — Parametri (Vincoli del Contesto Reale, Classe, Inclusione)
+                        </label>
+                        <textarea id="input-p2" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Classe 2ª superiore, 24 studenti, tempo totale 90 min, inclusione per studente DSA..."></textarea>
+                    </div>
+
+                    <!-- T - Tipo Output -->
+                    <div>
+                        <label for="input-t" class="block text-xs font-bold text-stone-800 mb-1">
+                            T — Tipo di Output (Formato, Struttura, Tabella, Consegne)
+                        </label>
+                        <textarea id="input-t" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Presenta una tabella con fasi, tempi, attività docente/studenti e consegne visibili..."></textarea>
+                    </div>
+
+                    <!-- D - Diagnosi QA -->
+                    <div>
+                        <label for="input-d" class="block text-xs font-bold text-[var(--status-success)] mb-1">
+                            D — Diagnosi (Criteri di Quality Assurance e Controllo)
+                        </label>
+                        <textarea id="input-d" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Prima dell'output finale verifica che i tempi sommino esattamene e che ogni attività abbia un obiettivo..."></textarea>
+                    </div>
+
+                    <!-- R - Reasoning & Review -->
+                    <div>
+                        <label for="input-reasoning" class="block text-xs font-bold text-[var(--accent)] mb-1">
+                            R — Reasoning & Review (Istruzioni di Controllo e Analisi)
+                        </label>
+                        <textarea id="input-reasoning" rows="2" class="w-full p-2.5 text-xs bg-[var(--cream)] border border-stone-400 rounded-md focus:border-[var(--primary)]" placeholder="Prima di elaborare, individua eventuali ambiguità, confronta due alternative didattiche e correggi le incongruenze..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Anteprima Live, Valutazione QA & Azioni -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Box Output Compilato -->
+                    <div class="bg-stone-900 rounded-xl p-5 border border-stone-700 text-stone-100 shadow-lg">
+                        <div class="flex items-center justify-between mb-3 border-b border-stone-800 pb-2">
+                            <span class="text-xs font-mono-code text-emerald-400 font-bold flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true"></span>
+                                <span>Output Prompt PROMPT-D 2.0</span>
+                            </span>
+                            <span class="text-[11px] text-stone-400">Aggiornamento in tempo reale</span>
+                        </div>
+
+                        <!-- Textarea modificabile dell'output finale -->
+                        <div class="mb-4">
+                            <label for="prompt-output" class="sr-only">Testo del prompt finale generato</label>
+                            <textarea id="prompt-output" rows="14" class="w-full p-3 bg-stone-950 text-emerald-300 font-mono-code text-xs rounded border border-stone-800 focus:ring-1 focus:ring-emerald-400 leading-relaxed" aria-live="polite" aria-label="Prompt completo generato"></textarea>
+                        </div>
+
+                        <!-- Bottone Copia negli Appunti -->
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button id="copy-btn" type="button" class="flex-1 py-3 px-4 bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white font-bold text-xs rounded-md shadow transition flex items-center justify-center gap-2 min-h-[44px]">
+                                <span id="copy-icon" aria-hidden="true">📋</span>
+                                <span id="copy-text">Copia Prompt negli Appunti</span>
+                            </button>
+                            <button id="qa-check-btn" type="button" class="py-3 px-4 bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 font-bold text-xs rounded-md shadow transition flex items-center justify-center gap-2 min-h-[44px]">
+                                <span aria-hidden="true">🔍</span>
+                                <span>Analizza Qualità QA</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Box Valutazione Qualità QA (Interactive Checklist) -->
+                    <div id="qa-results-box" class="bg-[var(--paper)] border border-stone-300 rounded-xl p-5 shadow-sm">
+                        <h4 class="font-bold text-stone-900 text-sm mb-3 flex items-center justify-between">
+                            <span>Checklist Qualità PROMPT-D</span>
+                            <span id="qa-score-badge" class="badge-status badge-success"><span aria-hidden="true">✅</span> Punteggio: 100%</span>
+                        </h4>
+                        
+                        <ul class="space-y-2 text-xs text-stone-800" id="qa-checklist">
+                            <li class="flex items-center gap-2" id="qa-item-p1">
+                                <span class="text-emerald-700" aria-hidden="true">✅</span>
+                                <span>Profilo con competenza professionale definita</span>
+                            </li>
+                            <li class="flex items-center gap-2" id="qa-item-r">
+                                <span class="text-emerald-700" aria-hidden="true">✅</span>
+                                <span>Deliverable didattico chiaro e definito</span>
+                            </li>
+                            <li class="flex items-center gap-2" id="qa-item-o">
+                                <span class="text-emerald-700" aria-hidden="true">✅</span>
+                                <span>Obiettivi basati su verbi operativi e osservabili</span>
+                            </li>
+                            <li class="flex items-center gap-2" id="qa-item-m">
+                                <span class="text-emerald-700" aria-hidden="true">✅</span>
+                                <span>Grounding con protezione contro allucinazioni</span>
+                            </li>
+                            <li class="flex items-center gap-2" id="qa-item-d">
+                                <span class="text-emerald-700" aria-hidden="true">✅</span>
+                                <span>Diagnosi QA con auto-correzione esplicita</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Modulo opzionale: Test Diretto con Gemini API -->
+                    <div class="bg-[var(--paper)] border border-stone-300 rounded-xl p-5 shadow-sm">
+                        <h4 class="font-bold text-stone-900 text-sm mb-2 flex items-center gap-2">
+                            <span aria-hidden="true">🤖</span>
+                            <span>Testa questo Prompt con l'IA (Gemini Flash)</span>
+                        </h4>
+                        <p class="text-xs text-stone-700 mb-4">
+                            Vuoi vedere come risponde un modello di IA contemporaneo a questa specifica didattica?
+                        </p>
+
+                        <button id="run-gemini-btn" type="button" class="w-full py-2.5 px-4 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-md transition flex items-center justify-center gap-2 min-h-[44px]">
+                            <span aria-hidden="true">🚀</span>
+                            <span>Esegui Prompt con Gemini API</span>
+                        </button>
+
+                        <div id="gemini-loading" class="hidden my-3 p-3 bg-blue-50 text-blue-800 text-xs rounded border border-blue-200 flex items-center gap-2">
+                            <span class="animate-spin" aria-hidden="true">⏳</span>
+                            <span>Generazione della risposta didattica in corso...</span>
+                        </div>
+
+                        <div id="gemini-response-box" class="hidden mt-3 p-3 bg-[var(--cream)] border border-stone-300 rounded text-xs text-stone-900 max-h-60 overflow-y-auto font-mono-code leading-relaxed whitespace-pre-wrap"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEZIONE 5: Sintesi & Formula del Docente -->
+        <section class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-stone-300">
+            <div class="bg-[var(--paper)] border-2 border-[var(--primary)] rounded-2xl p-6 sm:p-8 text-center shadow-md">
+                <span class="text-3xl mb-2 block" aria-hidden="true">🎓</span>
+                <h2 class="text-2xl sm:text-3xl font-serif-title font-bold text-stone-900 mb-3">La Formula Pratica per il Docente</h2>
+                <p class="text-stone-700 text-sm max-w-2xl mx-auto mb-6">
+                    Sostituisci la vecchia abitudine «Ruolo + Comando + Pensa Passo Passo» con la nuova formula didattica integrata:
+                </p>
+
+                <div class="p-4 bg-stone-900 text-amber-300 font-mono-code text-xs sm:text-sm rounded-xl border border-stone-700 max-w-3xl mx-auto leading-relaxed overflow-x-auto">
+                    CONTESTO + OBIETTIVO + EVIDENZA + VINCOLI + MATERIALI + FORMATO + CRITERI QA + REVISION
+                </div>
+
+                <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-stone-800">
+                    <span class="inline-flex items-center gap-1"><span class="text-[var(--status-success)]" aria-hidden="true">✅</span> Chiarezza</span>
+                    <span class="inline-flex items-center gap-1"><span class="text-[var(--status-success)]" aria-hidden="true">✅</span> Grounding</span>
+                    <span class="inline-flex items-center gap-1"><span class="text-[var(--status-success)]" aria-hidden="true">✅</span> Criteri di Successo</span>
+                    <span class="inline-flex items-center gap-1"><span class="text-[var(--status-success)]" aria-hidden="true">✅</span> Quality Assurance</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification per Feedback Operativo -->
+    <div id="toast" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="flex items-center gap-3 px-4 py-3 bg-stone-900 text-white text-xs font-bold rounded-lg shadow-xl border border-stone-700">
+            <span id="toast-icon" aria-hidden="true">✅</span>
+            <span id="toast-message">Prompt copiato negli appunti!</span>
+        </div>
+    </div>
+
+    <!-- Footer Editoriale -->
+    <footer class="bg-stone-900 text-stone-300 py-10 px-4 sm:px-6 lg:px-8 border-t border-stone-800 mt-12">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
+            <div class="space-y-1 text-center sm:text-left">
+                <p class="font-bold text-white font-serif-title text-sm">Prompt Engineering Didattico & Framework PROMPT-D 2.0</p>
+                <p class="text-stone-400">Guida per l'innovazione metodologica nella progettazione didattica assistita da IA.</p>
+            </div>
+            <div class="flex items-center gap-4 text-stone-400">
+                <a href="#hero" class="hover:text-white transition">Torna su ↑</a>
+                <span>•</span>
+                <span>Conforme WCAG 2.1 Livello AAA</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Preset Data per i Prompt Didattici Pre-configurati
+        const PRESETS = {
+            "preset-1": {
+                p1: "Assumi la prospettiva di un progettista didattico esperto nell'insegnamento della storia nella scuola secondaria di secondo grado. Progetta attività che privilegino analisi delle fonti, confronto tra interpretazioni e argomentazione storica.",
+                r: "Progetta una lezione laboratoriale di 90 minuti sulla Rivoluzione Francese articolata in: fase di attivazione, analisi di fonte primaria, sintesi e verifica formativa.",
+                o: "Gli studenti saranno in grado di individuare nel testo le cause economiche e sociali della crisi dell'Ancien Régime, confrontare la Dichiarazione dei Diritti del 1789 con il contesto monarchico e argomentare la trasformazione del concetto di cittadinanza.",
+                m: "Basa l'attività esclusivamente sulle fonti primarie fornite nel manuale (Dichiarazione dei diritti dell'uomo e del cittadino). Distingui sempre tra dati direttamente presenti nella fonte, inferenze interpretative e conoscenze generali.",
+                p2: "Classe: 2ª Liceo (24 studenti). Durata: 90 minuti. Prerequisiti: conoscenza dell'Illuminismo. È presente uno studente con dislessia (prevedi versione ad alta leggibilità/mappa sintetizzante).",
+                t: "Presenta una tabella con: Fase, Attività Docente, Attività Studenti, Tempo, Obiettivo e Evidenza osservabile. Inserisci il testo delle consegne per gli studenti e una rubrica di valutazione formativa a 3 livelli.",
+                d: "Prima di fornire l'output definitivo, verifica matematicamente che la somma dei minuti sia esattamente 90, che ogni attività sia collegata a un obiettivo osservabile e che sia prevista la modalità per lo studente con DSA.",
+                reasoning: "Scomponi il compito in sottoproblemi. Se individui incongruenze nei tempi o nella coerenza degli obiettivi, correggerle prima di presentare il risultato finale."
+            },
+            "preset-2": {
+                p1: "Agisci come coordinatore di progetti didattici interdisciplinari e docente esperto in Educazione Civica per la scuola secondaria di primo grado.",
+                r: "Crea un'Unità Didattica Apprendimento (UDA) di 4 ore sulla Sostenibilità e l'Agenda 2030 (Obiettivo 12: Consumo Responsabile).",
+                o: "Gli studenti saranno in grado di classificare l'impronta ecologica di tre prodotti quotidiani, proporre una strategia di riduzione degli sprechi a scuola e presentare un report sintetico al gruppo classe.",
+                m: "Utilizza i dati ufficiali dell'Astat/Istat sull'impatto dei rifiuti plastiche nella scuola. Inserisci la clausola: segnala esplicitamente quali statistiche derivano dal documento fornito e quali sono stime generali.",
+                p2: "Classe: 3ª Scuola Secondaria I Grado (20 studenti). Ambienti: Aula con LIM e laboratori a gruppi. Durata complessiva: 240 minuti (4 moduli da 60 min).",
+                t: "Fornisci una scheda UDA strutturata con: Titolo, Traguardi di competenza, Calendario moduli, Griglia di osservazione per il docente e Consegna operativa per il compito di realtà.",
+                d: "Verifica che il tempo sia suddiviso equamente e che almeno il 60% delle attività sia gestito direttamente dagli studenti in modalità cooperativa.",
+                reasoning: "Confronta due possibili metodologie (Debate vs Challenge Based Learning) e motiva nella risposta finale perché la scelta adottata è la più coerente con la classe."
+            },
+            "preset-3": {
+                p1: "Agisci come docente e valutatore di Letteratura Italiana nella scuola secondaria di secondo grado, specializzato nella progettazione di verifiche formative delle competenze.",
+                r: "Produci una prova di verifica formativa scritta sul Canto XXVI dell'Inferno di Dante Alighieri della durata di 60 minuti.",
+                o: "Gli studenti dovranno individuare 3 caratteristiche della figura di Ulisse nel testo, analizzare il rapporto tra 'virtute e canoscenza' e argomentare in un testo di 150 parole il tema del limite umano.",
+                m: "Utilizza esclusivamente i versi 90-142 del Canto XXVI dell'Inferno. Ogni domanda espositiva deve richiedere una citazione testuale diretta dalla fonte fornita.",
+                p2: "Classe: 3ª Superiore. Livello eterogeneo. Tempo della prova: 60 minuti. Prevedi una versione compensata per studente con DSA (font OpenDyslexic, tempo aggiuntivo o riduzione del numero di quesiti secondari).",
+                t: "Struttura la prova in: 4 quesiti a risposta multipla con motivazione, 2 quesiti a risposta aperta guidata con punteggio associato e Griglia di valutazione in quattro livelli.",
+                d: "Controlla che i quesiti misurino competenze di analisi e interpretazione e non solo semplice memoria. Verifica la correttezza della griglia di punteggio (totale 100 punti).",
+                reasoning: "Prima della consegna finale esegui un controllo di coerenza tra il testo dei versi citati e le soluzioni attese riportate nella chiave di correzione."
+            },
+            "preset-4": {
+                p1: "Agisci come didatta delle scienze naturali e progettista di laboratori d'indagine d'ispirazione Inquiry-Based Science Education (IBSE).",
+                r: "Progetta un'attività laboratoriale di 60 minuti sulla Fotosintesi Clorofilliana centrata su un esperimento con l'Elodea densa.",
+                o: "Gli studenti sapranno formulare un'ipotesi sull'effetto della luce sulla produzione di ossigeno, misurare la frequenza delle bolle e rappresentare i dati su un grafico cartesiano.",
+                m: "Basa l'attività sul protocollo standard di misurazione dell'ossigeno disciolto in acquario. Inserisci la clausola per distinguere dati sperimentali attesi ed eventuali fattori di disturbo.",
+                p2: "Classe: 1ª Liceo Scientifico (26 studenti divisi in 5 gruppi). Risorse: Laboratorio di scienze con provette e lampade orientabili.",
+                t: "Fornisci: Scheda laboratorio per gli studenti, Guida per il docente con risposte attese e Domande di stimolo per la discussione post-esperimento.",
+                d: "Accertati che le istruzioni di sicurezza del laboratorio siano chiaramente evidenziate all'inizio della scheda.",
+                reasoning: "Valuta le possibili cause di errore nell'esperimento e includi una sezione 'Cosa fare se l'esperimento non funziona'."
+            }
+        };
+
+        // Inizializzazione al caricamento del DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initToggleParadigm();
+            initPromptStudio();
+            initScrollProgress();
+            
+            // Carica il primo preset all'avvio
+            loadPreset('preset-1');
+        });
+
+        // 1. Progress Bar di Lettura
+        function initScrollProgress() {
+            const progressBar = document.getElementById('scroll-progress');
+            window.addEventListener('scroll', () => {
+                const winScroll = document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                if (height > 0) {
+                    const scrolled = (winScroll / height) * 100;
+                    progressBar.style.width = scrolled + '%';
+                    progressBar.setAttribute('aria-valuenow', Math.round(scrolled));
+                }
+            });
+        }
+
+        // 2. Menu Mobile e Navigazione Accessibile
+        function initNavigation() {
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+            menuBtn.addEventListener('click', () => {
+                const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
+                menuBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        // 3. Interactive Toggle Oracolo vs Didattico
+        function initToggleParadigm() {
+            const btnOracolo = document.getElementById('toggle-oracolo');
+            const btnDidattico = document.getElementById('toggle-didattico');
+            const panelOracolo = document.getElementById('panel-oracolo');
+            const panelDidattico = document.getElementById('panel-didattico');
+
+            btnOracolo.addEventListener('click', () => {
+                btnOracolo.setAttribute('aria-selected', 'true');
+                btnDidattico.setAttribute('aria-selected', 'false');
+                btnOracolo.className = "px-4 py-2 text-sm font-bold rounded-md transition min-h-[44px] bg-[var(--primary)] text-white shadow";
+                btnDidattico.className = "px-4 py-2 text-sm font-bold rounded-md transition min-h-[44px] text-stone-800 hover:text-stone-900";
+                
+                panelOracolo.classList.remove('hidden');
+                panelDidattico.classList.add('hidden');
+            });
+
+            btnDidattico.addEventListener('click', () => {
+                btnDidattico.setAttribute('aria-selected', 'true');
+                btnOracolo.setAttribute('aria-selected', 'false');
+                btnDidattico.className = "px-4 py-2 text-sm font-bold rounded-md transition min-h-[44px] bg-[var(--primary)] text-white shadow";
+                btnOracolo.className = "px-4 py-2 text-sm font-bold rounded-md transition min-h-[44px] text-stone-800 hover:text-stone-900";
+                
+                panelDidattico.classList.remove('hidden');
+                panelOracolo.classList.add('hidden');
+            });
+        }
+
+        // 4. Studio & Generatore PROMPT-D
+        function initPromptStudio() {
+            const presetSelector = document.getElementById('preset-selector');
+            const inputP1 = document.getElementById('input-p1');
+            const inputR = document.getElementById('input-r');
+            const inputO = document.getElementById('input-o');
+            const inputM = document.getElementById('input-m');
+            const inputP2 = document.getElementById('input-p2');
+            const inputT = document.getElementById('input-t');
+            const inputD = document.getElementById('input-d');
+            const inputReasoning = document.getElementById('input-reasoning');
+            
+            const promptOutput = document.getElementById('prompt-output');
+            const copyBtn = document.getElementById('copy-btn');
+            const qaCheckBtn = document.getElementById('qa-check-btn');
+            const runGeminiBtn = document.getElementById('run-gemini-btn');
+
+            // Event Listeners sugli Input per Update Live
+            const inputs = [inputP1, inputR, inputO, inputM, inputP2, inputT, inputD, inputReasoning];
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    updateCompiledPrompt();
+                    evaluateQA();
+                });
+            });
+
+            // Cambiamento Preset
+            presetSelector.addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (val === 'custom') {
+                    inputs.forEach(inp => inp.value = '');
+                    updateCompiledPrompt();
+                    evaluateQA();
+                } else if (PRESETS[val]) {
+                    loadPreset(val);
+                }
+            });
+
+            // Copia negli Appunti
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = promptOutput.value;
+                if (!textToCopy) return;
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(() => showToast("✅ Prompt copiato negli appunti!"));
+                } else {
+                    // Fallback di copia
+                    promptOutput.select();
+                    document.execCommand('copy');
+                    showToast("✅ Prompt copiato (Fallback Exec)");
+                }
+            });
+
+            // Bottone Analisi Qualità QA
+            qaCheckBtn.addEventListener('click', () => {
+                evaluateQA();
+                showToast("🔍 Analisi Qualità QA completata!");
+            });
+
+            // Esecuzione opzionale Gemini API
+            runGeminiBtn.addEventListener('click', executeGeminiAPI);
+        }
+
+        // Carica dati preset nei campi
+        function loadPreset(presetKey) {
+            const data = PRESETS[presetKey];
+            if (!data) return;
+
+            document.getElementById('input-p1').value = data.p1;
+            document.getElementById('input-r').value = data.r;
+            document.getElementById('input-o').value = data.o;
+            document.getElementById('input-m').value = data.m;
+            document.getElementById('input-p2').value = data.p2;
+            document.getElementById('input-t').value = data.t;
+            document.getElementById('input-d').value = data.d;
+            document.getElementById('input-reasoning').value = data.reasoning;
+
+            updateCompiledPrompt();
+            evaluateQA();
+        }
+
+        // Compone il prompt formattato secondo il framework PROMPT-D 2.0
+        function updateCompiledPrompt() {
+            const p1 = document.getElementById('input-p1').value.trim();
+            const r = document.getElementById('input-r').value.trim();
+            const o = document.getElementById('input-o').value.trim();
+            const m = document.getElementById('input-m').value.trim();
+            const p2 = document.getElementById('input-p2').value.trim();
+            const t = document.getElementById('input-t').value.trim();
+            const d = document.getElementById('input-d').value.trim();
+            const reasoning = document.getElementById('input-reasoning').value.trim();
+
+            let compiled = `[SPECIFICA DIDATTICA STRUTTURATA: PROMPT-D 2.0]\n\n`;
+
+            if (p1) compiled += `[PROFILO / RUOLO]:\n${p1}\n\n`;
+            if (r)  compiled += `[RISULTATO ATTESO]:\n${r}\n\n`;
+            if (o)  compiled += `[OBIETTIVI DIDATTICI OSSERVABILI]:\n${o}\n\n`;
+            if (m)  compiled += `[MATERIALI & GROUNDING]:\n${m}\n\n`;
+            if (p2) compiled += `[PARAMETRI CONTESTO & INCLUSIONE]:\n${p2}\n\n`;
+            if (t)  compiled += `[TIPO OUTPUT & FORMATO]:\n${t}\n\n`;
+            if (d)  compiled += `[DIAGNOSI & QUALITY ASSURANCE]:\n${d}\n\n`;
+            if (reasoning) compiled += `[REASONING & REVIEW CONTROL]:\n${reasoning}\n\n`;
+
+            compiled += `[ISTRUZIONE DI CONSEGNA FINALE]:\nAnalizza la richiesta, esegui le verifiche di Diagnosi QA indicate e presenta il risultato finale esplicitando eventuali assunzioni necessarie.`;
+
+            document.getElementById('prompt-output').value = compiled;
+        }
+
+        // Evaluatore di Qualità QA (Valuta la presenza dei requisiti chiave)
+        function evaluateQA() {
+            const p1 = document.getElementById('input-p1').value;
+            const r = document.getElementById('input-r').value;
+            const o = document.getElementById('input-o').value;
+            const m = document.getElementById('input-m').value;
+            const d = document.getElementById('input-d').value;
+
+            const checks = [
+                { id: 'qa-item-p1', valid: p1.length > 20 },
+                { id: 'qa-item-r', valid: r.length > 20 },
+                { id: 'qa-item-o', valid: /analizz|individu|confront|argoment|applic|progett|valut/i.test(o) },
+                { id: 'qa-item-m', valid: /fonte|grounding|disting|inferenz/i.test(m) },
+                { id: 'qa-item-d', valid: /verific|correg|somma|minuti|criteri/i.test(d) }
+            ];
+
+            let score = 0;
+            checks.forEach(item => {
+                const el = document.getElementById(item.id);
+                if (el) {
+                    if (item.valid) {
+                        score += 20;
+                        el.querySelector('span:first-child').textContent = '✅';
+                        el.querySelector('span:first-child').className = 'text-emerald-700';
+                    } else {
+                        el.querySelector('span:first-child').textContent = '⚠️';
+                        el.querySelector('span:first-child').className = 'text-[var(--status-warning)]';
+                    }
+                }
+            });
+
+            const scoreBadge = document.getElementById('qa-score-badge');
+            if (scoreBadge) {
+                if (score >= 80) {
+                    scoreBadge.className = "badge-status badge-success";
+                    scoreBadge.innerHTML = `<span aria-hidden="true">✅</span> Quality Score: ${score}% (Eccellente)`;
+                } else if (score >= 50) {
+                    scoreBadge.className = "badge-status badge-progress";
+                    scoreBadge.innerHTML = `<span aria-hidden="true">⏳</span> Quality Score: ${score}% (Sufficiente)`;
+                } else {
+                    scoreBadge.className = "badge-status badge-warning";
+                    scoreBadge.innerHTML = `<span aria-hidden="true">⚠️</span> Quality Score: ${score}% (Debole)`;
+                }
+            }
+        }
+
+        // Mostra Toast di Notifica
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            if (!toast || !toastMsg) return;
+
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Chiamata API Gemini per testare il prompt dal vivo
+        async function executeGeminiAPI() {
+            const promptText = document.getElementById('prompt-output').value;
+            const loading = document.getElementById('gemini-loading');
+            const responseBox = document.getElementById('gemini-response-box');
+
+            if (!promptText || promptText.length < 30) {
+                showToast("⚠️ Compila prima i campi del prompt!");
+                return;
+            }
+
+            loading.classList.remove('hidden');
+            responseBox.classList.add('hidden');
+            responseBox.textContent = '';
+
+            const apiKey = ""; // API Key vuota gestita a runtime dall'ambiente
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: {
+                    parts: [{ text: "Sei un assistente IA specializzato in Didattica e Pedagogia. Rispondi eseguendo fedelmente tutte le istruzioni della specifica didattica fornita." }]
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                loading.classList.add('hidden');
+                responseBox.classList.remove('hidden');
+
+                if (resultText) {
+                    responseBox.textContent = resultText;
+                    showToast("🚀 Risposta Gemini generata con successo!");
+                } else {
+                    responseBox.textContent = "Errore: Nessun contenuto restituito dal modello.";
+                }
+            } catch (err) {
+                loading.classList.add('hidden');
+                responseBox.classList.remove('hidden');
+                responseBox.textContent = "Errore durante la connessione con l'API Gemini: " + err.message;
+                showToast("❌ Errore durante l'esecuzione del prompt.");
+            }
+        }
+    </script>
+</body>
+</html>

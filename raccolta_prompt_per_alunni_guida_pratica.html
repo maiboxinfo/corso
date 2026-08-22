@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raccolta di Prompt per Alunni - Guida Pratica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        hero: '#0E47CB',
+                        navy: '#1A1A4E',
+                        brand: '#2F54EB',
+                        accentYellow: '#F5A623',
+                        accentTeal: '#3DD9C5',
+                        accentCoral: '#E84545',
+                        lightBg: '#F4F5F7',
+                        textDark: '#1A1A2E',
+                    },
+                    boxShadow: {
+                        'flat': '4px 4px 0px #1A1A4E',
+                        'flat-sm': '2px 2px 0px #1A1A4E',
+                        'flat-lg': '6px 6px 0px #1A1A4E',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F5F7;
+            color: #1A1A2E;
+        }
+
+        /* Strict Flat Design Outline Rules */
+        .flat-border {
+            border: 2.5px solid #1A1A4E;
+        }
+
+        .flat-border-thick {
+            border: 3.5px solid #1A1A4E;
+        }
+
+        .flat-card {
+            border: 2.5px solid #1A1A4E;
+            background-color: #FFFFFF;
+            box-shadow: 4px 4px 0px #1A1A4E;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .flat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px #1A1A4E;
+        }
+
+        .flat-btn {
+            border: 2.5px solid #1A1A4E;
+            box-shadow: 3px 3px 0px #1A1A4E;
+            font-weight: 700;
+            transition: all 0.1s ease;
+        }
+
+        .flat-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #1A1A4E;
+        }
+
+        .prompt-box {
+            border: 2px solid #1A1A4E;
+            background-color: #F4F5F7;
+            border-left: 6px solid #2F54EB;
+        }
+
+        /* Flat SVG Stroke rules */
+        svg line, svg path, svg circle, svg rect, svg polygon {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4F5F7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2F54EB;
+            border: 2px solid #1A1A4E;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <header class="bg-hero border-b-4 border-navy sticky top-0 z-40 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Flat Design Icon: Book & AI Spark -->
+                <div class="w-12 h-12 bg-accentYellow flat-border rounded-xl flex items-center justify-center shadow-flat-sm text-navy">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="#FFFFFF"/>
+                        <path d="M12 8l1.5 3 3 1.5-3 1.5L12 17l-1.5-3-3-1.5 3-1.5z" fill="#3DD9C5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl sm:text-2xl tracking-tight text-white leading-none">Guida Prompt Studenti</h1>
+                    <p class="text-xs text-accentTeal font-semibold mt-1">Imparare con l'Intelligenza Artificiale</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button onclick="openCustomizerModal()" class="flat-btn bg-accentYellow text-navy px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5">
+                        <path d="M12 20h9"/>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" fill="#3DD9C5"/>
+                    </svg>
+                    <span class="hidden sm:inline">Crea</span> Prompt
+                </button>
+                <button onclick="toggleFavoritesView()" id="favToggleBtn" class="flat-btn bg-white text-navy px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm flex items-center space-x-1">
+                    <svg class="w-4 h-4 text-accentCoral" viewBox="0 0 24 24" fill="#E84545" stroke="#1A1A4E" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    <span id="favCount" class="bg-navy text-white text-xs px-1.5 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-hero text-white py-10 px-4 sm:px-6 lg:px-8 border-b-4 border-navy relative overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
+            <div class="md:col-span-7 space-y-4">
+                <div class="inline-flex items-center space-x-2 bg-brand px-3 py-1 rounded-lg flat-border text-xs font-bold uppercase tracking-wider text-white">
+                    <span class="w-2.5 h-2.5 rounded-full bg-accentTeal"></span>
+                    <span>Guida Pratica di Studio</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                    Come usare ChatGPT per imparare meglio
+                </h2>
+                <p class="text-base sm:text-lg text-blue-100 font-medium max-w-2xl">
+                    Una guida pratica per studiare, fare esercizio, capire gli errori e organizzare il lavoro in modo autonomo e intelligente.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-3">
+                    <a href="#metodo-5-passi" class="flat-btn bg-accentTeal text-navy px-4 py-2.5 rounded-xl text-sm inline-flex items-center space-x-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Il Metodo in 5 Passi</span>
+                    </a>
+                    <a href="#prompt-veloci" class="flat-btn bg-white text-navy px-4 py-2.5 rounded-xl text-sm inline-flex items-center space-x-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <span>20 Prompt Pronti</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flat Design Illustration (Multi-ethnic student studying with AI) -->
+            <div class="md:col-span-5 flex justify-center">
+                <div class="w-full max-w-md bg-white p-6 rounded-2xl flat-border shadow-flat text-navy relative">
+                    <div class="flex items-center space-x-4 mb-4 pb-3 border-b-2 border-navy">
+                        <!-- Multi-ethnic character SVG -->
+                        <div class="w-16 h-16 rounded-full bg-accentTeal flat-border flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <svg class="w-16 h-16" viewBox="0 0 100 100">
+                                <!-- Background -->
+                                <circle cx="50" cy="50" r="45" fill="#3DD9C5" />
+                                <!-- Skin (medium warm) -->
+                                <path d="M50 30 C35 30 35 55 35 60 C35 72 42 80 50 80 C58 80 65 72 65 60 C65 55 65 30 50 30 Z" fill="#D29062" stroke="#1A1A4E" stroke-width="3"/>
+                                <!-- Neck -->
+                                <rect x="44" y="70" width="12" height="15" fill="#B8764B" stroke="#1A1A4E" stroke-width="3"/>
+                                <!-- Shirt -->
+                                <path d="M20 95 Q50 80 80 95 L80 100 L20 100 Z" fill="#2F54EB" stroke="#1A1A4E" stroke-width="3"/>
+                                <!-- Hair (Navy solid) -->
+                                <path d="M32 48 C30 25 70 25 68 48 C62 30 38 30 32 48 Z" fill="#1A1A4E"/>
+                                <!-- Eyes -->
+                                <ellipse cx="43" cy="52" rx="3" ry="4" fill="#1A1A4E"/>
+                                <ellipse cx="57" cy="52" rx="3" ry="4" fill="#1A1A4E"/>
+                                <!-- Smile -->
+                                <path d="M44 63 Q50 68 56 63" fill="none" stroke="#1A1A4E" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="bg-accentYellow text-navy text-xs font-black px-2 py-0.5 rounded flat-border">REGOLA D'ORO</span>
+                            <h3 class="font-extrabold text-base leading-tight mt-1">ChatGPT ti aiuta a capire, non fa i compiti al posto tuo!</h3>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-700 leading-relaxed font-medium">
+                        Usa i prompt per chiedere spiegazioni, fare verifiche simulate e scoprire dove hai sbagliato. Imparare è l'obiettivo principale!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl flat-card space-y-4">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <!-- Search Input -->
+                <div class="relative w-full md:w-96">
+                    <input type="text" id="searchInput" oninput="filterPrompts()" placeholder="Cerca prompt o argomento (es. Fisica, Equazioni)..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl flat-border bg-lightBg text-navy text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand">
+                    <svg class="w-5 h-5 text-navy absolute left-3 top-3" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </div>
+
+                <!-- Category Pills -->
+                <div class="flex flex-wrap gap-2 w-full md:w-auto" id="categoryPills">
+                    <button onclick="setCategory('all')" class="cat-btn flat-btn bg-brand text-white px-3 py-1.5 rounded-xl text-xs" data-cat="all">Tutti</button>
+                    <button onclick="setCategory('fondamenti')" class="cat-btn flat-btn bg-white text-navy px-3 py-1.5 rounded-xl text-xs" data-cat="fondamenti">Fondamenti</button>
+                    <button onclick="setCategory('materie')" class="cat-btn flat-btn bg-white text-navy px-3 py-1.5 rounded-xl text-xs" data-cat="materie">Materie Scolastiche</button>
+                    <button onclick="setCategory('studio')" class="cat-btn flat-btn bg-white text-navy px-3 py-1.5 rounded-xl text-xs" data-cat="studio">Metodo & Appunti</button>
+                    <button onclick="setCategory('20prompt')" class="cat-btn flat-btn bg-white text-navy px-3 py-1.5 rounded-xl text-xs" data-cat="20prompt">20 Prompt Veloci</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Sidebar Navigation -->
+        <aside class="lg:col-span-3 space-y-4">
+            <div class="bg-white p-4 rounded-2xl flat-border shadow-flat sticky top-24 max-h-[80vh] overflow-y-auto">
+                <h3 class="font-black text-sm text-navy uppercase tracking-wider mb-3 pb-2 border-b-2 border-navy flex items-center justify-between">
+                    <span>Indice dei Contenuti</span>
+                    <span class="text-xs bg-accentYellow text-navy px-2 py-0.5 rounded-full flat-border" id="sectionCount">36</span>
+                </h3>
+                <nav class="space-y-1 text-xs font-semibold" id="sidebarNav">
+                    <!-- Sidebar Links loaded dynamically -->
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="lg:col-span-9 space-y-8" id="mainContent">
+
+            <!-- Metodo 5 Passi Interactive Section -->
+            <article id="metodo-5-passi" class="flat-card p-6 rounded-2xl bg-white border-l-8 border-l-accentTeal" data-category="fondamenti">
+                <div class="flex items-center space-x-3 mb-4">
+                    <span class="bg-accentTeal text-navy px-3 py-1 rounded-xl font-black text-xs flat-border">SEZIONE 34</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-navy">Un metodo in 5 passi per studiare con l'IA</h2>
+                </div>
+                <p class="text-sm text-gray-700 font-medium mb-6">Quando utilizzi ChatGPT per studiare, puoi seguire questa sequenza per massimizzare l'apprendimento:</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <div class="bg-lightBg p-3 rounded-xl flat-border flex flex-col justify-between">
+                        <span class="text-xs font-black text-white bg-navy w-6 h-6 rounded-full flex items-center justify-center mb-2">1</span>
+                        <h4 class="font-bold text-xs text-navy">Prova da solo</h4>
+                        <p class="text-[11px] text-gray-600 mt-1">Cerca prima di capire con le tue conoscenze attuali.</p>
+                    </div>
+                    <div class="bg-lightBg p-3 rounded-xl flat-border flex flex-col justify-between">
+                        <span class="text-xs font-black text-navy bg-accentYellow w-6 h-6 rounded-full flex items-center justify-center mb-2 flat-border-sm">2</span>
+                        <h4 class="font-bold text-xs text-navy">Chiedi aiuto</h4>
+                        <p class="text-[11px] text-gray-600 mt-1">Se sei bloccato, formula una domanda chiara e precisa.</p>
+                    </div>
+                    <div class="bg-lightBg p-3 rounded-xl flat-border flex flex-col justify-between">
+                        <span class="text-xs font-black text-white bg-brand w-6 h-6 rounded-full flex items-center justify-center mb-2">3</span>
+                        <h4 class="font-bold text-xs text-navy">Ragiona</h4>
+                        <p class="text-[11px] text-gray-600 mt-1">Non copiare a occhi chiusi. Chiediti: "Ho capito davvero?"</p>
+                    </div>
+                    <div class="bg-lightBg p-3 rounded-xl flat-border flex flex-col justify-between">
+                        <span class="text-xs font-black text-navy bg-accentTeal w-6 h-6 rounded-full flex items-center justify-center mb-2 flat-border-sm">4</span>
+                        <h4 class="font-bold text-xs text-navy">Verifica</h4>
+                        <p class="text-[11px] text-gray-600 mt-1">Confronta la risposta con il libro di testo e fonti certe.</p>
+                    </div>
+                    <div class="bg-lightBg p-3 rounded-xl flat-border flex flex-col justify-between">
+                        <span class="text-xs font-black text-white bg-accentCoral w-6 h-6 rounded-full flex items-center justify-center mb-2">5</span>
+                        <h4 class="font-bold text-xs text-navy">Rielabora</h4>
+                        <p class="text-[11px] text-gray-600 mt-1">Spiega l'argomento con parole tue per fissarlo nella mente.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Dynamic Prompt Sections Container -->
+            <div id="promptsContainer" class="space-y-8">
+                <!-- Sections will be injected here via JavaScript -->
+            </div>
+
+        </section>
+    </main>
+
+    <div id="customizerModal" class="fixed inset-0 bg-navy bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl flat-border-thick shadow-flat-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b-2 border-navy pb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full bg-accentYellow flat-border-sm"></span>
+                    <h3 class="font-black text-lg text-navy">Personalizzatore di Prompt</h3>
+                </div>
+                <button onclick="closeCustomizerModal()" class="text-navy hover:text-accentCoral font-bold text-xl">&times;</button>
+            </div>
+
+            <p class="text-xs text-gray-600 font-medium">Compila i campi sottostanti per generare un prompt pronto da inserire in ChatGPT!</p>
+
+            <div id="customizerFields" class="space-y-3">
+                <!-- Dynamic Input Fields -->
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <label class="block text-xs font-bold text-navy">Anteprima Prompt Generato:</label>
+                <div id="customizerOutput" class="prompt-box p-3 rounded-xl text-xs font-mono text-navy font-semibold leading-relaxed break-words">
+                    Compila i campi per vedere l'anteprima del prompt...
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-3 border-t-2 border-navy">
+                <button onclick="closeCustomizerModal()" class="flat-btn bg-gray-200 text-navy px-4 py-2 rounded-xl text-xs">Annulla</button>
+                <button onclick="copyGeneratedPrompt()" class="flat-btn bg-accentTeal text-navy px-4 py-2 rounded-xl text-xs flex items-center space-x-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copia Prompt Custom</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-navy text-white px-5 py-3 rounded-xl flat-border shadow-flat z-50 hidden transition-all duration-300 flex items-center space-x-3">
+        <div class="w-6 h-6 rounded-full bg-accentTeal flex items-center justify-center text-navy font-black text-xs">✓</div>
+        <span id="toastMsg" class="text-xs font-bold">Prompt copiato negli appunti!</span>
+    </div>
+
+    <footer class="bg-navy text-white mt-16 border-t-4 border-navy py-8 px-4 text-center">
+        <div class="max-w-7xl mx-auto space-y-3">
+            <div class="flex justify-center items-center space-x-2">
+                <span class="w-3 h-3 bg-accentYellow rounded-full"></span>
+                <span class="font-extrabold text-sm uppercase tracking-wider">Guida Pratica ai Prompt per Studenti</span>
+            </div>
+            <p class="text-xs text-gray-300 font-medium max-w-xl mx-auto">
+                Promuoviamo un uso consapevole, autonomo ed etico delle tecnologie di Intelligenza Artificiale per l'apprendimento e lo studio personale.
+            </p>
+            <p class="text-[11px] text-gray-400">© Guida di Studio Interattiva — Stile Flat Design Outline</p>
+        </div>
+    </footer>
+
+    <script>
+        const sectionsData = [
+            {
+                id: 1,
+                title: "1. Prima di cominciare: che cos'è un prompt?",
+                category: "fondamenti",
+                badge: "Concetti Base",
+                description: "Un prompt è semplicemente ciò che scrivi a ChatGPT per spiegargli che cosa vuoi fare.",
+                content: `
+                    <p class="text-xs text-gray-700 font-medium mb-3">Per esempio, scrivere <em>"Spiegami la fotosintesi in modo semplice"</em> è già un prompt. Ma puoi ottenere una risposta molto più utile se fornisci qualche dettaglio in più.</p>
+                    <div class="space-y-3">
+                        <div class="prompt-card p-3 rounded-xl bg-lightBg border-2 border-navy">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-brand">Esempio Base</span>
+                                <button onclick="copyText('Spiegami la fotosintesi in modo semplice.')" class="flat-btn bg-white text-navy text-[10px] px-2 py-0.5 rounded">Copia</button>
+                            </div>
+                            <p class="text-xs font-mono text-navy font-semibold">Spiegami la fotosintesi in modo semplice.</p>
+                        </div>
+                        <div class="prompt-card p-3 rounded-xl bg-lightBg border-2 border-navy">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-accentCoral">Esempio Avanzato (Migliore)</span>
+                                <button onclick="copyText('Sono uno studente delle scuole superiori e sto studiando la fotosintesi. Spiegamela in modo semplice, usando un esempio concreto e poi fammi 3 domande per verificare se ho capito.')" class="flat-btn bg-accentTeal text-navy text-[10px] px-2 py-0.5 rounded">Copia</button>
+                            </div>
+                            <p class="text-xs font-mono text-navy font-semibold">Sono uno studente delle scuole superiori e sto studiando la fotosintesi. Spiegamela in modo semplice, usando un esempio concreto e poi fammi 3 domande per verificare se ho capito.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-yellow-50 p-3 rounded-xl border-2 border-navy">
+                        <h4 class="font-bold text-xs text-navy">💡 Una regola semplice:</h4>
+                        <p class="text-xs text-gray-700 mt-1">Più chiaramente spieghi che cosa vuoi ottenere, più è facile ricevere una risposta adatta alle tue esigenze. Indica: cosa vuoi fare, l'argomento, il livello, il formato e cosa NON vuoi che faccia.</p>
+                    </div>
+                `
+            },
+            {
+                id: 2,
+                title: "2. Una cosa importante: ChatGPT non deve fare tutto al posto tuo",
+                category: "fondamenti",
+                badge: "Regola Chiave",
+                description: "ChatGPT è un assistente allo studio, non un sostituto del tuo ragionamento.",
+                content: `
+                    <p class="text-xs text-gray-700 font-medium mb-3">È spesso molto più utile chiedere aiuto per comprendere il procedimento piuttosto che farsi dare direttamente la soluzione finale.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div class="p-3 bg-red-50 rounded-xl border-2 border-navy">
+                            <span class="text-[10px] font-bold text-red-700 uppercase">❌ Meno utile:</span>
+                            <p class="text-xs font-mono font-bold text-navy mt-1">"Risolvi questo esercizio."</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-xl border-2 border-navy">
+                            <span class="text-[10px] font-bold text-green-700 uppercase">✓ Molto più efficace:</span>
+                            <p class="text-xs font-mono font-bold text-navy mt-1">"Aiutami a capire questo esercizio."</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-700">Puoi usare ChatGPT per: farti domande, cercare errori, proporti esercizi, simulare interrogazioni, organizzare il ripasso o migliorare i tuoi appunti.</p>
+                `
+            },
+            {
+                id: 3,
+                title: "3. Il prompt 'base' che puoi riutilizzare",
+                category: "fondamenti",
+                badge: "Template Multiuso",
+                description: "Utilizza questo modello universale ogni volta che non sai da dove iniziare.",
+                prompts: [
+                    {
+                        title: "Modello Jolly Universale",
+                        text: "Sono uno studente e sto studiando [ARGOMENTO]. Devo [OBIETTIVO]. Spiegamelo in modo semplice e adatto al mio livello. Fammi un esempio concreto e, alla fine, fammi alcune domande per verificare se ho capito.",
+                        customizable: true,
+                        fields: ["ARGOMENTO", "OBIETTIVO"]
+                    },
+                    {
+                        title: "Esempio Applicato: Equazioni",
+                        text: "Sono uno studente e sto studiando le equazioni di primo grado. Devo prepararmi per una verifica. Spiegamele in modo semplice e adatto al mio livello. Fammi un esempio concreto e, alla fine, fammi 5 domande per verificare se ho capito.",
+                        customizable: false
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "4. Se non capisci un argomento",
+                category: "studio",
+                badge: "Comprensione",
+                description: "Non limitarti a chiedere una definizione. Chiedi di spiegare lo stesso concetto da angolazioni diverse.",
+                prompts: [
+                    {
+                        title: "Spiegazione Semplice",
+                        text: "Spiegami [ARGOMENTO] usando parole semplici, come se lo stessi spiegando a uno studente che lo incontra per la prima volta.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Spiegazione Passo per Passo",
+                        text: "Spiegami [ARGOMENTO] un passaggio alla volta. Non andare avanti finché non ho capito il passaggio precedente.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Spiegazione con Esempio Pratico",
+                        text: "Spiegami [ARGOMENTO] e fammi un esempio concreto della vita quotidiana.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Spiegazione con Analogia",
+                        text: "Spiegami [ARGOMENTO] usando un'analogia semplice. Poi spiegami anche in che cosa l'analogia non è perfetta.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Ancora Più Semplice",
+                        text: "Non ho capito la spiegazione. Puoi rispiegarla con parole ancora più semplici e con un esempio?",
+                        fields: []
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "5. Se vuoi controllare se hai davvero capito",
+                category: "studio",
+                badge: "Autovalutazione",
+                description: "Leggere è una cosa, saper rispondere alle domande è un'altra. Mettiti alla prova!",
+                prompts: [
+                    {
+                        title: "Domande una alla volta",
+                        text: "Fammi 5 domande su [ARGOMENTO], una alla volta. Aspetta la mia risposta prima di farmi la domanda successiva. Alla fine dimmi quali argomenti devo ripassare.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Interrogazione simulata",
+                        text: "Fai finta di essere il mio insegnante e fammi una breve interrogazione su [ARGOMENTO]. Fammi una domanda alla volta.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Domande a difficoltà crescente",
+                        text: "Fammi domande di difficoltà crescente su [ARGOMENTO]. Comincia da domande semplici e arriva a domande che richiedono di collegare più concetti.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "6. Se hai già studiato e vuoi fare un test",
+                category: "studio",
+                badge: "Quiz e Test",
+                description: "Fai un test senza visualizzare subito le risposte per stimolare la memoria attiva.",
+                prompts: [
+                    {
+                        title: "Test 10 domande con correzione",
+                        text: "Ho studiato [ARGOMENTO]. Fammi un test di 10 domande senza mostrarmi subito le risposte. Dopo ogni mia risposta dimmi se è corretta e spiegami l'errore se ho sbagliato.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Quiz strutturato a livelli",
+                        text: "Preparami un quiz su [ARGOMENTO]: - 3 domande facili; - 4 domande di difficoltà media; - 3 domande difficili. Fammi una domanda alla volta.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "7. Se hai degli appunti",
+                category: "studio",
+                badge: "Elaborazione Appunti",
+                description: "Incolla i tuoi appunti grezzi per trasformarli in materiale di studio altamente organizzato.",
+                prompts: [
+                    {
+                        title: "Riassunto Fedele",
+                        text: "Questi sono i miei appunti su [ARGOMENTO]: [APPUNTI]. Trasformali in un riassunto chiaro e organizzato. Non aggiungere informazioni che non sono presenti nei miei appunti.",
+                        fields: ["ARGOMENTO", "APPUNTI"]
+                    },
+                    {
+                        title: "Estrattore Parole Chiave",
+                        text: "Individua nei miei appunti le 15 parole chiave più importanti e spiegami brevemente ciascuna: [APPUNTI]",
+                        fields: ["APPUNTI"]
+                    },
+                    {
+                        title: "Generatore Q&A",
+                        text: "Trasforma questi appunti in 15 domande e risposte per ripassare: [APPUNTI]",
+                        fields: ["APPUNTI"]
+                    },
+                    {
+                        title: "Creazione Flashcard",
+                        text: "Trasforma questi appunti in flashcard. Per ogni flashcard scrivi: - Domanda - Risposta. Metti prima le informazioni più importanti: [APPUNTI]",
+                        fields: ["APPUNTI"]
+                    },
+                    {
+                        title: "Struttura per Mappa Concettuale",
+                        text: "Organizza questi appunti in una struttura adatta a creare una mappa concettuale. Indica concetti principali, sotto-concetti e collegamenti: [APPUNTI]",
+                        fields: ["APPUNTI"]
+                    }
+                ]
+            },
+            {
+                id: 8,
+                title: "8. Se devi prepararti per una verifica",
+                category: "studio",
+                badge: "Pianificazione",
+                description: "Organizza il tempo e crea una tabella di marcia personalizzata.",
+                prompts: [
+                    {
+                        title: "Piano di Ripasso in più giorni",
+                        text: "Devo prepararmi per una verifica di [MATERIA] tra [NUMERO] giorni. Gli argomenti sono: [ELENCO]. Aiutami a creare un piano di ripasso. Dividi il lavoro giorno per giorno e inserisci anche momenti per fare esercizi e verificare ciò che ho imparato.",
+                        fields: ["MATERIA", "NUMERO", "ELENCO"]
+                    },
+                    {
+                        title: "Ripasso Lampo (Poco tempo)",
+                        text: "Ho solo [NUMERO] ore per ripassare [ARGOMENTO]. Aiutami a organizzare il tempo. Indica cosa studiare prima, cosa esercitare e come verificare alla fine se ho capito.",
+                        fields: ["NUMERO", "ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 9,
+                title: "9. Se hai un esercizio che non riesci a risolvere",
+                category: "studio",
+                badge: "Risoluzione Problemi",
+                description: "Chiedi indizi guidati senza farti dare la soluzione pronta.",
+                prompts: [
+                    {
+                        title: "Trova il passaggio critico",
+                        text: "Questo è l'esercizio: [TESTO DELL'ESERCIZIO]. Ho provato a fare così: [MIO PROCEDIMENTO]. Non darmi subito la soluzione. Aiutami a capire quale passaggio devo controllare.",
+                        fields: ["TESTO DELL'ESERCIZIO", "MIO PROCEDIMENTO"]
+                    },
+                    {
+                        title: "Individua il primo errore",
+                        text: "Controlla il mio procedimento: [PROCEDIMENTO]. Indicami il primo punto in cui ho commesso un errore, ma non risolvere l'esercizio al posto mio.",
+                        fields: ["PROCEDIMENTO"]
+                    },
+                    {
+                        title: "Suggerimento per sbloccarsi",
+                        text: "Non so da dove iniziare questo esercizio: [TESTO]. Non risolverlo subito. Fammi una domanda o dammi un piccolo suggerimento per aiutarmi a iniziare.",
+                        fields: ["TESTO"]
+                    }
+                ]
+            },
+
+            /* MATERIE SCOLASTICHE */
+            {
+                id: 10,
+                title: "10. Matematica",
+                category: "materie",
+                badge: "Matematica",
+                description: "Capire formule, fare pratica con esercizi guidati e correggere errori di calcolo.",
+                prompts: [
+                    {
+                        title: "Capire una formula",
+                        text: "Spiegami la formula [FORMULA] in modo semplice. Dimmi che cosa significa ogni simbolo e fammi un esempio numerico.",
+                        fields: ["FORMULA"]
+                    },
+                    {
+                        title: "Fare pratica graduale",
+                        text: "Dammi 5 esercizi su [ARGOMENTO]. Comincia con un esercizio semplice e aumenta gradualmente la difficoltà. Non darmi subito le soluzioni.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Controllare il procedimento",
+                        text: "Questo è il mio procedimento: [PROCEDIMENTO]. Controllalo passo per passo. Dimmi dove ho sbagliato e spiegami perché.",
+                        fields: ["PROCEDIMENTO"]
+                    },
+                    {
+                        title: "Simulazione Verifica",
+                        text: "Simula una verifica di matematica su [ARGOMENTO]. Dammi un esercizio alla volta e aspetta che lo svolga prima di passare al successivo.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 11,
+                title: "11. Fisica",
+                category: "materie",
+                badge: "Fisica",
+                description: "Comprendere fenomeni naturali, applicare formule e verificare il ragionamento scientifico.",
+                prompts: [
+                    {
+                        title: "Capire un fenomeno",
+                        text: "Spiegami [FENOMENO FISICO] usando parole semplici e un esempio della vita quotidiana.",
+                        fields: ["FENOMENO FISICO"]
+                    },
+                    {
+                        title: "Analizzare una formula fisica",
+                        text: "Spiegami questa formula: [FORMULA]. Dimmi: 1. cosa significa ogni grandezza; 2. quali sono le unità di misura; 3. quando posso utilizzare la formula; 4. fammi un esempio.",
+                        fields: ["FORMULA"]
+                    },
+                    {
+                        title: "Verifica del ragionamento",
+                        text: "Ho risolto questo problema di fisica: [TESTO]. Questo è il mio procedimento: [PROCEDIMENTO]. Controlla il ragionamento senza darmi subito la soluzione.",
+                        fields: ["TESTO", "PROCEDIMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 12,
+                title: "12. Chimica",
+                category: "materie",
+                badge: "Chimica",
+                description: "Comprendere reazioni, legami e concetti fondamentali.",
+                prompts: [
+                    {
+                        title: "Imparare un concetto",
+                        text: "Spiegami [ARGOMENTO DI CHIMICA] in modo semplice. Usa un esempio concreto e poi fammi 3 domande.",
+                        fields: ["ARGOMENTO DI CHIMICA"]
+                    },
+                    {
+                        title: "Quiz di Ripasso",
+                        text: "Fammi 10 domande di chimica su [ARGOMENTO]. Una domanda alla volta, senza mostrarmi in anticipo le risposte.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Spiegare una reazione chimica",
+                        text: "Spiegami questa reazione chimica: [REAZIONE]. Spiegami cosa rappresentano le sostanze e cosa succede durante la reazione.",
+                        fields: ["REAZIONE"]
+                    }
+                ]
+            },
+            {
+                id: 13,
+                title: "13. Biologia",
+                category: "materie",
+                badge: "Biologia",
+                description: "Comprendere i processi biologici e verificare l'esposizione orale.",
+                prompts: [
+                    {
+                        title: "Spiegare un processo bio",
+                        text: "Spiegami [PROCESSO BIOLOGICO] passo per passo. Alla fine riassumi il processo in 5 punti.",
+                        fields: ["PROCESSO BIOLOGICO"]
+                    },
+                    {
+                        title: "Usare un'analogia",
+                        text: "Spiegami [CONCETTO DI BIOLOGIA] attraverso un'analogia semplice. Poi spiegami quali sono i limiti dell'analogia.",
+                        fields: ["CONCETTO DI BIOLOGIA"]
+                    },
+                    {
+                        title: "Verificare la spiegazione",
+                        text: "Fammi spiegare [ARGOMENTO] con parole mie. Dopo la mia spiegazione, indicami cosa ho spiegato bene e quali aspetti devo approfondire.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 14,
+                title: "14. Storia",
+                category: "materie",
+                badge: "Storia",
+                description: "Analizzare periodi storici, linee del tempo e relazioni di causa-effetto.",
+                prompts: [
+                    {
+                        title: "Analizzare un periodo storico",
+                        text: "Spiegami [EVENTO/PERIODO STORICO] in modo semplice. Organizza la spiegazione in: - cause; - eventi principali; - protagonisti; - conseguenze.",
+                        fields: ["EVENTO/PERIODO STORICO"]
+                    },
+                    {
+                        title: "Linea del Tempo testuale",
+                        text: "Crea una linea del tempo testuale degli eventi più importanti relativi a [ARGOMENTO]. Per ogni evento indica brevemente perché è importante.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Collegare due eventi",
+                        text: "Aiutami a capire il rapporto tra [EVENTO A] e [EVENTO B]. Spiegami quali collegamenti posso fare e perché.",
+                        fields: ["EVENTO A", "EVENTO B"]
+                    }
+                ]
+            },
+            {
+                id: 15,
+                title: "15. Geografia",
+                category: "materie",
+                badge: "Geografia",
+                description: "Comprendere territori, economie e confrontare regioni diverse.",
+                prompts: [
+                    {
+                        title: "Scheda di un territorio",
+                        text: "Spiegami le caratteristiche geografiche di [LUOGO]. Considera: - posizione; - territorio; - clima; - popolazione; - economia; - principali problemi.",
+                        fields: ["LUOGO"]
+                    },
+                    {
+                        title: "Confronto tra due luoghi",
+                        text: "Confronta [LUOGO A] e [LUOGO B]. Indica somiglianze e differenze in modo semplice e organizzato.",
+                        fields: ["LUOGO A", "LUOGO B"]
+                    }
+                ]
+            },
+            {
+                id: 16,
+                title: "16. Italiano",
+                category: "materie",
+                badge: "Italiano",
+                description: "Analizzare e comprendere testi, preparare temi e revisionare la propria scrittura.",
+                prompts: [
+                    {
+                        title: "Comprendere un testo",
+                        text: "Aiutami a comprendere questo testo: [TESTO]. Spiegami: - argomento principale; - idee principali; - parole o concetti difficili; - messaggio dell'autore.",
+                        fields: ["TESTO"]
+                    },
+                    {
+                        title: "Idee per un tema",
+                        text: "Devo scrivere un testo su [ARGOMENTO]. Aiutami a trovare possibili idee e argomenti. Non scrivere il tema al posto mio.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Revisionare un testo proprio",
+                        text: "Questo è il mio testo: [TESTO]. Indicami: - frasi poco chiare; - errori; - ripetizioni; - punti che potrei sviluppare meglio. Non riscrivere tutto al posto mio.",
+                        fields: ["TESTO"]
+                    }
+                ]
+            },
+            {
+                id: 17,
+                title: "17. Letteratura",
+                category: "materie",
+                badge: "Letteratura",
+                description: "Studiare autori, opere, poeti e correnti letterarie.",
+                prompts: [
+                    {
+                        title: "Capire un autore",
+                        text: "Spiegami in modo semplice chi è [AUTORE] e quali sono gli aspetti più importanti della sua produzione.",
+                        fields: ["AUTORE"]
+                    },
+                    {
+                        title: "Analizzare un'opera",
+                        text: "Aiutami a studiare [OPERA]. Spiegami: - contesto; - trama o contenuto; - temi principali; - personaggi; - caratteristiche dello stile.",
+                        fields: ["OPERA"]
+                    }
+                ]
+            },
+            {
+                id: 18,
+                title: "18. Lingue straniere",
+                category: "materie",
+                badge: "Lingue",
+                description: "Esercitare conversazione, grammatica, vocaboli e correzioni.",
+                prompts: [
+                    {
+                        title: "Conversazione guidata",
+                        text: "Parla con me in [LINGUA] usando un livello adatto a uno studente della mia età. Fammi una domanda alla volta e aspetta la mia risposta.",
+                        fields: ["LINGUA"]
+                    },
+                    {
+                        title: "Correzione frase",
+                        text: "Questa è la mia frase in [LINGUA]: [FRASE]. Correggila e spiegami in modo semplice il mio errore.",
+                        fields: ["LINGUA", "FRASE"]
+                    },
+                    {
+                        title: "Esercizio Vocabolario",
+                        text: "Sto studiando il vocabolario relativo a [ARGOMENTO]. Dammi 10 parole importanti con traduzione ed esempio. Poi fammi esercitare usando le parole nelle frasi.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 19,
+                title: "19. Informatica",
+                category: "materie",
+                badge: "Informatica",
+                description: "Capire concetti informatici, programmazione e individuazione di errori di codice.",
+                prompts: [
+                    {
+                        title: "Capire un concetto informatico",
+                        text: "Spiegami [CONCETTO INFORMATICO] come se non lo avessi mai studiato. Usa un esempio semplice.",
+                        fields: ["CONCETTO INFORMATICO"]
+                    },
+                    {
+                        title: "Debugging guidato",
+                        text: "Questo è il mio codice: [CODICE]. Questo è l'errore che ricevo: [ERRORE]. Non riscrivere tutto il codice. Aiutami a capire quale parte devo controllare.",
+                        fields: ["CODICE", "ERRORE"]
+                    }
+                ]
+            },
+            {
+                id: 20,
+                title: "20. Educazione civica",
+                category: "materie",
+                badge: "Civica",
+                description: "Analisi critica, distinzione tra fatti e opinioni e confronto di punti di vista.",
+                prompts: [
+                    {
+                        title: "Distinguere Fatti e Opinioni",
+                        text: "Aiutami ad analizzare questo testo: [TESTO]. Individua: - fatti; - opinioni; - argomentazioni; - eventuali affermazioni che dovrebbero essere verificate.",
+                        fields: ["TESTO"]
+                    },
+                    {
+                        title: "Confrontare punti di vista",
+                        text: "Presentami i principali punti di vista sul problema [ARGOMENTO]. Per ogni punto di vista indica le principali argomentazioni. Non dirmi quale devo scegliere: aiutami a ragionare.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+
+            /* METODI AVANZATI DI STUDIO */
+            {
+                id: 21,
+                title: "21. Prepararsi a un'interrogazione",
+                category: "studio",
+                badge: "Interrogazioni",
+                description: "Simulazione completa con feedback immediato e consigli per il recupero.",
+                prompts: [
+                    {
+                        title: "Simulazione Insegnante",
+                        text: "Fai finta di essere il mio insegnante. Interrogami su [ARGOMENTO]. Fammi una domanda alla volta. Aspetta la mia risposta. Dopo ogni risposta: - dimmi cosa ho detto correttamente; - indicami cosa manca; - fammi una domanda successiva. Alla fine dammi un breve consiglio su cosa ripassare.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Interrogazione Difficile",
+                        text: "Fammi un'interrogazione difficile su [ARGOMENTO]. Non limitarti alle definizioni: fammi anche domande che richiedono collegamenti e ragionamento.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 22,
+                title: "22. Prepararsi a una presentazione orale",
+                category: "studio",
+                badge: "Oratoria",
+                description: "Struttura un'esposizione chiara e simula le domande del pubblico.",
+                prompts: [
+                    {
+                        title: "Organizzare la scaletta",
+                        text: "Devo presentare [ARGOMENTO] alla classe. Aiutami a organizzare una presentazione chiara. Indicami: - introduzione; - 3-5 idee principali; - conclusione; - possibili domande che potrebbero farmi.",
+                        fields: ["ARGOMENTO"]
+                    },
+                    {
+                        title: "Simulazione Pubblico",
+                        text: "Simula il pubblico della mia presentazione. Fammi domande come potrebbe fare un compagno o un insegnante. Una domanda alla volta.",
+                        fields: []
+                    }
+                ]
+            },
+            {
+                id: 23,
+                title: "23. Organizzare un progetto",
+                category: "studio",
+                badge: "Project Management",
+                description: "Suddividi il lavoro a lungo termine in fasi quotidiane.",
+                prompts: [
+                    {
+                        title: "Pianificazione Progetto",
+                        text: "Devo completare questo progetto: [DESCRIZIONE]. Ho [NUMERO] giorni a disposizione. Aiutami a dividerlo in fasi. Per ogni fase indicami: - cosa devo fare; - quanto tempo potrei dedicarci; - quale risultato dovrei ottenere.",
+                        fields: ["DESCRIZIONE", "NUMERO"]
+                    }
+                ]
+            },
+            {
+                id: 24,
+                title: "24. Quando hai difficoltà a concentrarti",
+                category: "studio",
+                badge: "Focus",
+                description: "Scomponi un compito enorme in piccolissimi passi gestibili.",
+                prompts: [
+                    {
+                        title: "Passo dopo passo minimale",
+                        text: "Devo studiare [ARGOMENTO], ma non so da dove iniziare. Dividi il lavoro in piccoli passi. Dammi solo il primo passo e aspetta che ti dica quando l'ho completato.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 25,
+                title: "25. Quando non sai quale domanda fare",
+                category: "studio",
+                badge: "Ispirazione",
+                description: "Fatti suggerire le domande chiave dell'argomento.",
+                prompts: [
+                    {
+                        title: "10 Domande Fondamentali",
+                        text: "Sto studiando [ARGOMENTO], ma non so quali domande dovrei farmi. Suggeriscimi 10 domande importanti che uno studente dovrebbe saper rispondere dopo aver studiato questo argomento.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 26,
+                title: "26. Quando vuoi imparare attraverso esempi",
+                category: "studio",
+                badge: "Esempi",
+                description: "Richiedi 3 livelli di esempi per comprendere appieno un concetto.",
+                prompts: [
+                    {
+                        title: "3 Livelli di Esempi",
+                        text: "Spiegami [CONCETTO] attraverso 3 esempi: 1. un esempio molto semplice; 2. un esempio scolastico; 3. un esempio della vita quotidiana. Poi inventa 3 situazioni e chiedimi di riconoscere quale utilizza correttamente il concetto.",
+                        fields: ["CONCETTO"]
+                    }
+                ]
+            },
+            {
+                id: 27,
+                title: "27. Quando vuoi aumentare gradualmente la difficoltà",
+                category: "studio",
+                badge: "Adattivo",
+                description: "Un sistema di allenamento che si adatta alle tue risposte.",
+                prompts: [
+                    {
+                        title: "Allenamento Adattivo",
+                        text: "Fammi esercitare su [ARGOMENTO]. Inizia con un esercizio molto semplice. Se rispondo correttamente, aumenta leggermente la difficoltà. Se sbaglio, spiegami l'errore e proponimi un esercizio simile.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 28,
+                title: "28. Quando vuoi capire i tuoi errori",
+                category: "studio",
+                badge: "Analisi Errori",
+                description: "Sfrutta l'errore commesso per imparare il principio corretto.",
+                prompts: [
+                    {
+                        title: "Analisi Errore e Riesercizio",
+                        text: "Ho sbagliato questo esercizio: [ESERCIZIO]. La mia risposta è stata: [RISPOSTA]. Spiegami perché è sbagliata. Poi fammi svolgere un esercizio simile senza darmi la soluzione.",
+                        fields: ["ESERCIZIO", "RISPOSTA"]
+                    }
+                ]
+            },
+            {
+                id: 29,
+                title: "29. Quando vuoi collegare più materie",
+                category: "studio",
+                badge: "Interdisciplinare",
+                description: "Trova connessioni logiche e storiche tra diverse discipline.",
+                prompts: [
+                    {
+                        title: "Connessioni Interdisciplinari",
+                        text: "Sto studiando: - [ARGOMENTO 1]; - [ARGOMENTO 2]; - [ARGOMENTO 3]. Aiutami a trovare possibili collegamenti tra questi argomenti e spiegami perché i collegamenti hanno senso.",
+                        fields: ["ARGOMENTO 1", "ARGOMENTO 2", "ARGOMENTO 3"]
+                    }
+                ]
+            },
+            {
+                id: 30,
+                title: "30. Come chiedere una risposta adatta al tuo livello",
+                category: "studio",
+                badge: "Personalizzazione",
+                description: "Personalizza il registro e la profondità della risposta.",
+                prompts: [
+                    {
+                        title: "Seleziona il Livello",
+                        text: "Spiegamelo come a uno studente delle scuole superiori che sta affrontando l'argomento [ARGOMENTO] per la prima volta. Usa un linguaggio chiaro ma rigoroso.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 31,
+                title: "31. Come chiedere una risposta nel formato che ti serve",
+                category: "studio",
+                badge: "Formattazione",
+                description: "Scegli l'organizzazione visiva: tabelle, elenchi, schemi.",
+                prompts: [
+                    {
+                        title: "Tabella comparativa",
+                        text: "Spiegami [ARGOMENTO] creando una tabella con 3 colonne: Concetto, Definizione, Esempio Pratico.",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+            {
+                id: 32,
+                title: "32. Come chiedere di non fare il lavoro al posto tuo",
+                category: "studio",
+                badge: "Autonomia",
+                description: "Frasi chiave per mantenere il ruolo attivo nell'apprendimento.",
+                prompts: [
+                    {
+                        title: "Guida Solocratica",
+                        text: "Non darmi subito la soluzione a [PROBLEMA]. Dammi solo un suggerimento e fammi una domanda che mi aiuti a trovare la risposta da solo.",
+                        fields: ["PROBLEMA"]
+                    }
+                ]
+            },
+            {
+                id: 33,
+                title: "33. Come controllare una risposta",
+                category: "studio",
+                badge: "Verifica Fonti",
+                description: "Verifica criticamente le informazioni fornite dall'IA.",
+                prompts: [
+                    {
+                        title: "Verifica Critica",
+                        text: "Quali parti della tua risposta su [ARGOMENTO] dovrei verificare sui libri di testo? Ci sono informazioni incerte o fonti specifiche che dovrei consultare?",
+                        fields: ["ARGOMENTO"]
+                    }
+                ]
+            },
+
+            /* SEZIONI FINALI SPECIALE LISTA */
+            {
+                id: 35,
+                title: "35. 20 prompt da tenere sempre a portata di mano",
+                category: "20prompt",
+                badge: "Lista Rapida 20 Prompt",
+                description: "Una selezione veloce di 20 prompt essenziali pronti all'uso divisi per obiettivo.",
+                content: `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Per Capire -->
+                        <div class="bg-lightBg p-4 rounded-xl border-2 border-navy space-y-2">
+                            <h4 class="font-bold text-xs text-brand uppercase tracking-wider flex items-center space-x-1">
+                                <span>💡 Per Capire</span>
+                            </h4>
+                            <ul class="text-xs space-y-1.5 font-semibold text-navy">
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>1. Spiegami questo argomento in modo semplice.</span> <button onclick="copyText('Spiegami questo argomento in modo semplice.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>2. Spiegamelo passo per passo.</span> <button onclick="copyText('Spiegamelo passo per passo.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>3. Fammi un esempio concreto.</span> <button onclick="copyText('Fammi un esempio concreto.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>4. Spiegamelo usando un'analogia.</span> <button onclick="copyText('Spiegamelo usando un analogia.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>5. Riespiegamelo in un modo diverso.</span> <button onclick="copyText('Riespiegamelo in un modo diverso.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                            </ul>
+                        </div>
+
+                        <!-- Per Esercitarsi -->
+                        <div class="bg-lightBg p-4 rounded-xl border-2 border-navy space-y-2">
+                            <h4 class="font-bold text-xs text-accentCoral uppercase tracking-wider flex items-center space-x-1">
+                                <span>✏️ Per Esercitarsi</span>
+                            </h4>
+                            <ul class="text-xs space-y-1.5 font-semibold text-navy">
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>6. Fammi un esercizio simile.</span> <button onclick="copyText('Fammi un esercizio simile.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>7. Fammi una domanda alla volta.</span> <button onclick="copyText('Fammi una domanda alla volta.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>8. Aumenta gradualmente la difficoltà.</span> <button onclick="copyText('Aumenta gradualmente la difficoltà.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>9. Non darmi subito la soluzione.</span> <button onclick="copyText('Non darmi subito la soluzione.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>10. Dimmi dove ho sbagliato senza risolvere tutto.</span> <button onclick="copyText('Dimmi dove ho sbagliato senza risolvere tutto al posto mio.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                            </ul>
+                        </div>
+
+                        <!-- Per Ripassare -->
+                        <div class="bg-lightBg p-4 rounded-xl border-2 border-navy space-y-2">
+                            <h4 class="font-bold text-xs text-accentYellow uppercase tracking-wider flex items-center space-x-1">
+                                <span>📚 Per Ripassare</span>
+                            </h4>
+                            <ul class="text-xs space-y-1.5 font-semibold text-navy">
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>11. Trasforma questi appunti in flashcard.</span> <button onclick="copyText('Trasforma questi appunti in flashcard.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>12. Crea un quiz sui miei appunti.</span> <button onclick="copyText('Crea un quiz sui miei appunti.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>13. Fammi un\'interrogazione simulata.</span> <button onclick="copyText('Fammi un interrogazione simulata.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>14. Crea una guida allo studio.</span> <button onclick="copyText('Crea una guida allo studio.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>15. Individua le parole chiave.</span> <button onclick="copyText('Individua le parole chiave.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                            </ul>
+                        </div>
+
+                        <!-- Per Organizzarsi e Pensare -->
+                        <div class="bg-lightBg p-4 rounded-xl border-2 border-navy space-y-2">
+                            <h4 class="font-bold text-xs text-navy uppercase tracking-wider flex items-center space-x-1">
+                                <span>🎯 Organizzarsi & Pensare</span>
+                            </h4>
+                            <ul class="text-xs space-y-1.5 font-semibold text-navy">
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>16. Dividi questo lavoro in piccoli passi.</span> <button onclick="copyText('Dividi questo lavoro in piccoli passi.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>17. Aiutami a creare un piano di studio.</span> <button onclick="copyText('Aiutami a creare un piano di studio.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>18. Aiutami a organizzare il mio progetto.</span> <button onclick="copyText('Aiutami a organizzare il mio progetto.')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>19. Quali informazioni dovrei verificare?</span> <button onclick="copyText('Quali informazioni dovrei verificare?')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                                <li class="flex items-center justify-between bg-white p-2 rounded flat-border-sm"><span>20. Quali sono i punti deboli di questa spiegazione?</span> <button onclick="copyText('Quali sono i punti deboli di questa spiegazione?')" class="text-[10px] bg-accentTeal px-1.5 py-0.5 rounded border border-navy">Copia</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 36,
+                title: "36. Un ultimo consiglio speciale",
+                category: "fondamenti",
+                badge: "Consiglio Finale",
+                description: "Non serve conoscere formule complicate per usare bene l'IA.",
+                content: `
+                    <div class="bg-accentYellow p-4 rounded-xl border-2 border-navy text-navy space-y-2">
+                        <h4 class="font-black text-sm uppercase">Cosa spiegare sempre a ChatGPT:</h4>
+                        <ul class="list-disc list-inside text-xs font-semibold space-y-1">
+                            <li>che cosa stai studiando;</li>
+                            <li>che cosa non hai capito;</li>
+                            <li>che cosa vuoi ottenere;</li>
+                            <li>come vuoi essere aiutato.</li>
+                        </ul>
+                    </div>
+                    <div class="prompt-box p-3 rounded-xl mt-3">
+                        <span class="text-[10px] font-bold text-brand uppercase">Esempio d'oro:</span>
+                        <p class="text-xs font-mono font-bold text-navy mt-1">
+                            "Sto studiando le equazioni ma non capisco quando devo cambiare segno. Non risolvere gli esercizi al posto mio: spiegami la regola con due esempi e poi dammi tre esercizi da provare da solo."
+                        </p>
+                    </div>
+                    <p class="text-xs text-gray-700 font-bold mt-3 text-center">
+                        💡 Ricorda: Chiedere una risposta è facile. Imparare a fare le domande giuste è una competenza!
+                    </p>
+                `
+            }
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('favPrompts') || '[]');
+        let activeCategory = 'all';
+        let activeCustomTemplate = null;
+
+        function renderContent() {
+            const container = document.getElementById('promptsContainer');
+            const sidebar = document.getElementById('sidebarNav');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            
+            container.innerHTML = '';
+            sidebar.innerHTML = '';
+
+            let matchedCount = 0;
+
+            sectionsData.forEach(sec => {
+                // Category & Search filter check
+                const matchesCat = activeCategory === 'all' || sec.category === activeCategory;
+                const matchesSearch = sec.title.toLowerCase().includes(searchVal) || 
+                                      sec.description.toLowerCase().includes(searchVal) ||
+                                      (sec.prompts && sec.prompts.some(p => p.text.toLowerCase().includes(searchVal)));
+
+                if (matchesCat && matchesSearch) {
+                    matchedCount++;
+
+                    // Add to sidebar
+                    const navItem = document.createElement('a');
+                    navItem.href = `#sec-${sec.id}`;
+                    navItem.className = 'block p-2 rounded-lg hover:bg-lightBg border border-transparent hover:border-navy text-navy truncate font-medium transition';
+                    navItem.innerText = sec.title;
+                    sidebar.appendChild(navItem);
+
+                    // Build Section Card
+                    const card = document.createElement('article');
+                    card.id = `sec-${sec.id}`;
+                    card.className = 'flat-card p-5 sm:p-6 rounded-2xl bg-white space-y-4';
+                    card.setAttribute('data-category', sec.category);
+
+                    let isFav = favorites.includes(sec.id);
+
+                    let cardHeader = `
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                                <span class="bg-brand text-white px-2.5 py-0.5 rounded-lg text-xs font-black flat-border-sm">${sec.badge}</span>
+                                <span class="text-xs text-gray-500 font-bold">#${sec.id}</span>
+                            </div>
+                            <button onclick="toggleFav(${sec.id})" class="flat-btn px-2.5 py-1 rounded-lg text-xs flex items-center space-x-1 ${isFav ? 'bg-accentCoral text-white' : 'bg-white text-navy'}">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="${isFav ? '#FFFFFF' : 'none'}" stroke="#1A1A4E" stroke-width="2.5">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <span>${isFav ? 'Preferito' : 'Salva'}</span>
+                            </button>
+                        </div>
+                        <h3 class="text-lg sm:text-xl font-black text-navy">${sec.title}</h3>
+                        <p class="text-xs text-gray-600 font-medium">${sec.description}</p>
+                    `;
+
+                    let cardBody = '';
+
+                    if (sec.content) {
+                        cardBody = `<div class="pt-2">${sec.content}</div>`;
+                    } else if (sec.prompts) {
+                        cardBody = `<div class="space-y-3 pt-2">`;
+                        sec.prompts.forEach((p, idx) => {
+                            cardBody += `
+                                <div class="prompt-box p-3.5 rounded-xl space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="font-bold text-xs text-brand uppercase tracking-wider">${p.title}</h4>
+                                        <div class="flex space-x-2">
+                                            ${p.fields && p.fields.length > 0 ? `
+                                                <button onclick="openCustomizerForPrompt(${sec.id}, ${idx})" class="flat-btn bg-accentYellow text-navy text-[11px] px-2.5 py-1 rounded-lg flex items-center space-x-1">
+                                                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                                    <span>Personalizza</span>
+                                                </button>
+                                            ` : ''}
+                                            <button onclick="copyText('${escapeJsString(p.text)}')" class="flat-btn bg-accentTeal text-navy text-[11px] px-2.5 py-1 rounded-lg flex items-center space-x-1">
+                                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                                <span>Copia</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs font-mono font-semibold text-navy leading-relaxed break-words">${highlightPlaceholders(p.text)}</p>
+                                </div>
+                            `;
+                        });
+                        cardBody += `</div>`;
+                    }
+
+                    card.innerHTML = cardHeader + cardBody;
+                    container.appendChild(card);
+                }
+            });
+
+            document.getElementById('sectionCount').innerText = matchedCount;
+            updateFavCount();
+        }
+
+        function escapeJsString(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+        }
+
+        function highlightPlaceholders(text) {
+            return text.replace(/\[([^\]]+)\]/g, '<span class="bg-yellow-200 text-navy px-1 py-0.5 rounded flat-border-sm font-bold">[$1]</span>');
+        }
+
+        function copyText(text) {
+            // execCommand copy for iframe compatibility
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast('Prompt copiato negli appunti!');
+            } catch (err) {
+                showToast('Errore nella copiatura');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+
+        function toggleFav(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+                showToast('Rimosso dai preferiti');
+            } else {
+                favorites.push(id);
+                showToast('Aggiunto ai preferiti!');
+            }
+            localStorage.setItem('favPrompts', JSON.stringify(favorites));
+            renderContent();
+        }
+
+        function updateFavCount() {
+            document.getElementById('favCount').innerText = favorites.length;
+        }
+
+        function toggleFavoritesView() {
+            const btn = document.getElementById('favToggleBtn');
+            if (activeCategory === 'favorites') {
+                setCategory('all');
+                btn.classList.remove('bg-accentCoral', 'text-white');
+            } else {
+                activeCategory = 'favorites';
+                // filter by favorites
+                renderFavoritesOnly();
+                btn.classList.add('bg-accentCoral', 'text-white');
+            }
+        }
+
+        function renderFavoritesOnly() {
+            const container = document.getElementById('promptsContainer');
+            const sidebar = document.getElementById('sidebarNav');
+            container.innerHTML = '';
+            sidebar.innerHTML = '';
+
+            let count = 0;
+
+            sectionsData.forEach(sec => {
+                if (favorites.includes(sec.id)) {
+                    count++;
+                    // Build element logic...
+                    const card = document.createElement('article');
+                    card.className = 'flat-card p-5 sm:p-6 rounded-2xl bg-white space-y-4';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="bg-accentCoral text-white px-2 py-0.5 rounded text-xs font-bold">Preferito</span>
+                            <button onclick="toggleFav(${sec.id})" class="text-xs text-red-600 font-bold">Rimuovi</button>
+                        </div>
+                        <h3 class="text-lg font-black text-navy">${sec.title}</h3>
+                        <p class="text-xs text-gray-600">${sec.description}</p>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+
+            if (count === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl flat-card text-center space-y-3">
+                        <p class="text-sm font-bold text-navy">Non hai ancora salvato nessun prompt tra i preferiti.</p>
+                        <p class="text-xs text-gray-500">Clicca sul pulsante "Salva" nelle schede per ritrovarli qui velocemente!</p>
+                    </div>
+                `;
+            }
+            document.getElementById('sectionCount').innerText = count;
+        }
+
+        function setCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.remove('bg-white', 'text-navy');
+                    btn.classList.add('bg-brand', 'text-white');
+                } else {
+                    btn.classList.remove('bg-brand', 'text-white');
+                    btn.classList.add('bg-white', 'text-navy');
+                }
+            });
+            renderContent();
+        }
+
+        function filterPrompts() {
+            renderContent();
+        }
+
+        function openCustomizerModal() {
+            // Open default base template
+            const defaultPrompt = "Sono uno studente e sto studiando [ARGOMENTO]. Devo [OBIETTIVO]. Spiegamelo in modo semplice e adatto al mio livello. Fammi un esempio concreto e, alla fine, fammi 3 domande per verificare se ho capito.";
+            setupCustomizer("Prompt Personalizzato", defaultPrompt, ["ARGOMENTO", "OBIETTIVO"]);
+        }
+
+        function openCustomizerForPrompt(secId, promptIdx) {
+            const sec = sectionsData.find(s => s.id === secId);
+            if (sec && sec.prompts && sec.prompts[promptIdx]) {
+                const p = sec.prompts[promptIdx];
+                setupCustomizer(p.title, p.text, p.fields || []);
+            }
+        }
+
+        function setupCustomizer(title, text, fields) {
+            activeCustomTemplate = text;
+            const fieldsContainer = document.getElementById('customizerFields');
+            fieldsContainer.innerHTML = '';
+
+            if (fields.length === 0) {
+                // Auto detect placeholders [NAME]
+                const detected = text.match(/\[([^\]]+)\]/g);
+                if (detected) {
+                    fields = detected.map(d => d.replace('[', '').replace(']', ''));
+                }
+            }
+
+            fields.forEach(field => {
+                const div = document.createElement('div');
+                div.className = 'space-y-1';
+                div.innerHTML = `
+                    <label class="block text-xs font-bold text-navy uppercase tracking-wider">Campo: [${field}]</label>
+                    <input type="text" data-field="${field}" oninput="updateCustomizerOutput()" placeholder="Inserisci ${field.toLowerCase()}..." 
+                        class="custom-field-input w-full px-3 py-2 rounded-xl flat-border bg-lightBg text-xs font-semibold text-navy focus:ring-2 focus:ring-brand focus:outline-none">
+                `;
+                fieldsContainer.appendChild(div);
+            });
+
+            document.getElementById('customizerModal').classList.remove('hidden');
+            updateCustomizerOutput();
+        }
+
+        function updateCustomizerOutput() {
+            if (!activeCustomTemplate) return;
+            let output = activeCustomTemplate;
+            const inputs = document.querySelectorAll('.custom-field-input');
+            
+            inputs.forEach(input => {
+                const fieldName = input.dataset.field;
+                const val = input.value.trim();
+                const placeholder = `[${fieldName}]`;
+                if (val) {
+                    output = output.replaceAll(placeholder, val);
+                }
+            });
+
+            document.getElementById('customizerOutput').innerText = output;
+        }
+
+        function copyGeneratedPrompt() {
+            const text = document.getElementById('customizerOutput').innerText;
+            copyText(text);
+            closeCustomizerModal();
+        }
+
+        function closeCustomizerModal() {
+            document.getElementById('customizerModal').classList.add('hidden');
+        }
+
+        window.onload = function() {
+            renderContent();
+        };
+    </script>
+</body>
+</html>

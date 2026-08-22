@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ontologia ed Epistemologia nell'Intelligenza Artificiale</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Palette Editoriale (Conforme AAA su sfondi chiari) */
+            --ink: #1C1C1C;          /* Contrast ~16:1 su --cream */
+            --cream: #FAF6EE;        /* Sfondo principale */
+            --paper: #F2EAD9;        /* Sfondo alternato */
+            --surface: #FFFFFF;      /* Sfondo card */
+            --primary: #5A1530;      /* Borgogna scuro contrasto AAA */
+            --primary-accent: #7C1D3F;/* Pulsanti principali */
+            --accent: #8C6218;       /* Ambra/Ottone scuro per dettagli */
+            
+            /* Palette Semantica Fissa AAA */
+            --status-progress: #0047AB; /* Blu Cobalto - ⏳ In corso */
+            --status-warning: #B0004A;  /* Fucsia Intenso - ⚠️ Attenzione */
+            --status-success: #005C36;  /* Verde Smeraldo - ✅ Completato */
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--ink);
+            background-color: var(--cream);
+            line-height: 1.6;
+            font-size: 1.0625rem; /* ~17px per massima leggibilità */
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        code, pre, .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Focus Ring visibile per accessibilità da tastiera */
+        *:focus-visible {
+            outline: 3px solid var(--status-progress) !important;
+            outline-offset: 3px !important;
+        }
+
+        /* Texture sgranata sottile editoriale */
+        .paper-texture {
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 0, 0, 0.015) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(0, 0, 0, 0.015) 0%, transparent 40%);
+        }
+
+        /* Gestione Animazioni per prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Flip card styling accessibile */
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col">
+
+    <!-- Accessible Skip Link -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#5A1530] focus:text-white focus:rounded-md focus:shadow-lg">
+        Salta al contenuto principale
+    </a>
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-gray-200 z-50" aria-hidden="true">
+        <div id="progress-bar" class="h-full transition-all duration-150" style="width: 0%; background-color: var(--primary);"></div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-40 bg-[#FAF6EE]/90 backdrop-blur-md border-b border-[#1C1C1C]/10 transition-all">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <span class="w-10 h-10 rounded-lg bg-[#5A1530] text-white flex items-center justify-center font-serif font-bold text-xl shadow-sm group-hover:bg-[#7C1D3F] transition-colors" aria-hidden="true">
+                    Φ
+                </span>
+                <span class="font-serif font-bold text-lg sm:text-xl text-[#1C1C1C] tracking-tight">
+                    Ontologia <span class="text-[#7C1D3F] font-normal">&amp;</span> Epistemologia AI
+                </span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-1" aria-label="Navigazione principale">
+                <a href="#radici" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" aria-current="false">
+                    Radici Filosofiche
+                </a>
+                <a href="#ontologie-ia" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" aria-current="false">
+                    Ontologie computazionali
+                </a>
+                <a href="#epistemologia-ia" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" aria-current="false">
+                    Epistemologia &amp; LLM
+                </a>
+                <a href="#matrice" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" aria-current="false">
+                    Confronto
+                </a>
+                <a href="#strumento" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9] transition-colors" aria-current="false">
+                    Simulatore
+                </a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" type="button" class="md:hidden p-2.5 rounded-lg text-[#1C1C1C] hover:bg-[#F2EAD9] focus:outline-none" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri menu di navigazione">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path id="menu-icon-bars" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    <path id="menu-icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#FAF6EE] border-b border-[#1C1C1C]/10 px-4 pt-2 pb-6 space-y-2">
+            <a href="#radici" class="mobile-nav-link block px-4 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">
+                📚 1. Radici Filosofiche
+            </a>
+            <a href="#ontologie-ia" class="mobile-nav-link block px-4 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">
+                🧬 2. Ontologie computazionali
+            </a>
+            <a href="#epistemologia-ia" class="mobile-nav-link block px-4 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">
+                ⚙️ 3. Epistemologia &amp; LLM
+            </a>
+            <a href="#matrice" class="mobile-nav-link block px-4 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">
+                📊 4. Matrice di Confronto
+            </a>
+            <a href="#strumento" class="mobile-nav-link block px-4 py-3 rounded-md text-base font-semibold text-[#1C1C1C] hover:bg-[#F2EAD9]">
+                🛠️ 5. Simulatore RAG &amp; Validator
+            </a>
+        </div>
+    </header>
+
+    <main id="main-content" class="flex-grow">
+        <!-- Hero Section -->
+        <section class="py-16 md:py-24 border-b border-[#1C1C1C]/10 bg-gradient-to-b from-[#FAF6EE] to-[#F2EAD9]">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#5A1530]/10 text-[#5A1530] text-sm font-semibold mb-6 border border-[#5A1530]/20">
+                    <span aria-hidden="true">🎓</span>
+                    <span>Formazione Didattica &amp; Ingegneria della Conoscenza</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#1C1C1C] mb-6 leading-tight">
+                    Ontologia ed Epistemologia nell'Intelligenza Artificiale
+                </h1>
+                
+                <p class="text-lg sm:text-xl text-[#1C1C1C]/80 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Dalla filosofia pura all'architettura dei LLM: capire la differenza essenziale tra <strong>ciò che esiste davvero (Ontologia)</strong> e <strong>come i modelli simulano la conoscenza (Epistemologia)</strong> per eliminare le allucinazioni nei sistemi RAG.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#radici" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#5A1530] text-white font-semibold text-base hover:bg-[#7C1D3F] transition-all shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-[#5A1530]">
+                        <span aria-hidden="true">📖</span>
+                        <span>Inizia il Percorso Didattico</span>
+                    </a>
+                    <a href="#strumento" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-white border border-[#1C1C1C]/20 text-[#1C1C1C] font-semibold text-base hover:bg-[#FAF6EE] transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-[#1C1C1C]">
+                        <span aria-hidden="true">🛠️</span>
+                        <span>Prova il Simulatore RAG</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Le Radici Filosofiche -->
+        <section id="radici" class="py-16 md:py-20 border-b border-[#1C1C1C]/10">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center gap-3 mb-4 text-[#7C1D3F] font-semibold text-sm uppercase tracking-wider">
+                    <span class="w-8 h-px bg-[#7C1D3F]" aria-hidden="true"></span>
+                    <span>Modulo 01 — Fondamenti Teorici</span>
+                </div>
+                
+                <h2 class="text-3xl sm:text-4xl font-bold text-[#1C1C1C] mb-6">
+                    Le Radici Filosofiche: Essere vs Conoscere
+                </h2>
+
+                <div class="prose prose-lg text-[#1C1C1C]/90 space-y-6 mb-12">
+                    <p>
+                        In filosofia, <strong>ontologia</strong> ed <strong>epistemologia</strong> rappresentano le due colonne portanti dell'indagine teorica. Sebbene profondamente interconnesse, rispondono a quesiti radicalmente differenti:
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 my-8">
+                        <div class="bg-white p-6 rounded-xl border border-[#1C1C1C]/15 shadow-sm">
+                            <h3 class="font-serif font-bold text-xl text-[#5A1530] mb-3 flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-[#5A1530]" aria-hidden="true"></span>
+                                Ontologia (Teoria dell'Essere)
+                            </h3>
+                            <p class="text-sm text-[#1C1C1C]/80 mb-4">
+                                Si chiede quali cose esistono realmente nell'universo e quali categorie fondamentali strutturano la realtà, <em>indipendentemente</em> dalla presenza di un osservatore.
+                            </p>
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#F2EAD9] text-[#1C1C1C] text-xs font-semibold">
+                                <span aria-hidden="true">🔍</span>
+                                <span>Domanda chiave: "Che cosa c'è?"</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-[#1C1C1C]/15 shadow-sm">
+                            <h3 class="font-serif font-bold text-xl text-[#8C6218] mb-3 flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-[#8C6218]" aria-hidden="true"></span>
+                                Epistemologia (Teoria della Conoscenza)
+                            </h3>
+                            <p class="text-sm text-[#1C1C1C]/80 mb-4">
+                                Indaga come noi soggetti cognitivi acquisiamo, validiamo e giustifichiamo la conoscenza, esplorando i limiti e le fondamenta delle nostre credenze.
+                            </p>
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#F2EAD9] text-[#1C1C1C] text-xs font-semibold">
+                                <span aria-hidden="true">🧠</span>
+                                <span>Domanda chiave: "Come lo sappiamo?"</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quote Block / Maurizio Ferraris -->
+                    <blockquote class="bg-[#F2EAD9]/60 border-l-4 border-[#5A1530] p-6 rounded-r-xl italic text-[#1C1C1C] my-8">
+                        <p class="mb-3 text-lg">
+                            «L'ontologia riguarda quello che c'è, mentre l'epistemologia riguarda quello che capiamo o sappiamo a proposito di quello che c'è. La differenza fondamentale è che l'ontologia è <strong>inemendabile</strong> (non posso alterare la realtà fisica solo con il pensiero), mentre la nostra conoscenza epistemica è sempre <strong>emendabile</strong> e correggibile.»
+                        </p>
+                        <footer class="text-sm font-semibold not-italic text-[#7C1D3F] flex items-center gap-2">
+                            <span aria-hidden="true">👤</span>
+                            <span>Maurizio Ferraris — Filosofo contemporaneo</span>
+                        </footer>
+                    </blockquote>
+                </div>
+
+                <!-- Interactive Demonstration: Statement Analyzer -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#1C1C1C]/15 shadow-md mb-8">
+                    <h3 class="text-xl font-serif font-bold text-[#1C1C1C] mb-2 flex items-center gap-2">
+                        <span aria-hidden="true">🧪</span>
+                        <span>Dimostrazione Interattiva: Analizzatore di Enunciati</span>
+                    </h3>
+                    <p class="text-sm text-[#1C1C1C]/75 mb-6">
+                        Seleziona un'affermazione di esempio per osservare come si scinde la componente <strong>Ontologica (Fatto di Realtà)</strong> da quella <strong>Epistemologica (Credenza/Stato del Modello)</strong>.
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-6" role="group" aria-label="Esempi di enunciati">
+                        <button type="button" onclick="setStatement(0)" id="stmt-btn-0" class="stmt-btn px-4 py-2 rounded-lg border text-sm font-semibold transition-all bg-[#5A1530] text-white border-[#5A1530]" aria-pressed="true">
+                            Esempio A: "La strada giusta"
+                        </button>
+                        <button type="button" onclick="setStatement(1)" id="stmt-btn-1" class="stmt-btn px-4 py-2 rounded-lg border text-sm font-semibold transition-all bg-[#FAF6EE] text-[#1C1C1C] border-[#1C1C1C]/20 hover:bg-[#F2EAD9]" aria-pressed="false">
+                            Esempio B: "Diagnosi Clinica AI"
+                        </button>
+                        <button type="button" onclick="setStatement(2)" id="stmt-btn-2" class="stmt-btn px-4 py-2 rounded-lg border text-sm font-semibold transition-all bg-[#FAF6EE] text-[#1C1C1C] border-[#1C1C1C]/20 hover:bg-[#F2EAD9]" aria-pressed="false">
+                            Esempio C: "Norma Giuridica RAG"
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Output Box -->
+                    <div id="statement-output" class="p-6 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/10 space-y-4" aria-live="polite">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Ontologie nei Sistemi di IA -->
+        <section id="ontologie-ia" class="py-16 md:py-20 border-b border-[#1C1C1C]/10 bg-[#F2EAD9]/40">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center gap-3 mb-4 text-[#7C1D3F] font-semibold text-sm uppercase tracking-wider">
+                    <span class="w-8 h-px bg-[#7C1D3F]" aria-hidden="true"></span>
+                    <span>Modulo 02 — Ingegneria della Conoscenza</span>
+                </div>
+                
+                <h2 class="text-3xl sm:text-4xl font-bold text-[#1C1C1C] mb-6">
+                    Ontologie computazionali nei Sistemi di IA
+                </h2>
+
+                <p class="text-lg text-[#1C1C1C]/90 mb-8">
+                    In informatica, il termine filosofico assume una definizione tecnica rigorosa derivata da Thomas Gruber: 
+                    <em class="font-serif text-[#5A1530] font-semibold">«Un'ontologia è una specificazione formale ed esplicita di una concettualizzazione condivisa»</em>.
+                </p>
+
+                <!-- Cards Grid / Types of Ontologies -->
+                <div class="grid sm:grid-cols-2 gap-6 mb-12">
+                    <div class="bg-white p-6 rounded-xl border border-[#1C1C1C]/15 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 rounded-lg bg-[#5A1530]/10 text-[#5A1530] flex items-center justify-center font-bold text-xl mb-4" aria-hidden="true">
+                            🔗
+                        </div>
+                        <h3 class="font-serif font-bold text-xl text-[#1C1C1C] mb-2">Ontologie Leggere vs Formali</h3>
+                        <p class="text-sm text-[#1C1C1C]/80">
+                            Le ontologie <strong>leggere</strong> gestiscono tassonomie e gerarchie concettuali (es. schemi RDF/SKOS). Quelle <strong>formali</strong> integrano assiomi complessi in logica descrittiva (OWL) per effettuare inferenze automatiche rigorose.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-[#1C1C1C]/15 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 rounded-lg bg-[#0047AB]/10 text-[#0047AB] flex items-center justify-center font-bold text-xl mb-4" aria-hidden="true">
+                            🏛️
+                        </div>
+                        <h3 class="font-serif font-bold text-xl text-[#1C1C1C] mb-2">Ontologie di Dominio vs Enterprise</h3>
+                        <p class="text-sm text-[#1C1C1C]/80">
+                            Modellano uno specifico settore professionale (sanitario, giuridico, scolastico) eliminando le ambiguità semantiche tra termini correlati (es. la differenza univoca tra <em>Docente</em> e <em>Tutor</em>).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- NEW SUBSECTION: Standard W3C & Sigle (RDF & OWL) -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#1C1C1C]/15 shadow-md mb-12">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-2.5 py-1 rounded-md bg-[#5A1530]/10 text-[#5A1530] text-xs font-bold border border-[#5A1530]/20">
+                            📜 Standard W3C &amp; Sintassi
+                        </span>
+                        <span class="text-xs text-[#1C1C1C]/60 font-mono">RDF vs OWL</span>
+                    </div>
+
+                    <h3 class="text-2xl font-serif font-bold text-[#1C1C1C] mb-4">
+                        Decodificare le Sigle: RDF &amp; OWL Spiegati
+                    </h3>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <!-- RDF Box -->
+                        <div class="p-5 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/10 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-lg text-[#5A1530]">RDF</h4>
+                                <span class="text-xs px-2 py-0.5 rounded bg-[#005C36] text-white font-semibold">✅ Tripla Base</span>
+                            </div>
+                            <p class="text-xs font-mono font-semibold text-[#8C6218]">
+                                Resource Description Framework
+                            </p>
+                            <p class="text-sm text-[#1C1C1C]/80 leading-relaxed">
+                                <strong>Quadro di Descrizione delle Risorse:</strong> è lo standard W3C fondato sulla struttura a <em>tripla</em>: <code class="bg-[#F2EAD9] px-1 rounded">&lt;Soggetto&gt; &lt;Predicato&gt; &lt;Oggetto&gt;</code>. Serve a dichiarare relazioni fattuali elementari nel Web Semantico.
+                            </p>
+                        </div>
+
+                        <!-- OWL Box -->
+                        <div class="p-5 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/10 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-lg text-[#0047AB]">OWL</h4>
+                                <span class="text-xs px-2 py-0.5 rounded bg-[#0047AB] text-white font-semibold">⏳ Logica Formale</span>
+                            </div>
+                            <p class="text-xs font-mono font-semibold text-[#8C6218]">
+                                Web Ontology Language (OWL)
+                            </p>
+                            <p class="text-sm text-[#1C1C1C]/80 leading-relaxed">
+                                <strong>Linguaggio di Ontologia per il Web:</strong> basato sulle logiche descrittive. 
+                                <em class="text-[#5A1530] block mt-1">💡 Curiosità sulla sigla:</em> Si usa l'acronimo <strong>OWL</strong> anziché WOL sia per assonanza con la figura del gufo (simbolo di saggezza) sia come omaggio al personaggio <em>Owl</em> delle storie di Winnie-the-Pooh. OWL permette di esprimere vincoli formali, disgiunzioni e regole di inferenza automatica.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Code Snippet Tabs -->
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#1C1C1C]/10 pb-3">
+                            <div class="flex gap-2" role="tablist" aria-label="Esempi di codice ontologico">
+                                <button type="button" role="tab" aria-selected="true" aria-controls="panel-rdf" id="tab-rdf" onclick="switchOntoTab('rdf')" class="onto-tab-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all bg-[#5A1530] text-white">
+                                    📄 Esempio RDF (Tripla)
+                                </button>
+                                <button type="button" role="tab" aria-selected="false" aria-controls="panel-owl" id="tab-owl" onclick="switchOntoTab('owl')" class="onto-tab-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all bg-[#FAF6EE] text-[#1C1C1C] border border-[#1C1C1C]/20 hover:bg-[#F2EAD9]">
+                                    🦉 Esempio OWL (Assioma &amp; Vincoli)
+                                </button>
+                            </div>
+                            <button type="button" onclick="copyCurrentOntoCode()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#5A1530] text-white text-xs font-semibold hover:bg-[#7C1D3F] transition-colors focus:ring-2 focus:ring-[#5A1530]">
+                                <span aria-hidden="true">📋</span>
+                                <span id="onto-copy-btn-text">Copia Codice Sintassico</span>
+                            </button>
+                        </div>
+
+                        <!-- Panel RDF -->
+                        <div id="panel-rdf" role="tabpanel" aria-labelledby="tab-rdf" class="space-y-3">
+                            <div class="p-4 rounded-xl bg-[#1C1C1C] text-[#FAF6EE] font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto">
+<pre id="code-rdf"><code>@prefix ex: &lt;http://scuola.example.org/schema#&gt; .
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+
+# --- Dichiariamo una Tripla RDF semplice (Soggetto - Predicato - Oggetto) ---
+ex:ProfessoreRossi  rdf:type        ex:Docente ;        # Soggetto: ProfessoreRossi, Predicato: tipo, Oggetto: Docente
+                    ex:insegna     ex:CorsoIA .        # Soggetto: ProfessoreRossi, Predicato: insegna, Oggetto: CorsoIA
+
+ex:CorsoIA          ex:haCodice    "AI-2026" .         # Relazione con un valore letterale (Stringa)</code></pre>
+                            </div>
+                            <div class="p-3 rounded-lg bg-[#FAF6EE] border border-[#1C1C1C]/10 text-xs text-[#1C1C1C]/80">
+                                <strong>Spiegazione Didattica RDF:</strong> Il blocco RDF definisce fatti specifici mediante l'associazione univoca di un Soggetto (es. <em>ProfessoreRossi</em>) a una proprietà/Predicato (es. <em>insegna</em>) e a un Oggetto (es. <em>CorsoIA</em>). Non stabilisce vincoli rigidi di esclusione, ma asserisce relazioni reali nel grafo.
+                            </div>
+                        </div>
+
+                        <!-- Panel OWL -->
+                        <div id="panel-owl" role="tabpanel" aria-labelledby="tab-owl" class="hidden space-y-3">
+                            <div class="p-4 rounded-xl bg-[#1C1C1C] text-[#FAF6EE] font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto">
+<pre id="code-owl"><code>@prefix ex: &lt;http://scuola.example.org/schema#&gt; .
+@prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+
+# --- Definizione di Classe Formale e Vincolo di Disgiunzione in OWL ---
+ex:Docente a owl:Class ;
+    rdfs:subClassOf ex:Persona ;
+    owl:disjointWith ex:Studente . # ASSIOMA RIGIDO: Chi è Docente NON può contemporaneamente essere Studente!
+
+ex:Studente a owl:Class ;
+    rdfs:subClassOf ex:Persona .
+
+# --- Vincolo di Dominio e Codominio per la Proprietà ---
+ex:insegna a owl:ObjectProperty ;
+    rdfs:domain ex:Docente ;     # DOMINIO: Il soggetto a sinistra DEVE essere un Docente
+    rdfs:range  ex:Corso .       # CODOMINIO (RANGE): L'oggetto a destra DEVE essere un Corso</code></pre>
+                            </div>
+                            <div class="p-3 rounded-lg bg-[#FAF6EE] border border-[#1C1C1C]/10 text-xs text-[#1C1C1C]/80">
+                                <strong>Spiegazione Didattica OWL:</strong> A differenza di RDF, OWL introduce l'assioma <code class="bg-[#F2EAD9] px-1 rounded">owl:disjointWith</code> e vincoli di dominio/codominio. Se un LLM tentasse di allucinare che un <em>Studente</em> "insegna" un corso, un motore di inferenza basato su OWL rifiuterebbe immediatamente l'affermazione come <strong>incoerente sul piano ontologico</strong>!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBSECTION: Assioma, Dominio e Codominio -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#1C1C1C]/15 shadow-md mb-12">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-2.5 py-1 rounded-md bg-[#5A1530]/10 text-[#5A1530] text-xs font-bold border border-[#5A1530]/20">
+                            🧩 Fondamenti di Logica Ontologica
+                        </span>
+                        <span class="text-xs text-[#1C1C1C]/60 font-mono">Assiomi, Domain &amp; Range</span>
+                    </div>
+
+                    <h3 class="text-2xl font-serif font-bold text-[#1C1C1C] mb-4">
+                        I Tre Pilastri: Assioma, Dominio e Codominio
+                    </h3>
+
+                    <p class="text-sm text-[#1C1C1C]/80 leading-relaxed mb-6">
+                        Per impedire che un Large Language Model colleghi concetti in modo biologicamente o giuridicamente impossibile, le ontologie formali utilizzano tre vincoli logici fondamentali presi dalla logica dei predicati e dalla teoria degli insiemi:
+                    </p>
+
+                    <!-- 3 Concepts Cards Grid -->
+                    <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <!-- Card 1: Assioma -->
+                        <div class="p-5 rounded-xl bg-[#FAF6EE] border border-[#5A1530]/20 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-7 h-7 rounded-md bg-[#5A1530] text-white flex items-center justify-center font-bold text-xs">1</span>
+                                    <h4 class="font-bold text-lg text-[#5A1530]">Assioma (Axiom)</h4>
+                                </div>
+                                <p class="text-xs font-mono font-semibold text-[#8C6218] mb-2">
+                                    Regola logica non negoziabile
+                                </p>
+                                <p class="text-xs text-[#1C1C1C]/80 leading-relaxed">
+                                    Una proposizione assunta come sempre vera a priori che definisce relazioni o disgiunzioni necessarie nel dominio.
+                                </p>
+                            </div>
+                            <div class="p-2.5 rounded bg-white border border-[#1C1C1C]/10 text-xs font-mono text-[#5A1530]">
+                                <code>owl:disjointWith</code><br>
+                                <span class="text-[11px] text-[#1C1C1C]/70">Es: Docente ≠ Studente</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Dominio -->
+                        <div class="p-5 rounded-xl bg-[#FAF6EE] border border-[#0047AB]/20 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-7 h-7 rounded-md bg-[#0047AB] text-white flex items-center justify-center font-bold text-xs">2</span>
+                                    <h4 class="font-bold text-lg text-[#0047AB]">Dominio (Domain)</h4>
+                                </div>
+                                <p class="text-xs font-mono font-semibold text-[#8C6218] mb-2">
+                                    Insieme dei soggetti ammessi
+                                </p>
+                                <p class="text-xs text-[#1C1C1C]/80 leading-relaxed">
+                                    Specifica quale classe di enti può stare <strong>a sinistra (Soggetto)</strong> di una determinata relazione.
+                                </p>
+                            </div>
+                            <div class="p-2.5 rounded bg-white border border-[#1C1C1C]/10 text-xs font-mono text-[#0047AB]">
+                                <code>rdfs:domain ex:Docente</code><br>
+                                <span class="text-[11px] text-[#1C1C1C]/70">Es: Solo un Docente "insegna"</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Codominio -->
+                        <div class="p-5 rounded-xl bg-[#FAF6EE] border border-[#005C36]/20 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-7 h-7 rounded-md bg-[#005C36] text-white flex items-center justify-center font-bold text-xs">3</span>
+                                    <h4 class="font-bold text-lg text-[#005C36]">Codominio (Range)</h4>
+                                </div>
+                                <p class="text-xs font-mono font-semibold text-[#8C6218] mb-2">
+                                    Insieme degli oggetti ammessi
+                                </p>
+                                <p class="text-xs text-[#1C1C1C]/80 leading-relaxed">
+                                    Specifica quale classe di valori o enti può stare <strong>a destra (Oggetto)</strong> di una determinata relazione.
+                                </p>
+                            </div>
+                            <div class="p-2.5 rounded bg-white border border-[#1C1C1C]/10 text-xs font-mono text-[#005C36]">
+                                <code>rdfs:range ex:Corso</code><br>
+                                <span class="text-[11px] text-[#1C1C1C]/70">Es: L'oggetto di "insegna" è un Corso</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Reasoner Tester -->
+                    <div class="p-5 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/10">
+                        <h4 class="font-serif font-bold text-base text-[#1C1C1C] mb-3 flex items-center gap-2">
+                            <span aria-hidden="true">🧪</span>
+                            <span>Simulatore del Validatore Ontologico (Reasoner)</span>
+                        </h4>
+                        <p class="text-xs text-[#1C1C1C]/75 mb-4">
+                            Seleziona una tripla generata ipoteticamente da un LLM per verificare quale vincolo logico intercetta l'allucinazione:
+                        </p>
+
+                        <div class="grid sm:grid-cols-3 gap-2 mb-4" role="group" aria-label="Esempi di triple da verificare">
+                            <button type="button" onclick="testReasoner(0)" id="reasoner-btn-0" class="reasoner-btn p-3 rounded-lg border text-xs font-semibold text-left transition-all bg-[#5A1530] text-white border-[#5A1530]" aria-pressed="true">
+                                🔹 Tripla A: &lt;Rossi&gt; &lt;insegna&gt; &lt;CorsoIA&gt;
+                            </button>
+                            <button type="button" onclick="testReasoner(1)" id="reasoner-btn-1" class="reasoner-btn p-3 rounded-lg border text-xs font-semibold text-left transition-all bg-white text-[#1C1C1C] border-[#1C1C1C]/20 hover:bg-[#F2EAD9]" aria-pressed="false">
+                                ⚠️ Tripla B: &lt;StudenteMario&gt; &lt;insegna&gt; &lt;CorsoIA&gt;
+                            </button>
+                            <button type="button" onclick="testReasoner(2)" id="reasoner-btn-2" class="reasoner-btn p-3 rounded-lg border text-xs font-semibold text-left transition-all bg-white text-[#1C1C1C] border-[#1C1C1C]/20 hover:bg-[#F2EAD9]" aria-pressed="false">
+                                ⚠️ Tripla C: &lt;ProfRossi&gt; &lt;insegna&gt; &lt;"Mela"&gt;
+                            </button>
+                        </div>
+
+                        <!-- Output Box Reasoner -->
+                        <div id="reasoner-output" class="p-4 rounded-lg bg-white border border-[#1C1C1C]/15" aria-live="polite">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SVG Native Accessible Architecture Diagram -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#1C1C1C]/15 shadow-md mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                        <div>
+                            <h3 class="text-xl font-serif font-bold text-[#1C1C1C]">
+                                Diagramma Architetturale: Ancoraggio Ontologico nei Sistemi RAG
+                            </h3>
+                            <p class="text-sm text-[#1C1C1C]/75">
+                                Schema grafico ed elemento nativo SVG con codifica a tripla ridondanza.
+                            </p>
+                        </div>
+                        <!-- Status Legend Badge -->
+                        <div class="flex items-center gap-3 bg-[#FAF6EE] p-3 rounded-lg border border-[#1C1C1C]/10 text-xs">
+                            <span class="flex items-center gap-1 font-semibold text-[#005C36]">
+                                <span class="w-2.5 h-2.5 rounded-sm bg-[#005C36]" aria-hidden="true"></span>
+                                ✅ Verificato
+                            </span>
+                            <span class="flex items-center gap-1 font-semibold text-[#0047AB]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#0047AB]" aria-hidden="true"></span>
+                                ⏳ In elaborazione
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Native SVG with Title, Desc and Triple Redundancy -->
+                    <div class="w-full overflow-x-auto py-4">
+                        <svg role="img" aria-labelledby="rag-diag-title rag-diag-desc" viewBox="0 0 760 220" class="w-full h-auto min-w-[600px]">
+                            <title id="rag-diag-title">Architettura RAG con Ancoraggio Ontologico</title>
+                            <desc id="rag-diag-desc">
+                                Flusso di interrogazione: l'utente invia un prompt, l'ontologia Knowledge Graph verifica i concetti (quadrato verde, completato), mentre il LLM genera la risposta probabilistica filtrata (cerchio blu, in corso).
+                            </desc>
+
+                            <!-- Background Grid lines -->
+                            <line x1="20" y1="110" x2="740" y2="110" stroke="#E5E7EB" stroke-width="2" stroke-dasharray="6,6" />
+
+                            <!-- Node 1: Input Utente -->
+                            <g transform="translate(30, 50)">
+                                <rect x="0" y="0" width="140" height="120" rx="12" fill="#FAF6EE" stroke="#1C1C1C" stroke-width="2" />
+                                <text x="70" y="35" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#1C1C1C">1. Prompt Utente</text>
+                                <text x="70" y="60" text-anchor="middle" font-family="Inter" font-size="12" fill="#5A1530">Query di dominio</text>
+                                <rect x="25" y="80" width="90" height="24" rx="4" fill="#005C36" />
+                                <text x="70" y="96" text-anchor="middle" font-family="Inter" font-weight="600" font-size="11" fill="#FFFFFF">✅ Input valido</text>
+                            </g>
+
+                            <!-- Arrow 1 -->
+                            <path d="M 175 110 L 225 110" stroke="#5A1530" stroke-width="3" marker-end="url(#arrow)" />
+
+                            <!-- Node 2: Knowledge Graph / Ontologia (Validatore) -->
+                            <g transform="translate(235, 30)">
+                                <rect x="0" y="0" width="230" height="160" rx="12" fill="#FFFFFF" stroke="#005C36" stroke-width="3" />
+                                <text x="115" y="30" text-anchor="middle" font-family="Playfair Display" font-weight="700" font-size="16" fill="#005C36">2. Ontologia Formale</text>
+                                <text x="115" y="55" text-anchor="middle" font-family="Inter" font-size="12" fill="#1C1C1C">Knowledge Graph &amp; RDF/OWL</text>
+                                
+                                <g transform="translate(20, 75)">
+                                    <rect x="0" y="0" width="190" height="32" rx="6" fill="#005C36" />
+                                    <text x="95" y="21" text-anchor="middle" font-family="Inter" font-weight="600" font-size="12" fill="#FFFFFF">✅ Vincolo Semantico Rigido</text>
+                                </g>
+
+                                <text x="115" y="135" text-anchor="middle" font-family="Inter" font-size="11" fill="#1C1C1C">Fatti inemendabili del dominio</text>
+                            </g>
+
+                            <!-- Arrow 2 -->
+                            <path d="M 470 110 L 520 110" stroke="#5A1530" stroke-width="3" />
+
+                            <!-- Node 3: Generazione LLM -->
+                            <g transform="translate(530, 50)">
+                                <rect x="0" y="0" width="190" height="120" rx="12" fill="#FAF6EE" stroke="#0047AB" stroke-width="2" />
+                                <text x="95" y="35" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#0047AB">3. Risposta LLM</text>
+                                <text x="95" y="60" text-anchor="middle" font-family="Inter" font-size="12" fill="#1C1C1C">Inferenza Probabilistica</text>
+                                
+                                <circle cx="95" cy="92" r="14" fill="#0047AB" />
+                                <text x="95" y="96" text-anchor="middle" font-family="Inter" font-weight="700" font-size="12" fill="#FFFFFF">⏳</text>
+                                <text x="95" y="116" text-anchor="middle" font-family="Inter" font-weight="600" font-size="10" fill="#0047AB">Zero Allucinazioni</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Accessible Alternative Table -->
+                    <div class="mt-4 pt-4 border-t border-[#1C1C1C]/10">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-[#1C1C1C]/70 mb-2">Versione Testuale Alternativa del Diagramma:</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-[#1C1C1C]">
+                                <thead class="bg-[#FAF6EE] border-b border-[#1C1C1C]/10">
+                                    <tr>
+                                        <th scope="col" class="p-2">Fase Architetturale</th>
+                                        <th scope="col" class="p-2">Componente AI</th>
+                                        <th scope="col" class="p-2">Stato Operativo</th>
+                                        <th scope="col" class="p-2">Funzione Fondamentale</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-[#1C1C1C]/5">
+                                        <td class="p-2 font-semibold">1. Input Query</td>
+                                        <td class="p-2">Prompt dell'Utente</td>
+                                        <td class="p-2 text-[#005C36] font-semibold">✅ Completato (Quadrato)</td>
+                                        <td class="p-2">Invia la richiesta al sistema RAG</td>
+                                    </tr>
+                                    <tr class="border-b border-[#1C1C1C]/5">
+                                        <td class="p-2 font-semibold">2. Ancoraggio Ontologico</td>
+                                        <td class="p-2">Knowledge Graph (RDF/OWL)</td>
+                                        <td class="p-2 text-[#005C36] font-semibold">✅ Verificato (Quadrato)</td>
+                                        <td class="p-2">Filtra la query mediante concetti e relazioni univoche</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 font-semibold">3. Sintesi Finale</td>
+                                        <td class="p-2">LLM (Generatore probabilistico)</td>
+                                        <td class="p-2 text-[#0047AB] font-semibold">⏳ In corso (Cerchio)</td>
+                                        <td class="p-2">Formula la risposta grounded priva di allucinazioni</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Epistemologia dell'IA & Allucinazioni -->
+        <section id="epistemologia-ia" class="py-16 md:py-20 border-b border-[#1C1C1C]/10">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center gap-3 mb-4 text-[#7C1D3F] font-semibold text-sm uppercase tracking-wider">
+                    <span class="w-8 h-px bg-[#7C1D3F]" aria-hidden="true"></span>
+                    <span>Modulo 03 — Limiti Cognitivi dei Modelli</span>
+                </div>
+                
+                <h2 class="text-3xl sm:text-4xl font-bold text-[#1C1C1C] mb-6">
+                    Epistemologia dell'IA: Tra Previsione e Conoscenza
+                </h2>
+
+                <div class="prose prose-lg text-[#1C1C1C]/90 space-y-6 mb-12">
+                    <p>
+                        L'epistemologia dei modelli di Machine Learning si occupa di come questi sistemi generano e validano ciò che viene definita "conoscenza artificiale". Un Large Language Model non ha accesso diretto alla <em>"cosa in sé"</em> (il noumeno kantiano), ma manipola una <strong>rappresentazione probabilistica implicita</strong> definita dai pesi della sua rete neurale.
+                    </p>
+                    
+                    <!-- Callout Alert Box -->
+                    <div class="p-6 rounded-xl bg-[#B0004A]/10 border-l-4 border-[#B0004A] text-[#1C1C1C] space-y-2">
+                        <div class="flex items-center gap-2 font-bold text-[#B0004A]">
+                            <span aria-hidden="true">⚠️</span>
+                            <span>Il Genesi Epistemico delle Allucinazioni</span>
+                        </div>
+                        <p class="text-sm leading-relaxed">
+                            Un LLM può formulare un'affermazione estremamente plausibile (sul piano epistemico: una credenza probabilistica coerente con i dati di training) che tuttavia <strong>non ha alcun riscontro ontologico nella realtà fisica o normativa</strong>. Questo scollamento è la causa prima delle allucinazioni dell'IA.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Explorable Flip Cards Grid -->
+                <div class="grid md:grid-cols-2 gap-6 mb-12">
+                    <!-- Flip Card 1 -->
+                    <div class="flip-card h-64 cursor-pointer" onclick="toggleCard(this)" onkeydown="handleCardKey(event, this)" tabindex="0" role="button" aria-expanded="false" aria-label="Carta concettuale: Teoria del Modello nell'IA. Clicca o premi Invio per voltare.">
+                        <div class="flip-card-inner relative w-full h-full rounded-xl border border-[#1C1C1C]/15 shadow-sm bg-white">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 p-6 flex flex-col justify-between bg-white rounded-xl">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="px-2.5 py-1 rounded-md bg-[#FAF6EE] text-[#5A1530] text-xs font-bold border border-[#5A1530]/20">Concetto Key #1</span>
+                                        <span class="text-xs text-[#1C1C1C]/60">Clicca per ruotare 🔄</span>
+                                    </div>
+                                    <h3 class="font-serif font-bold text-xl text-[#1C1C1C] mb-2">L'Ontologia come "Teoria del Modello"</h3>
+                                    <p class="text-sm text-[#1C1C1C]/75">
+                                        Come viene percepito il mondo dai pesi di una rete neurale rispetto all'ontologia assoluta?
+                                    </p>
+                                </div>
+                                <div class="text-xs font-semibold text-[#7C1D3F] flex items-center gap-1">
+                                    <span>Scopri la prospettiva kantiana dell'IA</span>
+                                    <span aria-hidden="true">→</span>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 p-6 flex flex-col justify-between bg-[#5A1530] text-white rounded-xl">
+                                <div>
+                                    <span class="text-xs font-bold text-[#F2EAD9] uppercase tracking-wider block mb-2">Spiegazione Epistemica</span>
+                                    <p class="text-sm leading-relaxed">
+                                        L'IA non vede la realtà "in sé", ma solo la struttura interiorizzata dai dati. L'ontologia in IA è la <em>teoria del modello interiorizzato</em>, non del sistema assoluto reale.
+                                    </p>
+                                </div>
+                                <span class="text-xs text-[#FAF6EE]/80">Premi per tornare al fronte</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flip Card 2 -->
+                    <div class="flip-card h-64 cursor-pointer" onclick="toggleCard(this)" onkeydown="handleCardKey(event, this)" tabindex="0" role="button" aria-expanded="false" aria-label="Carta concettuale: Probabilità vs Verità. Clicca o premi Invio per voltare.">
+                        <div class="flip-card-inner relative w-full h-full rounded-xl border border-[#1C1C1C]/15 shadow-sm bg-white">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 p-6 flex flex-col justify-between bg-white rounded-xl">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="px-2.5 py-1 rounded-md bg-[#FAF6EE] text-[#8C6218] text-xs font-bold border border-[#8C6218]/20">Concetto Key #2</span>
+                                        <span class="text-xs text-[#1C1C1C]/60">Clicca per ruotare 🔄</span>
+                                    </div>
+                                    <h3 class="font-serif font-bold text-xl text-[#1C1C1C] mb-2">Prevedere vs Sapere</h3>
+                                    <p class="text-sm text-[#1C1C1C]/75">
+                                        Perché la coerenza sintattica e probabilistica non garantisce la verità ontologica?
+                                    </p>
+                                </div>
+                                <div class="text-xs font-semibold text-[#8C6218] flex items-center gap-1">
+                                    <span>Scopri il limite del Next-Token Prediction</span>
+                                    <span aria-hidden="true">→</span>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 p-6 flex flex-col justify-between bg-[#1C1C1C] text-white rounded-xl">
+                                <div>
+                                    <span class="text-xs font-bold text-[#F2EAD9] uppercase tracking-wider block mb-2">Spiegazione Epistemica</span>
+                                    <p class="text-sm leading-relaxed">
+                                        La predizione del token successivo misura la verosimiglianza sintattica (Epistemologia probabilistica), mentre la verità richiede l'esatta corrispondenza con enti e relazioni verificate (Ontologia).
+                                    </p>
+                                </div>
+                                <span class="text-xs text-[#FAF6EE]/80">Premi per tornare al fronte</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Matrice di Confronto Operativo -->
+        <section id="matrice" class="py-16 md:py-20 border-b border-[#1C1C1C]/10 bg-[#F2EAD9]/40">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center gap-3 mb-4 text-[#7C1D3F] font-semibold text-sm uppercase tracking-wider">
+                    <span class="w-8 h-px bg-[#7C1D3F]" aria-hidden="true"></span>
+                    <span>Modulo 04 — Quadro Comparativo</span>
+                </div>
+                
+                <h2 class="text-3xl sm:text-4xl font-bold text-[#1C1C1C] mb-6">
+                    Sintesi Comparativa: Ontologia vs Epistemologia
+                </h2>
+
+                <p class="text-base text-[#1C1C1C]/80 mb-8">
+                    Confronto sistematico per comprendere l'impatto di entrambe le dimensioni nella progettazione di architetture di Intelligenza Artificiale.
+                </p>
+
+                <!-- Responsive Accessible Table -->
+                <div class="bg-white rounded-xl border border-[#1C1C1C]/15 shadow-md overflow-hidden mb-8">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#5A1530] text-white text-sm">
+                                    <th scope="col" class="p-4 font-serif font-semibold">Dimensioni di Analisi</th>
+                                    <th scope="col" class="p-4 font-serif font-semibold w-1/2">Ontologia (Ciò che esiste)</th>
+                                    <th scope="col" class="p-4 font-serif font-semibold w-1/2">Epistemologia (Come conosciamo)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#1C1C1C]/10 text-sm text-[#1C1C1C]">
+                                <tr>
+                                    <th scope="row" class="p-4 font-bold bg-[#FAF6EE]">Domanda Centrale</th>
+                                    <td class="p-4">Cosa esiste? Quali entità, categorie e relazioni strutturano il dominio?</td>
+                                    <td class="p-4">Come sappiamo o verifichiamo la conoscenza? Con quale grado di incertezza?</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="p-4 font-bold bg-[#FAF6EE]">In Filosofia</th>
+                                    <td class="p-4">Teoria dell'essere e della realtà inemendabile (Ferraris, Aristotele).</td>
+                                    <td class="p-4">Teoria della conoscenza, giustificazione e limiti della mente (Kant, Popper).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="p-4 font-bold bg-[#FAF6EE]">Nei Sistemi di IA</th>
+                                    <td class="p-4">Knowledge Graph, Tassonomie formali, Schemi RDF/OWL, Database Vettoriali ancorati.</td>
+                                    <td class="p-4">Training dei modelli, inferenza probabilistica nei pesi neurali, RAG, allucinazioni.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="p-4 font-bold bg-[#FAF6EE]">Problema Tipico</th>
+                                    <td class="p-4">Ambiguità terminologica, mancanza di uno schema condiviso, inosservanza dei vincoli di dominio.</td>
+                                    <td class="p-4">Affidabilità delle predizioni, bias nei dati, incertezza statistica e allucinazioni del LLM.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="p-4 font-bold bg-[#FAF6EE]">Esempio Pratico (Scuola)</th>
+                                    <td class="p-4 font-semibold text-[#5A1530]">Definire formalmente la distinzione logica tra "Docente Titolo" e "Tutor Didattico".</td>
+                                    <td class="p-4 font-semibold text-[#8C6218]">Stabilire se l'AI può affermare con certezza se uno studente ha superato un vincolo normativo.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Strumento Operativo / Simulatore RAG & Validator -->
+        <section id="strumento" class="py-16 md:py-20 border-b border-[#1C1C1C]/10">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center gap-3 mb-4 text-[#7C1D3F] font-semibold text-sm uppercase tracking-wider">
+                    <span class="w-8 h-px bg-[#7C1D3F]" aria-hidden="true"></span>
+                    <span>Modulo 05 — Laboratorio Operativo</span>
+                </div>
+                
+                <h2 class="text-3xl sm:text-4xl font-bold text-[#1C1C1C] mb-6">
+                    Simulatore di Ancoraggio RAG &amp; Epistemico
+                </h2>
+
+                <p class="text-base text-[#1C1C1C]/80 mb-8">
+                    Configura lo scenario del tuo sistema di Intelligenza Artificiale per calcolare l'impatto dell'ontologia sui rischi di allucinazione epistemica e genera un prompt o schema architetturale pronto all'uso.
+                </p>
+
+                <!-- Interactive Configurator Form -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#1C1C1C]/15 shadow-md mb-8">
+                    <form id="rag-config-form" onsubmit="event.preventDefault(); updateSimulation();">
+                        <div class="grid sm:grid-cols-2 gap-6 mb-6">
+                            <!-- Field 1: Domain Selection -->
+                            <div>
+                                <label for="domain-select" class="block text-sm font-bold text-[#1C1C1C] mb-2">
+                                    1. Dominio di Applicazione AI:
+                                </label>
+                                <select id="domain-select" onchange="updateSimulation()" class="w-full p-3 rounded-lg border border-[#1C1C1C]/20 bg-[#FAF6EE] text-[#1C1C1C] font-semibold focus:ring-2 focus:ring-[#5A1530]">
+                                    <option value="educational">🎓 Educativo / Scolastico (Tutor, Voti, Corsi)</option>
+                                    <option value="legal">⚖️ Giuridico / Normativo (Leggi, Sentenze, Articoli)</option>
+                                    <option value="medical">🏥 Sanitario / Clinico (Diagnosi, Terapie, Farmaci)</option>
+                                </select>
+                            </div>
+
+                            <!-- Field 2: Grounding Mode -->
+                            <div>
+                                <label for="grounding-select" class="block text-sm font-bold text-[#1C1C1C] mb-2">
+                                    2. Presenza di Ontologia Formale (Grounding):
+                                </label>
+                                <select id="grounding-select" onchange="updateSimulation()" class="w-full p-3 rounded-lg border border-[#1C1C1C]/20 bg-[#FAF6EE] text-[#1C1C1C] font-semibold focus:ring-2 focus:ring-[#5A1530]">
+                                    <option value="none">❌ Nessuna (LLM puro basato su Pesi Statistici)</option>
+                                    <option value="light">⏳ Ontologia Leggera (Tassonomia e RAG semantico base)</option>
+                                    <option value="formal">✅ Ontologia Formale Completa (Knowledge Graph RDF/OWL)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Simulation Result Metrics -->
+                    <div class="p-6 rounded-xl bg-[#FAF6EE] border border-[#1C1C1C]/10 mb-6">
+                        <h3 class="text-base font-bold text-[#1C1C1C] mb-4 flex items-center gap-2">
+                            <span aria-hidden="true">📊</span>
+                            <span>Analisi della Risposta e Rischio Epistemico</span>
+                        </h3>
+
+                        <div class="grid sm:grid-cols-3 gap-4 text-center">
+                            <!-- Metric 1 -->
+                            <div class="p-4 rounded-lg bg-white border border-[#1C1C1C]/10">
+                                <span class="text-xs uppercase font-bold text-[#1C1C1C]/70 block mb-1">Rischio Allucinazione</span>
+                                <span id="metric-hallucination" class="text-xl font-extrabold text-[#B0004A]">
+                                    ⚠️ 85% (Molto Alto)
+                                </span>
+                            </div>
+                            <!-- Metric 2 -->
+                            <div class="p-4 rounded-lg bg-white border border-[#1C1C1C]/10">
+                                <span class="text-xs uppercase font-bold text-[#1C1C1C]/70 block mb-1">Rigore Ontologico</span>
+                                <span id="metric-ontology" class="text-xl font-extrabold text-[#0047AB]">
+                                    ⏳ Basso (Assente)
+                                </span>
+                            </div>
+                            <!-- Metric 3 -->
+                            <div class="p-4 rounded-lg bg-white border border-[#1C1C1C]/10">
+                                <span class="text-xs uppercase font-bold text-[#1C1C1C]/70 block mb-1">Validità Epistemica</span>
+                                <span id="metric-epistemology" class="text-xl font-extrabold text-[#005C36]">
+                                    ✅ Parziale
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generated Output Prompt / Architecture Text -->
+                    <div class="relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <label for="generated-output" class="text-xs font-bold uppercase tracking-wider text-[#1C1C1C]/70">
+                                Specification Document &amp; System Prompt Generato:
+                            </label>
+                            <button type="button" onclick="copyOutput()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#5A1530] text-white text-xs font-semibold hover:bg-[#7C1D3F] transition-colors focus:ring-2 focus:ring-[#5A1530]">
+                                <span aria-hidden="true">📋</span>
+                                <span id="copy-btn-text">Copia Output</span>
+                            </button>
+                        </div>
+                        <textarea id="generated-output" readonly rows="7" class="w-full p-4 rounded-xl bg-[#1C1C1C] text-[#FAF6EE] font-mono text-xs sm:text-sm leading-relaxed border border-[#1C1C1C]/20 focus:ring-2 focus:ring-[#5A1530]" aria-live="polite"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Sintesi Finale -->
+        <section class="py-16 md:py-20 border-b border-[#1C1C1C]/10 bg-[#FAF6EE]">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center gap-3 mb-4 text-[#7C1D3F] font-semibold text-sm uppercase tracking-wider">
+                    <span class="w-8 h-px bg-[#7C1D3F]" aria-hidden="true"></span>
+                    <span>Sintesi Didattica</span>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-[#1C1C1C] mb-6">
+                    Punti Chiave da Ricordare
+                </h2>
+
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-[#1C1C1C]/10">
+                        <span class="w-8 h-8 rounded-lg bg-[#005C36] text-white flex items-center justify-center font-bold text-sm shrink-0" aria-hidden="true">1</span>
+                        <div>
+                            <h3 class="font-bold text-[#1C1C1C] mb-1">L'Ontologia definisce "Quello che c'è" (Inemendabile)</h3>
+                            <p class="text-sm text-[#1C1C1C]/80">Fornisce ai sistemi di IA la struttura logica rigida dei concetti di un dominio, riducendo l'ambiguità prima della generazione.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-[#1C1C1C]/10">
+                        <span class="w-8 h-8 rounded-lg bg-[#0047AB] text-white flex items-center justify-center font-bold text-sm shrink-0" aria-hidden="true">2</span>
+                        <div>
+                            <h3 class="font-bold text-[#1C1C1C] mb-1">L'Epistemologia riguarda "Come la macchina valuta la conoscenza" (Emendabile)</h3>
+                            <p class="text-sm text-[#1C1C1C]/80">I LLM funzionano su base probabilistica. Senza ancoraggio ontologico esplicito, le loro credenze sintattiche possono sfociare in allucinazioni plausibili ma false.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-[#1C1C1C]/10">
+                        <span class="w-8 h-8 rounded-lg bg-[#5A1530] text-white flex items-center justify-center font-bold text-sm shrink-0" aria-hidden="true">3</span>
+                        <div>
+                            <h3 class="font-bold text-[#1C1C1C] mb-1">La soluzione ingegneristica è la Sinergia RAG / Knowledge Graph</h3>
+                            <p class="text-sm text-[#1C1C1C]/80">Un'ontologia ben progettata mitiga le carenze epistemiche del modello, vincolando la flessibilità del linguaggio naturale alla verità fattuale.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#1C1C1C] text-[#FAF6EE] py-12 border-t border-[#1C1C1C]/20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-4">
+            <p class="font-serif text-lg font-bold text-white">
+                Ontologia ed Epistemologia nell'IA
+            </p>
+            <p class="text-xs text-[#FAF6EE]/70 max-w-xl mx-auto">
+                Modulo didattico monofile ad alta accessibilità (WCAG 2.1 AAA). Requisiti visivi, contrasto e tripla ridondanza rigorosamente garantiti.
+            </p>
+            <div class="pt-4 text-xs text-[#FAF6EE]/50 border-t border-white/10">
+                &copy; 2026 Formazione Accessibile IA — Tutti i diritti riservati.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Accessible Toast Notification with aria-live -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none" aria-live="polite">
+        <div id="toast-body" class="flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white font-semibold text-sm border border-white/20 bg-[#005C36]">
+            <span id="toast-icon" aria-hidden="true">✅</span>
+            <span id="toast-message">Messaggio di notifica</span>
+        </div>
+    </div>
+
+    <script>
+        const statementsData = [
+            {
+                title: 'Esempio A: "Questa è la strada giusta"',
+                context: 'Frase di uso quotidiano o navigazione GPS',
+                ontological: '✅ Ontologico (Realtà fisica inemendabile): L\'esistenza topografica della strada nel mondo reale con le sue coordinate geografiche rigide.',
+                epistemological: '⏳ Epistemico (Credenza dell\'utente/modello): La persuasione soggettiva o probabilistica che quella strada sia l\'itinerario ottimale per raggiungere la meta.',
+                conclusion: '💡 Nota di Ferraris: Se la strada è chiusa (fatto ontologico), la credenza dell\'utente (epistemica) va emendata e corretta.'
+            },
+            {
+                title: 'Esempio B: "Diagnosi Clinica proposta dall\'AI"',
+                context: 'Ambiente Sanitario / Sistema Esperto',
+                ontological: '✅ Ontologico (Patologia reale): Lo stato biologico ed eziologico effettivo del paziente (es. infiammazione polmonare verificata).',
+                epistemological: '⏳ Epistemico (Predizione del Modello): La percentuale di accuratezza stimata dall\'algoritmo in base ai dati dell\'anamnesi.',
+                conclusion: '⚠️ Rischio Epistemico: Senza ontologia medica formale (es. SNOMED CT), il modello può allucinare una correlazione priva di riscontro clinico.'
+            },
+            {
+                title: 'Esempio C: "Interpretazione di un Articolo di Legge"',
+                context: 'Ambiente Giuridico / Normativo',
+                ontological: '✅ Ontologico (Corpus Normativo): Il testo legislativo emanato e vigente nella gazzetta ufficiale.',
+                epistemological: '⏳ Epistemico (Risposta RAG): L\'estrazione dei passaggi rilevanti eseguita dai pesi vettoriali del LLM.',
+                conclusion: '🎯 Soluzione: L\'ontologia giuridica impone regole di precedenza delle fonti a cui l\'epistemologia del LLM deve sottostare.'
+            }
+        ];
+
+        // Statement selection logic
+        function setStatement(index) {
+            const data = statementsData[index];
+            const container = document.getElementById('statement-output');
+            
+            // Update button states with triple redundancy
+            document.querySelectorAll('.stmt-btn').forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.classList.remove('bg-[#FAF6EE]', 'text-[#1C1C1C]');
+                    btn.classList.add('bg-[#5A1530]', 'text-white');
+                    btn.setAttribute('aria-pressed', 'true');
+                } else {
+                    btn.classList.remove('bg-[#5A1530]', 'text-white');
+                    btn.classList.add('bg-[#FAF6EE]', 'text-[#1C1C1C]');
+                    btn.setAttribute('aria-pressed', 'false');
+                }
+            });
+
+            container.innerHTML = `
+                <h4 class="font-serif font-bold text-lg text-[#5A1530] mb-2">${data.title}</h4>
+                <p class="text-xs font-bold text-[#1C1C1C]/60 uppercase tracking-wider mb-3">Contesto: ${data.context}</p>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 rounded-lg bg-white border border-[#1C1C1C]/10 font-semibold text-[#005C36]">
+                        ${data.ontological}
+                    </div>
+                    <div class="p-3 rounded-lg bg-white border border-[#1C1C1C]/10 font-semibold text-[#0047AB]">
+                        ${data.epistemological}
+                    </div>
+                    <div class="p-3 rounded-lg bg-[#F2EAD9] text-[#1C1C1C] italic">
+                        ${data.conclusion}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Flip card interaction
+        function toggleCard(cardElement) {
+            cardElement.classList.toggle('flipped');
+            const isFlipped = cardElement.classList.contains('flipped');
+            cardElement.setAttribute('aria-expanded', isFlipped ? 'true' : 'false');
+        }
+
+        function handleCardKey(event, cardElement) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleCard(cardElement);
+            }
+        }
+
+        function updateSimulation() {
+            const domain = document.getElementById('domain-select').value;
+            const grounding = document.getElementById('grounding-select').value;
+            
+            const metricHallucination = document.getElementById('metric-hallucination');
+            const metricOntology = document.getElementById('metric-ontology');
+            const metricEpistemology = document.getElementById('metric-epistemology');
+            const outputArea = document.getElementById('generated-output');
+
+            let hallucinationText = '';
+            let ontologyText = '';
+            let epistemologyText = '';
+            let promptText = '';
+
+            if (grounding === 'none') {
+                hallucinationText = '⚠️ 85% (Molto Alto)';
+                hallucinationStyle = 'text-[#B0004A]';
+                ontologyText = '❌ Assente (0%)';
+                epistemologyText = '⏳ Probabilistico Puro';
+                
+                promptText = `[SYSTEM ARCHITECTURE PROMPT - UNROUNDED LLM]\nDomain: ${domain.toUpperCase()}\nGrounding Status: ABSENT (No Ontology)\nRisk Assessment: HIGH HALLUCINATION RISK\n\nInstructions: System relies solely on neural weight correlations. Answers are probabilistically generated without strict entity verification. High chance of epistemic drift.`;
+            } else if (grounding === 'light') {
+                hallucinationText = '⚠️ 35% (Moderato)';
+                ontologyText = '⏳ Parziale (Tassonomia)';
+                epistemologyText = '✅ Verificato per Vettori';
+
+                promptText = `[SYSTEM ARCHITECTURE PROMPT - LIGHT RAG GROUNDING]\nDomain: ${domain.toUpperCase()}\nGrounding Status: LIGHT ONTOLOGY (RDF/SKOS Hierarchy)\nRisk Assessment: MODERATE RISK\n\nInstructions: Retrieve context vectors before generation. Constrain vocabulary to domain taxonomy. Reject queries outside known entity IDs.`;
+            } else if (grounding === 'formal') {
+                hallucinationText = '✅ < 2% (Quasi Assente)';
+                ontologyText = '✅ Completo (OWL Graph)';
+                epistemologyText = '✅ Giustificato & Tracciabile';
+
+                promptText = `[SYSTEM ARCHITECTURE PROMPT - FORMAL ONTOLOGICAL GROUNDING]\nDomain: ${domain.toUpperCase()}\nGrounding Status: FULL KNOWLEDGE GRAPH (OWL/RDF Strict Axioms)\nRisk Assessment: OPTIMAL (Zero-Hallucination Target)\n\nRules:\n1. Execute Description Logic inference on Knowledge Graph prior to synthesis.\n2. Reject any statement contradicting ontology entity axioms.\n3. Return response with explicit epistemic traceability metadata.`;
+            }
+
+            metricHallucination.innerText = hallucinationText;
+            metricOntology.innerText = ontologyText;
+            metricEpistemology.innerText = epistemologyText;
+            outputArea.value = promptText;
+        }
+
+        let toastTimer = null;
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast-notification');
+            const toastBody = document.getElementById('toast-body');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMsg = document.getElementById('toast-message');
+
+            if (toastTimer) clearTimeout(toastTimer);
+
+            toastMsg.innerText = message;
+            if (isSuccess) {
+                toastBody.className = "flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white font-semibold text-sm border border-white/20 bg-[#005C36]";
+                toastIcon.innerText = "✅";
+            } else {
+                toastBody.className = "flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white font-semibold text-sm border border-white/20 bg-[#B0004A]";
+                toastIcon.innerText = "⚠️";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        function copyOutput() {
+            const copyText = document.getElementById("generated-output");
+            const btnText = document.getElementById("copy-btn-text");
+
+            if (!copyText.value) return;
+
+            // Robust copy mechanism with fallback
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText.value).then(() => {
+                    btnText.innerText = "Copiato!";
+                    showToast("Specification document copiato negli appunti!");
+                    setTimeout(() => btnText.innerText = "Copia Output", 2000);
+                }).catch(() => fallbackCopy(copyText, btnText));
+            } else {
+                fallbackCopy(copyText, btnText);
+            }
+        }
+
+        function fallbackCopy(textarea, btnText) {
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                btnText.innerText = "Copiato!";
+                showToast("Specification document copiato negli appunti!");
+                setTimeout(() => btnText.innerText = "Copia Output", 2000);
+            } catch (err) {
+                showToast("Impossibile copiare il testo", false);
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (height > 0) ? (winScroll / height) * 100 : 0;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+        });
+
+        // Mobile Menu logic
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const iconBars = document.getElementById('menu-icon-bars');
+        const iconClose = document.getElementById('menu-icon-close');
+
+        if (mobileBtn && mobileMenu) {
+            mobileBtn.addEventListener('click', () => {
+                const isExpanded = mobileBtn.getAttribute('aria-expanded') === 'true';
+                mobileBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                iconBars.classList.toggle('hidden');
+                iconClose.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    mobileBtn.setAttribute('aria-expanded', 'false');
+                    iconBars.classList.remove('hidden');
+                    iconClose.classList.add('hidden');
+                });
+            });
+        }
+
+        // Initialize default view on load
+        window.onload = function() {
+            setStatement(0);
+            updateSimulation();
+            testReasoner(0);
+        };
+
+        // NEW: Reasoner Logic Tester for Axiom, Domain, Range
+        const reasonerTests = [
+            {
+                statement: '<ProfessoreRossi> <insegna> <CorsoIA>',
+                status: 'valid',
+                badgeText: '✅ Valida Ontologicamente',
+                badgeStyle: 'bg-[#005C36] text-white',
+                icon: '✅',
+                explanation: 'Soggetto "ProfessoreRossi" appartiene a <strong>Docente</strong> (rispetta il Dominio), Oggetto "CorsoIA" appartiene a <strong>Corso</strong> (rispetta il Codominio), e non viola l\'Assioma di disgiunzione.'
+            },
+            {
+                statement: '<StudenteMario> <insegna> <CorsoIA>',
+                status: 'error_domain_axiom',
+                badgeText: '⚠️ Violazione: Dominio e Assioma',
+                badgeStyle: 'bg-[#B0004A] text-white',
+                icon: '⚠️',
+                explanation: '<strong>Violazione del Dominio (Domain) & Assioma:</strong> La relazione <em>insegna</em> richiede che il soggetto sia un <code>Docente</code>. Poiché Mario è uno <code>Studente</code> e l\'assioma OWL dichiara <code>Docente owl:disjointWith Studente</code>, il Reasoner rifiuta la tripla come allucinazione!'
+            },
+            {
+                statement: '<ProfessoreRossi> <insegna> <"Mela">',
+                status: 'error_range',
+                badgeText: '⚠️ Violazione: Codominio (Range)',
+                badgeStyle: 'bg-[#B0004A] text-white',
+                icon: '⚠️',
+                explanation: '<strong>Violazione del Codominio (Range):</strong> La relazione <em>insegna</em> ha come codominio obbligatorio la classe <code>Corso</code>. La stringa o oggetto <code>"Mela"</code> non appartiene a tale classe, scatenando un errore di tipo semantico.'
+            }
+        ];
+
+        function testReasoner(index) {
+            const data = reasonerTests[index];
+            const container = document.getElementById('reasoner-output');
+
+            document.querySelectorAll('.reasoner-btn').forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.classList.remove('bg-white', 'text-[#1C1C1C]');
+                    btn.classList.add('bg-[#5A1530]', 'text-white');
+                    btn.setAttribute('aria-pressed', 'true');
+                } else {
+                    btn.classList.remove('bg-[#5A1530]', 'text-white');
+                    btn.classList.add('bg-white', 'text-[#1C1C1C]');
+                    btn.setAttribute('aria-pressed', 'false');
+                }
+            });
+
+            container.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <span class="font-mono font-bold text-xs text-[#1C1C1C]">Verifica: ${data.statement}</span>
+                    <span class="px-2.5 py-1 rounded text-xs font-bold ${data.badgeStyle} flex items-center gap-1">
+                        <span aria-hidden="true">${data.icon}</span>
+                        <span>${data.badgeText}</span>
+                    </span>
+                </div>
+                <p class="text-xs text-[#1C1C1C]/85 leading-relaxed">
+                    ${data.explanation}
+                </p>
+            `;
+        }
+
+        // NEW: Ontology Code Tabs Switcher Logic
+        let currentOntoTab = 'rdf';
+        function switchOntoTab(tabName) {
+            currentOntoTab = tabName;
+            const btnRdf = document.getElementById('tab-rdf');
+            const btnOwl = document.getElementById('tab-owl');
+            const panelRdf = document.getElementById('panel-rdf');
+            const panelOwl = document.getElementById('panel-owl');
+
+            if (tabName === 'rdf') {
+                btnRdf.classList.remove('bg-[#FAF6EE]', 'text-[#1C1C1C]');
+                btnRdf.classList.add('bg-[#5A1530]', 'text-white');
+                btnRdf.setAttribute('aria-selected', 'true');
+
+                btnOwl.classList.remove('bg-[#5A1530]', 'text-white');
+                btnOwl.classList.add('bg-[#FAF6EE]', 'text-[#1C1C1C]');
+                btnOwl.setAttribute('aria-selected', 'false');
+
+                panelRdf.classList.remove('hidden');
+                panelOwl.classList.add('hidden');
+            } else {
+                btnOwl.classList.remove('bg-[#FAF6EE]', 'text-[#1C1C1C]');
+                btnOwl.classList.add('bg-[#5A1530]', 'text-white');
+                btnOwl.setAttribute('aria-selected', 'true');
+
+                btnRdf.classList.remove('bg-[#5A1530]', 'text-white');
+                btnRdf.classList.add('bg-[#FAF6EE]', 'text-[#1C1C1C]');
+                btnRdf.setAttribute('aria-selected', 'false');
+
+                panelOwl.classList.remove('hidden');
+                panelRdf.classList.add('hidden');
+            }
+        }
+
+        function copyCurrentOntoCode() {
+            const codeId = currentOntoTab === 'rdf' ? 'code-rdf' : 'code-owl';
+            const codeText = document.getElementById(codeId).innerText;
+            const btnText = document.getElementById('onto-copy-btn-text');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(codeText).then(() => {
+                    btnText.innerText = "Copiato!";
+                    showToast(`Codice ${currentOntoTab.toUpperCase()} copiato negli appunti!`);
+                    setTimeout(() => btnText.innerText = "Copia Codice Sintassico", 2000);
+                }).catch(() => {
+                    showToast("Impossibile copiare il codice", false);
+                });
+            } else {
+                showToast(`Codice ${currentOntoTab.toUpperCase()} selezionato`, true);
+            }
+        }
+    </script>
+</body>
+</html>

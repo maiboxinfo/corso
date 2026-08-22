@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full bg-[#F7F5EF] text-[#151515]">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raccolta Prompt PROMPT-D con Guida Teorica per Studenti | ProgettaAI</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;1,800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#F7F5EF',
+                        ink: '#151515',
+                        muted: '#77736B',
+                        border: '#E4E0D7',
+                        coprogetta: { DEFAULT: '#EA580C', light: '#FFEDD5', dark: '#C2410C' },
+                        differenzia: { DEFAULT: '#059669', light: '#D1FAE5', dark: '#047857' },
+                        valuta: { DEFAULT: '#2563EB', light: '#DBEAFE', dark: '#1D4ED8' },
+                        proteggi: { DEFAULT: '#7C3AED', light: '#EDE9FE', dark: '#6D28D9' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F7F5EF;
+            color: #151515;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F7F5EF;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #D4D0C5;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-[#F7F5EF]/95 backdrop-blur-md border-b border-border px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <div class="flex items-center gap-2.5 group cursor-default">
+                <div class="w-10 h-10 rounded-xl bg-ink text-paper flex items-center justify-center font-display font-extrabold text-xl shadow-md">
+                    P<span class="text-coprogetta text-sm leading-none">D</span>
+                </div>
+                <div>
+                    <span class="font-display font-extrabold text-xl tracking-tight text-ink block leading-none">Raccolta Prompt PROMPT-D</span>
+                    <span class="text-[10px] uppercase tracking-wider text-muted font-semibold">29+ Modelli & Spiegazioni Teoriche Semplici</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-muted bg-white border border-border px-3 py-1.5 rounded-full shadow-sm hidden sm:inline-block">
+                    🎓 Guida Teorica & Pratica per Studenti
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION WITH THEORETICAL INTRODUCTION -->
+    <section class="px-4 lg:px-8 pt-10 pb-8 max-w-7xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 border border-amber-300 text-amber-950 text-xs font-bold tracking-wide uppercase mb-4 shadow-sm">
+            <i class="fa-solid fa-graduation-cap text-amber-600"></i>
+            <span>IA per imparare, verificare, creare e pensare</span>
+        </div>
+
+        <h1 class="font-display font-extrabold text-3xl sm:text-5xl text-ink max-w-4xl mx-auto leading-tight mb-4">
+            Raccolta dei Prompt PROMPT-D con Spiegazioni Teoriche
+        </h1>
+
+        <p class="text-xs sm:text-sm text-muted max-w-3xl mx-auto leading-relaxed mb-6">
+            Un prompt non è una semplice domanda rivolta ad un oracolo. È un <strong>contratto pedagogico</strong> tra lo studente e l'Intelligenza Artificiale. Il modello <strong>PROMPT-D</strong> in 7 componenti riduce il rischio di errore, ancorando l'IA ai materiali di studio. Tuttavia, ricorda: <strong>il PROMPT-D non azzera le allucinazioni!</strong> Per questo la Diagnosi (D) ed il controllo umano rimangono obbligatori.
+        </p>
+
+        <!-- FORMULA RAPIDA BADGE -->
+        <div class="inline-flex items-center gap-3 bg-white border border-border px-6 py-3 rounded-2xl shadow-sm font-mono text-xs font-extrabold text-ink mb-10">
+            <span class="text-coprogetta font-black">FORMULA RAPIDA:</span>
+            <span>P + R + O + M + P + T + D = PROMPT-D</span>
+        </div>
+
+        <!-- QUADRO TEORICO INTEGRALE DELLE 7 COMPONENTI -->
+        <div class="bg-white border border-border rounded-3xl p-6 sm:p-8 text-left shadow-sm space-y-6 max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 border-b border-border pb-4">
+                <div class="w-10 h-10 rounded-xl bg-orange-100 text-coprogetta flex items-center justify-center font-bold text-lg">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                    <h2 class="font-display font-extrabold text-xl text-ink">Spiegazione Teorica in Parole Semplici: Le 7 Componenti P-R-O-M-P-T-D</h2>
+                    <p class="text-xs text-muted">Perché ciascun passaggio è fondamentale per evitare errori e studiare in modo efficace</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                
+                <div class="bg-paper p-4 rounded-2xl border border-border space-y-1">
+                    <div class="font-bold text-coprogetta text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-orange-200 text-coprogetta flex items-center justify-center text-xs font-black">P</span>
+                        <span>P — Profilo (Chi deve essere l'IA?)</span>
+                    </div>
+                    <p class="text-muted leading-relaxed"><strong>Spiegazione Teorica:</strong> L'IA generativa contiene miliardi di informazioni su tantissimi argomenti. Assegnarle un ruolo preciso (es. <em>"Tutor di fisica per studenti superiori"</em>) la costringe a restringere il suo campo statistico ed ad adottare un tono ed un linguaggio adeguati alla tua età.</p>
+                </div>
+
+                <div class="bg-paper p-4 rounded-2xl border border-border space-y-1">
+                    <div class="font-bold text-coprogetta text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-orange-200 text-coprogetta flex items-center justify-center text-xs font-black">R</span>
+                        <span>R — Risultato (Che prodotto deve creare?)</span>
+                    </div>
+                    <p class="text-muted leading-relaxed"><strong>Spiegazione Teorica:</strong> Chiedere genericamente di "spiegare" produce un testo infinito ed astratto. Chiedere un prodotto preciso (es. <em>"Una scheda di sintesi con 3 domande"</em>) orienta l'IA verso un risultato utile per la tua sessione di studio.</p>
+                </div>
+
+                <div class="bg-paper p-4 rounded-2xl border border-border space-y-1">
+                    <div class="font-bold text-coprogetta text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-orange-200 text-coprogetta flex items-center justify-center text-xs font-black">O</span>
+                        <span>O — Obiettivi (Cosa devi saper fare TU?)</span>
+                    </div>
+                    <p class="text-muted leading-relaxed"><strong>Spiegazione Teorica:</strong> Esplicitare cosa vuoi imparare (es. <em>"Saper spiegare le cause e fare un esempio"</em>) impedisce all'IA di fare il compito al posto tuo. Trasforma l'IA da 'sostituto del pensiero' a 'palestra di ragionamento'.</p>
+                </div>
+
+                <div class="bg-paper p-4 rounded-2xl border border-border space-y-1">
+                    <div class="font-bold text-coprogetta text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-orange-200 text-coprogetta flex items-center justify-center text-xs font-black">M</span>
+                        <span>M — Materiali (Il Grounding / Ancoraggio)</span>
+                    </div>
+                    <p class="text-muted leading-relaxed"><strong>Spiegazione Teorica:</strong> Questa è la componente anti-allucinazione più importante. Fornire il testo del tuo libro o i tuoi appunti costringe l'IA a rispondere basandosi <strong>esclusivamente sui tuoi materiali</strong>, riducendo drasticamente le invenzioni.</p>
+                </div>
+
+                <div class="bg-paper p-4 rounded-2xl border border-border space-y-1">
+                    <div class="font-bold text-coprogetta text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-orange-200 text-coprogetta flex items-center justify-center text-xs font-black">P</span>
+                        <span>P — Parametri (Vincoli e Limiti)</span>
+                    </div>
+                    <p class="text-muted leading-relaxed"><strong>Spiegazione Teorica:</strong> I parametri definiscono la classe (es. 3ª superiore), il tempo disponibile (es. 20 minuti) ed il limite di parole (es. max 200 parole). Evitano risposte troppo complesse o inutilmente lunghe.</p>
+                </div>
+
+                <div class="bg-paper p-4 rounded-2xl border border-border space-y-1">
+                    <div class="font-bold text-coprogetta text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-orange-200 text-coprogetta flex items-center justify-center text-xs font-black">T</span>
+                        <span>T — Tipo Output (La forma visiva)</span>
+                    </div>
+                    <p class="text-muted leading-relaxed"><strong>Spiegazione Teorica:</strong> La mente memorizza meglio le informazioni se sono organizzate visivamente. Chiedere una tabella a colonne, un elenco puntato o una mappa testuale facilita il ripasso rapido prima di un'interrogazione.</p>
+                </div>
+
+                <div class="col-span-1 md:col-span-2 bg-amber-50 p-4 rounded-2xl border border-amber-200 space-y-1">
+                    <div class="font-bold text-amber-900 text-sm flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-amber-300 text-amber-950 flex items-center justify-center text-xs font-black">D</span>
+                        <span>D — Diagnosi (L'Autocheck dell'IA & La Verifica Umana)</span>
+                    </div>
+                    <p class="text-amber-950 leading-relaxed"><strong>Spiegazione Teorica:</strong> Chiediamo all'IA di verificare di non aver inventato nulla prima di darci la risposta. <strong>ATTENZIONE TEORICA FONDAMENTALE:</strong> L'autocheck dell'IA è un aiuto utile, ma <u>non garantisce la verità assoluta</u>. L'unico controllo al 100% valido è la tua <strong>Verifica Umana (Human-in-the-Loop)</strong> sul libro di testo!</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SEARCH & FILTER BAR -->
+    <section class="px-4 lg:px-8 py-4 max-w-7xl mx-auto w-full">
+        <div class="bg-white border border-border rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            
+            <!-- Category Filter Tabs -->
+            <div id="filter-container" class="flex flex-wrap gap-1.5 text-xs font-bold">
+                <button onclick="filterPrompts('all')" id="filter-all" class="px-3 py-1.5 rounded-xl bg-ink text-white shadow-sm">Tutti (29)</button>
+                <button onclick="filterPrompts('studio')" id="filter-studio" class="px-3 py-1.5 rounded-xl bg-paper text-muted hover:text-ink">Studio & Ripasso</button>
+                <button onclick="filterPrompts('factchecking')" id="filter-factchecking" class="px-3 py-1.5 rounded-xl bg-paper text-muted hover:text-ink">Fact-Checking & Fonti</button>
+                <button onclick="filterPrompts('discipline')" id="filter-discipline" class="px-3 py-1.5 rounded-xl bg-paper text-muted hover:text-ink">Matematica & Discipline</button>
+                <button onclick="filterPrompts('etica')" id="filter-etica" class="px-3 py-1.5 rounded-xl bg-paper text-muted hover:text-ink">Etica & Metacognizione</button>
+                <button onclick="filterPrompts('inclusione')" id="filter-inclusione" class="px-3 py-1.5 rounded-xl bg-paper text-muted hover:text-ink">BES & Accessibilità</button>
+            </div>
+
+            <!-- Keyword Search Input -->
+            <div class="relative w-full sm:w-64">
+                <input type="text" id="search-input" onkeyup="searchPrompts(this.value)" placeholder="Cerca prompt per parola..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-border bg-paper text-xs font-medium focus:bg-white focus:outline-none">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-muted text-xs"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN PROMPTS GRID -->
+    <main class="px-4 lg:px-8 py-6 max-w-7xl mx-auto w-full flex-1">
+        <div id="prompts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Dynamically populated with prompts AND theoretical explanations -->
+        </div>
+
+        <!-- SECTION 30: CHECKLIST DELLO STUDENTE PRIMA DI PREMERE INVIA -->
+        <section class="mt-12 bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold text-lg">
+                    <i class="fa-solid fa-square-check"></i>
+                </div>
+                <div>
+                    <h3 class="font-display font-bold text-xl text-ink">30. Checklist dello Studente Prima di Premere "Invia"</h3>
+                    <p class="text-xs text-muted">Spunta i 10 controlli di sicurezza e qualità prima di inviare un prompt all'IA.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-2" id="checklist-container">
+                <!-- Dynamically populated checklist -->
+            </div>
+        </section>
+
+        <!-- SECTIONS 31-32: CONFRONTO DA DOMANDA GENERICA A PROMPT-D -->
+        <section class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- ESEMPIO 1: STORIA -->
+            <div class="bg-white border border-border rounded-3xl p-6 shadow-sm space-y-3">
+                <h3 class="font-display font-bold text-base text-ink flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-orange-100 text-coprogetta flex items-center justify-center text-xs font-bold">31</span>
+                    <span>Dalla Domanda Generica al PROMPT-D (Storia)</span>
+                </h3>
+                <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-950 space-y-1">
+                    <span class="font-bold text-red-700">❌ Prompt-Oracolo Generico:</span>
+                    <p class="font-mono bg-white p-2 rounded-lg border border-red-200">"Spiegami la Rivoluzione francese."</p>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-950 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-emerald-700">✅ PROMPT-D Strutturato:</span>
+                        <button onclick="copyTextToClipboard(document.getElementById('ex-storia').innerText, 'Prompt Storia copiato!')" class="px-2 py-0.5 bg-emerald-700 text-white rounded text-[10px] font-bold">Copia</button>
+                    </div>
+                    <pre id="ex-storia" class="font-mono bg-white p-2.5 rounded-lg border border-emerald-200 text-[11px] whitespace-pre-wrap select-all">P: Agisci come un tutor di storia della scuola secondaria superiore.
+R: Aiutami a comprendere la Rivoluzione francese.
+O: Voglio spiegare le cause, distinguere le fasi e collegare cause e conseguenze.
+M: Utilizza esclusivamente il capitolo del mio libro che ti fornisco.
+P: Sono uno studente di terza superiore e ho 30 minuti per il ripasso.
+T: Crea una mappa causa -> evento -> conseguenza e poi fammi 5 domande progressive.
+D: Controlla che le informazioni derivino dal materiale fornito.</pre>
+                </div>
+            </div>
+
+            <!-- ESEMPIO 2: IA E CITTADINANZA DIGITALE -->
+            <div class="bg-white border border-border rounded-3xl p-6 shadow-sm space-y-3">
+                <h3 class="font-display font-bold text-base text-ink flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-orange-100 text-coprogetta flex items-center justify-center text-xs font-bold">32</span>
+                    <span>Dalla Domanda Generica al PROMPT-D (IA)</span>
+                </h3>
+                <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-950 space-y-1">
+                    <span class="font-bold text-red-700">❌ Prompt-Oracolo Generico:</span>
+                    <p class="font-mono bg-white p-2 rounded-lg border border-red-200">"Spiegami l'Intelligenza Artificiale."</p>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-950 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-emerald-700">✅ PROMPT-D Strutturato:</span>
+                        <button onclick="copyTextToClipboard(document.getElementById('ex-ia').innerText, 'Prompt IA copiato!')" class="px-2 py-0.5 bg-emerald-700 text-white rounded text-[10px] font-bold">Copia</button>
+                    </div>
+                    <pre id="ex-ia" class="font-mono bg-white p-2.5 rounded-lg border border-emerald-200 text-[11px] whitespace-pre-wrap select-all">P: Agisci come un docente di cittadinanza digitale della scuola secondaria superiore.
+R: Aiutami a comprendere che cosa sia l'IA generativa e come usarla nello studio.
+O: Voglio distinguere opportunità e rischi e spiegare perché l'IA va verificata.
+M: Utilizza i materiali forniti dal docente: [MATERIALI].
+P: Sono uno studente di quarta superiore; ho 20 minuti.
+T: Presenta: definizione -> esempio -> opportunità -> rischi -> 5 domande.
+D: Controlla che le affermazioni siano coerenti con i materiali.</pre>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTIONS 33-36: REGOLE FONDAMENTALI, HITL, PRIVACY E TABELLA 7 DOMANDE -->
+        <section class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- REGOLA DELLE 3 V -->
+            <div class="bg-white border border-border rounded-3xl p-6 shadow-sm space-y-3">
+                <div class="flex items-center gap-2 text-coprogetta font-bold text-sm">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <span>33. Regola delle "3 V"</span>
+                </div>
+                <p class="text-xs text-muted leading-relaxed">
+                    Un prompt ben progettato non rende automaticamente vera la risposta. Ogni output deve essere:
+                </p>
+                <div class="space-y-2 text-xs font-semibold">
+                    <div class="bg-paper p-2.5 rounded-xl border border-border"><strong class="text-coprogetta">1. VERIFICATO:</strong> Le informazioni sono corrette?</div>
+                    <div class="bg-paper p-2.5 rounded-xl border border-border"><strong class="text-differenzia">2. VALIDATO:</strong> Sono pertinenti al compito?</div>
+                    <div class="bg-paper p-2.5 rounded-xl border border-border"><strong class="text-valuta">3. VALUTATO:</strong> Uso responsabile del contenuto?</div>
+                </div>
+            </div>
+
+            <!-- HUMAN-IN-THE-LOOP -->
+            <div class="bg-white border border-border rounded-3xl p-6 shadow-sm space-y-3">
+                <div class="flex items-center gap-2 text-differenzia font-bold text-sm">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>34. Principio Human-in-the-Loop</span>
+                </div>
+                <p class="text-xs text-muted leading-relaxed">
+                    L'ultimo passaggio del PROMPT-D non è affidare la decisione all'IA. È chiedersi:
+                </p>
+                <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl text-xs text-emerald-950 font-bold leading-relaxed">
+                    "Che cosa devo controllare personalmente prima di utilizzare questa risposta?"
+                </div>
+                <p class="text-[11px] text-muted">La diagnosi dell'IA è un supporto, non una certificazione di verità. La responsabilità finale è sempre tua.</p>
+            </div>
+
+            <!-- REGOLA PRIVACY -->
+            <div class="bg-white border border-border rounded-3xl p-6 shadow-sm space-y-3">
+                <div class="flex items-center gap-2 text-proteggi font-bold text-sm">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>35. Regola della Privacy</span>
+                </div>
+                <p class="text-xs text-muted leading-relaxed">
+                    Nei prompt scolastici non devono mai essere inseriti dati identificativi reali (nomi, cognomi, indirizzi, telefoni, credenziali, dati sanitari).
+                </p>
+                <div class="bg-purple-50 border border-purple-200 p-3.5 rounded-2xl text-xs text-purple-950 font-semibold">
+                    Usa sempre formule astratte come: <em>"uno studente con DSA"</em> oppure <em>"uno studente di 3ª superiore"</em>.
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 36: LE 7 DOMANDE DA RICORDARE (TABELLA RIEPILOGATIVA) -->
+        <section class="mt-10 bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+            <h3 class="font-display font-bold text-xl text-ink flex items-center gap-2">
+                <i class="fa-solid fa-table-list text-coprogetta"></i>
+                <span>36. Le 7 Domande da Ricordare prima di interrogare l'IA</span>
+            </h3>
+
+            <div class="overflow-x-auto border border-border rounded-2xl">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-paper border-b border-border text-muted font-bold">
+                        <tr>
+                            <th class="p-3 w-16">Lettera</th>
+                            <th class="p-3">Componente PROMPT-D</th>
+                            <th class="p-3">Domanda Guida per lo Studente</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border font-medium">
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">P</td>
+                            <td class="p-3 font-bold text-ink">Profilo</td>
+                            <td class="p-3 text-muted"><strong>Chi</strong> deve essere l'IA? (Tutor, docente, coach)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">R</td>
+                            <td class="p-3 font-bold text-ink">Risultato</td>
+                            <td class="p-3 text-muted"><strong>Che cosa</strong> deve produrre precisamente?</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">O</td>
+                            <td class="p-3 font-bold text-ink">Obiettivi</td>
+                            <td class="p-3 text-muted"><strong>Che cosa voglio imparare o saper fare?</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">M</td>
+                            <td class="p-3 font-bold text-ink">Materiali</td>
+                            <td class="p-3 text-muted"><strong>Su quali fonti o appunti</strong> deve basarsi?</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">P</td>
+                            <td class="p-3 font-bold text-ink">Parametri</td>
+                            <td class="p-3 text-muted"><strong>Quali vincoli</strong> (classe, tempo, parole) deve rispettare?</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">T</td>
+                            <td class="p-3 font-bold text-ink">Tipo Output</td>
+                            <td class="p-3 text-muted"><strong>Come voglio</strong> ricevere il risultato? (Tabella, schema, quiz)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-coprogetta">D</td>
+                            <td class="p-3 font-bold text-ink">Diagnosi</td>
+                            <td class="p-3 text-muted"><strong>Come verifico</strong> che il risultato sia affidabile e privo di errori?</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-950 font-bold text-center">
+                Un buon prompt non chiede semplicemente una risposta. Costruisce le condizioni perché l'IA possa fornire un aiuto pertinente, verificabile e coerente con l'obiettivo di apprendimento.
+            </div>
+        </section>
+    </main>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const PROMPTS_DATA = [
+            {
+                id: 1,
+                title: "PROMPT-D PER CAPIRE UN ARGOMENTO",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Questo prompt attiva l'IA come 'tutor facilitatore'. Chiedendo un'analogia concreta ed un glossario, si agisce sulla memoria semantica dello studente per ancorare concetti nuovi a conoscenze già possedute.",
+                text: `P — PROFILO: Agisci come un tutor didattico esperto della scuola secondaria superiore.
+R — RISULTATO: Aiutami a comprendere [ARGOMENTO].
+O — OBIETTIVI: Voglio essere in grado di spiegare i concetti fondamentali, distinguere le idee principali da quelle secondarie e collegare l'argomento a un esempio concreto.
+M — MATERIALI: Utilizza esclusivamente queste fonti/materiali: [TESTO, DISPENSA, LINK O APPUNTI].
+P — PARAMETRI: Sono uno studente di [CLASSE/INDIRIZZO]. Ho [TEMPO] a disposizione. Utilizza un linguaggio adeguato al mio livello.
+T — TIPO DI OUTPUT: Organizza la spiegazione in: concetti fondamentali, esempio, parole chiave, 5 domande finali.
+D — DIAGNOSI: Prima di concludere, controlla di aver utilizzato esclusivamente le informazioni contenute nei materiali forniti. Segnala esplicitamente eventuali informazioni che non possono essere verificate attraverso tali materiali.`
+            },
+            {
+                id: 2,
+                title: "PROMPT-D PER STUDIARE UN ARGOMENTO",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Si basa sul principio dell'apprendimento sequenziale. Non chiede all'IA di sostituire lo studio, ma di creare una scaletta guidata con prerequisiti ed autoverifica.",
+                text: `P: Agisci come un tutor esperto di metodo di studio.
+R: Costruisci un percorso guidato per studiare [ARGOMENTO].
+O: Voglio comprendere, collegare e ricordare i concetti principali e saperli spiegare autonomamente.
+M: Utilizza questi miei materiali: [MATERIALI].
+P: Sono uno studente di [CLASSE]; ho [TEMPO] per studiare.
+T: Organizza il percorso in: prerequisiti -> concetti fondamentali -> esempi -> domande -> autoverifica.
+D: Controlla che ogni attività sia finalizzata a farmi ragionare e non soltanto a memorizzare.`
+            },
+            {
+                id: 3,
+                title: "PROMPT-D PER PREPARARE UN'INTERROGAZIONE",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Utilizza la tecnica didattica della 'Rievocazione Attiva' (Active Recall). L'IA fa UNA domanda alla volta e fornisce feedback immediato sul lessico.",
+                text: `P: Agisci come un docente che prepara uno studente a un'interrogazione.
+R: Fammi esercitare su [ARGOMENTO].
+O: Voglio saper spiegare, collegare e argomentare i concetti principali.
+M: Basa le domande esclusivamente su [LIBRO/DISPENSA/APPUNTI].
+P: Sono uno studente di [CLASSE]. Procedi da domande semplici a domande più complesse.
+T: Fammi una domanda alla volta. Dopo ogni mia risposta indica: correttezza, completezza e possibile miglioramento.
+D: Al termine indicami quali obiettivi ho raggiunto e quali devo ancora consolidare. Non inventare informazioni che non siano presenti nei materiali.`
+            },
+            {
+                id: 4,
+                title: "PROMPT-D PER PREPARARE UNA VERIFICA",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Simula una prova formale di valutazione formativa. Distingue domande nozionistiche da domande di analisi ed applicazione.",
+                text: `P: Agisci come un docente esperto di valutazione formativa.
+R: Prepara una simulazione di verifica su [ARGOMENTO].
+O: Voglio verificare la mia capacità di ricordare, comprendere, applicare e analizzare.
+M: Utilizza questi materiali: [MATERIALI].
+P: Livello: [CLASSE]. Tempo disponibile: [MINUTI].
+T: Crea [NUMERO] domande a scelta multipla, [NUMERO] domande aperte e [NUMERO] esercizi applicativi. Non fornire immediatamente le soluzioni.
+D: Controlla che le domande siano coerenti con gli obiettivi e che la difficoltà sia adeguata al livello indicato.`
+            },
+            {
+                id: 5,
+                title: "PROMPT-D PER RISOLVERE UN PROBLEMA SENZA FARSI DARE LA SOLUZIONE",
+                category: "discipline",
+                spiegazioneTeorica: "Spiegazione teorica: Evita l'effetto 'scorciatoia cognitiva'. L'IA non fornisce mai la risposta finale, ma fa da ponte socratico guidando lo studente a trovare da solo l'errore.",
+                text: `P: Agisci come un tutor di [MATERIA].
+R: Aiutami a risolvere questo problema: [PROBLEMA].
+O: Voglio imparare a individuare dati, strategia, procedimento e soluzione.
+M: Utilizza come riferimento [FORMULE/REGOLE/MATERIALI].
+P: Non conosco ancora completamente il procedimento e voglio essere guidato passo per passo.
+T: Non fornire subito la soluzione. Fammi una domanda alla volta e aspetta la mia risposta prima di procedere.
+D: Alla fine valuta il mio procedimento, individua il primo eventuale errore e spiegami come correggerlo senza sostituirti a me.`
+            },
+            {
+                id: 6,
+                title: "PROMPT-D PER MATEMATICA",
+                category: "discipline",
+                spiegazioneTeorica: "Spiegazione teorica: Scompone il procedimento matematico in 4 fasi distinte: Dati -> Strategia -> Tentativo dello studente -> Verifica delle unità di misura.",
+                text: `P: Agisci come un tutor di matematica della scuola secondaria superiore.
+R: Aiutami a risolvere [ESERCIZIO].
+O: Voglio imparare a riconoscere il metodo risolutivo e applicarlo autonomamente.
+M: Utilizza soltanto le formule e le regole presenti in [LIBRO/DISPENSA].
+P: Livello: [CLASSE]. Non darmi subito il risultato.
+T: Procedi in quattro fasi: dati -> strategia -> mio tentativo -> verifica finale.
+D: Controlla calcoli, unità di misura, formule e ragionamento. Se non puoi verificare un passaggio, dichiaralo.`
+            },
+            {
+                id: 7,
+                title: "PROMPT-D PER LE LINGUE STRANIERE",
+                category: "discipline",
+                spiegazioneTeorica: "Spiegazione teorica: Promuove l'apprendimento linguistico per immersione (QCER A2-C1). L'IA corregge immediatamente l'errore ed indica i 3 punti grammaticali da rafforzare.",
+                text: `P: Agisci come un tutor di [INGLESE/FRANCESE/SPAGNOLO/ALTRA LINGUA].
+R: Fammi esercitare in una conversazione su [ARGOMENTO].
+O: Voglio migliorare vocabolario, grammatica, comprensione e capacità comunicativa.
+M: Utilizza il lessico e le strutture presenti in [UNITÀ/TEMA].
+P: Livello [A2/B1/B2/C1]. Fammi una domanda alla volta.
+T: Rispondi nella lingua studiata e correggi i miei errori dopo ogni risposta.
+D: Alla fine indicami i tre errori più frequenti e le tre competenze che devo migliorare.`
+            },
+            {
+                id: 8,
+                title: "PROMPT-D PER MIGLIORARE UN TESTO",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Applica il principio della revisione tra pari (Peer Review). L'IA non riscrive il saggio dello studente, ma offre consigli sulla coerenza sintattica.",
+                text: `P: Agisci come un tutor di scrittura.
+R: Aiutami a migliorare questo testo: [TESTO].
+O: Voglio migliorare chiarezza, organizzazione, argomentazione e correttezza.
+M: Considera come criteri [RUBRICA/CONSEGNA/INDICAZIONI DEL DOCENTE].
+P: Sono uno studente di [CLASSE]. Non voglio che tu scriva il testo al posto mio.
+T: Prima individua problemi e punti di forza; poi suggerisci modifiche concrete. Non riscrivere integralmente il testo.
+D: Controlla che i suggerimenti mantengano le mie idee e non introducano contenuti non presenti nel testo originale.`
+            },
+            {
+                id: 9,
+                title: "PROMPT-D PER COSTRUIRE UNA SCALETTA",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Insegna la fase di pianificazione testuale prima della stesura. Aiuta ad articolare introduzione, 3 argomenti e conclusione.",
+                text: `P: Agisci come un tutor di progettazione di testi.
+R: Aiutami a costruire la scaletta di un elaborato su [ARGOMENTO].
+O: Voglio imparare a organizzare autonomamente le mie idee e costruire un'argomentazione coerente.
+M: Utilizza questi materiali: [MATERIALI].
+P: Elaborato destinato a [CLASSE/TIPO DI PROVA], lunghezza prevista [NUMERO] parole.
+T: Fornisci introduzione, 3 nuclei argomentativi, possibili esempi e conclusione. Non scrivere il testo completo.
+D: Controlla che la scaletta risponda effettivamente alla traccia.`
+            },
+            {
+                id: 10,
+                title: "PROMPT-D PER IL FACT-CHECKING",
+                category: "factchecking",
+                spiegazioneTeorica: "Spiegazione teorica: Attiva lo spirito critico e l'analisi delle allucinazioni. L'IA scompone le sue risposte in affermazioni verificabili e le confronta con fonti indipendenti.",
+                text: `P: Agisci come un assistente per la verifica critica delle informazioni.
+R: Analizza la risposta dell'IA che ti fornisco: [RISPOSTA].
+O: Voglio individuare affermazioni verificabili, informazioni dubbie, possibili errori e informazioni mancanti.
+M: Confronta la risposta con queste fonti indipendenti: [FONTI].
+P: Considera separatamente ogni affermazione importante. Non considerare la risposta dell'IA come una fonte sufficiente per dimostrare la propria correttezza.
+T: Usa una tabella: affermazione -> fonte -> confermata/contraddetta/non verificabile -> motivazione.
+D: Indica esplicitamente quali affermazioni non possono essere verificate con i materiali disponibili.`
+            },
+            {
+                id: 11,
+                title: "PROMPT-D PER SCOPRIRE POSSIBILI “ALLUCINAZIONI”",
+                category: "factchecking",
+                spiegazioneTeorica: "Spiegazione teorica: Insegna allo studente che l'IA lavora su base probabilistica e può inventare citazioni o date. Crea una tabella con il livello di certezza.",
+                text: `P: Agisci come un revisore critico di contenuti generati dall'IA.
+R: Analizza criticamente questo testo: [TESTO].
+O: Voglio individuare dati, nomi, date, citazioni o riferimenti che potrebbero essere inesatti.
+M: Confronta il testo con [FONTI DISPONIBILI].
+P: Non correggere automaticamente le informazioni dubbie. Distingui ciò che è verificato da ciò che necessita di verifica.
+T: Crea una tabella con: informazione -> livello di certezza -> motivo -> verifica necessaria.
+D: Non presentare come certo ciò che non può essere verificato.`
+            },
+            {
+                id: 12,
+                title: "PROMPT-D PER ANALIZZARE UNA FONTE",
+                category: "factchecking",
+                spiegazioneTeorica: "Spiegazione teorica: Guida all'analisi storiografica o scientifica dei documenti. Distingue l'autore, il contesto e le tesi principali dalle interpretazioni.",
+                text: `P: Agisci come un docente esperto di analisi delle fonti.
+R: Aiutami ad analizzare [FONTE].
+O: Voglio identificare autore, contesto, tesi, informazioni principali, eventuali limiti e punto di vista.
+M: Utilizza esclusivamente la fonte fornita e le informazioni contestuali che indico: [MATERIALI].
+P: Livello [CLASSE].
+T: Organizza l'analisi in una tabella.
+D: Distingui chiaramente ciò che emerge dalla fonte da ciò che è un'interpretazione.`
+            },
+            {
+                id: 13,
+                title: "PROMPT-D PER ANALIZZARE I BIAS",
+                category: "factchecking",
+                spiegazioneTeorica: "Spiegazione teorica: Promuove l'alfabetizzazione mediatica ed etica (AI Literacy). Aiuta a riconoscere stereotipi, generalizzazioni od omissioni culturali nell'output.",
+                text: `P: Agisci come un tutor di educazione ai media e cittadinanza digitale.
+R: Analizza questa risposta dell'IA: [TESTO].
+O: Voglio individuare stereotipi, generalizzazioni, omissioni o possibili bias.
+M: Utilizza come riferimento [MATERIALI/FONTI].
+P: Mantieni un approccio neutrale e non attribuire intenzioni al sistema senza elementi sufficienti.
+T: Per ogni possibile bias indica: passaggio interessato -> problema -> perché potrebbe essere problematico -> domanda utile per verificarlo.
+D: Distingui tra bias effettivamente dimostrabile e semplice possibilità da approfondire.`
+            },
+            {
+                id: 14,
+                title: "PROMPT-D PER UN DEBATE",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Insegna a strutturare argomentazioni pro e contro su temi etici o sociali, individuando le fallacie logiche delle squadre avversarie.",
+                text: `P: Agisci come un coach esperto di debate scolastico.
+R: Aiutami a preparare un debate sulla mozione “[MOZIONE]”.
+O: Voglio imparare a costruire argomenti, controargomentazioni e confutazioni.
+M: Utilizza queste fonti: [FONTI].
+P: Sono uno studente di [CLASSE]. Il debate dura [TEMPO].
+T: Presenta argomenti pro, argomenti contro, possibili obiezioni e domande da rivolgere alla squadra avversaria.
+D: Controlla che gli argomenti siano supportati dalle fonti e segnala quelli che richiedono ulteriori verifiche.`
+            },
+            {
+                id: 15,
+                title: "PROMPT-D PER L'ARGOMENTAZIONE",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Aiuta a formulare un testo argomentativo rigoroso: Tesi -> Prova a supporto -> Obiezione -> Confutazione dell'obiezione -> Conclusione.",
+                text: `P: Agisci come un tutor di argomentazione.
+R: Aiutami a costruire una posizione sul tema [TEMA].
+O: Voglio formulare una tesi, sostenerla con argomenti e anticipare possibili obiezioni.
+M: Utilizza [FONTI].
+P: Livello [CLASSE], lunghezza prevista [NUMERO] parole.
+T: Costruisci una struttura: tesi -> argomento 1 -> prova -> argomento 2 -> possibile obiezione -> risposta -> conclusione.
+D: Verifica che ogni argomento sia effettivamente collegato alla tesi e che le prove provengano dalle fonti.`
+            },
+            {
+                id: 16,
+                title: "PROMPT-D PER IL BRAINSTORMING",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Stimola la creatività e la generazione di alternative per project work, senza imporre una sola soluzione.",
+                text: `P: Agisci come un facilitatore di brainstorming.
+R: Aiutami a generare idee per [PROGETTO].
+O: Voglio confrontare alternative e sviluppare una soluzione originale.
+M: Considera questi vincoli/materiali: [MATERIALI].
+P: Ho [TEMPO/RISORSE] e il progetto è destinato a [DESTINATARI].
+T: Genera 8 idee e per ciascuna indica vantaggi, difficoltà e risorse necessarie.
+D: Controlla che le idee rispettino i vincoli indicati e segnala quelle che richiedono informazioni ulteriori.`
+            },
+            {
+                id: 17,
+                title: "PROMPT-D PER UN PROGETTO",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Insegna le basi del Project Management scolastico: definizione del problema, ruoli nel gruppo, tempi e criteri di successo.",
+                text: `P: Agisci come un tutor di progettazione didattica e project work.
+R: Aiutami a progettare un progetto su [TEMA].
+O: Voglio saper definire problema, obiettivo, soluzione, fasi operative e criteri di successo.
+M: Utilizza questi materiali: [MATERIALI].
+P: Gruppo di [NUMERO] studenti, tempo disponibile [ORE], risorse [RISORSE].
+T: Fornisci: problema -> obiettivi -> fasi -> ruoli -> tempi -> prodotto finale -> criteri di valutazione.
+D: Controlla che tempi e risorse siano realistici.`
+            },
+            {
+                id: 18,
+                title: "PROMPT-D PER PREPARARE UNA PRESENTAZIONE",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Progetta una presentazione efficace in slide, indicando per ogni diapositiva il messaggio principale, l'elemento visivo ed il discorso orale.",
+                text: `P: Agisci come un tutor di comunicazione efficace.
+R: Aiutami a progettare una presentazione su [TEMA].
+O: Voglio riuscire a spiegare l'argomento in modo chiaro e convincente.
+M: Utilizza esclusivamente [FONTI].
+P: Presentazione di [NUMERO] minuti per studenti di [CLASSE].
+T: Proponi una struttura di [NUMERO] slide. Per ogni slide indica: messaggio principale, elemento visivo e cosa dire oralmente.
+D: Controlla che il contenuto sia compatibile con il tempo disponibile e che le informazioni siano supportate dalle fonti.`
+            },
+            {
+                id: 19,
+                title: "PROMPT-D PER CREARE UNA MAPPA CONCETTUALE",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Organizza le informazioni in modo gerarchico dal generale al particolare (mappa strutturata), ideale per lo studio visivo.",
+                text: `P: Agisci come un esperto di organizzazione visuale delle informazioni.
+R: Aiutami a costruire una mappa concettuale su [ARGOMENTO].
+O: Voglio individuare concetti principali, sotto-concetti e relazioni.
+M: Utilizza [MATERIALI].
+P: Livello [CLASSE]. La mappa deve essere utilizzabile per il ripasso.
+T: Organizza le informazioni dal generale al particolare, utilizzando parole chiave e collegamenti.
+D: Controlla che non siano presenti concetti non ricavabili dai materiali.`
+            },
+            {
+                id: 20,
+                title: "PROMPT-D PER STUDENTI CON BES/DSA (SENZA PII)",
+                category: "inclusione",
+                spiegazioneTeorica: "Spiegazione teorica: Inclusione ed accessibilità senza perdita di valore concettuale. Il prompt tutela la privacy non inserendo mai dati personali identificativi (GDPR Shield).",
+                text: `P: Agisci come un tutor didattico esperto di inclusione scolastica.
+R: Rendi più accessibile questo materiale: [MATERIALE].
+O: Voglio comprendere gli stessi concetti fondamentali della classe, attraverso una struttura più chiara e accessibile.
+M: Utilizza esclusivamente il materiale fornito.
+P: Sono uno studente della scuola secondaria superiore con difficoltà nella lettura di testi complessi. Mantieni invariati gli obiettivi cognitivi essenziali.
+T: Produci: parole chiave, frasi brevi, struttura gerarchica, mappa concettuale testuale e 5 domande di autoverifica.
+D: Controlla che la semplificazione riguardi la modalità di accesso alle informazioni e non elimini i concetti fondamentali.`
+            },
+            {
+                id: 21,
+                title: "PROMPT-D PER L'AUTOVALUTAZIONE",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Sviluppa la metacognizione. L'IA non attribuisce un voto formale, ma fa 8 domande per far comprendere allo studente cosa sa fare in autonomia.",
+                text: `P: Agisci come un tutor metacognitivo.
+R: Aiutami ad autovalutare il mio apprendimento su [ARGOMENTO].
+O: Voglio capire che cosa so fare autonomamente, quali difficoltà ho e quali strategie devo migliorare.
+M: Utilizza gli obiettivi e la rubrica forniti: [MATERIALI].
+P: Sono uno studente di [CLASSE].
+T: Fammi 8 domande di autovalutazione e poi restituisci un profilo con: punti di forza, difficoltà, strategie da migliorare.
+D: Non assegnarmi un voto definitivo. Distingui tra autovalutazione e valutazione docente.`
+            },
+            {
+                id: 22,
+                title: "PROMPT-D PER IMPARARE DAGLI ERRORI",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Tratta l'errore come risorsa fondamentale di apprendimento. L'IA segnala il punto critico e guida lo studente a correggersi da solo.",
+                text: `P: Agisci come un tutor che utilizza l'errore come occasione di apprendimento.
+R: Analizza il mio procedimento: [PROCEDIMENTO].
+O: Voglio capire dove e perché ho sbagliato.
+M: Utilizza queste regole/formule/materiali: [MATERIALI].
+P: Non correggere immediatamente tutto il procedimento. Individua il primo punto problematico e guidami a correggerlo.
+T: Usa domande guida e brevi suggerimenti.
+D: Alla fine verifica se ho compreso l'errore e proponimi un esercizio simile.`
+            },
+            {
+                id: 23,
+                title: "PROMPT-D “L'IA NON DEVE FARE IL COMPITO”",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Il 'prompt-regola' dell'autonomia scolastica. L'IA agisce esclusivamente come tutor guida e rifiuta di scrivere risposte al posto dello studente.",
+                text: `P: Agisci come un tutor, non come un sostituto dello studente.
+R: Aiutami a svolgere [COMPITO].
+O: Voglio sviluppare autonomia, comprensione e capacità di ragionamento.
+M: Utilizza [MATERIALI].
+P: Non svolgere direttamente il compito. Fammi domande, fornisci indizi e correggi i miei tentativi.
+T: Procedi una fase alla volta e aspetta la mia risposta.
+D: Alla fine verifica quali parti ho svolto autonomamente e quali hanno richiesto il tuo aiuto.`
+            },
+            {
+                id: 24,
+                title: "PROMPT-D PER VERIFICARE L'USO DELL'IA",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Trasparenza e metacognizione nell'uso dell'IA. Separa nettamente il contributo personale dello studente dall'ausilio della macchina.",
+                text: `P: Agisci come un tutor di cittadinanza digitale.
+R: Aiutami a valutare il modo in cui ho utilizzato l'IA per questo lavoro.
+O: Voglio distinguere ciò che ho fatto autonomamente da ciò che ho delegato all'IA.
+M: Considera il mio lavoro e questa cronologia di utilizzo: [MATERIALI].
+P: Il prodotto finale è [TIPO DI PRODOTTO].
+T: Organizza la riflessione in: attività svolte da me -> attività svolte con l'IA -> informazioni verificate -> decisioni prese da me -> aspetti da migliorare.
+D: Non giudicare automaticamente l'utilizzo dell'IA come positivo o negativo: valuta se è coerente con gli obiettivi del compito.`
+            },
+            {
+                id: 25,
+                title: "PROMPT-D PER DICHIARARE L me US O DELL'IA",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Modello per la dichiarazione di trasparenza (AI Declaration). Permette di allegare in calce ai compiti come e dove è stata usata l'IA.",
+                text: `P: Agisci come un tutor di trasparenza e cittadinanza digitale.
+R: Aiutami a formulare una dichiarazione dell'utilizzo dell'IA nel mio elaborato.
+O: Voglio documentare in modo trasparente come ho utilizzato lo strumento.
+M: Considera il lavoro svolto e le indicazioni del docente: [MATERIALI].
+P: Il prodotto è [TIPO DI PRODOTTO].
+T: Scrivi una dichiarazione breve che specifichi: strumento utilizzato, finalità, attività svolte con l'IA e attività svolte autonomamente.
+D: Non attribuire all'IA attività che non ha svolto e non attribuire a me attività che non ho svolto.`
+            },
+            {
+                id: 26,
+                title: "PROMPT-D PER COLLEGARE IA E MATERIA SCOLASTICA",
+                category: "discipline",
+                spiegazioneTeorica: "Spiegazione teorica: Didattica interdisciplinare ed Educazione Civica. Analizza le implicazioni dell'IA all'interno delle singole discipline scolastiche.",
+                text: `P: Agisci come un docente esperto di [MATERIA] e di didattica interdisciplinare.
+R: Aiutami a collegare [ARGOMENTO SCOLASTICO] all'Intelligenza Artificiale.
+O: Voglio analizzare opportunità, limiti e implicazioni dell'IA nel contesto della disciplina.
+M: Utilizza [FONTI DISCIPLINARI].
+P: Livello [CLASSE], tempo [TEMPO].
+T: Proponi 3 collegamenti, spiegando per ciascuno il concetto disciplinare, il ruolo dell'IA e una domanda critica.
+D: Controlla che i collegamenti siano realmente pertinenti e non semplicemente associazioni superficiali.`
+            },
+            {
+                id: 27,
+                title: "PROMPT-D PER UNA RICERCA AUTONOMA",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Metodologia della ricerca scolastica. Insegna a formulare sotto-domande, selezionare parole chiave e verificare autonomamente le fonti.",
+                text: `P: Agisci come un tutor per la ricerca scolastica.
+R: Aiutami a progettare una ricerca su [TEMA].
+O: Voglio imparare a formulare domande di ricerca, selezionare fonti e confrontare informazioni.
+M: Parti da queste fonti iniziali: [FONTI].
+P: Livello [CLASSE], prodotto finale [TIPO], tempo disponibile [TEMPO].
+T: Proponi domanda di ricerca -> sotto-domande -> parole chiave -> criteri per selezionare le fonti -> schema del prodotto finale.
+D: Indica quali informazioni dovranno essere verificate manualmente e non presentare come verificati dati che non hai potuto controllare.`
+            },
+            {
+                id: 28,
+                title: "PROMPT-D PER CREARE UN VERO “DIALOGO SOCRATICO”",
+                category: "etica",
+                spiegazioneTeorica: "Spiegazione teorica: Maieutica e dialogo socratico. L'IA pone domande maieutiche progressive per far emergere la tesi dello studente senza mai svelare la risposta.",
+                text: `P: Agisci come un tutor socratico.
+R: Aiutami a riflettere sul problema “[DOMANDA]”.
+O: Voglio sviluppare capacità di analisi, argomentazione e valutazione.
+M: Utilizza come punto di partenza [TESTO/FONTE].
+P: Non darmi la risposta. Fammi una domanda alla volta e costruisci il percorso sulla base delle mie risposte.
+T: Utilizza domande progressivamente più complesse.
+D: Alla fine riassumi il percorso del mio ragionamento e indica quali argomenti ho giustificato adeguatamente e quali no.`
+            },
+            {
+                id: 29,
+                title: "PROMPT-D UNIVERSALE (MODELLO GENERALE)",
+                category: "studio",
+                spiegazioneTeorica: "Spiegazione teorica: Il modello master a 7 blocchi. Da utilizzare quando non sai quale prompt specifico scegliere per costruire la tua richiesta da zero.",
+                text: `[P — PROFILO] Agisci come [ruolo/tutor/docente/coach].
+[R — RISULTATO] Voglio ottenere [prodotto o risultato].
+[O — OBIETTIVI] Voglio essere in grado di [definire/comprendere/applicare/analizzare/confrontare/valutare/progettare].
+[M — MATERIALI] Utilizza come riferimento [libro, testo, appunti, fonti, dati].
+[P — PARAMETRI] Considera [classe/livello/tempo/numero di parole/strumenti/vincoli].
+[T — TIPO DI OUTPUT] Restituisci il risultato in [tabella/elenco/mappa/scheda/dialogo/piano].
+[D — DIAGNOSI] Prima di concludere, controlla il rispetto di tutti i vincoli, segnala eventuali informazioni non verificabili e indica ciò che devo controllare personalmente.`
+            }
+        ];
+
+        const CHECKLIST_ITEMS = [
+            "Ho indicato chi deve essere l'IA? (P — Profilo)",
+            "Ho specificato che cosa voglio ottenere? (R — Risultato)",
+            "Ho indicato che cosa voglio imparare o saper fare? (O — Obiettivi)",
+            "Ho fornito i materiali/fonti necessari? (M — Materiali)",
+            "Ho indicato classe, livello e vincoli? (P — Parametri)",
+            "Ho spiegato come voglio ricevere la risposta? (T — Tipo Output)",
+            "Ho chiesto all'IA di controllare il proprio output? (D — Diagnosi)",
+            "Ho previsto una verifica umana delle informazioni? (Human-in-the-Loop)",
+            "Sto chiedendo all'IA di aiutarmi a imparare oppure di fare il compito al posto mio?",
+            "Sto evitando di inserire dati personali o informazioni riservate? (GDPR Privacy)"
+        ];
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            let icon = 'fa-circle-info text-blue-500';
+            if (type === 'success') icon = 'fa-circle-check text-emerald-500';
+
+            toast.className = 'pointer-events-auto flex items-center gap-3 bg-white border border-border px-4 py-3 rounded-xl shadow-lg text-xs font-semibold text-ink animate-in slide-in-from-bottom-5 duration-300';
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast && toast.classList) toast.classList.add('opacity-0', 'transition-opacity');
+                setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 300);
+            }, 3000);
+        }
+
+        function copyTextToClipboard(text, toastMsg) {
+            if (!text) return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(toastMsg || 'Prompt copiato negli appunti!', 'success');
+                }).catch(() => {
+                    fallbackCopyText(text, toastMsg);
+                });
+            } else {
+                fallbackCopyText(text, toastMsg);
+            }
+        }
+
+        function fallbackCopyText(text, toastMsg) {
+            const dummy = document.createElement('textarea');
+            dummy.value = text;
+            dummy.style.position = 'fixed';
+            dummy.style.left = '-9999px';
+            dummy.style.top = '-9999px';
+            dummy.setAttribute('readonly', '');
+            document.body.appendChild(dummy);
+            dummy.select();
+            dummy.setSelectionRange(0, 99999);
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    showToast(toastMsg || 'Prompt copiato negli appunti!', 'success');
+                } else {
+                    showToast('Seleziona il testo per copiare', 'warning');
+                }
+            } catch (err) {
+                showToast('Seleziona il testo per copiare', 'warning');
+            }
+            document.body.removeChild(dummy);
+        }
+
+        const promptUserValues = {};
+        let currentRenderedItems = [];
+
+        function getPlaceholders(text) {
+            const matches = Array.from(text.matchAll(/\[([^\]]+)\]/g), m => m[1]);
+            return Array.from(new Set(matches));
+        }
+
+        function getPlaceholderHint(key) {
+            const k = key.toUpperCase();
+            if (k.includes('ARGOMENTO')) return 'Es. La Rivoluzione Industriale';
+            if (k.includes('MATERIA')) return 'Es. Fisica / Storia';
+            if (k.includes('CLASSE')) return 'Es. 3ª Liceo Scientifico';
+            if (k.includes('TEMPO') || k.includes('MINUTI')) return 'Es. 30 minuti';
+            if (k.includes('MATERIAL')) return 'Es. Capitolo 4 del libro';
+            if (k.includes('ESERCIZIO') || k.includes('PROBLEMA')) return 'Es. Equazione di secondo grado';
+            if (k.includes('NUMERO')) return 'Es. 5';
+            if (k.includes('PRODOTTO')) return 'Es. Infografica digitale';
+            return 'Inserisci qui il valore...';
+        }
+
+        function getCustomizedPromptText(p) {
+            let customText = p.text;
+            const userVals = promptUserValues[p.id];
+            if (userVals) {
+                Object.keys(userVals).forEach(key => {
+                    const val = userVals[key];
+                    if (val && val.trim() !== '') {
+                        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp('\\[\\s*' + escapedKey + '\\s*\\]', 'g');
+                        customText = customText.replace(regex, val.trim());
+                    }
+                });
+            }
+            return customText;
+        }
+
+        function updatePromptVariable(promptId, varIdx, value) {
+            const p = PROMPTS_DATA.find(item => item.id === promptId);
+            if (!p) return;
+            const placeholders = getPlaceholders(p.text);
+            const key = placeholders[varIdx];
+            if (!key) return;
+
+            if (!promptUserValues[promptId]) promptUserValues[promptId] = {};
+            promptUserValues[promptId][key] = value;
+
+            const preEl = document.getElementById(`prompt-pre-${promptId}`);
+            if (preEl) {
+                preEl.innerText = getCustomizedPromptText(p);
+            }
+
+            const badgeEl = document.getElementById(`prompt-status-${promptId}`);
+            if (badgeEl) {
+                const filledCount = Object.values(promptUserValues[promptId]).filter(v => v && v.trim() !== '').length;
+                if (filledCount > 0) {
+                    badgeEl.innerHTML = `<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold"><i class="fa-solid fa-circle-check mr-1"></i> ${filledCount}/${placeholders.length} personalizzate</span>`;
+                } else {
+                    badgeEl.innerHTML = '';
+                }
+            }
+        }
+
+        function resetPromptVariables(promptId) {
+            delete promptUserValues[promptId];
+            renderPrompts(currentRenderedItems.length > 0 ? currentRenderedItems : PROMPTS_DATA);
+            showToast(`Valori predefiniti ripristinati per il Prompt #${promptId}`, 'info');
+        }
+
+        function copyCustomizedPrompt(promptId) {
+            const p = PROMPTS_DATA.find(item => item.id === promptId);
+            if (!p) return;
+            const textToCopy = getCustomizedPromptText(p);
+            copyTextToClipboard(textToCopy, `Prompt #${p.id} personalizzato copiato negli appunti!`);
+        }
+
+        function renderPrompts(items) {
+            currentRenderedItems = items;
+            const grid = document.getElementById('prompts-grid');
+            if (!grid) return;
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-muted text-xs font-bold bg-white rounded-2xl border border-border">Nessun prompt trovato. Prova con una parola chiave diversa.</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(p => {
+                const placeholders = getPlaceholders(p.text);
+                const userVals = promptUserValues[p.id] || {};
+                const filledCount = Object.values(userVals).filter(v => v && v.trim() !== '').length;
+                const customizedText = getCustomizedPromptText(p);
+
+                const variablesFormHtml = placeholders.length > 0 ? `
+                    <div class="bg-paper border border-border rounded-xl p-3.5 space-y-2 text-xs">
+                        <div class="flex items-center justify-between font-bold text-ink">
+                            <span class="text-coprogetta flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
+                                <i class="fa-solid fa-sliders"></i> Personalizza Variabili (${placeholders.length})
+                            </span>
+                            ${filledCount > 0 ? `<button onclick="resetPromptVariables(${p.id})" class="text-[10px] text-muted hover:text-red-600 font-bold underline">Ripristina Default</button>` : ''}
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            ${placeholders.map((phKey, idx) => `
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold text-ink truncate" title="[${phKey}]">[${phKey}]</label>
+                                    <input type="text" 
+                                           placeholder="${getPlaceholderHint(phKey)}" 
+                                           value="${userVals[phKey] || ''}" 
+                                           oninput="updatePromptVariable(${p.id}, ${idx}, this.value)" 
+                                           class="w-full px-2.5 py-1.5 rounded-lg border border-border bg-white text-xs font-semibold text-ink focus:outline-none focus:ring-1 ring-coprogetta">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="bg-white border border-border rounded-2xl p-5 hover:border-coprogetta transition-colors flex flex-col justify-between shadow-sm space-y-3">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between font-bold text-ink">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-coprogetta font-display font-black text-sm">${p.id}. ${p.title}</span>
+                                    <div id="prompt-status-${p.id}">
+                                        ${filledCount > 0 ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold"><i class="fa-solid fa-circle-check mr-1"></i> ${filledCount}/${placeholders.length} personalizzate</span>` : ''}
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-md bg-paper text-muted text-[10px] font-bold uppercase shrink-0">${p.category}</span>
+                            </div>
+
+                            <!-- EXPLICIT THEORETICAL EXPLANATION BOX IN SIMPLE WORDS -->
+                            <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-950 font-medium leading-relaxed">
+                                <i class="fa-solid fa-lightbulb text-amber-600 mr-1"></i>
+                                ${p.spiegazioneTeorica}
+                            </div>
+
+                            <!-- DYNAMIC VARIABLE INPUT FIELDS -->
+                            ${variablesFormHtml}
+
+                            <!-- LIVE PROMPT CODE PREVIEW -->
+                            <div class="relative">
+                                <span class="absolute top-2 right-3 text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Anteprima Live</span>
+                                <pre id="prompt-pre-${p.id}" class="bg-slate-900 text-slate-100 p-3.5 pt-7 rounded-xl text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words max-w-full overflow-y-auto max-h-72 select-all border border-slate-800 shadow-inner">${customizedText}</pre>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex justify-end">
+                            <button onclick="copyCustomizedPrompt(${p.id})" class="px-4 py-2 rounded-xl bg-orange-100 text-coprogetta text-[11px] font-bold hover:bg-orange-200 transition-colors flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-copy"></i> Copia Prompt Personalizzato
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterPrompts(cat) {
+            const buttons = document.querySelectorAll('#filter-container button');
+            buttons.forEach(b => {
+                b.className = "px-3 py-1.5 rounded-xl bg-paper text-muted hover:text-ink";
+            });
+            const activeBtn = document.getElementById(`filter-${cat}`);
+            if (activeBtn) activeBtn.className = "px-3 py-1.5 rounded-xl bg-ink text-white shadow-sm";
+
+            if (cat === 'all') {
+                renderPrompts(PROMPTS_DATA);
+            } else {
+                const filtered = PROMPTS_DATA.filter(p => p.category === cat);
+                renderPrompts(filtered);
+            }
+        }
+
+        function searchPrompts(query) {
+            if (!query || query.trim() === '') {
+                renderPrompts(PROMPTS_DATA);
+                return;
+            }
+            const q = query.toLowerCase();
+            const filtered = PROMPTS_DATA.filter(p => p.title.toLowerCase().includes(q) || p.text.toLowerCase().includes(q) || p.spiegazioneTeorica.toLowerCase().includes(q));
+            renderPrompts(filtered);
+        }
+
+        function renderChecklist() {
+            const container = document.getElementById('checklist-container');
+            if (!container) return;
+            container.innerHTML = CHECKLIST_ITEMS.map((item, idx) => `
+                <label class="flex items-start gap-2.5 p-3 rounded-xl bg-paper border border-border cursor-pointer hover:bg-amber-50/50 transition-colors font-medium">
+                    <input type="checkbox" onchange="showToast('Controllo #${idx + 1} completato!', 'success')" class="mt-0.5 accent-coprogetta w-4 h-4 rounded">
+                    <span>${item}</span>
+                </label>
+            `).join('');
+        }
+
+        window.onload = function () {
+            renderPrompts(PROMPTS_DATA);
+            renderChecklist();
+        };
+    </script>
+</body>
+
+</html>

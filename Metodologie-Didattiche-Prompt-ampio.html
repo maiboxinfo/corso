@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metodologie Didattiche Attive & Prompt IA</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              900: '#2e1065',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.45); }
+    
+    .fade-in { animation: fadeIn 0.25s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    mark {
+      background-color: #fef08a;
+      color: #0f172a;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .dark mark {
+      background-color: #854d0e;
+      color: #fef08a;
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased overflow-hidden flex flex-col">
+
+  <div class="flex h-full w-full overflow-hidden">
+    
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 lg:w-80 bg-slate-900 text-slate-200 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none shrink-0">
+      
+      <!-- Sidebar Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('welcome')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-violet-500/30 text-xl font-bold">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-sm tracking-wide text-white leading-tight">Didattica Attiva</h1>
+            <p class="text-[11px] text-violet-400 font-medium uppercase tracking-wider"> & Prompt IA Docenti</p>
+          </div>
+        </div>
+        <button id="closeSidebarBtn" class="md:hidden text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Search Input in Sidebar -->
+      <div class="p-4 border-b border-slate-800/80">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+          <input type="text" id="searchInput" placeholder="Cerca metodologie, prompt, glossario..." 
+            class="w-full pl-9 pr-8 py-2 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all">
+          <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation List -->
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1 text-xs">
+        <button onclick="navigate('welcome')" id="nav-welcome" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all font-medium">
+          <i class="fa-solid fa-house text-violet-400 w-4 text-center"></i>
+          <span>Dashboard Principale</span>
+        </button>
+
+        <button onclick="navigate('bookmarks')" id="nav-bookmarks" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all font-medium">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-star text-amber-400 w-4 text-center"></i>
+            <span>I Miei Preferiti</span>
+          </div>
+          <span id="bookmarkBadge" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px]">0</span>
+        </button>
+
+        <button onclick="navigate('glossary')" id="nav-glossary" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all font-medium">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-book-atlas text-emerald-400 w-4 text-center"></i>
+            <span>Glossario Termini</span>
+          </div>
+          <span id="glossaryBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">38</span>
+        </button>
+
+        <div class="pt-4 pb-1 px-3">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Macro-Gruppi Tematici</span>
+        </div>
+
+        <div id="categoryNavContainer" class="space-y-1">
+          <!-- Rendered via JS -->
+        </div>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <button id="themeToggleBtn" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800 transition-all text-slate-300">
+          <i id="themeIcon" class="fa-solid fa-moon text-violet-400"></i>
+          <span id="themeLabel" class="text-xs">Tema Scuro</span>
+        </button>
+        <span class="text-[11px] text-slate-500">v2.6</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full min-w-0 bg-slate-50 dark:bg-slate-900">
+      
+      <!-- Top Bar -->
+      <header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-8 flex items-center justify-between shrink-0 z-10">
+        <div class="flex items-center gap-3 min-w-0">
+          <button id="openSidebarBtn" class="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+          
+          <div id="topbarTitleContainer" class="min-w-0">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <div id="topbarActions" class="flex items-center gap-2 shrink-0">
+          <!-- Rendered via JS -->
+        </div>
+      </header>
+
+      <!-- Dynamic Content Body -->
+      <main id="content" class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+        <!-- Rendered via JS -->
+      </main>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-semibold">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-sm"></i>
+    <span id="toastMsg">Operazione completata</span>
+  </div>
+
+  <script>
+    const macroColors = ['#8b5cf6', '#ec4899', '#0284c7', '#d97706', '#10b981', '#ef4444', '#059669'];
+    const tagClasses = [
+      'bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 border-violet-200 dark:border-violet-800/50',
+      'bg-pink-100 text-pink-700 dark:bg-pink-950/60 dark:text-pink-300 border-pink-200 dark:border-pink-800/50',
+      'bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border-sky-200 dark:border-sky-800/50',
+      'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800/50',
+      'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/50',
+      'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800/50',
+      'bg-teal-100 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800/50'
+    ];
+
+    const categories = [
+      {
+        id: 'mg1', icon: 'fa-users', name: 'Collaborazione e Peer Learning', color: macroColors[0], tagClass: tagClasses[0],
+        desc: 'Metodologie centrate sulla collaborazione tra pari e l\'apprendimento cooperativo.',
+        methods: [
+          {
+            id: 'm1', title: 'Cooperative Learning (es. Jigsaw)',
+            principles: 'Gli studenti lavorano in gruppi eterogenei. Nel Jigsaw, ciascun membro del gruppo diventa "esperto" di una sottosezione del tema, la approfondisce con gli esperti degli altri gruppi e torna al gruppo base per insegnarla ai compagni.',
+            studentRole: 'Co-costruttore: Attivo, responsabile dell\'apprendimento proprio e dei pari, facilitatore dei compagni.',
+            teacherRole: 'Regista e Osservatore: Struttura i gruppi, distribuisce i ruoli, monitora le dinamiche e interviene in caso di stallo.',
+            outcomes: 'Interdipendenza positiva, gestione del conflitto, responsabilizzazione individuale, comprensione profonda di argomenti complessi.',
+            tags: ['Gruppi eterogenei', 'Jigsaw', 'Interdipendenza']
+          },
+          {
+            id: 'm2', title: 'Peer Tutoring / Peer Instruction',
+            principles: 'Attività tra pari in cui uno studente più esperto (o a rotazione) affianca un compagno per il consolidamento di abilità o il recupero, oppure risponde a quesiti concettuali (Peer Instruction con quesiti a scelta multipla e discussione in diade).',
+            studentRole: 'Tutor / Tutee: Rielabora i contenuti con linguaggio paritario, mette a nudo i dubbi, consolida l\'autoefficacia.',
+            teacherRole: 'Supervisore: Prepara i materiali stimolo, forma i tutor, valida i contenuti scambiati e orienta la discussione.',
+            outcomes: 'Abbattimento delle barriere relazionali, personalizzazione dell\'apprendimento, consolidamento della metacognizione.',
+            tags: ['Peer Instruction', 'Mazur', 'Metacognizione']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p1', num: 1, title: 'Progettazione Lezione Jigsaw (Cooperative Learning)',
+            text: `Ruolo IA: Esperto in metodologie di apprendimento cooperativo per le scuole superiori.\n\nTask: Progetta una lezione di [inserire materia, es. Storia] di 2 ore sull'argomento "[inserire argomento, es. Le cause della Prima Guerra Mondiale]" utilizzando la metodologia Cooperative Learning Jigsaw.\n\nDettagli richiesti:\n1. Divisione dell'argomento in 4 sotto-temi specifici per i "Gruppi di Esperti".\n2. Istruzioni operative da consegnare al "Gruppo Base" e ai "Gruppi di Esperti".\n3. Tempistica precisa per ogni fase (Fase casa/intro, Fase esperti, Fase ricomposizione, Fase restituzione).\n4. Griglia di autovalutazione del lavoro svolto in gruppo.`
+          },
+          {
+            id: 'p2', num: 2, title: 'Sessione di Peer Instruction con Quesiti Concettuali',
+            text: `Ruolo IA: Docente esperto nella metodologia Peer Instruction (metodo Mazur).\n\nTask: Crea un piano lezione di 60 minuti per [inserire materia, es. Fisica/Matematica/Filosofia] sul tema "[inserire tema]".\n\nDettagli richiesti:\n1. Scrivi 3 Conceptest (domande a scelta multipla con un distruttore convincente basato sulle misconcezioni più comuni degli studenti su questo tema).\n2. Per ciascun Conceptest, scrivi il flusso operativo della lezione: Voto individuale ➔ Discussione in diade (Peer Tutoring) ➔ Rivotazione ➔ Spiegazione del docente.\n3. Scrivi un breve script delle risposte o suggerimenti che il studente-tutor deve dare al compagno durante il confronto.`
+          }
+        ]
+      },
+      {
+        id: 'mg2', icon: 'fa-puzzle-piece', name: 'Problem, Project & Challenge-Based', color: macroColors[1], tagClass: tagClasses[1],
+        desc: 'Apprendimento basato su problemi, progetti e sfide reali.',
+        methods: [
+          {
+            id: 'm3', title: 'Problem-Based Learning (PBL)',
+            principles: 'Gli studenti affrontano uno scenario di problema reale, complesso e "mal definito" (ill-structured). Si identificano i bisogni di conoscenza, si formulano ipotesi, si ricerca in autonomia e si propone la soluzione.',
+            studentRole: 'Solutore di problemi: Investigatore autonomo, analista critico, formulatore di ipotesi.',
+            teacherRole: 'Scaffolder / Guida: Pone domande maieutiche, non fornisce risposte dirette, guida il processo euristico.',
+            outcomes: 'Pensiero critico (critical thinking), problem solving complesso, autonomia nella ricerca informativa, auto-regolazione.',
+            tags: ['Ill-structured', 'Pensiero critico', 'Autonomia']
+          },
+          {
+            id: 'm4', title: 'Project-Based Learning (PjBL)',
+            principles: 'Percorso a lungo termine strutturato attorno alla realizzazione di un prodotto finale visibile (report, prototipo, app, documentario, campagna media). Integra diverse discipline e momenti di revisione.',
+            studentRole: 'Progettista e Creator: Pianifica le fasi, gestisce il tempo, realizza l\'artefatto e presenta il prodotto.',
+            teacherRole: 'Project Manager / Coach: Definisce la rubric di valutazione, fornisce feedback in itinere, gestisce le scadenze.',
+            outcomes: 'Project management, creatività applicata, sintesi multidisciplinare, gestione dello stress e delle scadenze.',
+            tags: ['Prodotto finale', 'Multidisciplinare', 'Rubric']
+          },
+          {
+            id: 'm5', title: 'Challenge-Based Learning (CBL)',
+            principles: 'Evoluzione del PBL focalizzata su grandi sfide globali o locali (es. Agenda 2030, mobilità sostenibile). Richiede di passare dall\'analisi teorica all\'azione concreta e misurabile sul campo.',
+            studentRole: 'Agente di cambiamento: Analizza contesti reali, progetta soluzioni pratiche e ne misura l\'impatto reale.',
+            teacherRole: 'Facilitatore di rete: Connette la classe con esperti del settore, enti locali, aziende e organizzazioni territoriali.',
+            outcomes: 'Consapevolezza civica, imprenditorialità, capacità di passare dall\'idea all\'azione, prototipazione rapida.',
+            tags: ['Agenda 2030', 'Azione concreta', 'Impatto']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p3', num: 3, title: 'Generatore di Scenari "Ill-Structured" per PBL',
+            text: `Ruolo IA: Instructional designer specializzato in Problem-Based Learning.\n\nTask: Crea un problema "ill-structured" (complesso, aperto, senza un'unica soluzione predefinita) da proporre a una classe di [inserire anno e indirizzo, es. 4° anno Istituto Tecnico Economico] per la disciplina [inserire materia].\n\nTraccia del Problema: Il problema deve riguardare un contesto di vita reale o professionale legato a "[inserire tema, es. La sostenibilità finanziaria di un'azienda locale in crisi]".\n\nFornisci:\n1. La lettera/dossier di scenario iniziale con cui presentare la situazione agli studenti.\n2. L'elenco delle "Domande Guida" che gli studenti dovranno porsi.\n3. Le risorse/documenti minimi da integrare (simulati).\n4. Il formato della proposta di soluzione richiesta alla classe.`
+          },
+          {
+            id: 'p4', num: 4, title: 'Progettazione UDA Project-Based Learning (PjBL)',
+            text: `Ruolo IA: Progettista didattico per competenze.\n\nTask: Progetta un'Unità di Apprendimento (UDA) basata sul Project-Based Learning interdisciplinare tra [Materia A] e [Materia B] per una classe di [inserire anno scolastico].\n\nOggetto del Progetto: Realizzazione di [inserire artefatto, es. Un podcast di 5 puntate o una campagna social su un tema storico/scientifico].\n\nIncludi:\n1. Il Driving Question (domanda guida motivante).\n2. La scansione temporale in 4 settimane con la Milestone finale di ogni settimana.\n3. I ruoli all'interno delle équipe di progetto.\n4. Una rubrica analitica di valutazione di prodotto (qualità dell'artefatto) e di processo (collaborazione, rispettare delle scadenze).`
+          },
+          {
+            id: 'p5', num: 5, title: 'Challenge-Based Learning legato all\'Agenda 2030',
+            text: `Ruolo IA: Esperto in educazione civica e didattica per sfide (Challenge-Based Learning).\n\nTask: Sviluppa un percorso CBL della durata di 10 ore incentrato sull'Obiettivo dell'Agenda 2030 numero [inserire n° Obiettivo, es. Goal 11: Città e Comunità Sostenibili].\n\nIncludi:\n1. Big Idea & Essential Question: La grande idea di partenza e la domanda essenziale.\n2. The Challenge: La formulazione della sfida pratica che la classe deve risolvere all'interno del proprio edificio scolastico o quartiere.\n3. Guiding Activities & Resources: Le attività d'indagine necessarie prima dell'azione.\n4. Solution & Action: Come far validare e testare sul campo la soluzione degli studenti dagli attori locali/scolastici.`
+          }
+        ]
+      },
+      {
+        id: 'mg3', icon: 'fa-flask', name: 'Didattica Investigativa e di Ricerca', color: macroColors[2], tagClass: tagClasses[2],
+        desc: 'Approcci basati sull\'indagine scientifica e la ricerca critica delle fonti.',
+        methods: [
+          {
+            id: 'm6', title: 'Inquiry-Based Learning (IBSE)',
+            principles: 'Basato sulle 5E (Engage, Explore, Explain, Elaborate, Evaluate). Gli studenti affrontano fenomeni naturali o sociali ponendo domande, formulando ipotesi, raccogliendo dati ed evidenze per giungere a spiegazioni formalizzate.',
+            studentRole: 'Ricercatore scientifico: Osservatore analitico, raccoglitore ed elaboratore di dati e prove empiriche.',
+            teacherRole: 'Mentore metodologico: Progetta le esperimentazioni/indagini, garantisce il rigore del metodo scientifico.',
+            outcomes: 'Alfabetizzazione scientifica e informativa, pensiero logico-deduttivo, argomentazione basata su evidenze (evidence-based).',
+            tags: ['5E Model', 'Evidence-based', 'Metodo scientifico']
+          },
+          {
+            id: 'm7', title: 'WebQuest',
+            principles: 'Attività di ricerca guidata in rete: il docente fornisce una struttura definita, ruoli specifici per gli studenti e una selezione di link ed emeroteche digitali sicure da analizzare per svolgere un compito complesso.',
+            studentRole: 'Analista di fonti: Esploratore critico di risorse digitali, selezionatore di informazioni attendibili.',
+            teacherRole: 'Curatore digitale: Mappa le risorse del web, progetta lo scenario di ricerca e la griglia di valutazione delle fonti.',
+            outcomes: 'Information literacy, contrasto alle fake news, capacità di sintesi ed elaborazione di informazioni da fonti primarie.',
+            tags: ['Information literacy', 'Fake news', 'Ricerca guidata']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p6', num: 6, title: 'Percorso Investigativo IBSE (5E Model)',
+            text: `Ruolo IA: Formatore di didattica delle scienze/umanistica basata sull'Inquiry-Based Learning.\n\nTask: Progetta una sequenza didattica basata sul modello delle 5E (Engage, Explore, Explain, Elaborate, Evaluate) sul tema "[inserire tema, es. La fotosintesi e la respirazione cellulare / Il concetto di democrazia nell'antica Atene]".\n\nDettagli richiesti:\nDescrivi dettagliatamente cosa fa il docente e cosa fa lo studente per ciascuna delle 5 fasi:\n• Engage: Attività stimolo o provocazione concettuale.\n• Explore: Esperimento, simulazione o analisi diretta di fonti.\n• Explain: Formalizzazione dei concetti emersi.\n• Elaborate: Applicazione delle conoscenze in un contesto nuovo.\n• Evaluate: Valutazione formativa e autovalutazione.`
+          },
+          {
+            id: 'p7', num: 7, title: 'Strutturazione di una WebQuest di Ricerca Critica',
+            text: `Ruolo IA: Specialist in media ed education e WebQuest.\n\nTask: Crea il testo completo per una WebQuest destinata a studenti del triennio della scuola secondaria di secondo grado.\n\nArgomento: "[Inserire tema di ricerca, es. La disinformazione scientifica sui cambiamenti climatici]".\n\nGenera le 6 sezioni trasparenti:\n1. Introduzione: Scenario d'impatto.\n2. Compito (Task): Cosa dovranno produrre gli studenti.\n3. Processo: Passaggi dettagliati con divisione in ruoli (es. il Giornalista, il Data Scientist, lo Storico, il Fact-checker).\n4. Risorse: Tipologia di link ed archivi da consultare (con suggerimenti sui criteri di validazione).\n5. Valutazione: Rubrica analitica di qualità della ricerca.\n6. Conclusione: Domanda di riflessione metacognitiva.`
+          }
+        ]
+      },
+      {
+        id: 'mg4', icon: 'fa-scale-balanced', name: 'Argomentazione, Simulazione e Decisori', color: macroColors[3], tagClass: tagClasses[3],
+        desc: 'Debate, studi di caso e simulazioni operative per sviluppare il pensiero argomentativo.',
+        methods: [
+          {
+            id: 'm8', title: 'Debate (Dibattito Regolamentato)',
+            principles: 'Metodologia formale in cui due squadre sostengono e confutano una mozione controversa (pro vs contro), rispettando regole di tempo, ruoli definiti e assenza di attacchi personali.',
+            studentRole: 'Debatter / Oratore: Ricercatore di tesi e prove, ascoltatore attivo della controparte, parlatore pubblico.',
+            teacherRole: 'Giudice / Moderatore: Insegna la struttura delle argomentazioni (Toulmin Model), gestisce i tempi e valuta senza pregiudizi.',
+            outcomes: 'Public speaking, confutazione logica, rispetto delle opinioni altrui, empatia (sostenere anche posizioni non condivise).',
+            tags: ['Public speaking', 'Toulmin', 'Pro vs Contro']
+          },
+          {
+            id: 'm9', title: 'Studio di Caso (Case Study)',
+            principles: 'Analisi dettagliata di una situazione reale o simulata (un caso legale, finanziario, etico, storico, aziendale). Gli studenti studiano i dati forniti e prendono decisioni strategiche argomentandole.',
+            studentRole: 'Decision-maker: Analista di scenari di complessità, decisore in contesti di incertezza.',
+            teacherRole: 'Facilitatore di discussione: Presenta il caso, stimola il dibattito collegiale, mette in luce le implicazioni di ogni scelta.',
+            outcomes: 'Capacità decisionale, applicazione di norme e concetti astratti a contesti reali, valutazione dei rischi.',
+            tags: ['Decision-making', 'Scenari reali', 'Analisi']
+          },
+          {
+            id: 'm10', title: 'Role Playing e Simulazione Operativa',
+            principles: 'Gli studenti assumono ruoli specifici (es. simulazione dell\'ONU - MUN, processo storico, consiglio d\'amministrazione) per comprendere prospettive diverse e negoziare soluzioni.',
+            studentRole: 'Attore / Negoziatore: Sospende il proprio giudizio, immedesimandosi nei vincoli e negli interessi del ruolo assegnato.',
+            teacherRole: 'Scenografo e Regista: Pone i vincoli dello scenario, fornisce i dossier di ruolo e conduce la fase di debriefing.',
+            outcomes: 'Empatia relazionale, negoziazione, risoluzione di conflitti, comprensione di dinamiche sistemiche e geopolitiche.',
+            tags: ['MUN', 'Negoziazione', 'Debriefing']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p8', num: 8, title: 'Strutturazione di una Lezione sul Debate Regolamentato',
+            text: `Ruolo IA: Coach esperto di Debate competitivo e regolamentato (modello World Schools Debate).\n\nTask: Organizza una sessione completa di Debate in classe (2 ore) per la disciplina di [inserire materia].\n\nMozione (THBT / Questa Assemblea ritiene che): "[Inserire la tesi controversa, es. 'Questa Assemblea ritiene che l'uso degli smartphone vada vietato del tutto negli ambienti scolastici']".\n\nFornisci:\n1. La ripartizione dei tempi di parola per i 3 oratori PRO e i 3 oratori CONTRO e i minuti per le repliche.\n2. Scheda di preparazione del modello ARES (Asserzione, Ragionamento, Evidenza, Link al tema) per aiutarli a costruire le argomentazioni.\n3. Regole per i POI (Points of Information) da rivolgere alla squadra avversaria.\n4. Griglia di valutazione per i giudici-studenti (argomentazione, confutazione, stile espositivo).`
+          },
+          {
+            id: 'p9', num: 9, title: 'Creazione di uno Studio di Caso per il Decision-Making',
+            text: `Ruolo IA: Docente esperto nella metodologia dello Studio di Caso (Case Study).\n\nTask: Scrivi un Studio di Caso reale/verosimile adatto a una classe di [inserire indirizzo scolastico, es. Liceo delle Scienze Umane / Istituto Tecnico Tecnologico].\n\nAmbito del Caso: [inserire ambito, es. Un dilemma etico o giuridico relativo alla privacy e ai Big Data].\n\nFornisci:\n1. Il testo del "Caso" (circa 300-400 parole) ricco di dati e con interessi in conflitto tra i soggetti coinvolti.\n2. Le 4 domande analitiche da sottoporre agli studenti per guidare il lavoro individuale.\n3. La guida per la discussione in assemblea di classe (scenari di decisione A, B, C e relative conseguenze).`
+          },
+          {
+            id: 'p10', num: 10, title: 'Simulazione e Role Playing su Scenario Storico o Geopolitico',
+            text: `Ruolo IA: Esperto di metodologie simulative e Role Playing.\n\nTask: Progetta una simulazione di Role Playing di 2 ore riproducendo "[inserire contesto, es. La Conferenza di Parigi del 1919 / Un vertice d'emergenza della Commissione Europea]".\n\nGenera:\n1. Dossier del Contesto: Quadro generale dei vincoli.\n2. Schede Ruolo (almeno 4 personaggi/delegazioni diverse): Per ogni ruolo specifica gli obiettivi segreti, i punti non negoziabili e le alleanze possibili.\n3. Fasi di lavoro: Apertura, trattativa bilaterale, stesura del trattato/risoluzione finale.\n4. Debriefing: Domande per analizzare le emozioni e i concetti appresi al termine della simulazione.`
+          }
+        ]
+      },
+      {
+        id: 'mg5', icon: 'fa-arrows-rotate', name: 'Didattica Invertita e Spazi Innovativi', color: macroColors[4], tagClass: tagClasses[4],
+        desc: 'Flipped Classroom, ambienti TEAL e laboratori Maker per una didattica esperienziale.',
+        methods: [
+          {
+            id: 'm11', title: 'Flipped Classroom (Classe Capovolta)',
+            principles: 'Lo studio concettuale delle basi avviene a casa in autonomia (tramite video-lezioni, letture, podcast); il tempo in aula è dedicato interamente ad attività applicative, laboratoriali e di discussione.',
+            studentRole: 'Autonomo nello studio: Responsabile della preparazione antecedente la lezione; attivo nell\'applicazione in aula.',
+            teacherRole: 'Consulente e Facilitatore: Progetta e seleziona le risorse per lo studio a casa; assiste individualmente gli studenti in aula.',
+            outcomes: 'Ottimizzazione del tempo aula per attività a cognitivo elevato, personalizzazione, autonomia nello studio.',
+            tags: ['Video-lezioni', 'Studio autonomo', 'Applicazione in aula']
+          },
+          {
+            id: 'm12', title: 'TEAL / Tinkering / Making',
+            principles: 'Integrazione di tecnologia, spazi fisici riconfigurabili e apprendimento esperienziale. Gli studenti costruiscono modelli, usano la stampa 3D, la robotica o il coding per esprimere concetti astratti.',
+            studentRole: 'Maker / Costruttore: Sperimentatore pratico, costruttore di prototipi, integratore di codice e materia.',
+            teacherRole: 'Lab Manager / Tutor: Allestisce gli ambienti tecnologici, incoraggia la sperimentazione e la gestione dell\'errore.',
+            outcomes: 'Pensiero computazionale, resilienza all\'errore (l\'errore come risorsa nel ciclo di design), competenze STEM/STEAM.',
+            tags: ['STEAM', 'Prototipazione', 'Errore come risorsa']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p11', num: 11, title: 'Progettazione Flipped Classroom completa',
+            text: `Ruolo IA: Esperto di Flipped Learning e didattica integrata.\n\nTask: Progetta un modulo Flipped Classroom di 3 sessioni sull'argomento "[inserire argomento, es. I Promessi Sposi e la peste del '600 / La legge di Ohm e i circuiti in serie]".\n\nStruttura il piano:\n1. FASE ANTE-AULA (Studio autonomo a casa):\n   - Lista di materiali multimediali consigliati (tipologie di video, estratti).\n   - Quiz di controllo d'ingresso (3 domande a risposta breve) per verificare che abbiano studiato prima di entrare in classe.\n\n2. FASE IN-AULA (Attività complessa):\n   - Descrizione dell'attività laboratoriale/applicativa da fare a scuola sfruttando il tempo guadagnato.\n   - Modalità con cui il docente fornirà il supporto personalizzato ai ragazzi in difficoltà.\n\n3. FASE POST-AULA: Attività di sintesi e consolidamento.`
+          },
+          {
+            id: 'p12', num: 12, title: 'Scheda Attività Tinkering / Making in Spazio TEAL',
+            text: `Ruolo IA: Mentor per laboratori Makerspace scolastici e metodologia Tinkering/TEAL.\n\nTask: Crea la scheda per un'attività laboratoriale basata sul Tinkering o sul Making da svolgere in aula/laboratorio per la materia [inserire materia].\n\nSfida di Costruzione: "[Inserire sfida, es. Costruire una struttura con materiali di recupero che resista a determinate sollecitazioni / Programmare una scheda Micro:bit per rilevare l'umidità del suolo]".\n\nDescrivi:\n1. Materiali a disposizione (vincoli fisici).\n2. Il ciclo di design: Esplora ➔ Progetta ➔ Realizza ➔ Sbaglia/Fallisci ➔ Correggi.\n3. Come il docente deve gestire la "pedagogia dell'errore" durante i fallimenti di prototipazione degli studenti.`
+          }
+        ]
+      },
+      {
+        id: 'mg6', icon: 'fa-gamepad', name: 'Gamification e Progettazione Creativa', color: macroColors[5], tagClass: tagClasses[5],
+        desc: 'Game-Based Learning, Design Thinking e Hackathon per stimolare la creatività e la motivazione.',
+        methods: [
+          {
+            id: 'm13', title: 'Gamification & Game-Based Learning',
+            principles: 'Utilizzo di meccaniche di gioco (punti, livelli, sfide, avatar, badge) o di videogiochi/giochi da tavolo didattici per guidare i percorsi di apprendimento e la revisione delle conoscenze.',
+            studentRole: 'Giocatore / Esploratore: Motivato dagli obiettivi di gioco, orientato al superamento delle sfide e al miglioramento.',
+            teacherRole: 'Game Designer: Disegna le regole dell\'ecosistema di gioco, calibra la difficoltà per mantenere lo stato di "flusso" (flow).',
+            outcomes: 'Aumento della motivazione intrinseca, apprendimento rapido dagli errori (try again), attenzione e memorizzazione attiva.',
+            tags: ['Badge', 'Flow', 'Motivazione intrinseca']
+          },
+          {
+            id: 'm14', title: 'Design Thinking & Hackathon',
+            principles: 'Processo strutturato in 5 fasi (Empathize, Define, Ideate, Prototype, Test) o maratona di progettazione (Hackathon) per risolvere problemi centrati sull\'utente finale in tempi ristretti.',
+            studentRole: 'Innovatore / Progettista: Focalizzato sull\'utente, generatore di idee non convenzionali, costruttore di prototipi rapidi.',
+            teacherRole: 'Facilitatore / Mentor: Scandisce le fasi del processo creativo, rimuove i blocchi logici, incoraggia il pensiero divergente.',
+            outcomes: 'Pensiero divergente, sintesi rapida, empatia verso l\'utente finalizzato, orientamento al prototipo.',
+            tags: ['5 fasi DT', 'Prototipo', 'Pensiero divergente']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p13', num: 13, title: 'Progettazione Game-Based Learning / Quiz-Game a Livelli',
+            text: `Ruolo IA: Game designer per la didattica.\n\nTask: Progetta una sessione didattica gamificata per il ripasso attivo di [inserire materia ed argomenti].\n\nIncludi:\n1. La narrazione o "Lore" di copertina (es. la classe deve sbloccare una cassaforte o fermare una crisi).\n2. 3 Livelli di sfida a complessità crescente (Livello 1: Reperimento concetti base; Livello 2: Connessioni e confronti; Livello 3: Soluzione del dilemma finale).\n3. Sistema di regole, punteggi, badge e penalità per la correzione degli errori.\n4. Domande ed enigmi specifici pronti per essere somministrati alla classe.`
+          },
+          {
+            id: 'p14', num: 14, title: 'Hackathon Didattico in 5 Fasi (Design Thinking)',
+            text: `Ruolo IA: Facilitatore di Design Thinking e organizzatore di Hackathon didattici.\n\nTask: Sviluppa la guida operativa per un Mini-Hackathon di 4 ore in classe.\n\nSfida: "[Inserire problema, es. Come riprogettare l'esperienza dell'accoglienza dei nuovi studenti nella scuola]".\n\nDettaglia le 5 fasi del Design Thinking con tempistiche rigide:\n1. Empatizza: Interviste o questionari all'utente target.\n2. Definisci: Mappa del problema e User Persona.\n3. Idea: Tecnica di Brainstorming rapido (Crazy Eights).\n4. Prototipa: Realizzazione di un prototipo su carta/digitale.\n5. Test & Pitch: Presentazione di 3 minuti (Elevator Pitch) davanti a una giuria.`
+          }
+        ]
+      },
+      {
+        id: 'mg7', icon: 'fa-earth-americas', name: 'Apprendimento Civico e Territoriale', color: macroColors[6], tagClass: tagClasses[6],
+        desc: 'Service Learning, Outdoor Education e strumenti di valutazione per competenze trasversali.',
+        methods: [
+          {
+            id: 'm15', title: 'Service Learning & Outdoor / Scuola Diffusa',
+            principles: 'Connessione del curricolo scolastico con un servizio concreto per la comunità locale (es. mappatura accessibilità, tutela beni culturali) condotto in spazi esterni all\'aula scolastica (musei, parchi, terzi spazi).',
+            studentRole: 'Cittadino attivo / Esploratore: Applica le conoscenze scolastiche all\'esterno dell\'edificio per risolvere bisogni reali del territorio.',
+            teacherRole: 'Co-progettista di Comunità: Attiva patti educativi col territorio, guida la riflessione metacognitiva sul senso civico dell\'azione.',
+            outcomes: 'Sviluppo di competenze di cittadinanza attiva, responsabilizzazione etica, legame con la comunità, valorizzazione del territorio.',
+            tags: ['Cittadinanza attiva', 'Territorio', 'Etica']
+          }
+        ],
+        prompts: [
+          {
+            id: 'p15', num: 15, title: 'Progetto Service Learning per l\'Educazione Civica',
+            text: `Ruolo IA: Coordinatore pedagogico per il Service Learning.\n\nTask: Progetta un percorso di Service Learning da integrare nel curricolo di Educazione Civica per una classe delle superiori.\n\nBisogno del Territorio: [inserire bisogno, es. La mancanza di digitalizzazione per gli anziani del quartiere / La riqualificazione della memoria storica del territorio].\n\nPianifica:\n1. Apprendimento disciplinare necessario (cosa devono imparare a scuola prima del servizio).\n2. Servizio alla comunità (cosa faranno operativamente per gli altri).\n3. Momenti di riflessione guidata (Diario di bordo metacognitivo per riflettere sull'impatto etico dell'esperienza).\n4. Valutazione delle competenze civiche di cittadinanza attiva.`
+          },
+          {
+            id: 'p16', num: 16, title: 'Attività di Outdoor Education / Scuola Diffusa',
+            text: `Ruolo IA: Esperto di didattica d'ambiente e scuola diffusa.\n\nTask: Sviluppa una lezione in modalità Outdoor Education fuori dall'edificio scolastico (es. in un parco, in un centro storico o museo) per la materia [inserire materia].\n\nIncludi:\n1. Fase preparatoria in aula (obiettivi e strumenti d'osservazione).\n2. Scheda di ricerca sul campo (griglia di rilevamento dati, compiti fotografici, interviste o campionamento).\n3. Fase di rielaborazione al rientro a scuola.\n4. Griglia d'osservazione del comportamento e dello spirito di osservazione sul campo.`
+          },
+          {
+            id: 'p17', num: 17, title: 'Generatore di Rubrica di Valutazione Competenze Trasversali',
+            text: `Ruolo IA: Esperto in valutazione degli apprendimenti e certificazione delle competenze.\n\nTask: Crea una rubrica analitica di valutazione delle competenze trasversali (Soft Skills / Competenze Chiave Europee) adatta a valutare un'attività svolta con metodologie attive nelle scuole superiori.\n\nCompetenze da valutare:\n1. Pensiero Critico e Problem Solving.\n2. Collaborazione e Comunicazione.\n3. Autonomia e Spirito di Iniziativa.\n\nDettagli della tabella:\nPer ciascuna competenza individua 4 livelli di padronanza (Iniziale, Base, Intermedio, Avanzato) con descrittori di comportamento osservabile precisi e non ambigui.`
+          },
+          {
+            id: 'p18', num: 18, title: '"SUPER-PROMPT" Metadidattico per Generazione Completa UDA',
+            text: `Ruolo IA: Master Designer di Unità di Apprendimento (UDA) per la scuola secondaria di secondo grado.\n\nTask: Compila una scheda completa di Unità di Apprendimento (UDA) personalizzata compilando la seguente struttura sulla base delle variabili che ti fornisco qui sotto:\n\nDati di input:\n- Materia/e: [Inserire materia/e]\n- Classe e Indirizzo: [Inserire es. 3° anno Liceo Scientifico / 4° anno Istituto Professionale]\n- Metodologia Principale da applicare: [Scegliere tra quelle della tabella sopra, es. Debate / PBL / Flipped]\n- Argomento disciplinare: [Inserire argomento]\n- Ore complessive a disposizione: [Inserire n° ore]\n\nL'IA deve generare:\n1. Titolo dell'UDA e Sintesi del Progetto.\n2. Traguardi di Competenza e Obiettivi specifici di apprendimento (Conoscenze e Abilità).\n3. Scansione dettagliata Lezione per Lezione (Fase d'attacco, Fase centrale operativa, Fase di chiusura/restituzione).\n4. Strumenti didattici, materiali e tecnologie necessarie.\n5. Modalità di personalizzazione/inclusione per alunni con BES/DSA.\n6. Griglia di Valutazione Tripartita: Valutazione delle Conoscenze (prassica), Valutazione del Processo (osservazione), Valutazione del Prodotto finale.`
+          }
+        ]
+      }
+    ];
+
+    const glossaryTerms = [
+      {
+        term: "5E Model",
+        cat: "Didattica Investigativa",
+        desc: "Modello di progettazione per l'Inquiry-Based Learning articolato in 5 fasi progressive: Engage (Coinvolgere con uno stimolo), Explore (Esplorare con un'indagine), Explain (Spiegare e formalizzare i concetti), Elaborate (Applicare in un nuovo contesto) ed Evaluate (Valutare l'apprendimento).",
+        tags: ["IBSE", "Inquiry", "Metodo Scientifico"]
+      },
+      {
+        term: "Agenda 2030",
+        cat: "Educazione Civica",
+        desc: "Programma d'azione globale per lo sviluppo sostenibile sottoscritto dai Paesi membri dell'ONU, composto da 17 Obiettivi (SDGs). Rappresenta il quadro di riferimento privilegiato per le attività di Challenge-Based e Service Learning.",
+        tags: ["SDGs", "Sostenibilità", "Cittadinanza"]
+      },
+      {
+        term: "ARES (Modello Argomentativo)",
+        cat: "Argomentazione e Debate",
+        desc: "Acronimo per Asserzione, Ragionamento, Evidenza e Sustaining Link al tema. È lo schema metodologico formale utilizzato nel Debate per costruire argomentazioni solide e prive di fallacie logiche.",
+        tags: ["Debate", "Argomentazione", "Public Speaking"]
+      },
+      {
+        term: "Challenge-Based Learning (CBL)",
+        cat: "Problem & Project-Based",
+        desc: "Metodologia esperienziale evoluzione del PBL, in cui gli studenti affrontano una grande sfida aperta del mondo reale e progettano una soluzione pratica d'impatto misurabile nel contesto locale o scolastico.",
+        tags: ["Sfida", "Agenda 2030", "Impatto"]
+      },
+      {
+        term: "Conceptest",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Quesito a scelta multipla breve e mirato utilizzato nella Peer Instruction. È progettato per far emergere e destrutturare le misconcezioni comuni (misconceptions) degli studenti su un tema scientifico o concettuale.",
+        tags: ["Mazur", "Peer Instruction", "Valutazione Formativa"]
+      },
+      {
+        term: "Cooperative Learning",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Metodologia a mediazione dei pari che organizza il lavoro in piccoli gruppi eterogenei strutturati in modo da garantire l'interdipendenza positiva, la responsabilità individuale e l'interazione promozionale diretta.",
+        tags: ["Jigsaw", "Lavoro di Gruppo", "Interdipendenza"]
+      },
+      {
+        term: "Debate (Dibattito Regolamentato)",
+        cat: "Argomentazione e Debate",
+        desc: "Metodologia didattica formale che vede due squadre contrapposte sostenere e confutare una mozione controversa (pro/contro) sotto la guida di regole stringenti di tempo, ruoli specifici e valutazione imparziale.",
+        tags: ["Public Speaking", "Pensiero Critico", "World Schools"]
+      },
+      {
+        term: "Debriefing",
+        cat: "Simulazione e Role Playing",
+        desc: "Fase fondamentale condotta al termine di un'attività di simulazione, role playing o laboratorio esperienziale. Permette agli studenti di analizzare le emozioni vissute, verbalizzare l'esperienza e concettualizzare quanto appreso.",
+        tags: ["Riflessione", "Metacognizione", "Simulazione"]
+      },
+      {
+        term: "Design Thinking",
+        cat: "Gamification & Creatività",
+        desc: "Processo di problem solving creativo centrato sulle persone (Human-Centered Design) articolato in 5 fasi: Empatizza, Definisci, Idea, Prototipa e Test.",
+        tags: ["Hackathon", "Creatività", "Prototipazione"]
+      },
+      {
+        term: "Driving Question",
+        cat: "Problem & Project-Based",
+        desc: "La 'Domanda Guida' provocatoria, aperta e stimolante che avvia e orienta l'intero percorso di un'Unità di Apprendimento basata su problemi o progetti (PBL/PjBL).",
+        tags: ["PjBL", "Domanda Guida", "UDA"]
+      },
+      {
+        term: "Elevator Pitch",
+        cat: "Gamification & Creatività",
+        desc: "Presentazione orale sintetica e ad alto impatto (durata tipica da 60 a 180 secondi) in cui un gruppo espone e convince una giuria o una platea sulla validità del proprio prototipo o della propria soluzione.",
+        tags: ["Pitch", "Hackathon", "Comunicazione"]
+      },
+      {
+        term: "Fact-Checking & Information Literacy",
+        cat: "Didattica Investigativa",
+        desc: "Insieme di competenze critiche per identificare, ricercare, valutare, verificare le fonti e contrastare le fake news e la disinformazione nel web.",
+        tags: ["WebQuest", "Fonti", "Fake News"]
+      },
+      {
+        term: "Flipped Classroom (Classe Capovolta)",
+        cat: "Didattica Invertita e Spazi Innovativi",
+        desc: "Modello pedagogico che ribalta la tradizionale lezione frontale: l'acquisizione delle nozioni base avviene a casa in autonomia tramite video o risorse multimediali, mentre il tempo scuola è interamente dedicato alla pratica applicativa e cooperativa.",
+        tags: ["Didattica Digitale", "Studio Autonomo", "Laboratorio"]
+      },
+      {
+        term: "Flow (Stato di Flusso)",
+        cat: "Gamification & Creatività",
+        desc: "Stato psicologico di massima immersione e concentrazione motivata nello svolgimento di un compito, raggiunto quando il livello di sfida (challenge) si bilancia perfettamente con le competenze dell'alunno.",
+        tags: ["Gamification", "Psicologia", "Motivazione"]
+      },
+      {
+        term: "Gamification & Game-Based Learning",
+        cat: "Gamification & Creatività",
+        desc: "Applicazione di elementi e dinamiche tipiche del gioco (punti, livelli, badge, storyline) in contesti educativi per stimolare la motivazione intrinseca e favorire la memorizzazione attiva.",
+        tags: ["Giochi", "Badge", "Motivazione"]
+      },
+      {
+        term: "Gruppi Eterogenei",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Formazione dei gruppi da parte del docente con il criterio della massima varietà di stili cognitivi, competenze disciplinari e attitudini, per favorire il tutoraggio reciproco e l'inclusione.",
+        tags: ["Cooperative Learning", "Inclusione", "Integrazione"]
+      },
+      {
+        term: "Hackathon Didattico",
+        cat: "Gamification & Creatività",
+        desc: "Maratona di co-progettazione e sviluppo creativo in cui squadre di studenti lavorano intensamente per un tempo definito (da poche ore a un paio di giorni) per ideare un prototipo o una proposta risolutiva a una sfida concreta.",
+        tags: ["Design Thinking", "Maratona Creativa", "Teamwork"]
+      },
+      {
+        term: "Ill-Structured Problem",
+        cat: "Problem & Project-Based",
+        desc: "Un 'problema mal definito' o complesso, privo di una risposta univoca o di un unico percorso risolutivo preconfezionato. È lo stimolo di partenza ideale per il Problem-Based Learning.",
+        tags: ["PBL", "Critical Thinking", "Problem Solving"]
+      },
+      {
+        term: "Inquiry-Based Science Education (IBSE)",
+        cat: "Didattica Investigativa",
+        desc: "Approccio pedagogico basato sull'indagine scientifica guidata. Gli studenti scoprono le leggi naturali ponendo domande, conducendo esperimenti, raccogliendo prove e costruendo spiegazioni basate sui dati.",
+        tags: ["Metodo Scientifico", "5E", "Esperimenti"]
+      },
+      {
+        term: "Interdipendenza Positiva",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Il principio cardine del Cooperative Learning secondo cui nessun membro del gruppo può raggiungere il proprio obiettivo individuale se tutti gli altri membri non raggiungono anche il loro ('uno per tutti, tutti per uno').",
+        tags: ["Cooperative Learning", "Responsabilità", "Gruppo"]
+      },
+      {
+        term: "Jigsaw",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Tecnica avanzata di Cooperative Learning (scatola dei tasselli). Gli studenti lavorano prima nel 'Gruppo Base', poi si separano nei 'Gruppi di Esperti' per approfondire un singolo aspetto, ed infine tornano al gruppo di origine per insegnarlo ai compagni.",
+        tags: ["Cooperative Learning", "Esperti", "Peer Teaching"]
+      },
+      {
+        term: "Making",
+        cat: "Didattica Invertita e Spazi Innovativi",
+        desc: "Didattica esperienziale legata al movimento dei Maker che unisce artigianato analogico e fabbricazione digitale (stampa 3D, coding, schede elettroniche) per realizzare oggetti fisici o prototipi interattivi.",
+        tags: ["STEAM", "Maker", "Stampa 3D"]
+      },
+      {
+        term: "Metacognizione",
+        cat: "Generale & Valutazione",
+        desc: "La capacità dello studente di riflettere sui propri processi cognitivi, di comprendere come apprende meglio, di monitorare le proprie strategie e di correggere autonomamente gli errori.",
+        tags: ["Auto-regolazione", "Consapevolezza", "Riflessione"]
+      },
+      {
+        term: "Model United Nations (MUN)",
+        cat: "Simulazione e Role Playing",
+        desc: "Simulazione diplomatica delle sessioni dell'ONU in cui gli studenti assumono il ruolo di delegati di Paesi esteri e dibattono su tematiche globali nel rispetto di procedure ufficiali.",
+        tags: ["Role Playing", "ONU", "Geopolitica"]
+      },
+      {
+        term: "Outdoor Education / Scuola Diffusa",
+        cat: "Apprendimento Civico",
+        desc: "Orientamento pedagogico che valorizza gli ambienti esterni alla classe (parchi, musei, quartieri, piazze) come luoghi privilegiati d'apprendimento autentico ed esperienziale.",
+        tags: ["Territorio", "Ambiente", "Cittadinanza"]
+      },
+      {
+        term: "Peer Instruction (Metodo Mazur)",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Metodologia interattiva ideata dal prof. Eric Mazur (Harvard) basata sull'alternanza di brevi spiegazioni, quesiti concettuali (Conceptest), discussione tra compagni di banco e chiarimento conclusivo del docente.",
+        tags: ["Mazur", "Conceptest", "Attivazione Cognitiva"]
+      },
+      {
+        term: "Peer Tutoring",
+        cat: "Collaborazione e Peer Learning",
+        desc: "Strategia d'insegnamento in cui uno studente svolge il ruolo di tutor fornendo spiegazioni, supporto o guida ad un compagno (tutee), rafforzando le competenze di entrambi con un linguaggio paritario.",
+        tags: ["Tutor", "Peer", "Inclusione"]
+      },
+      {
+        term: "POI (Point of Information)",
+        cat: "Argomentazione e Debate",
+        desc: "Breve domanda, chiarimento o obiezione (massimo 15 secondi) che un oratore della squadra avversaria può rivolgere all'oratore che sta parlando durante la fase centrale del Debate.",
+        tags: ["Debate", "Obiezione", "Interruzione"]
+      },
+      {
+        term: "Problem-Based Learning (PBL)",
+        cat: "Problem & Project-Based",
+        desc: "Approccio didattico basato sulla presentazione iniziale di un problema aperto e complesso. Gli studenti guidano il proprio percorso di ricerca per individuare le conoscenze mancanti e formulare soluzioni.",
+        tags: ["Problemi", "Ricerca", "Soluzione"]
+      },
+      {
+        term: "Project-Based Learning (PjBL)",
+        cat: "Problem & Project-Based",
+        desc: "Metodologia didattica a lungo termine in cui gli studenti lavorano per rispondere a una domanda guida realizzando un prodotto finale o artefatto autentico esposto al pubblico.",
+        tags: ["Prodotto Finale", "Artefatto", "UDA"]
+      },
+      {
+        term: "Prompt IA / Super-Prompt",
+        cat: "Tecnologia e Intelligenza Artificiale",
+        desc: "Insieme strutturato di istruzioni, ruoli e vincoli fornito a un modello linguistico (LLM come ChatGPT, Claude, Gemini) per generare materiali didattici, griglie o lezioni di alta qualità pedagogica.",
+        tags: ["Generative AI", "LLM", "Didattica Digitale"]
+      },
+      {
+        term: "Role Playing",
+        cat: "Simulazione e Role Playing",
+        desc: "Tecnica drammaturgica e simulative in cui gli studenti recitano un ruolo definito con obiettivi e vincoli specifici, sviluppando immedesimazione, empatia e capacità negoziali.",
+        tags: ["Simulazione", "Empatia", "Teatro Didattico"]
+      },
+      {
+        term: "Rubrica Analitica di Valutazione",
+        cat: "Generale & Valutazione",
+        desc: "Strumento di valutazione formale a matrice che scompone una prestazione o competenza in dimensioni, criteri ed indicatori osservabili articolati su diversi livelli di padronanza.",
+        tags: ["Valutazione", "Competenze", "Descrittori"]
+      },
+      {
+        term: "Scaffolding",
+        cat: "Generale & Valutazione",
+        desc: "Insieme di supporti strategici temporanei (domande guida, schemi, modelli, feedback) forniti dal docente o da pari per guidare l'alunno verso l'autonomia nella zona di sviluppo prossimale.",
+        tags: ["Supporto", "Vygotskij", "Autonomia"]
+      },
+      {
+        term: "Service Learning",
+        cat: "Apprendimento Civico",
+        desc: "Proposta pedagogica che unisce l'apprendimento curricolare scolastico allo svolgimento di un servizio solidale e gratuito per la comunità locale e il territorio.",
+        tags: ["Comunità", "Solidarietà", "Educazione Civica"]
+      },
+      {
+        term: "Studio di Caso (Case Study)",
+        cat: "Argomentazione e Debate",
+        desc: "Analisi approfondita di una situazione complessa e reale (aziendale, clinica, etica o giuridica) in cui gli studenti devono analizzare dati e assumere decisioni operative motivate.",
+        tags: ["Decision-Making", "Casi Reali", "Analisi"]
+      },
+      {
+        term: "TEAL (Technology-Enhanced Active Learning)",
+        cat: "Didattica Invertita e Spazi Innovativi",
+        desc: "Metodologia d'insegnamento che unisce spazi fisici flessibili, tecnologie digitali diffuse e collaborazione di gruppo per trasformare l'aula in un laboratorio interattivo.",
+        tags: ["Ambiente Innovativo", "Tecnologia", "Classi 4.0"]
+      },
+      {
+        term: "Tinkering",
+        cat: "Didattica Invertita e Spazi Innovativi",
+        desc: "Forma di apprendimento esperienziale informale ('pensare con le mani') che incoraggia l'esplorazione ludica dei materiali, lo smontaggio, l'assemblaggio creativo e la valorizzazione del fallimento come risorsa.",
+        tags: ["STEAM", "Manualità", "Errore Creativo"]
+      },
+      {
+        term: "Unità di Apprendimento (UDA)",
+        cat: "Generale & Valutazione",
+        desc: "Struttura complessa di progettazione didattica per competenze incentrata su un tema significativo, articolata in fasi trasversali, consegne operative, prodotti finali e rubriche valutative.",
+        tags: ["Progettazione", "Competenze", "Curricolo"]
+      },
+      {
+        term: "WebQuest",
+        cat: "Didattica Investigativa",
+        desc: "Format didattico d'indagine orientato alla ricerca sul web. Il docente fornisce scenari d'impatto, ruoli operativi, un processo guidato ed una selezione ragionata di risorse web sicure.",
+        tags: ["Ricerca Guidata", "Information Literacy", "Web"]
+      }
+    ];
+
+    let state = {
+      currentView: 'welcome', // welcome | category | method | prompts | prompt-detail | bookmarks | search | glossary
+      currentCatId: null,
+      currentMethodId: null,
+      currentPromptId: null,
+      glossaryFilterLetter: 'ALL',
+      glossaryQuery: '',
+      openCats: {},
+      searchQuery: '',
+      bookmarks: JSON.parse(localStorage.getItem('didattica_bookmarks') || '[]'),
+      darkMode: localStorage.getItem('didattica_theme') === 'dark',
+      customInputs: {}
+    };
+
+    function saveBookmarks() {
+      localStorage.setItem('didattica_bookmarks', JSON.stringify(state.bookmarks));
+      updateBookmarkBadge();
+    }
+
+    function isBookmarked(type, id) {
+      return state.bookmarks.some(b => b.type === type && b.id === id);
+    }
+
+    function toggleBookmark(type, id) {
+      if (isBookmarked(type, id)) {
+        state.bookmarks = state.bookmarks.filter(b => !(b.type === type && b.id === id));
+        showToast('Rimosso dai preferiti', 'fa-circle-xmark', 'text-rose-400');
+      } else {
+        state.bookmarks.push({ type, id, date: Date.now() });
+        showToast('Aggiunto ai preferiti!', 'fa-star', 'text-amber-400');
+      }
+      saveBookmarks();
+      renderAll();
+    }
+
+    function updateBookmarkBadge() {
+      const badge = document.getElementById('bookmarkBadge');
+      if (badge) badge.textContent = state.bookmarks.length;
+    }
+
+    function getAllMethods() {
+      return categories.flatMap(c => c.methods.map(m => ({...m, catId: c.id, catName: c.name, catIcon: c.icon, catColor: c.color, catTagClass: c.tagClass})));
+    }
+
+    function getAllPrompts() {
+      return categories.flatMap(c => c.prompts.map(p => ({...p, catId: c.id, catName: c.name, catIcon: c.icon, catColor: c.color, catTagClass: c.tagClass})));
+    }
+
+    function getCat(id) { return categories.find(c => c.id === id); }
+    function getMethod(id) { return getAllMethods().find(m => m.id === id); }
+    function getPrompt(id) { return getAllPrompts().find(p => p.id === id); }
+
+    function escHtml(str) {
+      if (!str) return '';
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function highlightText(text, query) {
+      if (!query) return escHtml(text);
+      const safe = escHtml(text);
+      const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return safe.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+    }
+
+    function showToast(msg, icon = 'fa-circle-check', colorClass = 'text-emerald-400') {
+      const t = document.getElementById('toast');
+      const tMsg = document.getElementById('toastMsg');
+      const tIcon = document.getElementById('toastIcon');
+      
+      tMsg.textContent = msg;
+      tIcon.className = `fa-solid ${icon} ${colorClass} text-sm`;
+      
+      t.classList.remove('translate-y-20', 'opacity-0');
+      t.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        t.classList.remove('translate-y-0', 'opacity-100');
+        t.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        showToast('Copiato negli appunti!');
+      } catch (e) {
+        showToast('Errore nella copia', 'fa-triangle-exclamation', 'text-rose-400');
+      }
+    }
+
+    function extractPlaceholders(text) {
+      const regex = /\[(.*?)\]/g;
+      const matches = [];
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        if (!matches.includes(match[1])) {
+          matches.push(match[1]);
+        }
+      }
+      return matches;
+    }
+
+    function getCustomizedPromptText(promptId) {
+      const prompt = getPrompt(promptId);
+      if (!prompt) return '';
+      let text = prompt.text;
+      const placeholders = extractPlaceholders(text);
+      
+      placeholders.forEach(ph => {
+        const key = `${promptId}_${ph}`;
+        const userVal = state.customInputs[key];
+        if (userVal && userVal.trim() !== '') {
+          text = text.replaceAll(`[${ph}]`, userVal.trim());
+        }
+      });
+      return text;
+    }
+
+    function navigate(view, catId = null, methodId = null, promptId = null) {
+      state.currentView = view;
+      state.currentCatId = catId;
+      state.currentMethodId = methodId;
+      state.currentPromptId = promptId;
+
+      if (view !== 'search') {
+        state.searchQuery = '';
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = '';
+        document.getElementById('clearSearchBtn')?.classList.add('hidden');
+      }
+
+      if (catId) state.openCats[catId] = true;
+
+      const hash = view === 'welcome' ? '' :
+                   view === 'bookmarks' ? 'bookmarks' :
+                   view === 'glossary' ? 'glossary' :
+                   view === 'category' ? `cat-${catId}` :
+                   view === 'method' ? `method-${methodId}` :
+                   view === 'prompts' ? `prompts-${catId}` :
+                   view === 'prompt-detail' ? `prompt-${promptId}` :
+                   view === 'search' ? `search-${encodeURIComponent(state.searchQuery)}` : '';
+      
+      location.hash = hash;
+      renderAll();
+    }
+
+    function readHash() {
+      const h = location.hash.slice(1);
+      if (!h) { navigate('welcome'); return; }
+      if (h === 'bookmarks') { state.currentView = 'bookmarks'; }
+      else if (h === 'glossary') { state.currentView = 'glossary'; }
+      else if (h.startsWith('cat-')) { state.currentView = 'category'; state.currentCatId = h.replace('cat-',''); state.openCats[state.currentCatId] = true; }
+      else if (h.startsWith('method-')) { state.currentView = 'method'; state.currentMethodId = h.replace('method-',''); const m = getMethod(state.currentMethodId); if(m) { state.currentCatId = m.catId; state.openCats[m.catId] = true; } }
+      else if (h.startsWith('prompts-')) { state.currentView = 'prompts'; state.currentCatId = h.replace('prompts-',''); state.openCats[state.currentCatId] = true; }
+      else if (h.startsWith('prompt-')) { state.currentView = 'prompt-detail'; state.currentPromptId = h.replace('prompt-',''); const p = getPrompt(state.currentPromptId); if(p) { state.currentCatId = p.catId; state.openCats[p.catId] = true; } }
+      else if (h.startsWith('search-')) { state.currentView = 'search'; state.searchQuery = decodeURIComponent(h.replace('search-','')); }
+      else { state.currentView = 'welcome'; }
+      renderAll();
+    }
+
+    function renderCategoryNav() {
+      const container = document.getElementById('categoryNavContainer');
+      if (!container) return;
+
+      container.innerHTML = categories.map(cat => {
+        const isOpen = state.openCats[cat.id];
+        const isActiveCat = state.currentCatId === cat.id;
+
+        return `
+          <div class="space-y-1">
+            <button onclick="toggleCatNav('${cat.id}')" 
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all text-slate-300 hover:bg-slate-800/60 ${isActiveCat ? 'bg-slate-800 text-white font-semibold' : ''}">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <i class="fa-solid ${cat.icon} text-xs shrink-0" style="color: ${cat.color}"></i>
+                <span class="truncate text-xs">${cat.name}</span>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[10px] text-slate-500 transition-transform ${isOpen ? 'rotate-90' : ''}"></i>
+            </button>
+            
+            ${isOpen ? `
+              <div class="pl-7 pr-2 space-y-1 text-[11px] border-l-2 border-slate-800 ml-4 py-1 fade-in">
+                <button onclick="navigate('category', '${cat.id}')" 
+                  class="w-full text-left py-1.5 px-2 rounded-lg transition-colors flex items-center justify-between ${state.currentView === 'category' && state.currentCatId === cat.id ? 'text-violet-400 font-semibold bg-violet-500/10' : 'text-slate-400 hover:text-slate-200'}">
+                  <span><i class="fa-solid fa-book-open text-[10px] mr-1.5 opacity-70"></i>Metodologie</span>
+                  <span class="px-1.5 py-0.2 rounded bg-slate-800 text-[9px]">${cat.methods.length}</span>
+                </button>
+                <button onclick="navigate('prompts', '${cat.id}')" 
+                  class="w-full text-left py-1.5 px-2 rounded-lg transition-colors flex items-center justify-between ${state.currentView === 'prompts' && state.currentCatId === cat.id ? 'text-violet-400 font-semibold bg-violet-500/10' : 'text-slate-400 hover:text-slate-200'}">
+                  <span><i class="fa-solid fa-robot text-[10px] mr-1.5 opacity-70"></i>Prompt IA</span>
+                  <span class="px-1.5 py-0.2 rounded bg-slate-800 text-[9px]">${cat.prompts.length}</span>
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCatNav(catId) {
+      state.openCats[catId] = !state.openCats[catId];
+      renderCategoryNav();
+    }
+
+    function renderTopbar() {
+      const container = document.getElementById('topbarTitleContainer');
+      const actions = document.getElementById('topbarActions');
+      if (!container) return;
+
+      let titleHtml = '';
+      let actionsHtml = '';
+
+      if (state.currentView === 'welcome') {
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-gauge-high text-violet-500"></i> Dashboard Principale
+          </h2>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Panoramica completa metodologie, prompt IA e glossario</p>
+        `;
+      } else if (state.currentView === 'bookmarks') {
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-amber-500 flex items-center gap-2">
+            <i class="fa-solid fa-star"></i> I Miei Preferiti
+          </h2>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">${state.bookmarks.length} elementi salvati</p>
+        `;
+      } else if (state.currentView === 'glossary') {
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-emerald-500 flex items-center gap-2">
+            <i class="fa-solid fa-book-atlas"></i> Glossario dei Termini Pedagogici
+          </h2>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">${glossaryTerms.length} concetti, modelli ed acronimi spiegati</p>
+        `;
+      } else if (state.currentView === 'category') {
+        const cat = getCat(state.currentCatId);
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-2 truncate">
+            <i class="fa-solid ${cat.icon}" style="color:${cat.color}"></i> ${cat.name}
+          </h2>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${cat.methods.length} Metodologie attive</p>
+        `;
+      } else if (state.currentView === 'method') {
+        const m = getMethod(state.currentMethodId);
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-2 truncate">
+            <i class="fa-solid fa-book-bookmark text-violet-500"></i> ${m ? m.title : 'Metodologia'}
+          </h2>
+        `;
+        if (m) {
+          const starred = isBookmarked('method', m.id);
+          actionsHtml = `
+            <button onclick="toggleBookmark('method', '${m.id}')" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all ${starred ? 'text-amber-500 border-amber-300 dark:border-amber-700' : 'text-slate-600 dark:text-slate-300'}">
+              <i class="fa-solid fa-star ${starred ? 'text-amber-400' : 'text-slate-400'}"></i>
+              <span>${starred ? 'Preferito' : 'Salva nei preferiti'}</span>
+            </button>
+          `;
+        }
+      } else if (state.currentView === 'prompts') {
+        const cat = getCat(state.currentCatId);
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-2 truncate">
+            <i class="fa-solid fa-robot text-violet-500"></i> Prompt IA — ${cat ? cat.name : ''}
+          </h2>
+        `;
+        if (cat) {
+          actionsHtml = `
+            <button onclick="copyAllCatPrompts('${cat.id}')" class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-violet-500/20 transition-all">
+              <i class="fa-solid fa-copy"></i>
+              <span class="hidden sm:inline">Copia Tutti i Prompt</span>
+            </button>
+          `;
+        }
+      } else if (state.currentView === 'prompt-detail') {
+        const p = getPrompt(state.currentPromptId);
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-2 truncate">
+            <i class="fa-solid fa-wand-magic-sparkles text-violet-500"></i> Prompt #${p ? p.num : ''}
+          </h2>
+        `;
+        if (p) {
+          const starred = isBookmarked('prompt', p.id);
+          actionsHtml = `
+            <button onclick="toggleBookmark('prompt', '${p.id}')" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all ${starred ? 'text-amber-500 border-amber-300 dark:border-amber-700' : 'text-slate-600 dark:text-slate-300'}">
+              <i class="fa-solid fa-star ${starred ? 'text-amber-400' : 'text-slate-400'}"></i>
+              <span>${starred ? 'Preferito' : 'Salva'}</span>
+            </button>
+          `;
+        }
+      } else if (state.currentView === 'search') {
+        titleHtml = `
+          <h2 class="font-bold text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-2 truncate">
+            <i class="fa-solid fa-magnifying-glass text-violet-500"></i> Risultati per "${escHtml(state.searchQuery)}"
+          </h2>
+        `;
+      }
+
+      container.innerHTML = titleHtml;
+      actions.innerHTML = actionsHtml;
+    }
+
+    function renderContent() {
+      const c = document.getElementById('content');
+      if (!c) return;
+
+      if (state.currentView === 'welcome') c.innerHTML = renderWelcomeView();
+      else if (state.currentView === 'bookmarks') c.innerHTML = renderBookmarksView();
+      else if (state.currentView === 'glossary') c.innerHTML = renderGlossaryView();
+      else if (state.currentView === 'category') c.innerHTML = renderCategoryView();
+      else if (state.currentView === 'method') c.innerHTML = renderMethodDetailView();
+      else if (state.currentView === 'prompts') c.innerHTML = renderPromptsView();
+      else if (state.currentView === 'prompt-detail') c.innerHTML = renderPromptDetailView();
+      else if (state.currentView === 'search') c.innerHTML = renderSearchView();
+
+      c.scrollTop = 0;
+    }
+
+    function renderWelcomeView() {
+      const totalMethods = getAllMethods().length;
+      const totalPrompts = getAllPrompts().length;
+      const totalCats = categories.length;
+
+      return `
+        <div class="max-w-6xl mx-auto space-y-8 fade-in">
+          
+          <!-- Hero Banner -->
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 text-white p-6 md:p-10 shadow-2xl shadow-violet-500/20">
+            <div class="relative z-10 max-w-2xl space-y-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold text-violet-200 border border-white/10">
+                <i class="fa-solid fa-sparkles text-amber-300"></i> Cassetta degli Attrezzi Pedagogici
+              </span>
+              <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight leading-tight">
+                Metodologie Attive & AI Assistant per Docenti
+              </h1>
+              <p class="text-slate-200 text-xs md:text-sm leading-relaxed">
+                Esplora ${totalMethods} metodologie didattiche operative strutturate, ${totalPrompts} prompt IA pronti all'uso e un glossario di ${glossaryTerms.length} termini specialistici per ChatGPT, Claude, Gemini e Copilot.
+              </p>
+            </div>
+            <!-- Decorative Icon Background -->
+            <i class="fa-solid fa-brain absolute -right-6 -bottom-8 text-[180px] opacity-10 text-white pointer-events-none"></i>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-center">
+              <p class="text-2xl md:text-3xl font-extrabold text-violet-600 dark:text-violet-400">${totalCats}</p>
+              <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">Macro-Gruppi</p>
+            </div>
+            <div class="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-center">
+              <p class="text-2xl md:text-3xl font-extrabold text-sky-600 dark:text-sky-400">${totalMethods}</p>
+              <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">Metodologie</p>
+            </div>
+            <div class="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-center">
+              <p class="text-2xl md:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">${totalPrompts}</p>
+              <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">Prompt IA</p>
+            </div>
+            <div onclick="navigate('glossary')" class="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-center cursor-pointer hover:border-emerald-400 transition-colors">
+              <p class="text-2xl md:text-3xl font-extrabold text-emerald-500">${glossaryTerms.length}</p>
+              <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">Termini Glossario</p>
+            </div>
+          </div>
+
+          <!-- Quick Access Glossary Banner -->
+          <div onclick="navigate('glossary')" class="p-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-sky-500/10 border border-emerald-500/20 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:shadow-md transition-all">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20 shrink-0">
+                <i class="fa-solid fa-book-atlas"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Glossario della Didattica & Pedagogia</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Consulta le definizioni chiare di tutti i termini: Jigsaw, PBL, IBSE, 5E Model, Flipped, TEAL, Debate, Scaffolding e molti altri.</p>
+              </div>
+            </div>
+            <button class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shrink-0 transition-colors">
+              Esplora Glossario →
+            </button>
+          </div>
+
+          <!-- Macro-Categories Grid -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-violet-500"></i> Macro-Gruppi Tematici
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              ${categories.map(cat => `
+                <div onclick="navigate('category', '${cat.id}')" 
+                  class="group relative rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between overflow-hidden">
+                  
+                  <div class="absolute top-0 left-0 right-0 h-1.5" style="background-color: ${cat.color}"></div>
+                  
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md text-base" style="background-color: ${cat.color}">
+                        <i class="fa-solid ${cat.icon}"></i>
+                      </div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${cat.tagClass}">
+                        ${cat.methods.length} Metodi
+                      </span>
+                    </div>
+
+                    <h4 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors mb-2">
+                      ${cat.name}
+                    </h4>
+
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      ${cat.desc}
+                    </p>
+                  </div>
+
+                  <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-semibold text-violet-600 dark:text-violet-400">
+                    <span>${cat.prompts.length} Prompt IA pronti</span>
+                    <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function renderGlossaryView() {
+      const q = state.glossaryQuery.trim().toLowerCase();
+      const selectedLetter = state.glossaryFilterLetter;
+
+      // Extract unique first letters
+      const letters = Array.from(new Set(glossaryTerms.map(t => t.term.charAt(0).toUpperCase()))).sort();
+
+      const filteredTerms = glossaryTerms.filter(t => {
+        const matchesQuery = !q || t.term.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q) || t.tags.some(tag => tag.toLowerCase().includes(q));
+        const matchesLetter = selectedLetter === 'ALL' || t.term.charAt(0).toUpperCase() === selectedLetter;
+        return matchesQuery && matchesLetter;
+      });
+
+      return `
+        <div class="max-w-5xl mx-auto space-y-6 fade-in">
+          
+          <!-- Breadcrumb -->
+          <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <button onclick="navigate('welcome')" class="hover:text-violet-500">Dashboard</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-slate-800 dark:text-slate-200 font-semibold truncate">Glossario Pedagogico</span>
+          </nav>
+
+          <!-- Header -->
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm border-l-8 border-l-emerald-500 space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i class="fa-solid fa-book-atlas text-emerald-500"></i> Glossario Didattica & Pedagogia
+                </h1>
+                <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Guida completa ai concetti, modelli teorici, acronimi e metodologie operative.
+                </p>
+              </div>
+              <div class="px-3 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold text-xs shrink-0 text-center">
+                ${filteredTerms.length} di ${glossaryTerms.length} Termini
+              </div>
+            </div>
+
+            <!-- Glossary Local Search Box -->
+            <div class="relative max-w-md">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" value="${escHtml(state.glossaryQuery)}" 
+                oninput="updateGlossaryQuery(this.value)"
+                placeholder="Filtra termini nel glossario..." 
+                class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-all">
+              ${state.glossaryQuery ? `
+                <button onclick="updateGlossaryQuery('')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs">
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Alphabetical Filter Bar -->
+          <div class="flex flex-wrap items-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-xs">
+            <span class="font-bold text-slate-400 text-[11px] mr-2 uppercase">Indice:</span>
+            <button onclick="setGlossaryLetter('ALL')" class="px-2.5 py-1 rounded-lg font-semibold transition-all ${selectedLetter === 'ALL' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+              Tutti (${glossaryTerms.length})
+            </button>
+            ${letters.map(letter => `
+              <button onclick="setGlossaryLetter('${letter}')" class="w-8 h-8 rounded-lg font-semibold flex items-center justify-center transition-all ${selectedLetter === letter ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+                ${letter}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Terms Grid -->
+          ${filteredTerms.length === 0 ? `
+            <div class="text-center py-12 space-y-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <i class="fa-solid fa-book-open-reader text-3xl text-slate-400"></i>
+              <h3 class="font-bold text-slate-700 dark:text-slate-300">Nessun termine corrisponde ai criteri</h3>
+              <p class="text-xs text-slate-500">Prova a modificare il testo di ricerca o la lettera selezionata.</p>
+              <button onclick="updateGlossaryQuery(''); setGlossaryLetter('ALL');" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold">
+                Reset Filtri
+              </button>
+            </div>
+          ` : `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${filteredTerms.map(t => `
+                <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-3 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all">
+                  <div class="flex items-start justify-between gap-3">
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>${highlightText(t.term, state.glossaryQuery)}</span>
+                    </h3>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 shrink-0">
+                      ${t.cat}
+                    </span>
+                  </div>
+
+                  <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    ${highlightText(t.desc, state.glossaryQuery)}
+                  </p>
+
+                  <div class="flex flex-wrap gap-1.5 pt-1">
+                    ${t.tags.map(tag => `
+                      <span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-700/60 text-slate-500 dark:text-slate-400 font-medium">
+                        #${tag}
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+
+        </div>
+      `;
+    }
+
+    function updateGlossaryQuery(val) {
+      state.glossaryQuery = val;
+      renderContent();
+    }
+
+    function setGlossaryLetter(letter) {
+      state.glossaryFilterLetter = letter;
+      renderContent();
+    }
+
+    function renderCategoryView() {
+      const cat = getCat(state.currentCatId);
+      if (!cat) return '<p class="text-slate-500">Categoria non trovata.</p>';
+
+      return `
+        <div class="max-w-5xl mx-auto space-y-6 fade-in">
+          
+          <!-- Breadcrumb -->
+          <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <button onclick="navigate('welcome')" class="hover:text-violet-500">Dashboard</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-slate-800 dark:text-slate-200 font-semibold truncate">${cat.name}</span>
+          </nav>
+
+          <!-- Header -->
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-8" style="border-left-color: ${cat.color}">
+            <div>
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg shadow-md" style="background-color: ${cat.color}">
+                  <i class="fa-solid ${cat.icon}"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">${cat.name}</h1>
+              </div>
+              <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-2">${cat.desc}</p>
+            </div>
+
+            <button onclick="navigate('prompts', '${cat.id}')" 
+              class="shrink-0 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20 transition-all">
+              <i class="fa-solid fa-robot"></i>
+              <span>Vedi i Prompt IA (${cat.prompts.length})</span>
+            </button>
+          </div>
+
+          <!-- Methods List -->
+          <div class="space-y-4">
+            <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Metodologie della Categoria</h3>
+
+            ${cat.methods.map(m => {
+              const starred = isBookmarked('method', m.id);
+              return `
+                <div class="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 p-5 shadow-sm space-y-4 hover:border-violet-300 dark:hover:border-violet-700 transition-all">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                      <h4 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>${m.title}</span>
+                      </h4>
+                      <div class="flex flex-wrap gap-1.5 pt-1">
+                        ${m.tags.map(t => `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold ${cat.tagClass}">${t}</span>`).join('')}
+                      </div>
+                    </div>
+
+                    <button onclick="toggleBookmark('method', '${m.id}')" 
+                      class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-400 hover:text-amber-400 transition-colors">
+                      <i class="fa-solid fa-star ${starred ? 'text-amber-400' : ''}"></i>
+                    </button>
+                  </div>
+
+                  <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p class="font-semibold text-slate-800 dark:text-slate-200 mb-1"><i class="fa-solid fa-lightbulb text-amber-500 mr-1.5"></i> Principi e Svolgimento:</p>
+                    ${m.principles}
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/80">
+                      <p class="font-semibold text-violet-600 dark:text-violet-400 mb-1"><i class="fa-solid fa-user-graduate mr-1"></i> Ruolo dello Studente:</p>
+                      <p class="text-slate-600 dark:text-slate-400 leading-normal">${m.studentRole}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/80">
+                      <p class="font-semibold text-indigo-600 dark:text-indigo-400 mb-1"><i class="fa-solid fa-chalkboard-user mr-1"></i> Ruolo del Docente:</p>
+                      <p class="text-slate-600 dark:text-slate-400 leading-normal">${m.teacherRole}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400">
+                      <i class="fa-solid fa-bullseye text-emerald-500 mr-1"></i> <b>Risultato:</b> ${m.outcomes}
+                    </span>
+                    <button onclick="navigate('method', '${cat.id}', '${m.id}')" 
+                      class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-violet-600 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors shrink-0">
+                      Dettaglio →
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+        </div>
+      `;
+    }
+
+    function renderMethodDetailView() {
+      const m = getMethod(state.currentMethodId);
+      if (!m) return '<p class="text-slate-500">Metodologia non trovata.</p>';
+      const cat = getCat(m.catId);
+      const starred = isBookmarked('method', m.id);
+
+      return `
+        <div class="max-w-4xl mx-auto space-y-6 fade-in">
+          
+          <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <button onclick="navigate('welcome')" class="hover:text-violet-500">Dashboard</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <button onclick="navigate('category', '${cat.id}')" class="hover:text-violet-500 truncate">${cat.name}</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-slate-800 dark:text-slate-200 font-semibold truncate">${m.title}</span>
+          </nav>
+
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md space-y-6">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${cat.tagClass}">
+                  <i class="fa-solid ${cat.icon} mr-1"></i> ${cat.name}
+                </span>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-3">${m.title}</h1>
+              </div>
+
+              <button onclick="toggleBookmark('method', '${m.id}')" 
+                class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-400 hover:text-amber-400 transition-colors shrink-0">
+                <i class="fa-solid fa-star ${starred ? 'text-amber-400' : ''}"></i>
+              </button>
+            </div>
+
+            <div class="p-5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 space-y-2">
+              <h3 class="font-bold text-xs uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> Principi e Svolgimento Operativo
+              </h3>
+              <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${m.principles}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-5 rounded-xl bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40 space-y-2">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-violet-700 dark:text-violet-300 flex items-center gap-2">
+                  <i class="fa-solid fa-user-graduate"></i> Ruolo dello Studente
+                </h4>
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${m.studentRole}</p>
+              </div>
+
+              <div class="p-5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/40 space-y-2">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-indigo-700 dark:text-indigo-300 flex items-center gap-2">
+                  <i class="fa-solid fa-chalkboard-user"></i> Ruolo del Docente
+                </h4>
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${m.teacherRole}</p>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 space-y-2">
+              <h4 class="font-bold text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <i class="fa-solid fa-bullseye"></i> Risultati di Apprendimento
+              </h4>
+              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${m.outcomes}</p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+              ${m.tags.map(t => `<span class="px-2.5 py-1 rounded-lg text-xs font-semibold ${cat.tagClass}">${t}</span>`).join('')}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function renderPromptsView() {
+      const cat = getCat(state.currentCatId);
+      if (!cat) return '<p class="text-slate-500">Categoria non trovata.</p>';
+
+      return `
+        <div class="max-w-5xl mx-auto space-y-6 fade-in">
+          
+          <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <button onclick="navigate('welcome')" class="hover:text-violet-500">Dashboard</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <button onclick="navigate('category', '${cat.id}')" class="hover:text-violet-500 truncate">${cat.name}</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-slate-800 dark:text-slate-200 font-semibold truncate">Prompt IA</span>
+          </nav>
+
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm border-l-8" style="border-left-color: ${cat.color}">
+            <h1 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-robot text-violet-500"></i> Prompt IA per ${cat.name}
+            </h1>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Pronti per ChatGPT, Claude, Gemini e Copilot. Fai clic su un prompt per personalizzare i parametri ed esportare.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            ${cat.prompts.map(p => renderPromptCard({...p, catId: cat.id})).join('')}
+          </div>
+
+        </div>
+      `;
+    }
+
+    function renderPromptCard(p) {
+      const catId = p.catId || state.currentCatId;
+      const cat = getCat(catId);
+      const starred = isBookmarked('prompt', p.id);
+      const placeholders = extractPlaceholders(p.text);
+      const customizedText = getCustomizedPromptText(p.id);
+
+      return `
+        <div class="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 p-5 shadow-sm space-y-4 hover:border-violet-300 dark:hover:border-violet-700 transition-all">
+          
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-violet-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                #${p.num}
+              </div>
+              <h4 class="font-bold text-base text-slate-900 dark:text-white">${p.title}</h4>
+            </div>
+
+            <button onclick="toggleBookmark('prompt', '${p.id}')" 
+              class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-400 hover:text-amber-400 transition-colors">
+              <i class="fa-solid fa-star ${starred ? 'text-amber-400' : ''}"></i>
+            </button>
+          </div>
+
+          <!-- Interactive Placeholder Inputs -->
+          ${placeholders.length > 0 ? `
+            <div class="p-4 rounded-xl bg-violet-50/60 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40 space-y-3">
+              <p class="text-xs font-bold text-violet-700 dark:text-violet-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders"></i> Personalizza i parametri del prompt prima di copiarlo:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${placeholders.map(ph => {
+                  const inputKey = `${p.id}_${ph}`;
+                  const currentVal = state.customInputs[inputKey] || '';
+                  return `
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 truncate">
+                        [${ph}]
+                      </label>
+                      <input type="text" value="${escHtml(currentVal)}" 
+                        oninput="updatePromptInput('${p.id}', '${ph.replace(/'/g, "\\'")}', this.value)"
+                        placeholder="Inserisci il tuo valore..."
+                        class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-violet-500 dark:text-slate-100">
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Text Preview -->
+          <div class="relative group">
+            <pre data-prompt-preview="${p.id}" class="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs leading-relaxed whitespace-pre-wrap overflow-x-auto border border-slate-800">${escHtml(customizedText)}</pre>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-between pt-2">
+            <button onclick="navigate('prompt-detail', '${cat ? cat.id : ''}', null, '${p.id}')" 
+              class="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400">
+              Vedi in vista isolata →
+            </button>
+
+            <button onclick="copyToClipboard(getCustomizedPromptText('${p.id}'))" 
+              class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-violet-500/20 transition-all">
+              <i class="fa-solid fa-copy"></i>
+              <span>Copia Prompt</span>
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function updatePromptInput(promptId, placeholder, value) {
+      const key = `${promptId}_${placeholder}`;
+      state.customInputs[key] = value;
+      
+      const updatedText = getCustomizedPromptText(promptId);
+      const previewElems = document.querySelectorAll(`[data-prompt-preview="${promptId}"]`);
+      previewElems.forEach(elem => {
+        elem.textContent = updatedText;
+      });
+    }
+
+    function copyAllCatPrompts(catId) {
+      const cat = getCat(catId);
+      if (!cat) return;
+      const allText = cat.prompts.map(p => `=== PROMPT #${p.num}: ${p.title} ===\n\n${getCustomizedPromptText(p.id)}`).join('\n\n' + '='.repeat(40) + '\n\n');
+      copyToClipboard(allText);
+    }
+
+    function renderPromptDetailView() {
+      const p = getPrompt(state.currentPromptId);
+      if (!p) return '<p class="text-slate-500">Prompt non trovato.</p>';
+      const cat = getCat(p.catId);
+
+      return `
+        <div class="max-w-4xl mx-auto space-y-6 fade-in">
+          <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <button onclick="navigate('welcome')" class="hover:text-violet-500">Dashboard</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <button onclick="navigate('category', '${cat.id}')" class="hover:text-violet-500 truncate">${cat.name}</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <button onclick="navigate('prompts', '${cat.id}')" class="hover:text-violet-500">Prompt IA</button>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-slate-800 dark:text-slate-200 font-semibold truncate">Prompt #${p.num}</span>
+          </nav>
+
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${cat.tagClass}">
+                <i class="fa-solid ${cat.icon} mr-1"></i> ${cat.name}
+              </span>
+              <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-3">Prompt #${p.num}: ${p.title}</h1>
+            </div>
+
+            ${renderPromptCard(p)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBookmarksView() {
+      if (state.bookmarks.length === 0) {
+        return `
+          <div class="max-w-xl mx-auto text-center py-16 space-y-4 fade-in">
+            <div class="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-2xl mx-auto">
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Nessun preferito salvato</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Clicca sull'icona della stella presente su qualsiasi metodologia o prompt per salvarlo qui per un accesso rapido.
+            </p>
+            <button onclick="navigate('welcome')" class="px-4 py-2 rounded-xl bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700">
+              Torna alla Dashboard
+            </button>
+          </div>
+        `;
+      }
+
+      const bookmarkedMethods = state.bookmarks.filter(b => b.type === 'method').map(b => getMethod(b.id)).filter(Boolean);
+      const bookmarkedPrompts = state.bookmarks.filter(b => b.type === 'prompt').map(b => getPrompt(b.id)).filter(Boolean);
+
+      return `
+        <div class="max-w-5xl mx-auto space-y-8 fade-in">
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h1 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-star text-amber-500"></i> I Miei Elementi Preferiti
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${state.bookmarks.length} elementi salvati nel tuo browser</p>
+          </div>
+
+          ${bookmarkedMethods.length > 0 ? `
+            <div class="space-y-4">
+              <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Metodologie Salvate (${bookmarkedMethods.length})</h3>
+              <div class="grid grid-cols-1 gap-4">
+                ${bookmarkedMethods.map(m => {
+                  const cat = getCat(m.catId);
+                  return `
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between gap-4">
+                      <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${cat.tagClass}">${cat.name}</span>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">${m.title}</h4>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <button onclick="navigate('method', '${cat.id}', '${m.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-xs font-semibold">Vedi</button>
+                        <button onclick="toggleBookmark('method', '${m.id}')" class="p-1.5 text-amber-500 hover:text-slate-400"><i class="fa-solid fa-star"></i></button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${bookmarkedPrompts.length > 0 ? `
+            <div class="space-y-4">
+              <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Prompt IA Salvati (${bookmarkedPrompts.length})</h3>
+              <div class="space-y-4">
+                ${bookmarkedPrompts.map(p => renderPromptCard(p)).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderSearchView() {
+      const q = state.searchQuery.trim();
+      if (!q || q.length < 2) {
+        return `
+          <div class="max-w-md mx-auto text-center py-16 text-slate-500 space-y-2 fade-in">
+            <i class="fa-solid fa-magnifying-glass text-3xl text-slate-400"></i>
+            <p class="text-sm font-semibold">Digita almeno 2 caratteri per cercare...</p>
+          </div>
+        `;
+      }
+
+      const methods = getAllMethods().filter(m => matchItem(m, q));
+      const prompts = getAllPrompts().filter(p => matchPrompt(p, q));
+      const glossaryResults = glossaryTerms.filter(t => t.term.toLowerCase().includes(q.toLowerCase()) || t.desc.toLowerCase().includes(q.toLowerCase()));
+      const total = methods.length + prompts.length + glossaryResults.length;
+
+      if (total === 0) {
+        return `
+          <div class="max-w-md mx-auto text-center py-16 space-y-3 fade-in">
+            <i class="fa-solid fa-face-frown text-4xl text-slate-400"></i>
+            <h3 class="font-bold text-slate-800 dark:text-slate-200">Nessun risultato trovato</h3>
+            <p class="text-xs text-slate-500">Nessuna corrispondenza per "${escHtml(q)}". Prova con altri termini di ricerca.</p>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="max-w-5xl mx-auto space-y-8 fade-in">
+          
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h1 class="text-lg font-bold text-slate-900 dark:text-white">
+              Risultati di ricerca per: <span class="text-violet-600 dark:text-violet-400">"${escHtml(q)}"</span>
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Trovati ${total} elementi (${methods.length} metodologie, ${prompts.length} prompt, ${glossaryResults.length} glossario)</p>
+          </div>
+
+          ${glossaryResults.length > 0 ? `
+            <div class="space-y-4">
+              <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <i class="fa-solid fa-book-atlas mr-1"></i> Termini Glossario (${glossaryResults.length})
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${glossaryResults.map(t => `
+                  <div onclick="navigate('glossary'); state.glossaryQuery='${t.term.replace(/'/g, "\\'")}';" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-800/60 shadow-sm hover:border-emerald-500 cursor-pointer transition-all space-y-2">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">${t.cat}</span>
+                    <h4 class="font-bold text-sm text-slate-900 dark:text-white">${highlightText(t.term, q)}</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">${highlightText(t.desc, q)}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${methods.length > 0 ? `
+            <div class="space-y-4">
+              <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Metodologie (${methods.length})</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${methods.map(m => {
+                  const cat = getCat(m.catId);
+                  return `
+                    <div onclick="navigate('method', '${m.catId}', '${m.id}')" 
+                      class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-violet-400 cursor-pointer transition-all space-y-2">
+                      <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${m.catTagClass}">${cat.name}</span>
+                      <h4 class="font-bold text-sm text-slate-900 dark:text-white">${highlightText(m.title, q)}</h4>
+                      <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">${highlightText(m.principles, q)}</p>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${prompts.length > 0 ? `
+            <div class="space-y-4">
+              <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Prompt IA (${prompts.length})</h3>
+              <div class="space-y-4">
+                ${prompts.map(p => renderPromptCard(p)).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+        </div>
+      `;
+    }
+
+    function matchItem(m, q) {
+      if (!q) return false;
+      const low = q.toLowerCase();
+      return m.title.toLowerCase().includes(low) ||
+             m.principles.toLowerCase().includes(low) ||
+             m.studentRole.toLowerCase().includes(low) ||
+             m.teacherRole.toLowerCase().includes(low) ||
+             m.outcomes.toLowerCase().includes(low) ||
+             (m.tags && m.tags.some(t => t.toLowerCase().includes(low)));
+    }
+
+    function matchPrompt(p, q) {
+      if (!q) return false;
+      const low = q.toLowerCase();
+      return p.title.toLowerCase().includes(low) || p.text.toLowerCase().includes(low);
+    }
+
+    function renderAll() {
+      renderCategoryNav();
+      renderTopbar();
+      renderContent();
+      updateBookmarkBadge();
+    }
+
+    function applyTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+
+      if (state.darkMode) {
+        html.classList.add('dark');
+        if (icon) icon.className = 'fa-solid fa-sun text-amber-400';
+        if (label) label.textContent = 'Tema Chiaro';
+        localStorage.setItem('didattica_theme', 'dark');
+      } else {
+        html.classList.remove('dark');
+        if (icon) icon.className = 'fa-solid fa-moon text-violet-400';
+        if (label) label.textContent = 'Tema Scuro';
+        localStorage.setItem('didattica_theme', 'light');
+      }
+    }
+
+    // Event Listeners Initialization
+    window.addEventListener('load', () => {
+      applyTheme();
+      
+      // Theme Toggle
+      document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+        state.darkMode = !state.darkMode;
+        applyTheme();
+      });
+
+      // Search Inputs
+      const searchInput = document.getElementById('searchInput');
+      const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          state.searchQuery = e.target.value;
+          if (clearSearchBtn) {
+            clearSearchBtn.classList.toggle('hidden', state.searchQuery.length === 0);
+          }
+
+          if (state.searchQuery.trim().length >= 2) {
+            state.currentView = 'search';
+            location.hash = 'search-' + encodeURIComponent(state.searchQuery);
+            renderAll();
+          } else if (state.searchQuery.trim().length === 0 && state.currentView === 'search') {
+            navigate('welcome');
+          }
+        });
+      }
+
+      if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', () => {
+          if (searchInput) searchInput.value = '';
+          state.searchQuery = '';
+          clearSearchBtn.classList.add('hidden');
+          navigate('welcome');
+        });
+      }
+
+      // Mobile Sidebar Controls
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const openBtn = document.getElementById('openSidebarBtn');
+      const closeBtn = document.getElementById('closeSidebarBtn');
+
+      function openSidebar() {
+        sidebar?.classList.remove('-translate-x-full');
+        backdrop?.classList.remove('hidden');
+      }
+
+      function closeSidebar() {
+        sidebar?.classList.add('-translate-x-full');
+        backdrop?.classList.add('hidden');
+      }
+
+      openBtn?.addEventListener('click', openSidebar);
+      closeBtn?.addEventListener('click', closeSidebar);
+      backdrop?.addEventListener('click', closeSidebar);
+
+      // Hash Sync
+      window.addEventListener('hashchange', readHash);
+      readHash();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come Funzionano gli LLM — Guida Visiva GSAP</title>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- GSAP 3 CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+  :root {
+    --bg: #0a0a1a;
+    --bg2: #12122a;
+    --bg3: #1a1a3e;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b9d;
+    --text: #e8e8f0;
+    --text2: #a0a0c0;
+    --card: rgba(26,26,62,0.85);
+    --radius: 16px;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+  /* Glassmorphism card */
+  .glass-card {
+    background: var(--card);
+    border: 1px solid rgba(108,99,255,0.2);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+  }
+
+  .attn-arc {
+    fill: none;
+    transition: stroke 0.3s, stroke-width 0.3s, opacity 0.3s;
+    cursor: pointer;
+  }
+
+  .attn-arc:hover {
+    stroke-width: 4px !important;
+    opacity: 1 !important;
+  }
+
+  .tf-block {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .tf-block:hover {
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 12px var(--accent));
+  }
+
+  /* Pulse animation */
+  @keyframes glowPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px var(--accent)); }
+    50% { filter: drop-shadow(0 0 16px var(--accent2)); }
+  }
+  .glowing { animation: glowPulse 2s infinite; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- NAVIGATION -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-opacity-90 bg-[#0a0a1a] backdrop-blur-md border-b border-indigo-900/40 px-6 py-4">
+  <div class="max-w-6xl mx-auto flex justify-between items-center">
+    <div class="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-teal-300 to-pink-400">
+      🧠 LLM Visual Explorer (GSAP)
+    </div>
+    <div class="hidden md:flex space-x-1 text-xs font-semibold">
+      <a href="#tokenization" class="px-3 py-2 rounded-lg text-gray-300 hover:text-indigo-400 hover:bg-indigo-950/40 transition">1. Tokenizzazione</a>
+      <a href="#embeddings" class="px-3 py-2 rounded-lg text-gray-300 hover:text-indigo-400 hover:bg-indigo-950/40 transition">2. Embeddings</a>
+      <a href="#attention" class="px-3 py-2 rounded-lg text-indigo-400 bg-indigo-950/60 transition">3. Attenzione</a>
+      <a href="#transformer" class="px-3 py-2 rounded-lg text-indigo-400 bg-indigo-950/60 transition">4. Transformer</a>
+      <a href="#generation" class="px-3 py-2 rounded-lg text-gray-300 hover:text-indigo-400 hover:bg-indigo-950/40 transition">5. Generazione</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="pt-32 pb-16 px-6 max-w-5xl mx-auto text-center relative">
+  <div id="hero-particles" class="absolute inset-0 pointer-events-none opacity-40"></div>
+  <span class="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
+    Spiegazione Visuale GSAP
+  </span>
+  <h1 class="text-4xl md:text-6xl font-black mt-6 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400">
+    Come Funziona un Large Language Model
+  </h1>
+  <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
+    Visualizzazione vettoriale ad alta definizione per comprendere il percorso dei token, la Self-Attention e il flusso di dati nel Transformer.
+  </p>
+  <a href="#attention" class="inline-block px-8 py-3.5 rounded-full bg-gradient-to-r from-indigo-500 to-teal-400 text-white font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 transition transform">
+    Guarda Attenzione e Transformer ↓
+  </a>
+</section>
+
+<!-- 1. TOKENIZATION -->
+<section id="tokenization" class="py-12 px-6 max-w-5xl mx-auto">
+  <div class="text-center mb-8">
+    <span class="text-indigo-400 font-bold text-xs uppercase tracking-widest">Fase 1</span>
+    <h2 class="text-3xl font-extrabold text-white mt-1">Tokenizzazione</h2>
+    <p class="text-gray-400 text-sm mt-2">I testi vengono divisi in sotto-parole o numeri (token ID) elaborabili dalla rete neurale.</p>
+  </div>
+
+  <!-- Scheda Spiegazione Dettagliata -->
+  <div class="glass-card p-6 mb-6 text-xs leading-relaxed text-gray-300">
+    <h3 class="text-indigo-300 font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="p-1 rounded bg-indigo-500/20 text-indigo-400">📖</span> Cos'è e come funziona la Tokenizzazione?
+    </h3>
+    <p class="mb-2">
+      I modelli LLM non comprendono direttamente le parole o i caratteri così come li leggiamo noi umani. Per questo motivo, il primo passo fondamentale consiste nella <strong>tokenizzazione</strong>: un processo che scompone il testo di input in unità atomiche chiamate <em>token</em>.
+    </p>
+    <div class="grid md:grid-cols-3 gap-3 mt-3 pt-3 border-t border-indigo-900/40 text-[11px]">
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-teal-300 block mb-1">1. Algoritmi BPE / WordPiece</strong>
+        I modelli utilizzano algoritmi come BPE (Byte-Pair Encoding) per spezzare parole frequenti in un unico token e parole rare o composte in sotto-parole (es. "intelli" + "genza").
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-indigo-300 block mb-1">2. Mappatura Numerica (Token ID)</strong>
+        Ogni token corrisponde univocamente a un numero intero presente nel dizionario del modello (vocabolario), tipicamente composto da 32.000 a oltre 100.000 elementi.
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-pink-300 block mb-1">3. Gestione dei Prefissi</strong>
+        I caratteri speciali (come "##") indicano che il token fa parte della continuazione di una parola precedente, garantendo massima efficienza e flessibilità linguistica.
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card p-6 md:p-8">
+    <label class="block text-xs font-bold text-indigo-300 uppercase mb-2">Scrivi una frase di prova:</label>
+    <input type="text" id="tokenInput" value="L'intelligenza artificiale comprende il linguaggio umano" 
+      class="w-full bg-[#0a0a1a] border border-indigo-500/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-400 text-lg mb-6">
+    
+    <div id="tokenOutput" class="flex flex-wrap gap-3 min-h-[60px] p-4 bg-black/30 rounded-xl border border-indigo-900/30"></div>
+  </div>
+</section>
+
+<!-- 2. EMBEDDINGS -->
+<section id="embeddings" class="py-12 px-6 max-w-5xl mx-auto">
+  <div class="text-center mb-8">
+    <span class="text-indigo-400 font-bold text-xs uppercase tracking-widest">Fase 2</span>
+    <h2 class="text-3xl font-extrabold text-white mt-1">Embeddings Vettoriali</h2>
+    <p class="text-gray-400 text-sm mt-2">Ogni token viene proiettato in uno spazio vettoriale dove concetti simili sono vicini.</p>
+  </div>
+
+  <!-- Scheda Spiegazione Dettagliata -->
+  <div class="glass-card p-6 mb-6 text-xs leading-relaxed text-gray-300">
+    <h3 class="text-indigo-300 font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="p-1 rounded bg-indigo-500/20 text-indigo-400">🎯</span> Come funzionano gli Embeddings e lo Spazio Vettoriale?
+    </h3>
+    <p class="mb-2">
+      Una volta ottenuto l'ID del token, il modello lo converte in un <strong>vettore numerico denso</strong> (l'<em>Embedding</em>). Un embedding trasforma concetti astratti in punti matematici posizionati all'interno di uno spazio geometrico ad altissima dimensione (es. 768, 1536 o 4096 dimensioni).
+    </p>
+    <div class="grid md:grid-cols-3 gap-3 mt-3 pt-3 border-t border-indigo-900/40 text-[11px]">
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-teal-300 block mb-1">1. Prossimità Semantica</strong>
+        Parole con significati simili o contesti d'uso affini (come "cane" e "gatto") hanno vettori molto vicini nello spazio vettoriale, misurati tramite similarità del coseno.
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-indigo-300 block mb-1">2. Algebra delle Parole</strong>
+        Le relazioni concettuali diventano operazioni aritmetiche: ad esempio, calcolando <em>Vettore("Re") - Vettore("Uomo") + Vettore("Donna")</em> si ottiene un risultato vicinissimo a <em>Vettore("Regina")</em>.
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-pink-300 block mb-1">3. Riduzione Dimensionale</strong>
+        Nel grafico sottostante visualizziamo una proiezione semplificata a 2D di questi vettori suddivisi in cluster tematici (Animali, Tecnologia, Natura).
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card p-6 text-center">
+    <svg id="embeddingSvg" class="w-full h-80 rounded-xl bg-black/40 border border-indigo-900/40" viewBox="0 0 800 320"></svg>
+    <div class="flex justify-center gap-4 mt-4">
+      <button onclick="animateCluster('animali')" class="px-4 py-2 bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-lg text-sm font-semibold hover:bg-indigo-600/50">Cluster Animali</button>
+      <button onclick="animateCluster('tecnologia')" class="px-4 py-2 bg-teal-600/30 text-teal-300 border border-teal-500/40 rounded-lg text-sm font-semibold hover:bg-teal-600/50">Cluster Tecnologia</button>
+      <button onclick="animateCluster('natura')" class="px-4 py-2 bg-pink-600/30 text-pink-300 border border-pink-500/40 rounded-lg text-sm font-semibold hover:bg-pink-600/50">Cluster Natura</button>
+    </div>
+  </div>
+</section>
+
+<!-- 3. ATTENTION MECHANISM -->
+<section id="attention" class="py-12 px-6 max-w-5xl mx-auto">
+  <div class="text-center mb-8">
+    <span class="text-indigo-400 font-bold text-xs uppercase tracking-widest">Fase 3</span>
+    <h2 class="text-3xl font-extrabold text-white mt-1">Meccanismo di Self-Attention</h2>
+    <p class="text-gray-400 text-sm mt-2">Ogni parola calcola la sua relazione (Query × Key) con tutte le altre parole del testo.</p>
+  </div>
+
+  <!-- Scheda Spiegazione Dettagliata -->
+  <div class="glass-card p-6 mb-6 text-xs leading-relaxed text-gray-300">
+    <h3 class="text-indigo-300 font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="p-1 rounded bg-indigo-500/20 text-indigo-400">⚡</span> Cos'è l'Attenzione e perché ha rivoluzionato l'AI?
+    </h3>
+    <p class="mb-2">
+      Introdotta nel celebre paper <em>"Attention Is All You Need" (2017)</em>, la <strong>Self-Attention</strong> consente al modello di valutare il contesto globale della frase contemporaneamente, collegando parole anche molto distanti tra loro per risolvere ambiguità grammaticali e semantiche.
+    </p>
+    <div class="grid md:grid-cols-3 gap-3 mt-3 pt-3 border-t border-indigo-900/40 text-[11px]">
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-teal-300 block mb-1">1. Query, Key e Value (Q, K, V)</strong>
+        Ogni token crea tre vettori: la <strong>Query</strong> (cosa sto cercando?), la <strong>Key</strong> (cosa offro come contenuto?) e il <strong>Value</strong> (l'informazione reale da trasmettere).
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-indigo-300 block mb-1">2. Prodotto Scalare & Softmax</strong>
+        Moltiplicando Query e Key di due parole si ottiene un punteggio d'affinità. La funzione Softmax converte questi punteggi in percentuali (pesi d'attenzione da 0% a 100%).
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-pink-300 block mb-1">3. Multi-Head Attention</strong>
+        I Transformer applicano molteplici "teste d'attenzione" in parallelo, permettendo al modello di focalizzarsi allo stesso tempo su regole sintattiche, riferimenti ai pronomi e relazioni logiche.
+      </div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <!-- SVG Attention Arcs Diagram -->
+    <div class="md:col-span-2 glass-card p-6 flex flex-col justify-between">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-indigo-300 font-bold text-sm uppercase">Grafico Archi d'Attenzione (Interactive SVG)</h3>
+        <select id="attnSentenceSelect" onchange="loadAttentionSentence()" class="bg-[#12122a] border border-indigo-500/40 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none">
+          <option value="0">Il gatto dorme sul divano morbido</option>
+          <option value="1">La luna illumina il mare di notte</option>
+          <option value="2">L'AI comprende il contesto completo</option>
+        </select>
+      </div>
+
+      <!-- SVG Canvas for Attention Arcs -->
+      <svg id="attnSvg" class="w-full h-64 bg-black/40 rounded-xl border border-indigo-900/40" viewBox="0 0 700 240"></svg>
+
+      <div id="attnInfoCard" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-500/30 rounded-lg text-xs text-gray-300 min-h-[42px] flex items-center">
+        💡 Clicca su una parola o passa il mouse sugli archi per esplorare i pesi di attenzione!
+      </div>
+    </div>
+
+    <!-- Heatmap Matrix -->
+    <div class="glass-card p-6 flex flex-col justify-between">
+      <h3 class="text-teal-300 font-bold text-sm uppercase mb-4">Matrice di Attenzione</h3>
+      <div id="attnHeatmap" class="grid gap-1 my-auto"></div>
+      <div class="mt-4 text-[11px] text-gray-400 text-center">
+        Intensità del colore = Peso Softmax(Q·Kᵀ / √d)
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. TRANSFORMER ARCHITECTURE -->
+<section id="transformer" class="py-12 px-6 max-w-5xl mx-auto">
+  <div class="text-center mb-8">
+    <span class="text-indigo-400 font-bold text-xs uppercase tracking-widest">Fase 4</span>
+    <h2 class="text-3xl font-extrabold text-white mt-1">Architettura Transformer</h2>
+    <p class="text-gray-400 text-sm mt-2">I blocchi sovrapposti elaborano e trasformano i vettori di input attraverso l'attenzione e reti feed-forward.</p>
+  </div>
+
+  <!-- Scheda Spiegazione Dettagliata -->
+  <div class="glass-card p-6 mb-6 text-xs leading-relaxed text-gray-300">
+    <h3 class="text-indigo-300 font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="p-1 rounded bg-indigo-500/20 text-indigo-400">🏗️</span> Come funziona la pipeline profonda del Transformer?
+    </h3>
+    <p class="mb-2">
+      L'architettura Transformer è composta da una sequenza di blocchi identici sovrapposti in profondità (da 12 nei modelli base ad oltre 96 nei modelli più avanzati). Ogni blocco affina progressivamente la rappresentazione concettuale dei dati.
+    </p>
+    <div class="grid md:grid-cols-3 gap-3 mt-3 pt-3 border-t border-indigo-900/40 text-[11px]">
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-teal-300 block mb-1">1. Encoding Posizionale</strong>
+        Poiché il Transformer elabora tutti i token in parallelo e non uno alla volta, vengono aggiunti vettori d'onda trigonometrici (seno/coseno) per codificare la posizione esatta di ogni parola nella sequenza.
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-indigo-300 block mb-1">2. Connessioni Residue & Norm</strong>
+        Per evitare che l'informazione si degradi nelle reti molto profonde, gli input saltano attorno ai sotto-blocchi (connessioni residue) e vengono stabilizzati tramite <em>Layer Normalization</em>.
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-pink-300 block mb-1">3. Feed-Forward Network (FFN)</strong>
+        Dopo l'attenzione tra token, ciascun vettore passa individualmente attraverso una rete densa FFN che estrae e memorizza fatti e concetti complessi appresi dal modello.
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card p-6 md:p-8">
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-indigo-900/40">
+      <div class="flex gap-3">
+        <button onclick="triggerTfFlow()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-teal-400 text-white font-bold rounded-lg text-xs shadow hover:opacity-90">
+          ▶ Avvia Flusso Dati GSAP
+        </button>
+        <button onclick="toggleTfLayers()" class="px-4 py-2 bg-indigo-900/40 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-semibold hover:bg-indigo-800/40">
+          🔄 Cambia Num Strati (N)
+        </button>
+      </div>
+      <div class="text-xs text-gray-400">
+        Stato Pipeline: <span id="tfStatus" class="text-teal-400 font-bold">Attivo</span>
+      </div>
+    </div>
+
+    <!-- Interactive Transformer SVG Diagram -->
+    <div class="relative">
+      <svg id="transformerSvg" class="w-full h-[480px] bg-black/40 rounded-xl border border-indigo-900/40" viewBox="0 0 800 480"></svg>
+    </div>
+
+    <!-- Dynamic Description Box -->
+    <div id="tfComponentInfo" class="mt-6 p-4 bg-indigo-950/60 border border-indigo-500/30 rounded-xl text-sm text-gray-300">
+      <strong class="text-indigo-400">🔍 Clicca su un qualsiasi blocco del Transformer</strong> sopra per scoprirne la funzione dettagliata all'interno del modello.
+    </div>
+  </div>
+</section>
+
+<!-- 5. GENERATION & TEMPERATURE -->
+<section id="generation" class="py-12 px-6 max-w-5xl mx-auto mb-16">
+  <div class="text-center mb-8">
+    <span class="text-indigo-400 font-bold text-xs uppercase tracking-widest">Fase 5</span>
+    <h2 class="text-3xl font-extrabold text-white mt-1">Generazione e Temperatura</h2>
+    <p class="text-gray-400 text-sm mt-2">La temperatura regola la nitidezza della distribuzione di probabilità della parola successiva.</p>
+  </div>
+
+  <!-- Scheda Spiegazione Dettagliata -->
+  <div class="glass-card p-6 mb-6 text-xs leading-relaxed text-gray-300">
+    <h3 class="text-indigo-300 font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="p-1 rounded bg-indigo-500/20 text-indigo-400">🎲</span> Generazione Autoregressiva e Parametri di Campionamento
+    </h3>
+    <p class="mb-2">
+      I modelli linguistici sono motori probabilistici autoregressivi: generano il testo <strong>un token alla volta</strong>. Dopo aver calcolato la probabilità per ciascuna parola del vocabolario, il modello ne sceglie una, la aggiunge alla sequenza e riavvia il processo per calcolare la parola successiva.
+    </p>
+    <div class="grid md:grid-cols-3 gap-3 mt-3 pt-3 border-t border-indigo-900/40 text-[11px]">
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-teal-300 block mb-1">1. Temperatura Bassa (T &lt; 0.5)</strong>
+        Rende la distribuzione di probabilità molto "appuntita" (Softmax concentrata). Il modello sceglierà quasi sempre le parole più probabili e prevedibili (utile per dati precisi, matematica e codice).
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-indigo-300 block mb-1">2. Temperatura Alta (T &gt; 1.0)</strong>
+        Appiattisce le probabilità dando maggiore possibilità di scelta alle parole meno frequenti. Questo stimola risposte più creative e variegate, ma aumenta il rischio di allucinazioni o frasi slegate.
+      </div>
+      <div class="bg-black/30 p-2.5 rounded-lg border border-indigo-900/30">
+        <strong class="text-pink-300 block mb-1">3. Top-K & Top-P (Nucleus)</strong>
+        Insieme alla temperatura, i filtri Top-K (limita la scelta alle K parole migliori) e Top-P (mantiene solo i token la cui probabilità cumulata raggiunge P) impediscono al modello di selezionare opzioni del tutto prive di senso.
+      </div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="glass-card p-6">
+      <h3 class="text-indigo-300 font-bold text-sm uppercase mb-4">Controllo Temperatura</h3>
+      <div class="mb-6">
+        <div class="flex justify-between text-xs font-bold mb-2">
+          <span>Temperatura T: <span id="tempVal" class="text-teal-300 text-sm">0.7</span></span>
+          <span id="tempLabel" class="text-indigo-400">Bilanciato</span>
+        </div>
+        <input type="range" id="tempSlider" min="0.1" max="2.0" step="0.1" value="0.7" oninput="updateTemperature()" class="w-full accent-indigo-500 cursor-pointer">
+      </div>
+      
+      <div id="probBars" class="space-y-3"></div>
+    </div>
+
+    <div class="glass-card p-6 flex flex-col justify-between">
+      <div>
+        <h3 class="text-teal-300 font-bold text-sm uppercase mb-3">Generazione Autoregressiva</h3>
+        <p class="text-xs text-gray-400 mb-4">Il modello sceglie un token alla volta, lo aggiunge all'input e ripete il processo.</p>
+        <div id="genTextBox" class="p-4 bg-black/50 border border-indigo-900/40 rounded-xl font-mono text-sm min-h-[100px] text-gray-200">
+          <span id="genText">L'intelligenza artificiale</span><span class="inline-block w-2 h-4 bg-teal-400 ml-1 animate-pulse"></span>
+        </div>
+      </div>
+      <button onclick="startAutoGeneration()" class="mt-4 w-full py-3 bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-bold rounded-xl text-sm shadow-lg hover:opacity-90 transition">
+        ⚡ Simula Prossimo Token
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="text-center py-8 text-xs text-gray-500 border-t border-indigo-950">
+  LLM Explorer GSAP — Guida Didattica Interattiva • Nessuna dipendenza 3D complessa
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────────
+   1. TOKENIZER LOGIC
+   ────────────────────────────────────────────────────────── */
+const tokenColors = ['#6c63ff', '#00d4aa', '#ff6b9d', '#ffd93d', '#4D96FF', '#C084FC'];
+
+function tokenizeText(text) {
+  if (!text.trim()) return [];
+  const words = text.match(/[\w\u00C0-\u024F']+|[^\s\w]/g) || [];
+  const tokens = [];
+  let id = 1200;
+  words.forEach(w => {
+    if (w.length > 7 && Math.random() > 0.3) {
+      const mid = Math.floor(w.length / 2);
+      tokens.push({ text: w.slice(0, mid), id: id++ });
+      tokens.push({ text: '##' + w.slice(mid), id: id++ });
+    } else {
+      tokens.push({ text: w, id: id++ });
+    }
+  });
+  return tokens;
+}
+
+function renderTokens() {
+  const input = document.getElementById('tokenInput').value;
+  const tokens = tokenizeText(input);
+  const container = document.getElementById('tokenOutput');
+  container.innerHTML = '';
+
+  tokens.forEach((t, i) => {
+    const chip = document.createElement('div');
+    const color = tokenColors[i % tokenColors.length];
+    chip.className = 'token-chip px-3 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-2 transform opacity-0 scale-75';
+    chip.style.backgroundColor = color + '20';
+    chip.style.color = color;
+    chip.style.borderColor = color + '60';
+    chip.innerHTML = `<span>${t.text}</span> <span class="text-[10px] opacity-60 font-mono">[${t.id}]</span>`;
+    container.appendChild(chip);
+  });
+
+  gsap.to('.token-chip', {
+    opacity: 1,
+    scale: 1,
+    duration: 0.3,
+    stagger: 0.05,
+    ease: 'back.out(1.7)'
+  });
+}
+
+document.getElementById('tokenInput').addEventListener('input', renderTokens);
+
+/* ──────────────────────────────────────────────────────────
+   2. EMBEDDINGS VECTOR SPACE (SVG + GSAP)
+   ────────────────────────────────────────────────────────── */
+const clustersData = {
+  animali: [
+    { name: 'cane', x: 200, y: 120 }, { name: 'gatto', x: 230, y: 150 },
+    { name: 'leone', x: 180, y: 170 }, { name: 'lupo', x: 250, y: 100 }
+  ],
+  tecnologia: [
+    { name: 'computer', x: 550, y: 110 }, { name: 'robot', x: 580, y: 140 },
+    { name: 'software', x: 520, y: 160 }, { name: 'AI', x: 610, y: 90 }
+  ],
+  natura: [
+    { name: 'albero', x: 380, y: 220 }, { name: 'fiore', x: 410, y: 250 },
+    { name: 'fiume', x: 350, y: 240 }, { name: 'foresta', x: 440, y: 210 }
+  ]
+};
+
+function initEmbeddingsSvg() {
+  const svg = document.getElementById('embeddingSvg');
+  svg.innerHTML = '';
+
+  // Background grid
+  for (let x = 0; x < 800; x += 40) {
+    svg.innerHTML += `<line x1="${x}" y1="0" x2="${x}" y2="320" stroke="rgba(108,99,255,0.06)" stroke-width="1"/>`;
+  }
+  for (let y = 0; y < 320; y += 40) {
+    svg.innerHTML += `<line x1="0" y1="${y}" x2="800" y2="${y}" stroke="rgba(108,99,255,0.06)" stroke-width="1"/>`;
+  }
+
+  const colors = { animali: '#6c63ff', tecnologia: '#00d4aa', natura: '#ff6b9d' };
+
+  Object.keys(clustersData).forEach(key => {
+    const color = colors[key];
+    const points = clustersData[key];
+
+    // Cluster center glow
+    const avgX = points.reduce((s, p) => s + p.x, 0) / points.length;
+    const avgY = points.reduce((s, p) => s + p.y, 0) / points.length;
+
+    svg.innerHTML += `<circle cx="${avgX}" cy="${avgY}" r="60" fill="${color}" fill-opacity="0.1" class="cluster-bg-${key}"/>`;
+
+    points.forEach(p => {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', `emb-node node-${key}`);
+      g.innerHTML = `
+        <circle cx="${p.x}" cy="${p.y}" r="8" fill="${color}" filter="drop-shadow(0 0 6px ${color})"/>
+        <text x="${p.x}" y="${p.y - 12}" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">${p.name}</text>
+      `;
+      svg.appendChild(g);
+    });
+  });
+}
+
+function animateCluster(key) {
+  gsap.to(`.node-${key}`, {
+    scale: 1.3,
+    transformOrigin: 'center center',
+    duration: 0.4,
+    yoyo: true,
+    repeat: 1,
+    ease: 'power2.out'
+  });
+}
+
+/* ──────────────────────────────────────────────────────────
+   3. SELF-ATTENTION VISUAL DIAGRAM & MATRIX
+   ────────────────────────────────────────────────────────── */
+const attnSentences = [
+  {
+    words: ['Il', 'gatto', 'dorme', 'sul', 'divano', 'morbido'],
+    weights: [
+      [0.10, 0.45, 0.15, 0.10, 0.12, 0.08],
+      [0.15, 0.20, 0.35, 0.05, 0.15, 0.10],
+      [0.05, 0.40, 0.15, 0.10, 0.20, 0.10],
+      [0.05, 0.10, 0.10, 0.15, 0.50, 0.10],
+      [0.05, 0.20, 0.15, 0.20, 0.15, 0.25],
+      [0.02, 0.08, 0.05, 0.05, 0.55, 0.25]
+    ]
+  },
+  {
+    words: ['La', 'luna', 'illumina', 'il', 'mare', 'di notte'],
+    weights: [
+      [0.10, 0.50, 0.15, 0.10, 0.10, 0.05],
+      [0.15, 0.20, 0.40, 0.05, 0.10, 0.10],
+      [0.05, 0.35, 0.10, 0.10, 0.25, 0.15],
+      [0.05, 0.10, 0.10, 0.10, 0.55, 0.10],
+      [0.05, 0.15, 0.30, 0.15, 0.15, 0.20],
+      [0.02, 0.20, 0.25, 0.05, 0.18, 0.30]
+    ]
+  },
+  {
+    words: ["L'AI", 'comprende', 'il', 'contesto', 'completo'],
+    weights: [
+      [0.15, 0.45, 0.10, 0.20, 0.10],
+      [0.30, 0.15, 0.10, 0.35, 0.10],
+      [0.05, 0.10, 0.15, 0.60, 0.10],
+      [0.20, 0.30, 0.15, 0.15, 0.20],
+      [0.10, 0.15, 0.05, 0.50, 0.20]
+    ]
+  }
+];
+
+let selectedWordIdx = null;
+
+function loadAttentionSentence() {
+  const idx = parseInt(document.getElementById('attnSentenceSelect').value);
+  const data = attnSentences[idx];
+  renderAttentionArcs(data);
+  renderAttentionHeatmap(data);
+}
+
+function renderAttentionArcs(data) {
+  const svg = document.getElementById('attnSvg');
+  svg.innerHTML = '';
+  const words = data.words;
+  const n = words.length;
+  const spacing = 650 / (n - 1);
+  const startX = 25;
+  const posY = 180;
+
+  // Draw word nodes
+  words.forEach((w, i) => {
+    const x = startX + i * spacing;
+    
+    // Group
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'cursor-pointer');
+    g.onclick = () => highlightAttentionNode(i, data);
+
+    g.innerHTML = `
+      <circle cx="${x}" cy="${posY}" r="14" fill="#12122a" stroke="#6c63ff" stroke-width="2" id="attnNodeCircle-${i}"/>
+      <text x="${x}" y="${posY + 32}" fill="#e8e8f0" font-size="12" font-weight="bold" text-anchor="middle" id="attnNodeText-${i}">${w}</text>
+    `;
+    svg.appendChild(g);
+  });
+
+  // Draw attention arcs between nodes
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (i === j) continue;
+      const x1 = startX + i * spacing;
+      const x2 = startX + j * spacing;
+      const weight = data.weights[i][j];
+      const dist = Math.abs(x1 - x2);
+      const arcHeight = Math.min(130, dist * 0.45);
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const d = `M ${x1} ${posY - 14} C ${x1} ${posY - 14 - arcHeight}, ${x2} ${posY - 14 - arcHeight}, ${x2} ${posY - 14}`;
+      path.setAttribute('d', d);
+      path.setAttribute('class', `attn-arc arc-from-${i} arc-to-${j}`);
+      path.setAttribute('stroke', weight > 0.3 ? '#00d4aa' : '#6c63ff');
+      path.setAttribute('stroke-width', Math.max(1, weight * 6));
+      path.setAttribute('opacity', weight * 0.8 + 0.1);
+
+      path.onmouseenter = () => {
+        document.getElementById('attnInfoCard').innerHTML = 
+          `<strong>"${words[i]}"</strong> → <strong>"${words[j]}"</strong>: Peso Attenzione = <span class="text-teal-300 font-bold">${(weight * 100).toFixed(0)}%</span>`;
+      };
+
+      svg.appendChild(path);
+    }
+  }
+}
+
+function highlightAttentionNode(nodeIdx, data) {
+  selectedWordIdx = nodeIdx;
+  const words = data.words;
+
+  // Reset opacity
+  gsap.to('.attn-arc', { opacity: 0.08, strokeWidth: 1, duration: 0.3 });
+
+  // Highlight arcs originating from this node
+  gsap.to(`.arc-from-${nodeIdx}`, {
+    opacity: 1,
+    strokeWidth: (i, target) => parseFloat(target.getAttribute('stroke-width')) * 1.5,
+    duration: 0.4
+  });
+
+  document.getElementById('attnInfoCard').innerHTML = 
+    `🔍 Parola selezionata: <strong class="text-indigo-400">"${words[nodeIdx]}"</strong>. I fasci luminosi mostrano quanta attenzione presta alle altre parole!`;
+}
+
+function renderAttentionHeatmap(data) {
+  const container = document.getElementById('attnHeatmap');
+  const n = data.words.length;
+  container.innerHTML = '';
+  container.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const val = data.weights[i][j];
+      const cell = document.createElement('div');
+      cell.className = 'aspect-square rounded flex items-center justify-center text-[10px] font-bold cursor-pointer transition hover:scale-110';
+      cell.style.backgroundColor = `rgba(108,99,255, ${val * 1.8})`;
+      cell.style.color = val > 0.3 ? '#fff' : 'rgba(255,255,255,0.4)';
+      cell.textContent = (val * 100).toFixed(0);
+      cell.onclick = () => highlightAttentionNode(i, data);
+      container.appendChild(cell);
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   4. TRANSFORMER ARCHITECTURE DIAGRAM (SVG + GSAP)
+   ────────────────────────────────────────────────────────── */
+let tfLayerCount = 3;
+
+function initTransformerSvg() {
+  const svg = document.getElementById('transformerSvg');
+  svg.innerHTML = '';
+
+  const width = 800;
+  const height = 480;
+
+  // Blocks definitions
+  const blocks = [
+    { id: 'input', label: '1. Input Embedding + Positional Encoding', color: '#ff6b9d', y: 400, h: 40 },
+    { id: 'attn', label: '2. Multi-Head Self-Attention', color: '#6c63ff', y: 310, h: 50 },
+    { id: 'norm1', label: '3. Add & Layer Normalization', color: '#4D96FF', y: 240, h: 35 },
+    { id: 'ffn', label: '4. Feed-Forward Neural Network (FFN)', color: '#00d4aa', y: 160, h: 50 },
+    { id: 'norm2', label: '5. Add & Layer Normalization', color: '#4D96FF', y: 100, h: 35 },
+    { id: 'output', label: '6. Linear & Softmax Output Probabilities', color: '#ffd93d', y: 30, h: 40 }
+  ];
+
+  // Draw connector lines
+  for (let i = 0; i < blocks.length - 1; i++) {
+    const y1 = blocks[i].y;
+    const y2 = blocks[i+1].y + blocks[i+1].h;
+    svg.innerHTML += `
+      <line x1="400" y1="${y1}" x2="400" y2="${y2}" stroke="#6c63ff" stroke-dasharray="4 4" stroke-width="2" opacity="0.6"/>
+    `;
+  }
+
+  // Draw blocks
+  blocks.forEach(b => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'tf-block');
+    g.onclick = () => showTfComponentInfo(b.id);
+
+    g.innerHTML = `
+      <rect x="220" y="${b.y}" width="360" height="${b.h}" rx="10" fill="${b.color}" fill-opacity="0.25" stroke="${b.color}" stroke-width="2"/>
+      <text x="400" y="${b.y + b.h / 2 + 5}" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">${b.label}</text>
+    `;
+    svg.appendChild(g);
+  });
+
+  // Data pulse particles container
+  const particleGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  particleGroup.setAttribute('id', 'tfParticles');
+  svg.appendChild(particleGroup);
+}
+
+function triggerTfFlow() {
+  const group = document.getElementById('tfParticles');
+  group.innerHTML = '';
+
+  for (let i = 0; i < 6; i++) {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    p.setAttribute('r', '6');
+    p.setAttribute('fill', '#00d4aa');
+    p.setAttribute('filter', 'drop-shadow(0 0 8px #00d4aa)');
+    p.setAttribute('cx', '400');
+    p.setAttribute('cy', '420');
+    group.appendChild(p);
+
+    gsap.to(p, {
+      cy: 40,
+      duration: 2.5,
+      delay: i * 0.4,
+      repeat: -1,
+      ease: 'none'
+    });
+  }
+}
+
+function toggleTfLayers() {
+  tfLayerCount = tfLayerCount === 3 ? 6 : 3;
+  document.getElementById('tfStatus').textContent = `${tfLayerCount} Strati Impilati`;
+  triggerTfFlow();
+}
+
+function showTfComponentInfo(id) {
+  const infoMap = {
+    input: "<strong>Embedding + Positional Encoding:</strong> Trasforma i token in vettori e vi aggiunge la posizione spaziale relativa (vettori seno/coseno) per far comprendere al modello l'ordine delle parole.",
+    attn: "<strong>Multi-Head Self-Attention:</strong> Il cuore del Transformer. Calcola multiple proiezioni di attenzione (Query, Key, Value) in parallelo per catturare diverse relazioni sintattiche e semantiche.",
+    norm1: "<strong>Add & Layer Norm:</strong> Connessione residua che somma l'input iniziale all'output dell'attenzione e stabilizza il gradiente mediante normalizzazione del layer.",
+    ffn: "<strong>Feed-Forward Network (FFN):</strong> Rete neurale densa a due strati che elabora la rappresentazione di ciascuna posizione separatamente.",
+    norm2: "<strong>Add & Layer Norm 2:</strong> Seconda normalizzazione e connessione residua per preservare il flusso di informazione profondo.",
+    output: "<strong>Linear & Softmax:</strong> Proietta lo stato nascosto finale sul vocabolario intero e applica la funzione Softmax per ottenere la probabilità di ogni prossimo token."
+  };
+
+  document.getElementById('tfComponentInfo').innerHTML = infoMap[id] || "Seleziona un componente del modello.";
+}
+
+/* ──────────────────────────────────────────────────────────
+   5. GENERATION & TEMPERATURE LOGIC
+   ────────────────────────────────────────────────────────── */
+const baseNextWords = [
+  { word: 'comprende', prob: 0.45 },
+  { word: 'genera', prob: 0.25 },
+  { word: 'trasforma', prob: 0.15 },
+  { word: 'analizza', prob: 0.10 },
+  { word: 'crea', prob: 0.05 }
+];
+
+function updateTemperature() {
+  const T = parseFloat(document.getElementById('tempSlider').value);
+  document.getElementById('tempVal').textContent = T.toFixed(1);
+
+  const label = document.getElementById('tempLabel');
+  if (T < 0.4) label.textContent = 'Deterministico (Cold)';
+  else if (T <= 0.9) label.textContent = 'Bilanciato';
+  else label.textContent = 'Creativo / Caotico (Hot)';
+
+  // Apply temperature scaling: P = softmax(logits / T)
+  const scaled = baseNextWords.map(item => ({
+    word: item.word,
+    prob: Math.exp(Math.log(item.prob) / T)
+  }));
+
+  const sum = scaled.reduce((acc, curr) => acc + curr.prob, 0);
+  const normalized = scaled.map(item => ({
+    word: item.word,
+    prob: item.prob / sum
+  }));
+
+  renderProbabilityBars(normalized);
+}
+
+function renderProbabilityBars(words) {
+  const container = document.getElementById('probBars');
+  container.innerHTML = '';
+
+  words.forEach((item, i) => {
+    const pct = (item.prob * 100).toFixed(1);
+    const color = tokenColors[i % tokenColors.length];
+
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-3 text-xs font-semibold';
+    row.innerHTML = `
+      <span class="w-20 text-right text-gray-300 font-mono">${item.word}</span>
+      <div class="flex-1 bg-black/40 h-6 rounded-lg overflow-hidden border border-indigo-900/30 p-0.5">
+        <div class="prob-bar-fill h-full rounded-md transition-all duration-300 flex items-center px-2 text-[10px] text-white font-bold" 
+          style="width: ${pct}%; background-color: ${color}">
+          ${pct}%
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function startAutoGeneration() {
+  const phrases = [
+    " comprende il linguaggio naturale con facilità.",
+    " trasforma le idee in codice eseguibile.",
+    " analizza grandi quantità di dati in secondi.",
+    " genera testo creativo ed esaustivo."
+  ];
+
+  const target = document.getElementById('genText');
+  const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+  target.textContent = "L'intelligenza artificiale" + randomPhrase;
+
+  gsap.fromTo('#genText', { opacity: 0.4 }, { opacity: 1, duration: 0.6 });
+}
+
+/* ──────────────────────────────────────────────────────────
+   INIT ON LOAD
+   ────────────────────────────────────────────────────────── */
+window.onload = function() {
+  renderTokens();
+  initEmbeddingsSvg();
+  loadAttentionSentence();
+  initTransformerSvg();
+  triggerTfFlow();
+  updateTemperature();
+};
+</script>
+</body>
+</html>

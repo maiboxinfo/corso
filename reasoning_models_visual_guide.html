@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dalla Generazione Immediata al Ragionamento Computazionale</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-serif-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+    }
+    /* Custom scrollbar for simulator logs */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 antialiased selection:bg-indigo-900 selection:text-white">
+
+  <!-- Top Header Nav -->
+  <header class="sticky top-0 z-50 bg-stone-50/90 backdrop-blur-md border-b border-stone-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Logo / Title -->
+      <a href="#" class="font-serif-title text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
+        Reasoning <span class="text-indigo-900 italic font-normal">Lab</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-medium uppercase tracking-wider text-stone-600">
+        <a href="#paradigmi" class="hover:text-indigo-900 transition-colors">Paradigma</a>
+        <a href="#simulatore-search" class="hover:text-indigo-900 transition-colors">Search & Compute</a>
+        <a href="#architetture" class="hover:text-indigo-900 transition-colors">Architetture</a>
+        <a href="#budget" class="hover:text-indigo-900 transition-colors">Budget Calculator</a>
+        <a href="#glossario" class="hover:text-indigo-900 transition-colors">Glossario</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="#sintesi" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-900 text-stone-100 hover:bg-indigo-950 transition-colors shadow-sm">
+          <span>Vademecum Copiabile</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </a>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Apri menu" class="md:hidden p-2 text-stone-700 hover:text-stone-900 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden border-b border-stone-200 bg-stone-50 px-4 py-4 space-y-3 text-sm">
+      <a href="#paradigmi" onclick="toggleMobileMenu()" class="block font-medium text-stone-700 hover:text-indigo-900">Paradigma: LLM vs Reasoning</a>
+      <a href="#simulatore-search" onclick="toggleMobileMenu()" class="block font-medium text-stone-700 hover:text-indigo-900">Simulatore Search & Compute</a>
+      <a href="#architetture" onclick="toggleMobileMenu()" class="block font-medium text-stone-700 hover:text-indigo-900">Architetture & Chain of Thought</a>
+      <a href="#budget" onclick="toggleMobileMenu()" class="block font-medium text-stone-700 hover:text-indigo-900">Reasoning Budget Calculator</a>
+      <a href="#glossario" onclick="toggleMobileMenu()" class="block font-medium text-stone-700 hover:text-indigo-900">Glossario Interattivo</a>
+      <a href="#sintesi" onclick="toggleMobileMenu()" class="block font-medium text-amber-700 font-semibold">Sintesi Copiabile</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="py-16 sm:py-24 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      <h1 class="font-serif-title text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-stone-900 leading-[1.15] mb-6">
+        Dalla generazione immediata al <span class="italic text-indigo-900 font-semibold">ragionamento computazionale</span>.
+      </h1>
+
+      <p class="text-lg sm:text-xl text-stone-700 font-light leading-relaxed max-w-2xl mx-auto mb-10">
+        Nei moderni <i>reasoning models</i>, l'AI non si limita a produrre la parola successiva più probabile. Utilizza calcolo durante l'inferenza per decomporre problemi, esplorare rami alternativi, verificare risultati e correggere errori.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="#simulatore-search" class="px-6 py-3 rounded-xl bg-indigo-900 hover:bg-indigo-950 text-white font-medium text-sm transition-all shadow-md hover:shadow-indigo-900/20">
+          Sperimenta la Search in Azione
+        </a>
+        <a href="#paradigmi" class="px-6 py-3 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-800 font-medium text-sm transition-all border border-stone-300">
+          Confronta i Paradigmi
+        </a>
+      </div>
+
+      <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-left border-t border-stone-200/80 pt-8">
+        <div class="p-3">
+          <span class="block font-serif-title text-2xl font-bold text-indigo-950">Test-Time Compute</span>
+          <span class="text-xs text-stone-600">Calcolo allocato durante l'inferenza anziché solo nel training.</span>
+        </div>
+        <div class="p-3">
+          <span class="block font-serif-title text-2xl font-bold text-indigo-950">Search Tree</span>
+          <span class="text-xs text-stone-600">Esplorazione ramificata delle traiettorie di soluzione.</span>
+        </div>
+        <div class="p-3">
+          <span class="block font-serif-title text-2xl font-bold text-indigo-950">Verify & Correct</span>
+          <span class="text-xs text-stone-600">Verifica sistematica e revisione prima dell'output finale.</span>
+        </div>
+        <div class="p-3">
+          <span class="block font-serif-title text-2xl font-bold text-indigo-950">Adaptive Budget</span>
+          <span class="text-xs text-stone-600">Risorse di calcolo proporzionali alla difficoltà del problema.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTESTO / PARADIGMA: LLM vs REASONING -->
+    <section id="paradigmi" class="py-16 max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="mb-10 text-center max-w-2xl mx-auto">
+        <h2 class="font-serif-title text-3xl sm:text-4xl font-normal text-stone-900 mb-3">
+          1. Cambio di Paradigma
+        </h2>
+        <p class="text-stone-600 text-sm sm:text-base">
+          Passaggio dalla predizione token-per-token immediata a una sequenza articolata di scomposizione, ricerca e autocorrezione.
+        </p>
+      </div>
+
+      <!-- Interactive Comparison Switcher -->
+      <div class="bg-stone-100 p-2 sm:p-3 rounded-2xl border border-stone-200 shadow-sm mb-8">
+        <div class="flex justify-center gap-2 mb-6">
+          <button id="btnTradizionale" onclick="switchParadigm('tradizionale')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-indigo-900 text-white shadow-sm">
+            LLM Tradizionale (Generativo)
+          </button>
+          <button id="btnReasoning" onclick="switchParadigm('reasoning')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-stone-200 text-stone-700 hover:bg-stone-300">
+            Reasoning Model (Inferenza con Search)
+          </button>
+        </div>
+
+        <!-- View 1: Tradizionale -->
+        <div id="viewTradizionale" class="grid md:grid-cols-3 gap-4 p-4 sm:p-6 bg-white rounded-xl border border-stone-200">
+          <div class="p-4 bg-stone-50 rounded-xl border border-stone-200 flex flex-col items-center text-center justify-center">
+            <span class="text-2xl mb-2">📥</span>
+            <span class="font-semibold text-stone-900 text-sm">PROBLEMA</span>
+            <span class="text-xs text-stone-500 mt-1">Prompt utente</span>
+          </div>
+          <div class="p-4 bg-stone-100 rounded-xl border border-dashed border-stone-300 flex flex-col items-center text-center justify-center">
+            <span class="text-2xl mb-2 font-mono">f(x)</span>
+            <span class="font-semibold text-stone-900 text-sm">ELABORAZIONE UNIFORME</span>
+            <span class="text-xs text-stone-500 mt-1">Stesso numero di layer per ogni parola</span>
+          </div>
+          <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 flex flex-col items-center text-center justify-center">
+            <span class="text-2xl mb-2">💬</span>
+            <span class="font-semibold text-amber-950 text-sm">RISPOSTA IMMEDIATA</span>
+            <span class="text-xs text-amber-800 mt-1">Rischio allucinazione su problemi complessi</span>
+          </div>
+        </div>
+
+        <!-- View 2: Reasoning (Hidden by default or toggled) -->
+        <div id="viewReasoning" class="hidden grid grid-cols-2 md:grid-cols-6 gap-2 p-4 sm:p-6 bg-indigo-950 text-white rounded-xl">
+          <div class="p-3 bg-indigo-900/80 rounded-lg border border-indigo-700/50 text-center flex flex-col items-center justify-center">
+            <span class="text-amber-400 font-mono text-xs uppercase font-bold mb-1">01. Input</span>
+            <span class="text-xs font-medium">Problema</span>
+          </div>
+          <div class="p-3 bg-indigo-900/80 rounded-lg border border-indigo-700/50 text-center flex flex-col items-center justify-center">
+            <span class="text-amber-400 font-mono text-xs uppercase font-bold mb-1">02. Plan</span>
+            <span class="text-xs font-medium">Scomposizione</span>
+          </div>
+          <div class="p-3 bg-indigo-900/80 rounded-lg border border-indigo-700/50 text-center flex flex-col items-center justify-center">
+            <span class="text-amber-400 font-mono text-xs uppercase font-bold mb-1">03. Search</span>
+            <span class="text-xs font-medium">Esplorazione</span>
+          </div>
+          <div class="p-3 bg-indigo-900/80 rounded-lg border border-indigo-700/50 text-center flex flex-col items-center justify-center">
+            <span class="text-amber-400 font-mono text-xs uppercase font-bold mb-1">04. Verify</span>
+            <span class="text-xs font-medium">Verifica</span>
+          </div>
+          <div class="p-3 bg-indigo-900/80 rounded-lg border border-indigo-700/50 text-center flex flex-col items-center justify-center">
+            <span class="text-amber-400 font-mono text-xs uppercase font-bold mb-1">05. Correct</span>
+            <span class="text-xs font-medium">Revisione</span>
+          </div>
+          <div class="p-3 bg-amber-600 rounded-lg text-center flex flex-col items-center justify-center col-span-2 md:col-span-1">
+            <span class="text-white font-mono text-xs uppercase font-bold mb-1">06. Output</span>
+            <span class="text-xs font-bold">Soluzione Validata</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 bg-amber-50/70 border border-amber-200/80 rounded-xl text-stone-800 text-sm leading-relaxed flex items-start gap-3">
+        <span class="text-xl">💡</span>
+        <div>
+          <strong class="font-semibold text-amber-950">Definizione Operativa:</strong>
+          <em>Reasoning = utilizzo di computazione intermedia (test-time compute) per aumentare la probabilità di trovare una soluzione corretta a un problema complesso.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO INTERATTIVA: SEARCH & TEST-TIME SCALING SIMULATOR -->
+    <section id="simulatore-search" class="py-16 bg-stone-900 text-stone-100 border-y border-stone-800">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="mb-8">
+          <span class="text-amber-400 font-mono text-xs uppercase tracking-widest block mb-2">Dimostrazione Interattiva</span>
+          <h2 class="font-serif-title text-3xl sm:text-4xl text-white font-normal">
+            2. Simulatore di Test-Time Search & Reasoning Budget
+          </h2>
+          <p class="text-stone-400 text-sm sm:text-base mt-2 max-w-2xl">
+            Aumenta il budget computazionale per osservare come il modello genera traiettorie alternative, rileva errori (❌), effettua verifiche (🔍) e seleziona il percorso ottimale (✅).
+          </p>
+        </div>
+
+        <!-- Controls Box -->
+        <div class="bg-stone-800/90 p-5 rounded-2xl border border-stone-700/80 mb-8 grid md:grid-cols-3 gap-6 items-center">
+          <div>
+            <label for="computeSlider" class="block text-xs font-mono uppercase tracking-wider text-amber-400 mb-2">
+              Reasoning Compute Budget: <span id="budgetValue" class="text-white font-bold">Medio (3x)</span>
+            </label>
+            <input id="computeSlider" type="range" min="1" max="5" value="3" oninput="updateSearchSimulation()" class="w-full h-2 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-amber-500">
+            <div class="flex justify-between text-[10px] text-stone-400 mt-1 font-mono">
+              <span>Low (1x)</span>
+              <span>Balanced</span>
+              <span>High Search (5x)</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-mono uppercase tracking-wider text-stone-300 mb-2">
+              Strategia di Search
+            </label>
+            <select id="strategySelect" onchange="updateSearchSimulation()" class="w-full bg-stone-900 border border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-200 focus:ring-1 focus:ring-amber-500">
+              <option value="tree">Search Ramificata (Branching Tree)</option>
+              <option value="consistency">Self-Consistency (Traiettorie Parallele)</option>
+              <option value="verifier">Generatore + Verificatore (Filter)</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-3 pt-2 md:pt-0">
+            <button onclick="runSimulationAnimation()" class="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-stone-950 font-semibold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md">
+              <span>▶ Esegui Simulazione</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Visual Tree / Canvas Area -->
+        <div id="treeContainer" class="bg-stone-950 border border-stone-800 rounded-2xl p-6 min-h-[360px] flex flex-col justify-between relative overflow-hidden">
+          
+          <div class="flex justify-between items-center text-xs font-mono text-stone-400 pb-4 border-b border-stone-800">
+            <span>Stato: <span id="simStatus" class="text-amber-400">Pronto per l'esplorazione</span></span>
+            <span id="simMetrics">Nodi Esplorati: 0 | Verifiche: 0</span>
+          </div>
+
+          <!-- Dynamic Graph Visual -->
+          <div id="graphVisual" class="my-6 flex flex-col items-center justify-center gap-6 relative transition-all min-h-[180px]">
+            <!-- Dynamic DOM content injected by JS -->
+          </div>
+
+          <!-- Simulation Narrative Output -->
+          <div class="bg-stone-900/90 rounded-xl p-4 border border-stone-800/80 font-mono text-xs text-stone-300 leading-relaxed" aria-live="polite">
+            <span class="text-amber-400 font-semibold block mb-1">🔍 Log del Reasoning Engine:</span>
+            <div id="simLog" class="h-20 overflow-y-auto space-y-1 text-stone-400">
+              Regola il budget di calcolo e premi "Esegui Simulazione" per visualizzare l'albero decisionale.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANATOMIA DELLA CHAIN OF THOUGHT & DIMOSTRAZIONI -->
+    <section id="architetture" class="py-16 max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <div>
+          <span class="text-indigo-900 font-mono text-xs uppercase tracking-wider block mb-1">3. Meccanismi Fondamentali</span>
+          <h2 class="font-serif-title text-3xl sm:text-4xl font-normal text-stone-900 mb-4">
+            Anatomia della Chain of Thought (CoT)
+          </h2>
+          <p class="text-stone-600 text-sm leading-relaxed mb-6">
+            Una Chain of Thought è una sequenza esplicita di passaggi intermedi. Tuttavia, occorre evitare l'equivoco: <strong>CoT non è una dimostrazione formale deterministicamente garantita</strong>, bensì un processo probabilistico guidato da euristiche apprese.
+          </p>
+
+          <!-- Interactive Stepper -->
+          <div class="space-y-3">
+            <div class="p-4 bg-stone-100 rounded-xl border-l-4 border-indigo-900 flex items-start gap-3">
+              <span class="font-mono text-xs bg-indigo-900 text-white w-6 h-6 rounded-full flex items-center justify-center shrink-0">1</span>
+              <div>
+                <h4 class="font-semibold text-stone-900 text-sm">Scomposizione del Problema</h4>
+                <p class="text-xs text-stone-600 mt-0.5">Suddivisione del target in sottoproblemi più semplici da risolvere sequenzialmente.</p>
+              </div>
+            </div>
+
+            <div class="p-4 bg-stone-100 rounded-xl border-l-4 border-amber-600 flex items-start gap-3">
+              <span class="font-mono text-xs bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center shrink-0">2</span>
+              <div>
+                <h4 class="font-semibold text-stone-900 text-sm">Generazione di Ipotesi & Tentativi</h4>
+                <p class="text-xs text-stone-600 mt-0.5">Formulazione di passaggi intermedi, calcoli e relazioni logiche.</p>
+              </div>
+            </div>
+
+            <div class="p-4 bg-stone-100 rounded-xl border-l-4 border-emerald-600 flex items-start gap-3">
+              <span class="font-mono text-xs bg-emerald-600 text-white w-6 h-6 rounded-full flex items-center justify-center shrink-0">3</span>
+              <div>
+                <h4 class="font-semibold text-stone-900 text-sm">Autocitazione e Verifica Intermedia</h4>
+                <p class="text-xs text-stone-600 mt-0.5">Rilevamento di incongruenze o vicoli ciechi con eventuale backtracking.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CoT vs Dimostrazione Formale Card Toggle -->
+        <div class="bg-stone-100/80 p-6 rounded-2xl border border-stone-200 shadow-sm">
+          <h3 class="font-serif-title text-xl font-bold text-stone-900 mb-3">
+            CoT vs Sistema Formale
+          </h3>
+          <p class="text-xs text-stone-600 mb-4">
+            Seleziona una scheda per confrontare come le regole formali differiscono dalla ricerca degli LLM.
+          </p>
+
+          <div class="flex border-b border-stone-300 mb-4 font-mono text-xs">
+            <button id="tabFormalBtn" onclick="switchCoTTab('formal')" class="py-2 px-4 border-b-2 border-indigo-900 font-bold text-indigo-900">
+              Sistema Formale
+            </button>
+            <button id="tabCoTBtn" onclick="switchCoTTab('cot')" class="py-2 px-4 text-stone-500 hover:text-stone-900">
+              Reasoning LLM (CoT)
+            </button>
+          </div>
+
+          <div id="tabFormalContent" class="space-y-3 font-mono text-xs text-stone-800">
+            <div class="p-2.5 bg-white rounded border border-stone-200">PREMESSE → Regole Assolute</div>
+            <div class="p-2.5 bg-white rounded border border-stone-200">PASSO VALIDO → Verificato assiomaticamente</div>
+            <div class="p-2.5 bg-emerald-100/70 border border-emerald-300 text-emerald-950 font-bold">TEOREMA DIMOSTRATO (Garanzia 100%)</div>
+            <p class="font-sans text-xs text-stone-500 mt-2 italic">
+              Ogni singolo passaggio viene validato rispetto a regole sintattiche rigorose. Non ammette eccezioni.
+            </p>
+          </div>
+
+          <div id="tabCoTContent" class="hidden space-y-3 font-mono text-xs text-stone-800">
+            <div class="p-2.5 bg-white rounded border border-stone-200">PROBLEMA → Rappresentazione Vettoriale</div>
+            <div class="p-2.5 bg-amber-50 rounded border border-amber-200">IPOTESI & TENTATIVI → Euristiche apprese</div>
+            <div class="p-2.5 bg-stone-200/80 border border-stone-300">CONTROLLO/REVISIONE → Verificatore integrato</div>
+            <div class="p-2.5 bg-amber-100/80 border border-amber-300 text-amber-950 font-bold">SOLUZIONE AD ALTA PROBABILITÀ</div>
+            <p class="font-sans text-xs text-stone-500 mt-2 italic">
+              La soluzione emerge attraverso tentativi e correzioni. Non garantisce la correttezza assoluta (può fallire se le premesse sono errate).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITETTURA: GENERATORE + VERIFICATORE & AGENTIC REASONING -->
+    <section class="py-16 bg-stone-100 border-y border-stone-200">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-indigo-900 font-mono text-xs uppercase tracking-wider block mb-1">4. Modelli e Strumenti</span>
+          <h2 class="font-serif-title text-3xl sm:text-4xl font-normal text-stone-900">
+            Generatore, Verificatore e Loop Agentico
+          </h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Card 1: Generator + Verifier -->
+          <div class="p-6 bg-white rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 font-bold text-lg mb-4">
+                🔍
+              </div>
+              <h3 class="font-serif-title text-xl font-bold text-stone-900 mb-2">Disaccoppiamento Generazione / Verifica</h3>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                I sistemi più efficaci separano il ruolo del <strong>Generatore</strong> (ottimizzato per esplorare e proporre ampie possibilità) da quello del <strong>Verificatore/Critic</strong> (ottimizzato per valutare la correttezza formale o logica di ogni candidato).
+              </p>
+            </div>
+            
+            <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 font-mono text-[11px] space-y-1.5">
+              <div class="flex justify-between items-center text-stone-700">
+                <span>Candidato A</span>
+                <span class="text-rose-600 font-bold">❌ Scartato (Errore logico)</span>
+              </div>
+              <div class="flex justify-between items-center text-stone-700">
+                <span>Candidato B</span>
+                <span class="text-rose-600 font-bold">❌ Scartato (Preconcetto)</span>
+              </div>
+              <div class="flex justify-between items-center text-stone-900 font-bold bg-emerald-50 p-1 rounded border border-emerald-200">
+                <span>Candidato C</span>
+                <span class="text-emerald-700">✅ Approvato dal Verifier</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Agentic Reasoning Loop -->
+          <div class="p-6 bg-white rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-indigo-100 border border-indigo-300 flex items-center justify-center text-indigo-900 font-bold text-lg mb-4">
+                🤖
+              </div>
+              <h3 class="font-serif-title text-xl font-bold text-stone-900 mb-2">Agentic Reasoning (Think-Act-Observe)</h3>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                Quando il modello interagisce con l'esterno (calcolatori, interpreti di codice Python, browser o database), il ragionamento si trasforma in un ciclo iterativo dinamico.
+              </p>
+            </div>
+
+            <div class="bg-indigo-950 text-stone-200 p-3 rounded-xl font-mono text-[11px] space-y-1">
+              <div class="text-amber-400 font-bold">THINK → Pianifica l'uso dell'API</div>
+              <div class="text-indigo-300">ACT → Esegue il codice / query</div>
+              <div class="text-stone-400">OBSERVE → Rileva l'output / errore</div>
+              <div class="text-emerald-400 font-bold">REVISE → Aggiorna il piano e riprova</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STRUMENTO OPERATIVO: REASONING BUDGET CALCULATOR -->
+    <section id="budget" class="py-16 max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="mb-10 text-center max-w-2xl mx-auto">
+        <span class="text-amber-700 font-mono text-xs uppercase tracking-wider block mb-1">5. Strumento Operativo</span>
+        <h2 class="font-serif-title text-3xl sm:text-4xl font-normal text-stone-900">
+          Reasoning Budget & Adaptive Compute
+        </h2>
+        <p class="text-stone-600 text-sm mt-2">
+          Determina il quantitativo ideale di calcolo da allocare in fase di inferenza basandoti sulla natura e complessità del task.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200 shadow-sm grid md:grid-cols-12 gap-8 items-center">
+        <!-- Input Form -->
+        <div class="md:col-span-6 space-y-5">
+          <div>
+            <label for="taskComplexity" class="block text-xs font-semibold uppercase tracking-wider text-stone-700 mb-1">
+              Difficoltà e Complessità del Task
+            </label>
+            <select id="taskComplexity" onchange="calculateBudget()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 text-sm text-stone-900 focus:ring-2 focus:ring-indigo-900">
+              <option value="easy">Semplice (Sintesi, Traduzione, FAQ)</option>
+              <option value="medium" selected>Media (Code Refactoring, Analisi Testuale)</option>
+              <option value="hard">Elevata (Dimostrazione Matematica, Bug Hunting Complesso)</option>
+              <option value="critical">Critica (Architettura Software, Decisioni di Sicurezza)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="toolAvailability" class="block text-xs font-semibold uppercase tracking-wider text-stone-700 mb-1">
+              Disponibilità di Strumenti Esterni (Tool/Proof Checker)
+            </label>
+            <select id="toolAvailability" onchange="calculateBudget()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 text-sm text-stone-900 focus:ring-2 focus:ring-indigo-900">
+              <option value="none">Nessun tool (Solo CoT puramente testuale)</option>
+              <option value="interpreter" selected>Interprete di Codice / Calcolatore</option>
+              <option value="full">Proof Checker Formale / Sandbox completa</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="riskTolerance" class="block text-xs font-semibold uppercase tracking-wider text-stone-700 mb-1">
+              Tolleranza all'Errore
+            </label>
+            <select id="riskTolerance" onchange="calculateBudget()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 text-sm text-stone-900 focus:ring-2 focus:ring-indigo-900">
+              <option value="high">Alta (Accettata risposta euristica rapida)</option>
+              <option value="medium" selected>Bilanciata (Richiesta buona accuratezza)</option>
+              <option value="zero">Zero Tolleranza (Verifica tassativa multi-passaggio)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Output Panel -->
+        <div class="md:col-span-6 bg-stone-900 text-stone-100 p-6 rounded-2xl border border-stone-800 flex flex-col justify-between h-full min-h-[300px]">
+          <div>
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3 mb-4">
+              <span class="text-xs font-mono uppercase text-amber-400 font-semibold">Raccomandazione Profilo Compute</span>
+              <span id="budgetTierTag" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500 text-stone-950">
+                BALANCED SEARCH
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <span class="text-xs text-stone-400 block font-mono">Allocazione Risorse Stimata:</span>
+                <span id="computeAllocationText" class="text-lg font-serif-title font-bold text-white">
+                  3x-5x Inferenza Basale
+                </span>
+              </div>
+
+              <!-- Visual Progress breakdown -->
+              <div class="space-y-2 font-mono text-xs">
+                <div>
+                  <div class="flex justify-between text-[11px] text-stone-300 mb-1">
+                    <span>🧠 Generation / Think</span>
+                    <span id="percentThink">40%</span>
+                  </div>
+                  <div class="w-full h-2 bg-stone-800 rounded-full overflow-hidden">
+                    <div id="barThink" class="h-full bg-indigo-500 transition-all duration-300" style="width: 40%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-[11px] text-stone-300 mb-1">
+                    <span>🌳 Branching & Search</span>
+                    <span id="percentSearch">35%</span>
+                  </div>
+                  <div class="w-full h-2 bg-stone-800 rounded-full overflow-hidden">
+                    <div id="barSearch" class="h-full bg-amber-500 transition-all duration-300" style="width: 35%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-[11px] text-stone-300 mb-1">
+                    <span>🔍 Verification & Refinement</span>
+                    <span id="percentVerify">25%</span>
+                  </div>
+                  <div class="w-full h-2 bg-stone-800 rounded-full overflow-hidden">
+                    <div id="barVerify" class="h-full bg-emerald-500 transition-all duration-300" style="width: 25%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p id="budgetAdvice" class="mt-6 text-xs text-stone-400 italic border-t border-stone-800 pt-3">
+            Consigliato l'uso di Self-Consistency combinato con verifica via interprete di codice per validare le sotto-funzioni.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GLOSSARIO INTERATTIVO CON CHIP FILTER -->
+    <section id="glossario" class="py-16 bg-stone-100 border-t border-stone-200">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="mb-8 text-center max-w-2xl mx-auto">
+          <span class="text-indigo-900 font-mono text-xs uppercase tracking-wider block mb-1">6. Terminologia fondamentale</span>
+          <h2 class="font-serif-title text-3xl sm:text-4xl font-normal text-stone-900">
+            Glossario Visuale del Reasoning
+          </h2>
+          <p class="text-stone-600 text-sm mt-1">
+            Filtra i concetti per categoria chiave.
+          </p>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+          <button onclick="filterGlossary('all', this)" class="chip-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-900 text-white transition-all">Tutti</button>
+          <button onclick="filterGlossary('search', this)" class="chip-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-700 hover:bg-stone-300 transition-all">Search & Branching</button>
+          <button onclick="filterGlossary('compute', this)" class="chip-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-700 hover:bg-stone-300 transition-all">Test-Time Compute</button>
+          <button onclick="filterGlossary('verification', this)" class="chip-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-700 hover:bg-stone-300 transition-all">Verification & Agents</button>
+        </div>
+
+        <!-- Grid of Cards -->
+        <div id="glossaryGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Item 1 -->
+          <div class="glossary-card p-5 bg-white rounded-xl border border-stone-200 shadow-sm transition-all" data-category="compute">
+            <span class="text-xs font-mono text-indigo-800 font-bold uppercase tracking-wider block mb-1">📈 Test-Time Scaling</span>
+            <h4 class="font-semibold text-stone-900 text-sm mb-2">Scalabilità all'Inferenza</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              La capacità di migliorare le prestazioni di un modello incrementando il calcolo distribuito durante la fase di generazione della risposta.
+            </p>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="glossary-card p-5 bg-white rounded-xl border border-stone-200 shadow-sm transition-all" data-category="search">
+            <span class="text-xs font-mono text-amber-700 font-bold uppercase tracking-wider block mb-1">🌳 Tree Search</span>
+            <h4 class="font-semibold text-stone-900 text-sm mb-2">Ricerca ad Albero</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              Esplorazione sistematica di percorsi decisionali multipli (branching) per valutare preventivamente le conseguenze dei passaggi intermedi.
+            </p>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="glossary-card p-5 bg-white rounded-xl border border-stone-200 shadow-sm transition-all" data-category="search">
+            <span class="text-xs font-mono text-indigo-800 font-bold uppercase tracking-wider block mb-1">🔄 Self-Consistency</span>
+            <h4 class="font-semibold text-stone-900 text-sm mb-2">Autoconsistenza</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              Campionamento di traiettorie multiple indipendenti e selezione della risposta su cui converge la maggioranza delle traiettorie.
+            </p>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="glossary-card p-5 bg-white rounded-xl border border-stone-200 shadow-sm transition-all" data-category="verification">
+            <span class="text-xs font-mono text-emerald-700 font-bold uppercase tracking-wider block mb-1">🔍 Verifier / Critic</span>
+            <h4 class="font-semibold text-stone-900 text-sm mb-2">Modulo Verificatore</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              Un modello o componente dedicato esclusivamente ad assegnare uno score di correttezza a ogni sotto-passaggio o candidato generato.
+            </p>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="glossary-card p-5 bg-white rounded-xl border border-stone-200 shadow-sm transition-all" data-category="verification">
+            <span class="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider block mb-1">🧠 Meta-Reasoning</span>
+            <h4 class="font-semibold text-stone-900 text-sm mb-2">Meta-Ragionamento</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              Capacità del sistema di decidere *come* e *quanto* ragionare: definire la strategia, il budget di calcolo e il momento esatto in cui fermarsi (stopping criterion).
+            </p>
+          </div>
+
+          <!-- Item 6 -->
+          <div class="glossary-card p-5 bg-white rounded-xl border border-stone-200 shadow-sm transition-all" data-category="verification">
+            <span class="text-xs font-mono text-amber-700 font-bold uppercase tracking-wider block mb-1">🤖 Agentic Reasoning</span>
+            <h4 class="font-semibold text-stone-900 text-sm mb-2">Ragionamento Agentico</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              Ciclo continuo di pensiero, azione diretta nel mondo esterno/tool, osservazione del feedback ed eventuale correzione.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SINTESI FINALE & VADEMECUM COPIABILE -->
+    <section id="sintesi" class="py-16 max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="bg-stone-900 text-stone-100 rounded-3xl p-6 sm:p-10 border border-stone-800 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800 pb-6 mb-6">
+          <div>
+            <span class="text-amber-400 font-mono text-xs uppercase tracking-widest block mb-1">7. Output Riutilizzabile</span>
+            <h2 class="font-serif-title text-2xl sm:text-3xl font-normal text-white">
+              Vademecum Operativo sui Reasoning Models
+            </h2>
+          </div>
+          <button onclick="copyCheatSheet()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-xs uppercase tracking-wider transition-all shrink-0 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <span id="copyBtnText">Copia Vademecum</span>
+          </button>
+        </div>
+
+        <pre id="cheatSheetText" class="bg-stone-950 p-4 sm:p-6 rounded-xl border border-stone-800 font-mono text-xs text-stone-300 whitespace-pre-wrap leading-relaxed overflow-x-auto">
+=== CHEAT SHEET: REASONING NEGLI LLM (2026) ===
+
+PRINCIPIO FONDAMENTALE:
+Reasoning = Allocazione di calcolo dinamico durante l'inferenza (test-time compute)
+per scomporre, esplorare, verificare e correggere le traiettorie di soluzione.
+
+PIPELINE DI RAGIONAMENTO:
+[PROBLEMA] → Interpretazione → Pianificazione → Search/Thinking → Verifica → Revisione → [STOP] → [RISPOSTA]
+
+DIFFERENZA CHIAVE DA RECORD:
+• LLM Tradizionale: Genera token sequenziali diretti (f(x) uniforme).
+• Reasoning Model: Ricerca nello spazio delle soluzioni con facoltà di scartare rami errati (❌).
+
+LE 4 RISORSE DEL TEST-TIME COMPUTE:
+• THINK: Calcolo sequenziale e scomposizione CoT.
+• SEARCH: Generazione di alternative ramificate.
+• VERIFY: Modulo critic per validare i passaggi intermedi.
+• TOOLS: Uso di interpreti di codice, sandbox e proof-checker.
+
+REGOLA D'ORO PER IL BUDGET:
+• Problema Facile: Minimo compute -> Stop rapido.
+• Problema Complesso: Alto compute -> Multi-branching, verifier e correzione dinamica.
+
+Avvertenza: Più compute RIDUCE gli errori, ma NON garantisce l'infallibilità formale.</pre>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-stone-950 text-stone-500 border-t border-stone-800 py-8 text-center text-xs">
+    <div class="max-w-5xl mx-auto px-4">
+      <p>Reasoning Lab — Guida Interattiva al Calcolo durante l'Inferenza negli LLM Moderni.</p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT CONTROLLERS -->
+  <script>
+    // 1. Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // 2. Paradigm Switcher
+    function switchParadigm(type) {
+      const btnTrad = document.getElementById('btnTradizionale');
+      const btnReas = document.getElementById('btnReasoning');
+      const viewTrad = document.getElementById('viewTradizionale');
+      const viewReas = document.getElementById('viewReasoning');
+
+      if (type === 'tradizionale') {
+        btnTrad.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-indigo-900 text-white shadow-sm";
+        btnReas.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-stone-200 text-stone-700 hover:bg-stone-300";
+        viewTrad.classList.remove('hidden');
+        viewReas.classList.add('hidden');
+      } else {
+        btnReas.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-indigo-900 text-white shadow-sm";
+        btnTrad.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-stone-200 text-stone-700 hover:bg-stone-300";
+        viewReas.classList.remove('hidden');
+        viewTrad.classList.add('hidden');
+      }
+    }
+
+    // 3. Search & Test-Time Simulator
+    const budgetLabels = {
+      1: 'Molto Basso (1x)',
+      2: 'Basso (2x)',
+      3: 'Medio (3x)',
+      4: 'Elevato (4x)',
+      5: 'Ricerca Estensiva (5x)'
+    };
+
+    function updateSearchSimulation() {
+      const val = document.getElementById('computeSlider').value;
+      document.getElementById('budgetValue').innerText = budgetLabels[val];
+      renderGraphVisual();
+    }
+
+    function renderGraphVisual() {
+      const budget = parseInt(document.getElementById('computeSlider').value);
+      const strategy = document.getElementById('strategySelect').value;
+      const container = document.getElementById('graphVisual');
+      const metrics = document.getElementById('simMetrics');
+
+      container.innerHTML = '';
+
+      if (strategy === 'tree') {
+        let nodeCount = budget * 3;
+        metrics.innerText = `Nodi Esplorati: ${nodeCount} | Verifiche: ${budget * 2}`;
+        
+        let html = `
+          <div class="flex flex-col items-center gap-4 w-full">
+            <div class="px-3 py-1.5 bg-indigo-900 text-amber-300 rounded-lg text-xs font-mono font-bold border border-indigo-700">Root: Problema Iniziale</div>
+            <div class="w-0.5 h-4 bg-stone-700"></div>
+            <div class="flex justify-center gap-4 sm:gap-8 flex-wrap">
+        `;
+
+        for (let i = 1; i <= Math.min(budget, 4); i++) {
+          const isWinner = i === Math.min(budget, 2);
+          const statusBg = isWinner ? 'bg-emerald-900/80 border-emerald-500 text-emerald-200' : (i % 2 === 0 ? 'bg-rose-950/60 border-rose-800 text-rose-300' : 'bg-stone-800 border-stone-700 text-stone-300');
+          const badge = isWinner ? '✅ Valido' : (i % 2 === 0 ? '❌ Scartato' : '🔍 In corso');
+
+          html += `
+            <div class="flex flex-col items-center gap-2">
+              <div class="p-2.5 rounded-xl border ${statusBg} text-center text-xs font-mono min-w-[110px] shadow-sm">
+                <div>Ramo #${i}</div>
+                <div class="text-[10px] mt-1 font-bold">${badge}</div>
+              </div>
+            </div>
+          `;
+        }
+        html += `</div></div>`;
+        container.innerHTML = html;
+
+      } else if (strategy === 'consistency') {
+        metrics.innerText = `Campioni Paralleli: ${budget * 2} | Consenso: 85%`;
+        let html = `<div class="flex flex-wrap justify-center gap-3 w-full">`;
+        for (let i = 1; i <= budget * 2; i++) {
+          const match = i !== 2;
+          html += `
+            <div class="p-2 border rounded-lg font-mono text-[11px] ${match ? 'bg-indigo-950 border-indigo-700 text-indigo-200' : 'bg-stone-800 border-stone-700 text-stone-400'}">
+              Path #${i}: ${match ? 'Risposta X' : 'Risposta Y'}
+            </div>
+          `;
+        }
+        html += `</div><div class="text-xs font-mono text-emerald-400 mt-2">📊 Aggregazione per Maggioranza -> Risposta X</div>`;
+        container.innerHTML = html;
+
+      } else { // verifier
+        metrics.innerText = `Candidati Generati: ${budget * 2} | Scarti: ${budget * 2 - 1}`;
+        container.innerHTML = `
+          <div class="flex items-center gap-2 sm:gap-4 font-mono text-xs text-center flex-wrap justify-center">
+            <div class="p-2 bg-stone-800 rounded border border-stone-700">Generatore (${budget * 2} Bozze)</div>
+            <div class="text-amber-400">➔</div>
+            <div class="p-2 bg-amber-950 border border-amber-700 text-amber-200 rounded">Modulo Verificatore (Filter)</div>
+            <div class="text-emerald-400">➔</div>
+            <div class="p-2 bg-emerald-950 border border-emerald-600 text-emerald-200 rounded font-bold">1 Soluzione Accertata</div>
+          </div>
+        `;
+      }
+    }
+
+    function runSimulationAnimation() {
+      const budget = document.getElementById('computeSlider').value;
+      const strategy = document.getElementById('strategySelect').value;
+      const status = document.getElementById('simStatus');
+      const log = document.getElementById('simLog');
+
+      status.innerText = "Simulazione in corso...";
+      status.className = "text-amber-400 animate-pulse";
+      log.innerHTML = `<div>[0.00s] Inizio ricerca con budget ${budget}x (${strategy})...</div>`;
+
+      setTimeout(() => {
+        log.innerHTML += `<div>[0.35s] Scomposizione problema in sottonodi...</div>`;
+      }, 300);
+
+      setTimeout(() => {
+        log.innerHTML += `<div class="text-amber-300">[0.70s] Valutazione euristica e rilevamento errori ❌...</div>`;
+      }, 700);
+
+      setTimeout(() => {
+        log.innerHTML += `<div class="text-emerald-400 font-semibold">[1.10s] Convergenza su traiettoria con massimo score di correttezza ✅.</div>`;
+        status.innerText = "Completato con successo";
+        status.className = "text-emerald-400 font-bold";
+        renderGraphVisual();
+      }, 1100);
+    }
+
+    // 4. CoT vs Formal Tab Switcher
+    function switchCoTTab(tab) {
+      const formalBtn = document.getElementById('tabFormalBtn');
+      const cotBtn = document.getElementById('tabCoTBtn');
+      const formalContent = document.getElementById('tabFormalContent');
+      const cotContent = document.getElementById('tabCoTContent');
+
+      if (tab === 'formal') {
+        formalBtn.className = "py-2 px-4 border-b-2 border-indigo-900 font-bold text-indigo-900";
+        cotBtn.className = "py-2 px-4 text-stone-500 hover:text-stone-900";
+        formalContent.classList.remove('hidden');
+        cotContent.classList.add('hidden');
+      } else {
+        cotBtn.className = "py-2 px-4 border-b-2 border-indigo-900 font-bold text-indigo-900";
+        formalBtn.className = "py-2 px-4 text-stone-500 hover:text-stone-900";
+        cotContent.classList.remove('hidden');
+        formalContent.classList.add('hidden');
+      }
+    }
+
+    // 5. Reasoning Budget Calculator
+    function calculateBudget() {
+      const complexity = document.getElementById('taskComplexity').value;
+      const tools = document.getElementById('toolAvailability').value;
+      const risk = document.getElementById('riskTolerance').value;
+
+      let think = 40;
+      let search = 35;
+      let verify = 25;
+      let tier = "BALANCED SEARCH";
+      let allocation = "3x-5x Inferenza Basale";
+      let advice = "Consigliato l'uso di Self-Consistency combinato con verifica via interprete per validare le sotto-funzioni.";
+
+      if (complexity === 'easy') {
+        think = 70;
+        search = 15;
+        verify = 15;
+        tier = "FAST INFERENCE";
+        allocation = "1x (Direct Generation)";
+        advice = "Task semplice. Un CoT minimale o risposta diretta è sufficiente senza allocare ricerca ramificata.";
+      } else if (complexity === 'hard' || complexity === 'critical') {
+        if (risk === 'zero') {
+          think = 25;
+          search = 45;
+          verify = 30;
+          tier = "DEEP SEARCH & VERIFY";
+          allocation = "10x-20x High Compute";
+          advice = "Task ad elevatissimo rischio. Richiede esplorazione multi-ramo con verifica automatica stringente tramite sandbox o verifier formale.";
+        } else {
+          think = 30;
+          search = 40;
+          verify = 30;
+          tier = "EXTENDED REASONING";
+          allocation = "5x-10x Inferenza Basale";
+          advice = "Si raccomanda l'uso di Tree Search con backtracking attivo per correggere vicoli ciechi prima del delivery finale.";
+        }
+      }
+
+      document.getElementById('budgetTierTag').innerText = tier;
+      document.getElementById('computeAllocationText').innerText = allocation;
+      document.getElementById('percentThink').innerText = think + '%';
+      document.getElementById('percentSearch').innerText = search + '%';
+      document.getElementById('percentVerify').innerText = verify + '%';
+
+      document.getElementById('barThink').style.width = think + '%';
+      document.getElementById('barSearch').style.width = search + '%';
+      document.getElementById('barVerify').style.width = verify + '%';
+      document.getElementById('budgetAdvice').innerText = advice;
+    }
+
+    // 6. Glossary Card Filter
+    function filterGlossary(category, btnElement) {
+      const buttons = document.querySelectorAll('.chip-btn');
+      buttons.forEach(b => {
+        b.className = "chip-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-700 hover:bg-stone-300 transition-all";
+      });
+      if (btnElement) {
+        btnElement.className = "chip-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-900 text-white transition-all";
+      }
+
+      const cards = document.querySelectorAll('.glossary-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // 7. Copy Cheat Sheet Vademecum
+    function copyCheatSheet() {
+      const text = document.getElementById('cheatSheetText').innerText;
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        const btnText = document.getElementById('copyBtnText');
+        btnText.textContent = 'Copiato!';
+        setTimeout(() => {
+          btnText.textContent = 'Copia Vademecum';
+        }, 2000);
+      } catch (err) {
+        console.error('Impossibile copiare negli appunti', err);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // Initialize graph on load
+    window.onload = function() {
+      renderGraphVisual();
+    };
+  </script>
+</body>
+</html>

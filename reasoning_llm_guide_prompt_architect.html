@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Tecniche di Reasoning negli LLM & Generator di Prompt</title>
+
+  <!-- Google Fonts for Editorial & Technical Aesthetics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js and Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS Tokens & Editorial Styling -->
+  <style>
+    :root {
+      /* Editorial Warm Palette */
+      --ink: #181512;
+      --ink-muted: #524b43;
+      --cream: #faf7f2;
+      --paper: #f1ebd9;
+      --paper-dark: #e5dcc7;
+      
+      /* Primary Domain Colors: Deep Petrol Teal & Warm Terracotta */
+      --primary: #1b4952;
+      --primary-dark: #102e35;
+      --primary-light: #e8f1f3;
+      --accent: #bd6a28;
+      --accent-dark: #8d4a16;
+      --accent-light: #fdf4eb;
+
+      --border: #dcd3c1;
+      --shadow-subtle: 0 4px 20px -2px rgba(24, 21, 18, 0.06);
+      --shadow-card: 0 8px 30px rgba(24, 21, 18, 0.08);
+
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+    }
+
+    .font-serif { font-family: var(--font-serif); }
+    .font-sans { font-family: var(--font-sans); }
+    .font-mono { font-family: var(--font-mono); }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--cream);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    /* Editorial Card Styles */
+    .editorial-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .editorial-card:hover {
+      box-shadow: var(--shadow-card);
+      border-color: #c4b8a2;
+    }
+
+    .editorial-card-paper {
+      background-color: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Range Slider Styling */
+    input[type=range] {
+      accent-color: var(--primary);
+    }
+
+    /* Checkbox Custom styling */
+    .custom-checkbox:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#181512',
+            'ink-muted': '#524b43',
+            cream: '#faf7f2',
+            paper: '#f1ebd9',
+            'paper-dark': '#e5dcc7',
+            primary: '#1b4952',
+            'primary-dark': '#102e35',
+            'primary-light': '#e8f1f3',
+            accent: '#bd6a28',
+            'accent-dark': '#8d4a16',
+            'accent-light': '#fdf4eb',
+            border: '#dcd3c1'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-accent/20 selection:text-accent-dark">
+
+  <!-- Top Scroll Progress Indicator -->
+  <div class="fixed top-0 left-0 w-full h-1 z-50 bg-transparent pointer-events-none">
+    <div id="scroll-progress-bar" class="h-full bg-accent transition-all duration-75 w-0"></div>
+  </div>
+
+  <!-- Sticky Navigation Header -->
+  <header class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-border/80 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2.5 text-ink font-serif font-bold text-lg tracking-tight hover:opacity-80 transition">
+        <span class="w-3 h-3 rounded-full bg-accent inline-block"></span>
+        <span>Reasoning<span class="text-primary italic font-normal">.Architect</span></span>
+        <span class="text-xs font-sans font-medium px-2 py-0.5 rounded-full bg-paper text-ink-muted ml-1 border border-border">Frontier AI Suite</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-5 text-sm font-medium text-ink-muted">
+        <a href="#contesto" class="hover:text-primary transition-colors">Contesto</a>
+        <a href="#pilastri" class="hover:text-primary transition-colors">I 4 Pilastri</a>
+        <a href="#prompt-generator" class="hover:text-primary transition-colors text-accent font-semibold flex items-center gap-1">
+          <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> Prompt Architect
+        </a>
+        <a href="#glossario" class="hover:text-primary transition-colors">Glossario</a>
+        <a href="#confronto" class="hover:text-primary transition-colors">Sistema 1 vs 2</a>
+        <a href="#allocatore" class="hover:text-primary transition-colors">Configuratore</a>
+        <a href="#sintesi" class="hover:text-primary transition-colors">Sintesi</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="#prompt-generator" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-primary text-cream hover:bg-primary-dark transition shadow-sm">
+          <i data-lucide="terminal" class="w-4 h-4"></i> Genera Prompt
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Apri menu" class="md:hidden p-2 text-ink hover:text-primary focus:outline-none">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-b border-border bg-cream px-6 py-4 space-y-3 font-medium text-sm">
+      <a href="#contesto" class="block text-ink-muted hover:text-primary" onclick="toggleMobileMenu()">Contesto</a>
+      <a href="#pilastri" class="block text-ink-muted hover:text-primary" onclick="toggleMobileMenu()">I 4 Pilastri Spiegati</a>
+      <a href="#prompt-generator" class="block text-accent font-bold hover:text-accent-dark" onclick="toggleMobileMenu()">Generatore di Prompt di Reasoning</a>
+      <a href="#glossario" class="block text-ink-muted hover:text-primary" onclick="toggleMobileMenu()">Glossario Tecnico</a>
+      <a href="#confronto" class="block text-ink-muted hover:text-primary" onclick="toggleMobileMenu()">Sistema 1 vs 2</a>
+      <a href="#allocatore" class="block text-ink-muted hover:text-primary" onclick="toggleMobileMenu()">Configuratore</a>
+      <a href="#sintesi" class="block text-ink-muted hover:text-primary" onclick="toggleMobileMenu()">Sintesi e Cheat Sheet</a>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24 border-b border-border/60 bg-gradient-to-b from-cream via-cream to-paper/40">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-light border border-accent/20 text-accent-dark text-xs font-semibold uppercase tracking-wider mb-6">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Frontier Deliberative AI & Prompt Engineering
+        </div>
+
+        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-ink leading-[1.15] mb-6 tracking-tight">
+          Architettura del <span class="text-primary italic">Reasoning</span> e Prompting Avanzato
+        </h1>
+
+        <p class="text-lg sm:text-xl text-ink-muted leading-relaxed font-sans mb-8 max-w-3xl">
+          Comprendi a fondo la scienza dell'IA deliberativa di Sistema 2 e genera prompt ingegnerizzati basati sui <strong>4 Pilastri Tecnici</strong> per forzare il ragionamento profondo nei modelli di nuova generazione (OpenAI o-series / GPT-5 class, Claude Extended Thinking, DeepSeek R-series, Gemini Deliberative, Llama Reasoning).
+        </p>
+
+        <!-- "In parole semplici" Callout Box -->
+        <div class="editorial-card-paper p-5 sm:p-6 mb-8 border-l-4 border-l-accent">
+          <div class="flex items-center gap-2 text-accent-dark font-bold text-xs uppercase tracking-wider mb-2">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i> Cosa cambia nel Prompting di Reasoning?
+          </div>
+          <p class="text-sm sm:text-base text-ink leading-relaxed">
+            I classici prompt chiedono subito la risposta. I prompt basati sui <strong>4 Pilastri del Reasoning</strong> costringono il modello a creare uno "spazio latente di riflessione" prima di rispondere, imponendo <strong>fasi di autoverifica</strong>, <strong>ricerca ad albero delle ipotesi</strong> e <strong>correzione degli errori intermedi (Backtracking)</strong>.
+          </p>
+        </div>
+
+        <!-- Call to Action Buttons -->
+        <div class="flex flex-wrap gap-4 items-center">
+          <a href="#prompt-generator" class="px-6 py-3.5 rounded-full bg-primary text-cream font-semibold text-sm hover:bg-primary-dark transition-all flex items-center gap-2 shadow-md hover:shadow-lg">
+            <i data-lucide="wand-2" class="w-4 h-4"></i> Crea Prompt con i 4 Pilastri
+          </a>
+          <a href="#glossario" class="px-6 py-3.5 rounded-full bg-paper border border-border text-ink font-semibold text-sm hover:bg-paper-dark transition-all flex items-center gap-2">
+            <i data-lucide="book-marked" class="w-4 h-4"></i> Consulta il Glossario
+          </a>
+        </div>
+
+        <!-- Key Pillar Highlights Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-12 pt-8 border-t border-border/80">
+          <div class="p-4 bg-white/70 rounded-xl border border-border">
+            <div class="font-serif text-2xl font-bold text-primary">01. Scaling</div>
+            <div class="text-xs font-bold text-ink mt-1">Test-Time Compute</div>
+            <div class="text-[11px] text-ink-muted mt-1">Spazio di pensiero esteso nell'inferenza.</div>
+          </div>
+          <div class="p-4 bg-white/70 rounded-xl border border-border">
+            <div class="font-serif text-2xl font-bold text-accent">02. RLVR</div>
+            <div class="text-xs font-bold text-ink mt-1">Verifiable Rewards</div>
+            <div class="text-[11px] text-ink-muted mt-1">Ancoraggio a verificatori oggettivi 0/1.</div>
+          </div>
+          <div class="p-4 bg-white/70 rounded-xl border border-border">
+            <div class="font-serif text-2xl font-bold text-primary-dark">03. PRMs</div>
+            <div class="text-xs font-bold text-ink mt-1">Process Rewards</div>
+            <div class="text-[11px] text-ink-muted mt-1">Valutazione atomica passo per passo.</div>
+          </div>
+          <div class="p-4 bg-white/70 rounded-xl border border-border">
+            <div class="font-serif text-2xl font-bold text-accent-dark">04. Tree Search</div>
+            <div class="text-xs font-bold text-ink mt-1">MCTS & Backtrack</div>
+            <div class="text-[11px] text-ink-muted mt-1">Esplorazione ramificata e ritrattazione.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Contesto Teorico -->
+    <section id="contesto" class="py-16 border-b border-border/60">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="mb-8">
+          <span class="text-xs font-bold text-accent uppercase tracking-widest">01 / L'Evoluzione del Reasoning</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-2">Dalla Predizione del Prossimo Token alla Deliberazione</h2>
+        </div>
+
+        <div class="space-y-6 text-ink-muted text-base leading-relaxed">
+          <p>
+            Per anni l'intelligenza artificiale basata sui Transformers si è basata sul principio dell'<strong>Autoregressione Avida</strong>: dato un testo di input, il modello calcola la distribuzione di probabilità per il token successivo e seleziona il più verosimile. Questo approccio funziona brillantemente per la prosa fluida, ma fallisce di fronte a compiti che richiedono una pianificazione preventiva (es. programmazione complessa, dimostrazioni matematiche, analisi giuridica).
+          </p>
+
+          <!-- Interactive Accordion for Problem Analysis -->
+          <div class="my-6 space-y-3">
+            <div class="editorial-card p-4 cursor-pointer hover:border-primary transition" onclick="toggleAccordion('acc-1')">
+              <div class="flex justify-between items-center font-semibold text-ink">
+                <span class="flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4 text-accent"></i> Perché la risposta diretta ("Zero-Shot") soffre di allucinazioni?</span>
+                <i id="acc-1-icon" data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+              </div>
+              <div id="acc-1" class="hidden mt-3 pt-3 border-t border-border text-sm text-ink-muted leading-relaxed">
+                Quando un LLM tradizionale genera una risposta senza una fase di pensiero dedicata, si impegna in una traiettoria sintattica irrevocabile. Se commette un errore al terzo token, tenterà comunque di razionalizzarlo nei token successivi anziché ammettere l'errore, provocando le note allucinazioni logiche.
+              </div>
+            </div>
+
+            <div class="editorial-card p-4 cursor-pointer hover:border-primary transition" onclick="toggleAccordion('acc-2')">
+              <div class="flex justify-between items-center font-semibold text-ink">
+                <span class="flex items-center gap-2"><i data-lucide="cpu" class="w-4 h-4 text-primary"></i> Come i Prompt Ingegnerizzati simulano l'Hardware del Reasoning</span>
+                <i id="acc-2-icon" data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+              </div>
+              <div id="acc-2" class="hidden mt-3 pt-3 border-t border-border text-sm text-ink-muted leading-relaxed">
+                Anche su modelli standard o durante l'interazione via API/Prompt, l'uso di prompt strutturati basati sui 4 pilastri forza il modello a riservare token del contesto di output per eseguire calcoli intermedi, scomporre il problema, valutare sotto-ipotesi e correggersi formalmente prima di mostrare la risposta finale.
+              </div>
+            </div>
+          </div>
+
+          <p>
+            Comprendere i principi architetturali dei modelli di reasoning ci consente di progettare <strong>prompt ad altissima efficienza</strong> che costringono qualunque architettura di nuova generazione a comportarsi da motore analitico di Sistema 2.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: I 4 Pilastri Spiegati nel Dettaglio -->
+    <section id="pilastri" class="py-16 border-b border-border/60 bg-paper/20">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="mb-12">
+          <span class="text-xs font-bold text-accent uppercase tracking-widest">02 / Architettura Fondamentale</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-2">I 4 Pilastri del Reasoning: Spiegazione Approfondita</h2>
+          <p class="text-ink-muted text-sm sm:text-base mt-2 max-w-3xl">
+            Di seguito l'analisi tecnica dettagliata delle quattro innovazioni che rendono possibile il ragionamento negli LLM e come ciascuna si traduce in una regola di Prompting.
+          </p>
+        </div>
+
+        <!-- Pillar Tabs Selector -->
+        <div class="flex flex-wrap gap-2 mb-8 border-b border-border/80 pb-4">
+          <button onclick="selectPillarTab(1)" id="tab-btn-1" class="pillar-tab-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-primary text-cream shadow-sm transition flex items-center gap-2">
+            <span>1. Test-Time Compute</span>
+          </button>
+          <button onclick="selectPillarTab(2)" id="tab-btn-2" class="pillar-tab-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-paper border border-border text-ink hover:bg-paper-dark transition flex items-center gap-2">
+            <span>2. Verifiable Rewards (RLVR)</span>
+          </button>
+          <button onclick="selectPillarTab(3)" id="tab-btn-3" class="pillar-tab-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-paper border border-border text-ink hover:bg-paper-dark transition flex items-center gap-2">
+            <span>3. Process Reward Models (PRM)</span>
+          </button>
+          <button onclick="selectPillarTab(4)" id="tab-btn-4" class="pillar-tab-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-paper border border-border text-ink hover:bg-paper-dark transition flex items-center gap-2">
+            <span>4. Tree Search & Backtrack</span>
+          </button>
+        </div>
+
+        <!-- Pillar Detail Content Display Area -->
+        <div id="pillar-detail-container" class="editorial-card p-6 sm:p-8 bg-white transition-all">
+          
+          <!-- Pillar 1 Content (Default Active) -->
+          <div id="pillar-content-1" class="pillar-content-block space-y-6">
+            <div class="flex items-start justify-between flex-wrap gap-4 border-b border-border pb-4">
+              <div>
+                <span class="text-xs font-mono uppercase font-bold text-primary">Pilastro 01 / Allocazione Dinamica</span>
+                <h3 class="font-serif text-2xl font-bold text-ink">Test-Time Compute Scaling & Latent CoT</h3>
+              </div>
+              <span class="px-3 py-1 bg-primary-light text-primary font-mono text-xs font-bold rounded-full border border-primary/20">
+                Formula: Precisione ∝ log(Token_Pensiero)
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-primary"></i> Il Concetto Architetturale
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  Mentre nei modelli tradizionali il tempo di calcolo per risposta è fisso, il <strong>Test-Time Compute Scaling</strong> alloca dinamicamente migliaia di token intermedi di "pensiero invisibile" prima di generare l'output. Più il problema è complesso, più il modello prolunga la catena deduttiva.
+                </p>
+                <div class="bg-paper p-3 rounded-lg border border-border text-xs">
+                  <strong>Effetto Pratico:</strong> Concedere un budget di pensiero appropriato fa superare in accuratezza logica modelli nettamente più grandi che rispondono d'impulso.
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="terminal" class="w-4 h-4 text-accent"></i> Come Imporlo nel Prompting
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  Per replicare questo comportamento tramite prompt engineering, si obbliga il modello ad aprire un blocco di pensiero isolato (es. <code>&lt;thinking&gt;...&lt;/thinking&gt;</code>) stabilendo una quota minima di passaggi deduttivi prima di fornire qualunque conclusione.
+                </p>
+                <div class="bg-ink text-cream p-3 rounded-lg font-mono text-xs overflow-x-auto">
+                  <span class="text-gray-400"># Regola di Prompting:</span><br>
+                  "Prima di rispondere, inserisci un blocco &lt;thinking&gt; ed esegui almeno 5 passaggi analitici espliciti decomponendo ogni assunzione."
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 2 Content -->
+          <div id="pillar-content-2" class="pillar-content-block hidden space-y-6">
+            <div class="flex items-start justify-between flex-wrap gap-4 border-b border-border pb-4">
+              <div>
+                <span class="text-xs font-mono uppercase font-bold text-accent">Pilastro 02 / Grounding Oggettivo</span>
+                <h3 class="font-serif text-2xl font-bold text-ink">RLVR (Reinforcement Learning with Verifiable Rewards)</h3>
+              </div>
+              <span class="px-3 py-1 bg-accent-light text-accent-dark font-mono text-xs font-bold rounded-full border border-accent/20">
+                Feedback Deterministico vs Preferenze Umane
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-accent"></i> Il Concetto Architetturale
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  L'RLHF tradizionale usava giudici umani o modelli di preferenza per stimare l'eleganza di una risposta, creando ambiguità. L'<strong>RLVR</strong> addestra il modello su problemi con **verificatori oggettivi** (es. compilatori di codice, solutori simbolici, test d'invarianza formale). Il modello riceve +1 se il codice compila ed esegue i test unitari, 0 se fallisce.
+                </p>
+                <div class="bg-paper p-3 rounded-lg border border-border text-xs">
+                  <strong>Perché è rivoluzionario:</strong> Elimina l'adulazione (sycophancy) e sviluppa una vera competenza di risoluzione dove i fatti contano più della forma.
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="terminal" class="w-4 h-4 text-accent"></i> Come Imporlo nel Prompting
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  Nel prompt definiamo **criteri di verifica binaria** or "Test Assertion". Chiediamo all'LLM di inventare casi di test limite e simulare l'esecuzione prima di consegnare il risultato.
+                </p>
+                <div class="bg-ink text-cream p-3 rounded-lg font-mono text-xs overflow-x-auto">
+                  <span class="text-gray-400"># Regola di Prompting:</span><br>
+                  "Definisci 3 test case di verifica rigorosi con input/output atteso. Valuta la tua soluzione contro questi test prima di confermare la risposta."
+                </div>
+              </div>
+            </div>
+
+            <!-- Deep Dive: RLHF Tradizionale vs RLVR -->
+            <div class="mt-6 pt-6 border-t border-border bg-paper/40 p-5 rounded-xl space-y-4">
+              <h4 class="font-serif text-lg font-bold text-ink flex items-center gap-2">
+                <i data-lucide="git-compare" class="w-5 h-5 text-accent"></i> 
+                Focus Tecnico: Come funziona l'RLHF Tradizionale e perché fallisce nel Reasoning
+              </h4>
+              
+              <p class="text-xs sm:text-sm text-ink-muted leading-relaxed">
+                L'<strong>RLHF (Reinforcement Learning from Human Feedback)</strong> è stata la tecnica cardine per l'allineamento dei modelli di linguaggio generali (come ChatGTP early-stage, Claude 2, ecc.). Si articola tradizionalmente in tre fasi:
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div class="bg-white p-3 rounded-lg border border-border">
+                  <span class="font-bold text-primary block mb-1">Fase 1: SFT</span>
+                  <span class="text-ink-muted"><em>Supervised Fine-Tuning</em>: Addestramento iniziale su prompt e risposte ideali scritte o revisionate da valutatori umani.</span>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-border">
+                  <span class="font-bold text-accent block mb-1">Fase 2: Reward Model (RM)</span>
+                  <span class="text-ink-muted">Si genera un modello di ricompensa facendogli confrontare coppie di risposte (A vs B) e apprendere le preferenze qualitative espresse dagli umani.</span>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-border">
+                  <span class="font-bold text-primary-dark block mb-1">Fase 3: PPO / DPO</span>
+                  <span class="text-ink-muted">L'LLM viene ottimizzato tramite algoritmi di RL (es. Proximal Policy Optimization) per massimizzare il punteggio del Reward Model senza allontanarsi troppo dal modello base.</span>
+                </div>
+              </div>
+
+              <div class="bg-red-50/60 border border-red-200/80 p-4 rounded-lg text-xs space-y-2 text-ink">
+                <span class="font-bold text-red-900 flex items-center gap-1.5">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i> I 3 Colli di Bottiglia dell'RLHF nel Reasoning Avanzato:
+                </span>
+                <ul class="list-disc list-inside space-y-1 text-ink-muted pl-1">
+                  <li><strong>L'Inganno della Forma (Style Bias):</strong> Gli umani tendono a premiare risposte ben formattate, eloquenti e sicure di sé, anche quando contengono errori matematici o bug sottili.</li>
+                  <li><strong>Sycophancy (Adulazione):</strong> Il modello impara a confermare le opinioni dell'utente anziché correggerlo, poiché risposte accomodanti ottengono punteggi più alti dai rater.</li>
+                  <li><strong>Incapacità di Valutazione Umana:</strong> Un valutatore umano non può verificare istantaneamente una prova di 50 passaggi algebrici o 200 righe di codice concorrente, rendendo l'RLHF inapplicabile per scalare l'intelligenza pura. Per questo l'RLVR (verificatori automatici 0/1) lo sostituisce nel reasoning.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 3 Content -->
+          <div id="pillar-content-3" class="pillar-content-block hidden space-y-6">
+            <div class="flex items-start justify-between flex-wrap gap-4 border-b border-border pb-4">
+              <div>
+                <span class="text-xs font-mono uppercase font-bold text-primary">Pilastro 03 / Feedback Atomico</span>
+                <h3 class="font-serif text-2xl font-bold text-ink">PRM (Process Reward Models) vs ORM</h3>
+              </div>
+              <span class="px-3 py-1 bg-primary-light text-primary font-mono text-xs font-bold rounded-full border border-primary/20">
+                Valutazione Passo-Passo
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="microscope" class="w-4 h-4 text-primary"></i> Il Concetto Architetturale
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  I classici Outcome Reward Models (ORM) giudicavano soltanto il risultato finale. Se la risposta era sbagliata, non si sapeva dove fosse il bug. I <strong>Process Reward Models (PRM)</strong> analizzano ogni singolo rigo di deduzione attribuendo uno score ad ogni token di passaggio. Questo evita che una deduzione fortunata con passaggi errati passi inosservata.
+                </p>
+                <div class="bg-paper p-3 rounded-lg border border-border text-xs">
+                  <strong>Analogia:</strong> Un insegnante di matematica che assegna punti intermedi per la correttezza dei passaggi dell'equazione, invece di mettere solo 0 o 10 alla fine.
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="terminal" class="w-4 h-4 text-accent"></i> Come Imporlo nel Prompting
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  Forziamo il modello ad auto-assegnarsi un **punteggio di confidenza numerico (0.0 - 1.0)** per ogni passaggio deduttivo e a fermarsi immediatamente se la fiducia scende sotto la soglia.
+                </p>
+                <div class="bg-ink text-cream p-3 rounded-lg font-mono text-xs overflow-x-auto">
+                  <span class="text-gray-400"># Regola di Prompting:</span><br>
+                  "Al termine di ogni passaggio del tuo ragionamento, assegna un punteggio [Confidenza: X.XX]. Se X.XX < 0.85, interrompi la catena e riparti."
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 4 Content -->
+          <div id="pillar-content-4" class="pillar-content-block hidden space-y-6">
+            <div class="flex items-start justify-between flex-wrap gap-4 border-b border-border pb-4">
+              <div>
+                <span class="text-xs font-mono uppercase font-bold text-accent-dark">Pilastro 04 / Struttura di Ricerca</span>
+                <h3 class="font-serif text-2xl font-bold text-ink">Latent Tree Search, MCTS & Backtracking</h3>
+              </div>
+              <span class="px-3 py-1 bg-accent-light text-accent-dark font-mono text-xs font-bold rounded-full border border-accent/20">
+                Esplorazione Ramificata & Retrattazione
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="git-fork" class="w-4 h-4 text-accent-dark"></i> Il Concetto Architetturale
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  Sfruttando algoritmi simili a quelli usati nei solutori strategici (Monte Carlo Tree Search), l'LLM non segue una linea singola ma esplora **alberi di decisioni concorrenti**. Quando la valutazione di un ramo mostra una contraddizione o una bassa ricompensa PRM, il modello **pota il ramo** (Pruning) ed effettua **Backtracking** verso il nodo decisionale precedente per provare un'ipotesi alternativa.
+                </p>
+                <div class="bg-paper p-3 rounded-lg border border-border text-xs">
+                  <strong>Capacità Chiave:</strong> L'abilità esplicita di dire "Aspetta, ho commesso un errore al punto 2, torno indietro e cambio strada."
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h4 class="font-bold text-ink text-base flex items-center gap-2">
+                  <i data-lucide="terminal" class="w-4 h-4 text-accent"></i> Come Imporlo nel Prompting
+                </h4>
+                <p class="text-ink-muted leading-relaxed">
+                  Chiediamo al modello di ipotizzare **almeno 2-3 strategie distinte** (Ramo A, Ramo B), confrontarle criticamente e usare marcatori di sintassi come <code>[BACKTRACK]</code> o <code>[RAMO SCARTATO]</code> se incontra incoerenze.
+                </p>
+                <div class="bg-ink text-cream p-3 rounded-lg font-mono text-xs overflow-x-auto">
+                  <span class="text-gray-400"># Regola di Prompting:</span><br>
+                  "Genera 2 ramificazioni di risoluzione. Se identifichi un vicolo cieco nel Ramo A, scrivi [BACKTRACK], spiega l'errore e passa al Ramo B."
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Generatore di Prompt di Reasoning ("Prompt Architect") -->
+    <section id="prompt-generator" class="py-16 border-b border-border/60">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-light text-accent-dark text-xs font-bold uppercase tracking-wider mb-2">
+            <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> Strumento Interattivo Operativo
+          </div>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink">Reasoning Prompt Architect</h2>
+          <p class="text-ink-muted text-sm sm:text-base mt-2">
+            Componi prompt professionali ad alte prestazioni inserendo le tecniche dei 4 Pilastri. Seleziona i vincoli desiderati e ottieni un prompt pronto da copiare ed usare sui modelli frontier di nuova generazione (OpenAI, Anthropic Claude, DeepSeek, Google Gemini, Meta Llama).
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Left Controls Column -->
+          <div class="lg:col-span-5 space-y-6">
+            <div class="editorial-card p-6 bg-white space-y-5">
+              <h3 class="font-serif text-lg font-bold text-ink border-b border-border pb-3 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4 text-primary"></i> Configurazione Prompt
+              </h3>
+
+              <!-- Preset Templates Selector -->
+              <div>
+                <label for="prompt-preset" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                  Carica Preset di Dominio
+                </label>
+                <select id="prompt-preset" onchange="applyPromptPreset()" class="w-full bg-cream border border-border rounded-lg p-2.5 text-sm font-sans focus:border-primary focus:outline-none">
+                  <option value="custom">-- Personalizzato --</option>
+                  <option value="code_audit" selected>Coding: Refactoring & Debugging Critico</option>
+                  <option value="math_solver">Matematica & Fisica: Dimostrazione Rigorosa</option>
+                  <option value="legal_contract">Legale: Analisi Contrattuale & Rischi</option>
+                  <option value="medical_diag">Medicina: Diagnosi Differenziale</option>
+                  <option value="business_strategy">Business: Validazione Strategia & ROI</option>
+                </select>
+              </div>
+
+              <!-- Task Goal Input -->
+              <div>
+                <label for="prompt-goal" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                  Obiettivo o Quesito Specifico
+                </label>
+                <textarea id="prompt-goal" rows="2" oninput="buildReasoningPrompt()" class="w-full bg-cream border border-border rounded-lg p-2.5 text-sm font-sans focus:border-primary focus:outline-none" placeholder="Inserisci qui il compito principale..."></textarea>
+              </div>
+
+              <!-- Checkbox Options for the 4 Pillars -->
+              <div class="space-y-3 pt-2 border-t border-border">
+                <span class="block text-xs font-bold text-ink uppercase tracking-wider">Pilastri da Enfatizzare</span>
+
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" id="chk-p1" checked onchange="buildReasoningPrompt()" class="custom-checkbox mt-1 h-4 w-4 text-primary rounded border-border focus:ring-primary">
+                  <span class="text-xs text-ink leading-tight">
+                    <strong>1. Test-Time Compute (CoT Scratchpad):</strong> Forza blocco &lt;thinking&gt; e analisi estesa.
+                  </span>
+                </label>
+
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" id="chk-p2" checked onchange="buildReasoningPrompt()" class="custom-checkbox mt-1 h-4 w-4 text-primary rounded border-border focus:ring-primary">
+                  <span class="text-xs text-ink leading-tight">
+                    <strong>2. Verifiable Rewards (RLVR):</strong> Obbliga a creare e superare 3 test di verifica oggettivi.
+                  </span>
+                </label>
+
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" id="chk-p3" checked onchange="buildReasoningPrompt()" class="custom-checkbox mt-1 h-4 w-4 text-primary rounded border-border focus:ring-primary">
+                  <span class="text-xs text-ink leading-tight">
+                    <strong>3. Process Rewards (PRM Evaluation):</strong> Exige punteggio di confidenza su ogni singolo passaggio.
+                  </span>
+                </label>
+
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" id="chk-p4" checked onchange="buildReasoningPrompt()" class="custom-checkbox mt-1 h-4 w-4 text-primary rounded border-border focus:ring-primary">
+                  <span class="text-xs text-ink leading-tight">
+                    <strong>4. Tree Search & Backtracking:</strong> Forza l'esplorazione di rami alternativi se si rilevano errori.
+                  </span>
+                </label>
+              </div>
+
+              <!-- Extra Formatting Options -->
+              <div class="pt-2 border-t border-border space-y-3">
+                <div>
+                  <label for="prompt-style" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                    Profondità del Pensiero
+                  </label>
+                  <select id="prompt-style" onchange="buildReasoningPrompt()" class="w-full bg-cream border border-border rounded-lg p-2 text-xs font-sans">
+                    <option value="deep" selected>Profonda & Ispezionabile (Consigliata)</option>
+                    <option value="extreme">Ultra-Rigida (Zero Allucinazioni / Massima Latenza)</option>
+                    <option value="compact">Sintetica & Veloce (Bassa latenza)</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Right Live Output Column -->
+          <div class="lg:col-span-7">
+            <div class="editorial-card p-6 bg-ink text-cream h-full flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10 flex-wrap gap-2">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="code" class="w-4 h-4 text-accent"></i>
+                    <span class="font-serif font-bold text-sm tracking-wide text-white">Prompt Ingegnerizzato Generato</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="copyToClipboard('generated-prompt-output')" class="px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-dark text-white text-xs font-bold flex items-center gap-1.5 transition shadow">
+                      <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copia Prompt
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Prompt Code Display area -->
+                <div class="relative">
+                  <pre id="generated-prompt-output" class="font-mono text-xs text-cream/90 bg-black/50 p-4 rounded-xl border border-white/10 overflow-x-auto leading-relaxed max-h-[500px] overflow-y-auto whitespace-pre-wrap select-all">
+<!-- Prompt generato apparirà qui -->
+                  </pre>
+                </div>
+              </div>
+
+              <!-- Footer info box inside output card -->
+              <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-gray-400">
+                <span class="flex items-center gap-1">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> Pronto per LLM Frontier (OpenAI, Claude, DeepSeek, Gemini, Llama)
+                </span>
+                <span class="font-mono text-accent">Formato System/User Ready</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Glossario Tecnico del Reasoning -->
+    <section id="glossario" class="py-16 border-b border-border/60 bg-paper/30">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-accent uppercase tracking-widest">04 / Terminolgia & Concetti Chiave</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-2">Glossario Tecnico del Reasoning</h2>
+            <p class="text-ink-muted text-sm sm:text-base mt-1">
+              Definizioni chiare ed esaustive dei termini architetturali dell'IA deliberativa di nuova generazione.
+            </p>
+          </div>
+
+          <!-- Search Filter Input for Glossary -->
+          <div class="w-full sm:w-64">
+            <div class="relative">
+              <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Cerca termine (es. PRM, CoT)..." class="w-full bg-white border border-border rounded-xl pl-9 pr-4 py-2 text-xs font-sans focus:border-primary focus:outline-none shadow-sm">
+              <i data-lucide="search" class="w-4 h-4 text-ink-muted absolute left-3 top-2.5"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Glossary Items Grid -->
+        <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="rlhf reinforcement learning human feedback preferenze umane ppo dpo reward model">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-accent-dark">RLHF (Human Feedback)</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accent-light text-accent-dark font-bold">Alignment Classic</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              <em>Reinforcement Learning from Human Feedback</em>: paradigma di allineamento basato sulle preferenze qualitative umane. Fondamentale per tono, usabilità e sicurezza, ma limitato nel reasoning a causa di vulnerabilità quali <i>Style Bias</i> e <i>Sycophancy</i>.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="sycophancy adulazione reward hacking stile bias allucinazione compiacenza">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-red-700">Sycophancy & Reward Hacking</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-red-100 text-red-800 font-bold">RLHF Pitfalls</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Comportamenti patologici scaturiti da RLHF impreciso: il modello "inganna" il Reward Model (Reward Hacking) dando risposte apparentemente convincenti o dandoti sempre ragione (Sycophancy) anche se la soluzione è logica o matematicamente errata.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="test time compute scaling inferenza budget">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-primary">Test-Time Compute</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary-light text-primary font-bold">Inference Scaling</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              La quantità di risorse computazionali e token riservati durante la fase di generazione dell'output (inferenza), anziché durante l'addestramento. Permette al modello di riflettere più a lungo per risolvere quesiti complessi.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="chain of thought cot catena di pensiero latente scratchpad">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-accent-dark">Chain-of-Thought (CoT)</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accent-light text-accent-dark font-bold">Prompting & Latent</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              La sequenza esplicita o latente di passaggi deduttivi intermedi generati prima della risposta finale. Può essere visibile nell'output oppure gestita in uno spazio di pensiero nascosto (&lt;thinking&gt;).
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="prm process reward model valutazione atomica step by step">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-primary">Process Reward Model (PRM)</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary-light text-primary font-bold">Reward Architecture</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Modello di ricompensa che assegna un punteggio di correttezza ad ogni singolo passaggio intermedio della catena di ragionamento, impedendo che errori logici nascosti producano risposte corrette per puro caso.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="orm outcome reward model risultato finale">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-ink-muted">Outcome Reward Model (ORM)</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-paper text-ink-muted font-bold">Legacy Reward</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Modello di ricompensa tradizionale che valuta esclusivamente l'output finale (corretto/sbagliato), senza analizzare la qualità o correttezza dei singoli passaggi logici intermedi.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="rlvr reinforcement learning with verifiable rewards verificatore oggettivo">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-accent-dark">RLVR</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accent-light text-accent-dark font-bold">Reinforcement Learning</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              <em>Reinforcement Learning with Verifiable Rewards</em>: tecnica di addestramento in cui la ricompensa è determinata da verificatori matematici o d'esecuzione oggettivi (es. compilatori, test unitari), eliminando la soggettività.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="mcts monte carlo tree search ricerca ad albero albero delle decisioni">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-primary">Monte Carlo Tree Search (MCTS)</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary-light text-primary font-bold">Search Algorithm</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Algoritmo di ricerca Euristica su grafi ad albero che consente al modello di esplorare più traiettorie risolutive, stimare la probabilità di successo di ciascun ramo e scegliere il percorso ottimale.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="backtracking ritrattazione correzione errori retrocedere">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-accent-dark">Backtracking</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accent-light text-accent-dark font-bold">Reasoning Control</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              La capacità attiva del modello di riconoscere un errore o un vicolo cieco in un ramo deduttivo, abortire quella linea di pensiero e tornare al nodo decisionale precedente per tentare un'alternativa.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="pruning potatura rimozione rami vicoli ciechi">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-primary">Pruning (Potatura)</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary-light text-primary font-bold">Tree Optimization</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Processo di eliminazione precoce delle ramificazioni della ricerca che scendono sotto una soglia minima di punteggio PRM o che violano vincoli logici, risparmiando token per i rami promettenti.
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="sistema 1 sistema 2 kahneman reattivo deliberativo">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-ink">Sistema 1 vs Sistema 2</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-paper text-ink-muted font-bold">Cognitive Framework</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Parallelismo basato sulle scienze cognitive: Il Sistema 1 rappresenta la generazione rapida e intuitiva (prosa fluida), mentre il Sistema 2 rappresenta il pensiero lento, riflessivo e controllato (reasoning rigoroso).
+            </p>
+          </div>
+
+          <div class="glossary-item editorial-card p-5 bg-white" data-keywords="latent thinking space spazio di pensiero nascosto token invisibili">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-serif font-bold text-ink text-lg text-accent-dark">Latent Thinking Space</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accent-light text-accent-dark font-bold">Architecture</span>
+            </div>
+            <p class="text-xs text-ink-muted leading-relaxed">
+              Ambiente di esecuzione protetto o nascosto in cui l'LLM genera token di pensiero intermedi per elaborare e verificare la soluzione prima di presentare la risposta pulita all'utente finale.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Confronto Sistema 1 vs Sistema 2 & Chart -->
+    <section id="confronto" class="py-16 border-b border-border/60 bg-paper/20">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Text and Dynamic Mode Selector -->
+          <div class="lg:col-span-5 space-y-6">
+            <div>
+              <span class="text-xs font-bold text-primary uppercase tracking-widest">05 / Paradigmi a Confronto</span>
+              <h2 class="font-serif text-3xl font-bold text-ink mt-2">Sistema 1 (Istintivo) vs Sistema 2 (Deliberativo)</h2>
+            </div>
+
+            <p class="text-sm text-ink-muted leading-relaxed">
+              I modelli moderni alternano risposte immediate per compiti conversazionali o mnemonici a processi deliberativi complessi per compiti che richiedono rigore formale.
+            </p>
+
+            <!-- Interactive Toggle Card -->
+            <div class="editorial-card p-4 space-y-4">
+              <div class="flex items-center justify-between text-xs font-bold text-ink">
+                <span>Modalità Selezionata:</span>
+                <span id="system-mode-label" class="text-primary font-mono uppercase">Sistema 2 (Reasoning)</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 p-1 bg-paper rounded-lg border border-border">
+                <button id="btn-sys-1" onclick="switchSystemMode(1)" class="py-2 text-xs font-bold rounded-md transition text-ink-muted">Sistema 1 (Fast)</button>
+                <button id="btn-sys-2" onclick="switchSystemMode(2)" class="py-2 text-xs font-bold rounded-md bg-primary text-cream shadow-sm transition">Sistema 2 (Deep)</button>
+              </div>
+
+              <!-- Dynamic Details Box -->
+              <div id="system-details-box" class="space-y-2 text-xs pt-2">
+                <!-- Aggiornato dinamicamente via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Benchmark Chart Box -->
+          <div class="lg:col-span-7">
+            <div class="editorial-card p-6 bg-white">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="font-serif text-lg font-bold text-ink">Accuratezza Benchmark vs Budget di Ragionamento</h3>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-paper text-ink-muted border border-border">Scaling Curve</span>
+              </div>
+              
+              <!-- Canvas Container -->
+              <div class="relative h-64 sm:h-72 w-full">
+                <canvas id="benchmarkChart"></canvas>
+              </div>
+              <p class="text-[11px] text-ink-muted text-center mt-3">
+                Grafico: L'accuratezza su problemi complessi (AIME / SWE-bench) scala esponenzialmente con l'aumento dei token di pensiero allocati.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Strumento Operativo - Allocatore di Budget & Configurator -->
+    <section id="allocatore" class="py-16 border-b border-border/60">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="mb-8">
+          <span class="text-xs font-bold text-accent uppercase tracking-widest">06 / Configurazione Tecnica</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-2">Configuratore di Inference & Budget Allocator</h2>
+          <p class="text-ink-muted text-sm sm:text-base mt-2">
+            Pianifica l'architettura applicativa: seleziona il caso d'uso e genera i parametri ottimali di Test-Time Compute e soglie PRM in YAML.
+          </p>
+        </div>
+
+        <div class="editorial-card p-6 sm:p-8 bg-white space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
+            <!-- Input 1: Domain -->
+            <div>
+              <label for="builder-domain" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                Dominio dell'Applicazione
+              </label>
+              <select id="builder-domain" onchange="generateStrategyConfig()" class="w-full bg-cream border border-border rounded-lg p-3 text-sm font-sans focus:border-primary focus:outline-none">
+                <option value="code">Software Engineering & Bug Fixing</option>
+                <option value="legal">Analisi Legale & Contrattualistica</option>
+                <option value="math">Calcolo Scientifico & Finanziario</option>
+                <option value="chat">Assistente Conversazionale Generalista</option>
+              </select>
+            </div>
+
+            <!-- Input 2: Latency Requirement -->
+            <div>
+              <label for="builder-latency" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                Tolleranza sulla Latenza
+              </label>
+              <select id="builder-latency" onchange="generateStrategyConfig()" class="w-full bg-cream border border-border rounded-lg p-3 text-sm font-sans focus:border-primary focus:outline-none">
+                <option value="strict">Bassa (Risposta in &lt; 2 secondi)</option>
+                <option value="moderate" selected>Moderata (Risposta in 5 - 15 secondi)</option>
+                <option value="high">Alta / Asincrona (Fino a 60 secondi)</option>
+              </select>
+            </div>
+
+            <!-- Input 3: Model Scale -->
+            <div>
+              <label for="builder-model" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                Taglia del Modello di Base
+              </label>
+              <select id="builder-model" onchange="generateStrategyConfig()" class="w-full bg-cream border border-border rounded-lg p-3 text-sm font-sans focus:border-primary focus:outline-none">
+                <option value="small">Piccola (Modello Distillato / Edge)</option>
+                <option value="medium" selected>Media (32B - 70B Class)</option>
+                <option value="flagship">Frontier Flagship (Frontier Scale)</option>
+              </select>
+            </div>
+
+            <!-- Input 4: Accuracy Threshold -->
+            <div>
+              <label for="builder-accuracy" class="block text-xs font-bold text-ink uppercase tracking-wider mb-2">
+                Criticità dell'Errore (Soglia PRM)
+              </label>
+              <select id="builder-accuracy" onchange="generateStrategyConfig()" class="w-full bg-cream border border-border rounded-lg p-3 text-sm font-sans focus:border-primary focus:outline-none">
+                <option value="standard">Tolleranza Standard (Bassa criticità)</option>
+                <option value="high" selected>Alta Precisione (Tolleranza minima)</option>
+                <option value="zero">Zero-Hallucination Guard (MCTS strict)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Live Generated YAML Output -->
+          <div class="pt-6 border-t border-border">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="code" class="w-4 h-4"></i> Output Configurazione System YAML
+              </span>
+              <button onclick="copyToClipboard('config-output-code')" class="px-3 py-1.5 rounded-md bg-paper hover:bg-paper-dark border border-border text-ink text-xs font-semibold flex items-center gap-1.5 transition">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copia YAML
+              </button>
+            </div>
+
+            <pre id="config-output-code" aria-live="polite" class="bg-ink text-cream font-mono text-xs p-4 rounded-xl overflow-x-auto leading-relaxed border border-ink">
+# Generazione in corso...
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Sintesi Executive & Cheat Sheet Copiabile -->
+    <section id="sintesi" class="py-16 bg-paper/40">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="editorial-card p-6 sm:p-8 bg-white border-2 border-primary/20">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-primary-light text-primary rounded-lg">
+              <i data-lucide="bookmark" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h2 class="font-serif text-2xl font-bold text-ink">Cheat Sheet Prompting & Reasoning</h2>
+              <p class="text-xs text-ink-muted">Sintesi tascabile dei 4 pilastri da applicare ad ogni prompt analitico</p>
+            </div>
+          </div>
+
+          <div id="executive-summary-text" class="space-y-3 text-sm text-ink leading-relaxed border-t border-border pt-4 font-mono text-xs">
+            <p><strong>[PILASTRO 1 - THINKING SCRATCHPAD]</strong><br>
+            Imponi sempre l'apertura del blocco &lt;thinking&gt;. Esempio: "Esegui prima la decompilazione del problema nel blocco &lt;thinking&gt; ed elenca almeno 4 passaggi intermedi."</p>
+            
+            <p><strong>[PILASTRO 2 - VERIFIABLE REWARDS (RLVR)]</strong><br>
+            Chiedi test case espliciti. Esempio: "Definisci 3 test di verifica oggettivi e verifica la tua risposta rispetto a ciascuno prima di concludere."</p>
+            
+            <p><strong>[PILASTRO 3 - PROCESS REWARDS (PRM)]</strong><br>
+            Esigi punteggio di confidenza atomico. Esempio: "Assegna uno score da 0 a 1 ad ogni passaggio logico. Se un passaggio ha score < 0.85, arresta l'esecuzione."</p>
+
+            <p><strong>[PILASTRO 4 - TREE SEARCH & BACKTRACKING]</strong><br>
+            Forza l'esplorazione e la correzione degli errori. Esempio: "Esplora due rami risolutivi concorrenti. Se trovi una contraddizione, scrivi [BACKTRACK] e cambia ramo."</p>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-border flex flex-wrap justify-between items-center gap-4">
+            <button onclick="copyToClipboard('executive-summary-text')" class="w-full sm:w-auto px-6 py-3 rounded-full bg-primary text-cream font-bold text-xs hover:bg-primary-dark transition flex items-center justify-center gap-2 shadow-sm">
+              <i data-lucide="copy" class="w-4 h-4"></i> Copia Cheat Sheet negli Appunti
+            </button>
+            <span class="text-xs text-ink-muted font-mono">Formato Markdown Pronto</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-ink text-cream py-12 border-t border-ink">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-6">
+      <div>
+        <div class="font-serif font-bold text-lg text-white flex items-center justify-center sm:justify-start gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-accent inline-block"></span>
+          Reasoning.Architect — Guida & Prompt Suite
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Sviluppato per la progettazione di Prompt avanzati basati sull'IA deliberativa.</p>
+      </div>
+      <div class="text-xs text-gray-400 font-mono">
+        Edizione Frontier — Monofile HTML/JS
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-6 right-6 z-50 bg-ink text-cream px-5 py-3 rounded-xl shadow-2xl border border-white/20 text-xs font-medium flex items-center gap-3 transform translate-y-20 opacity-0 pointer-events-none">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-accent"></i>
+    <span id="toast-message">Copiato negli appunti con successo!</span>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Initialize Lucide Icons
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      // Scroll Progress Bar
+      window.addEventListener('scroll', function() {
+        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        const progressBar = document.getElementById('scroll-progress-bar');
+        if (progressBar) {
+          progressBar.style.width = scrolled + '%';
+        }
+      });
+
+      // Initialize System Mode default display
+      switchSystemMode(2);
+
+      // Apply initial prompt preset
+      applyPromptPreset();
+
+      // Initialize Strategy YAML Configurator
+      generateStrategyConfig();
+
+      // Initialize Benchmark Chart
+      initBenchmarkChart();
+    });
+
+    function toggleAccordion(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById(id + '-icon');
+      if (el) {
+        el.classList.toggle('hidden');
+        if (icon) {
+          icon.classList.toggle('rotate-180');
+        }
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu) {
+        menu.classList.toggle('hidden');
+      }
+    }
+
+    function selectPillarTab(pillarId) {
+      // Hide all pillar content blocks
+      for (let i = 1; i <= 4; i++) {
+        const block = document.getElementById('pillar-content-' + i);
+        const btn = document.getElementById('tab-btn-' + i);
+        if (block) block.classList.add('hidden');
+        if (btn) {
+          btn.className = "pillar-tab-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-paper border border-border text-ink hover:bg-paper-dark transition flex items-center gap-2";
+        }
+      }
+
+      // Show selected block and highlight button
+      const selectedBlock = document.getElementById('pillar-content-' + pillarId);
+      const selectedBtn = document.getElementById('tab-btn-' + pillarId);
+      if (selectedBlock) selectedBlock.classList.remove('hidden');
+      if (selectedBtn) {
+        selectedBtn.className = "pillar-tab-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-primary text-cream shadow-sm transition flex items-center gap-2";
+      }
+    }
+
+    const promptPresets = {
+      code_audit: {
+        goal: "Analizza questo blocco di codice per identificare race condition, memory leak e colli di bottiglia sotto alto carico con concorrenza elevata.",
+        p1: true, p2: true, p3: true, p4: true, style: "deep"
+      },
+      math_solver: {
+        goal: "Risolvi e dimostra formalmente questo problema di calcolo delle probabilità e permutazioni vincolate.",
+        p1: true, p2: true, p3: true, p4: true, style: "extreme"
+      },
+      legal_contract: {
+        goal: "Esamina il seguente contratto commerciale per individuare clausole vessatorie, ambiguita di responsabilita e rischi di non-compliance GDPR.",
+        p1: true, p2: false, p3: true, p4: true, style: "deep"
+      },
+      medical_diag: {
+        goal: "Formula una diagnosi differenziale dettagliata per un paziente che presenta sintomi sistemici e marcatori infiammatori atipici.",
+        p1: true, p2: false, p3: true, p4: true, style: "deep"
+      },
+      business_strategy: {
+        goal: "Valuta la fattibilita e i rischi finanziari dell'ingresso in un nuovo mercato B2B, fornendo proiezioni ROI a 3 anni e mitigazione dei rischi.",
+        p1: true, p2: true, p3: true, p4: false, style: "compact"
+      }
+    };
+
+    function applyPromptPreset() {
+      const presetKey = document.getElementById('prompt-preset').value;
+      if (presetKey === 'custom') return;
+
+      const data = promptPresets[presetKey];
+      if (!data) return;
+
+      document.getElementById('prompt-goal').value = data.goal;
+      document.getElementById('chk-p1').checked = data.p1;
+      document.getElementById('chk-p2').checked = data.p2;
+      document.getElementById('chk-p3').checked = data.p3;
+      document.getElementById('chk-p4').checked = data.p4;
+      document.getElementById('prompt-style').value = data.style;
+
+      buildReasoningPrompt();
+    }
+
+    function buildReasoningPrompt() {
+      const goal = document.getElementById('prompt-goal').value.trim() || "[Inserisci qui il tuo quesito o problema specifico]";
+      const p1 = document.getElementById('chk-p1').checked;
+      const p2 = document.getElementById('chk-p2').checked;
+      const p3 = document.getElementById('chk-p3').checked;
+      const p4 = document.getElementById('chk-p4').checked;
+      const style = document.getElementById('prompt-style').value;
+
+      let prompt = `[SYSTEM INSTRUCTION: REASONING ENGINE ACTIVATE]\n`;
+      prompt += `Sei un sistema esperto di ragionamento analitico di livello avanzato (Sistema 2).\n`;
+      prompt += `Per risolvere il quesito dell'utente, DEVI seguire rigorosamente il protocollo di pensiero basato sui Pilastri del Reasoning.\n\n`;
+
+      prompt += `--- OBIETTIVO DEL COMPITO ---\n${goal}\n\n`;
+
+      prompt += `--- PROTOCOLLO DI RAGIONAMENTO ED ESECUZIONE ---\n`;
+
+      if (p1) {
+        prompt += `\n1. [PILASTRO 1: TEST-TIME COMPUTE & THOUGHT SCRATCHPAD]\n`;
+        if (style === 'extreme') {
+          prompt += `- Apri tassativamente un blocco <thinking> prima di qualsiasi output.\n`;
+          prompt += `- Decomponi il problema in almeno 5 sotto-problemi atomici distinti.\n`;
+          prompt += `- Esplicita tutte le assunzioni implicite prima di procedere.\n`;
+        } else if (style === 'compact') {
+          prompt += `- Utilizza un blocco <thinking> conciso ma rigoroso per pianificare la risoluzione passo per passo.\n`;
+        } else {
+          prompt += `- Inserisci una fase di pensiero dedicata nel blocco <thinking>.\n`;
+          prompt += `- Esplora la struttura del problema prima di tentare una soluzione diretta.\n`;
+        }
+      }
+
+      if (p3) {
+        prompt += `\n2. [PILASTRO 3: PROCESS REWARD MODEL (PRM) & VALUTAZIONE PASSO-PASSO]\n`;
+        prompt += `- Al termine di ogni singolo passaggio deduttivo, assegna esplicitamente un livello di confidenza [Confidenza: 0.00 - 1.00].\n`;
+        prompt += `- Se la confidenza di un passaggio scende sotto 0.85, NON avanzare al passaggio successivo: identifica il punto di debolezza.\n`;
+      }
+
+      if (p4) {
+        prompt += `\n3. [PILASTRO 4: TREE SEARCH & BACKTRACKING (ESPLORAZIONE RAMIFICATA)]\n`;
+        prompt += `- Formula almeno 2 rami/ipotesi risolutive distinte (es. Ramo A e Ramo B).\n`;
+        prompt += `- Se durante l'analisi di un ramo riscontri una contraddizione logica, un difetto formale o un punto morto, scrivi esplicitamente:\n`;
+        prompt += `  "[BACKTRACKING: Ramo X scartato a causa di <motivo> -> Ritorno al nodo di scelta Y]" e proseguire sul ramo alternativo.\n`;
+      }
+
+      if (p2) {
+        prompt += `\n4. [PILASTRO 2: VERIFIABLE REWARDS (RLVR) & TEST OBBIETTIVI]\n`;
+        prompt += `- Prima di formulare la risposta finale, crea 3 casi di test/criteri di verifica oggettivi e binarizzabili (VERO/FALSO).\n`;
+        prompt += `- Esegui una simulazione formale verificando che la soluzione soddisfi tutti e 3 i test.\n`;
+      }
+
+      prompt += `\n--- FORMATO DI OUTPUT FINALE ---\n`;
+      prompt += `- Chiudi il blocco </thinking>.\n`;
+      prompt += `- Fornisci la RISPOSTA FINALE nel blocco <solution> in modo chiaro, definitivo e privo di ambiguità sintattiche.\n`;
+
+      document.getElementById('generated-prompt-output').innerText = prompt;
+    }
+
+    function filterGlossary() {
+      const query = document.getElementById('glossary-search').value.toLowerCase().trim();
+      const items = document.querySelectorAll('.glossary-item');
+
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const keywords = item.getAttribute('data-keywords') || '';
+        if (query === '' || text.includes(query) || keywords.toLowerCase().includes(query)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    function switchSystemMode(sys) {
+      const label = document.getElementById('system-mode-label');
+      const details = document.getElementById('system-details-box');
+      const btn1 = document.getElementById('btn-sys-1');
+      const btn2 = document.getElementById('btn-sys-2');
+
+      if (sys === 1) {
+        label.innerText = 'Sistema 1 (Generazione Reattiva)';
+        label.className = 'text-accent-dark font-mono uppercase font-bold';
+        btn1.className = 'py-2 text-xs font-bold rounded-md bg-accent text-cream shadow-sm transition';
+        btn2.className = 'py-2 text-xs font-bold rounded-md text-ink-muted transition';
+
+        details.innerHTML = `
+          <div class="flex justify-between py-1 border-b border-border"><span>Latenza:</span><strong class="text-emerald-700">Istantanea (&lt; 200ms)</strong></div>
+          <div class="flex justify-between py-1 border-b border-border"><span>Costo Computazionale:</span><strong class="text-emerald-700">Molto Basso (1x)</strong></div>
+          <div class="flex justify-between py-1 border-b border-border"><span>Rischio Allucinazioni:</span><strong class="text-red-600">Elevato su problemi complessi</strong></div>
+          <div class="flex justify-between py-1"><span>Adatto per:</span><strong>Chat quotidiana, riassunti semplici, traduzione</strong></div>
+        `;
+      } else {
+        label.innerText = 'Sistema 2 (Reasoning Deliberativo)';
+        label.className = 'text-primary font-mono uppercase font-bold';
+        btn2.className = 'py-2 text-xs font-bold rounded-md bg-primary text-cream shadow-sm transition';
+        btn1.className = 'py-2 text-xs font-bold rounded-md text-ink-muted transition';
+
+        details.innerHTML = `
+          <div class="flex justify-between py-1 border-b border-border"><span>Latenza:</span><strong class="text-amber-700">Riflessiva (3s - 30s)</strong></div>
+          <div class="flex justify-between py-1 border-b border-border"><span>Costo Computazionale:</span><strong class="text-amber-700">Variabile (10x - 100x Test-Time)</strong></div>
+          <div class="flex justify-between py-1 border-b border-border"><span>Rischio Allucinazioni:</span><strong class="text-emerald-700">Quasi Azzerato (PRM & Test Checked)</strong></div>
+          <div class="flex justify-between py-1"><span>Adatto per:</span><strong>Coding, matematica, audit contrattuali, medicina</strong></div>
+        `;
+      }
+    }
+
+    function generateStrategyConfig() {
+      const domain = document.getElementById('builder-domain').value;
+      const latency = document.getElementById('builder-latency').value;
+      const model = document.getElementById('builder-model').value;
+      const accuracy = document.getElementById('builder-accuracy').value;
+      const codeOutput = document.getElementById('config-output-code');
+
+      let tokens = 1000;
+      let prmThreshold = 0.85;
+      let strategy = "Best-of-N";
+
+      if (latency === 'strict') tokens = 500;
+      else if (latency === 'moderate') tokens = 2000;
+      else tokens = 6000;
+
+      if (accuracy === 'zero') {
+        prmThreshold = 0.96;
+        strategy = "Monte-Carlo-Tree-Search + Backtracking";
+      } else if (accuracy === 'high') {
+        prmThreshold = 0.90;
+        strategy = "Step-by-Step PRM Verification";
+      }
+
+      const yaml = `reasoning_architecture_config:
+  domain_target: "${domain}"
+  model_tier: "${model}"
+  test_time_compute:
+    max_thinking_tokens: ${tokens}
+    search_strategy: "${strategy}"
+    process_reward_model:
+      enabled: true
+      min_step_score: ${prmThreshold}
+      action_on_failure: "PRUNE_AND_BACKTRACK"
+  prompt_architecture:
+    scratchpad_tag: "thinking"
+    prm_evaluation_injected: true
+    rlvr_tests_count: 3`;
+
+      if (codeOutput) {
+        codeOutput.innerText = yaml;
+      }
+    }
+
+    function initBenchmarkChart() {
+      const ctx = document.getElementById('benchmarkChart');
+      if (!ctx) return;
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['100 Tokens', '500 Tokens', '1,500 Tokens', '3,000 Tokens', '6,000 Tokens'],
+          datasets: [
+            {
+              label: 'MATH olimpico (AIME)',
+              data: [58, 74, 86, 93, 96.5],
+              borderColor: '#1b4952',
+              backgroundColor: 'rgba(27, 73, 82, 0.1)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 3
+            },
+            {
+              label: 'SWE-bench (Software Engineering)',
+              data: [32, 51, 69, 82, 88.4],
+              borderColor: '#bd6a28',
+              backgroundColor: 'transparent',
+              borderDash: [5, 5],
+              tension: 0.3,
+              borderWidth: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: { family: 'Inter', size: 11 }
+              }
+            }
+          },
+          scales: {
+            y: {
+              min: 30,
+              max: 100,
+              title: { display: true, text: 'Accuratezza %', font: { size: 11 } }
+            },
+            x: {
+              title: { display: true, text: 'Budget Token di Pensiero (Inference Compute)', font: { size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    function copyToClipboard(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+
+      const textToCopy = el.innerText || el.textContent;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast("Copiato negli appunti con successo!");
+        }).catch(() => {
+          fallbackCopyText(textToCopy);
+        });
+      } else {
+        fallbackCopyText(textToCopy);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Copiato negli appunti!");
+      } catch (err) {
+        showToast("Impossibile copiare automaticamente.");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById('toast-notification');
+      const toastMsg = document.getElementById('toast-message');
+      if (!toast || !toastMsg) return;
+
+      toastMsg.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

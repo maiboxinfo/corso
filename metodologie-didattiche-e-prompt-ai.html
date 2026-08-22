@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Didattica Attiva & Libreria Prompt AI</title>
+  <!-- Tailwind CSS per utility veloci -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome per iconografia rich -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #f8f9fa;
+      --bg-surface: #ffffff;
+      --bg-sidebar: #1e1b4b;
+      --sidebar-text: #e0e7ff;
+      --sidebar-active: #4f46e5;
+      --accent-primary: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-soft: #eeeffe;
+      --text-dark: #1f2937;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --toast-bg: #111827;
+    }
+
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      height: 100vh;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.6);
+    }
+
+    /* Evidenziatore per Ricerca Live */
+    mark {
+      background-color: #fef08a;
+      color: #854d0e;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    /* Animazioni Smooth */
+    .fade-in {
+      animation: fadeIn 0.25s ease-in-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Modal Glassmorphism */
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast {
+      background-color: var(--toast-bg);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="flex flex-col md:flex-row overflow-hidden h-screen bg-slate-50">
+
+  <!-- SIDEBAR MOBILE OVERLAY -->
+  <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/60 z-40 hidden md:hidden transition-opacity" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 bg-indigo-950 text-indigo-100 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl">
+    <div>
+      <!-- Brand / Logo -->
+      <div class="p-5 border-b border-indigo-900/80 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 font-bold text-xl">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-base leading-tight text-white">Didattica Attiva</h1>
+            <p class="text-xs text-indigo-300 font-medium">& Prompt AI Hub</p>
+          </div>
+        </div>
+        <button onclick="toggleSidebar()" class="md:hidden text-indigo-300 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Quick Search Sidebar -->
+      <div class="p-4">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-indigo-400 text-sm"></i>
+          <input type="text" id="sidebar-search" oninput="handleSearch(this.value)" placeholder="Cerca metodologie o prompt..." 
+            class="w-full bg-indigo-900/60 text-white text-xs pl-9 pr-3 py-2.5 rounded-lg border border-indigo-800/80 focus:outline-none focus:border-indigo-500 placeholder-indigo-400 transition">
+        </div>
+      </div>
+
+      <!-- Navigation Tree -->
+      <nav class="px-3 py-2 space-y-1 overflow-y-auto max-h-[calc(100vh-210px)]">
+        <a href="#home" onclick="navTo('home')" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-indigo-200 hover:bg-indigo-900/50 hover:text-white" data-route="home">
+          <i class="fa-solid fa-house w-5 text-indigo-400"></i>
+          <span>Dashboard Overview</span>
+        </a>
+
+        <div class="pt-3 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-indigo-400/80">
+          Sezioni Principali
+        </div>
+
+        <a href="#metodologie" onclick="navTo('metodologie')" class="nav-btn flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-indigo-200 hover:bg-indigo-900/50 hover:text-white" data-route="metodologie">
+          <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-cubes w-5 text-indigo-400"></i>
+            <span>Metodologie (15)</span>
+          </div>
+          <span class="bg-indigo-900/80 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full font-bold">7 Macro</span>
+        </a>
+
+        <a href="#prompts" onclick="navTo('prompts')" class="nav-btn flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-indigo-200 hover:bg-indigo-900/50 hover:text-white" data-route="prompts">
+          <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-wand-magic-sparkles w-5 text-indigo-400"></i>
+            <span>Libreria Prompt AI</span>
+          </div>
+          <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold">18 Prompt</span>
+        </a>
+
+        <a href="#uda-builder" onclick="navTo('uda-builder')" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-indigo-200 hover:bg-indigo-900/50 hover:text-white" data-route="uda-builder">
+          <i class="fa-solid fa-sliders w-5 text-emerald-400"></i>
+          <span>Generatore Super-Prompt UDA</span>
+        </a>
+
+        <!-- Macro-Gruppi Filter Shortcuts -->
+        <div class="pt-4 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-indigo-400/80">
+          Filtra per Macro-Gruppi
+        </div>
+        <div id="sidebar-macro-list" class="space-y-1">
+          <!-- Popolato via JS -->
+        </div>
+      </nav>
+    </div>
+
+    <!-- Footer info -->
+    <div class="p-4 border-t border-indigo-900/60 text-xs text-indigo-400 flex items-center justify-between">
+      <span>Scuola Sec. II Grado</span>
+      <span class="bg-indigo-900 px-2 py-0.5 rounded text-[10px]">v2.5 SPA</span>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50">
+    <!-- Topbar Header -->
+    <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-3.5 flex items-center justify-between z-10 shadow-sm">
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleSidebar()" class="md:hidden flex items-center space-x-1.5 px-3 py-2 bg-indigo-50 text-indigo-900 rounded-lg border border-indigo-200 hover:bg-indigo-100 transition focus:outline-none">
+          <i class="fa-solid fa-bars text-lg"></i>
+          <span class="text-xs font-bold">Menu</span>
+        </button>
+        <div>
+          <h2 id="topbar-title" class="text-lg font-bold text-slate-800 leading-tight">Dashboard Overview</h2>
+          <p id="topbar-subtitle" class="text-xs text-slate-500">Panoramica integrata delle metodologie e prompt operativi</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center space-x-2">
+        <button onclick="copyAllPrompts()" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copia Tutti i Prompt</span>
+        </button>
+        <button onclick="navTo('uda-builder')" class="flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Crea UDA con AI</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Dynamic Scrollable View Container -->
+    <div id="content" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+      <!-- Dynamic views will render here via JavaScript -->
+    </div>
+  </main>
+
+  <!-- MODAL CUSTOMIZER PROMPT -->
+  <div id="prompt-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden fade-in">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100">
+      <div class="p-5 bg-indigo-950 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 id="modal-title" class="font-bold text-base leading-tight">Personalizza Prompt AI</h3>
+            <p class="text-xs text-indigo-300">Compila i parametri e genera il prompt finale</p>
+          </div>
+        </div>
+        <button onclick="closeModal()" class="text-indigo-300 hover:text-white text-lg p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-4 flex-1" id="modal-body">
+        <!-- Form inputs generated dynamically -->
+      </div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end space-x-3">
+        <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Annulla</button>
+        <button id="modal-copy-btn" onclick="copyConfiguredPrompt()" class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow transition flex items-center space-x-2">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copia Prompt Personalizzato</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container">
+    <div id="toast" class="toast">
+      <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+      <span id="toast-msg" class="text-xs font-medium">Testo copiato con successo!</span>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. DATA STATE: METODOLOGIE & PROMPTS AI
+    // ==========================================
+    
+    const macroGroups = [
+      { id: 1, name: "Collaborazione e Peer Learning", icon: "fa-users", color: "indigo" },
+      { id: 2, name: "Problem, Project & Challenge-Based Learning", icon: "fa-lightbulb", color: "amber" },
+      { id: 3, name: "Didattica Investigativa e di Ricerca", icon: "fa-microscope", color: "emerald" },
+      { id: 4, name: "Argomentazione, Simulazione e Decisori", icon: "fa-comments", color: "rose" },
+      { id: 5, name: "Didattica Invertita e Spazi Innovativi", icon: "fa-rotate", color: "sky" },
+      { id: 6, name: "Gamification e Progettazione Creativa", icon: "fa-gamepad", color: "purple" },
+      { id: 7, name: "Apprendimento Civico e Territoriale", icon: "fa-earth-europe", color: "teal" }
+    ];
+
+    const metodologieData = [
+      {
+        id: "m1",
+        macroId: 1,
+        nome: "Cooperative Learning (es. Jigsaw)",
+        svolgimento: "Gli studenti lavorano in gruppi eterogenei. Nel Jigsaw, ciascun membro del gruppo diventa \"esperto\" di una sottosezione del tema, la approfondisce con gli esperti degli altri gruppi e torna al gruppo base per insegnarla ai compagni.",
+        ruoloStudente: "Co-costruttore: Attivo, responsabile dell'apprendimento proprio e dei pari, facilitatore dei compagni.",
+        ruoloDocente: "Regista e Osservatore: Struttura i gruppi, distribuisce i ruoli, monitora le dinamiche e interviene in caso di stallo.",
+        risultati: "Interdipendenza positiva, gestione del conflitto, responsabilizzazione individuale, comprensione profonda di argomenti complessi."
+      },
+      {
+        id: "m2",
+        macroId: 1,
+        nome: "Peer Tutoring / Peer Instruction",
+        svolgimento: "Attività tra pari in cui uno studente più esperto (o a rotazione) affianca un compagno per il consolidamento di abilità o il recupero, oppure risponde a quesiti concettuali (Peer Instruction con quesiti a scelta multipla e discussione in diade).",
+        ruoloStudente: "Tutor / Tutee: Rielabora i contenuti con linguaggio paritario, mette a nudo i dubbi, consolida l'autoefficacia.",
+        ruoloDocente: "Supervisore: Prepara i materiali stimolo, forma i tutor, valida i contenuti scambiati e orienta la discussione.",
+        risultati: "Abbattimento delle barriere relazionali, personalizzazione dell'apprendimento, consolidamento della metacognizione."
+      },
+      {
+        id: "m3",
+        macroId: 2,
+        nome: "Problem-Based Learning (PBL)",
+        svolgimento: "Gli studenti affrontano uno scenario di problema reale, complesso e \"mal definito\" (ill-structured). Si identificano i bisogni di conoscenza, si formulano ipotesi, si ricerca in autonomia e si propone la soluzione.",
+        ruoloStudente: "Solutore di problemi: Investigatore autonomo, analista critico, formulatore di ipotesi.",
+        ruoloDocente: "Scaffolder / Guida: Pone domande maieutiche, non fornisce risposte dirette, guida il processo euristico.",
+        risultati: "Pensiero critico (critical thinking), problem solving complesso, autonomia nella ricerca informativa, auto-regolazione."
+      },
+      {
+        id: "m4",
+        macroId: 2,
+        nome: "Project-Based Learning (PjBL)",
+        svolgimento: "Percorso a lungo termine strutturato attorno alla realizzazione di un prodotto finale visibile (report, prototipo, app, documentario, campagna media). Integra diverse discipline e momenti di revisione.",
+        ruoloStudente: "Progettista e Creator: Pianifica le fasi, gestisce il tempo, realizza l'artefatto e presenta il prodotto.",
+        ruoloDocente: "Project Manager / Coach: Definisce la rubric di valutazione, fornisce feedback in itinere, gestisce le scadenze.",
+        risultati: "Project management, creatività applicata, sintesi multidisciplinare, gestione dello stress e delle scadenze."
+      },
+      {
+        id: "m5",
+        macroId: 2,
+        nome: "Challenge-Based Learning (CBL)",
+        svolgimento: "Evoluzione del PBL focalizzata su grandi sfide globali o locali (es. Agenda 2030, mobilità sostenibile). Richiede di passare dall'analisi teorica all'azione concreta e misurabile sul campo.",
+        ruoloStudente: "Agente di cambiamento: Analizza contesti reali, progetta soluzioni pratiche e ne misura l'impatto reale.",
+        ruoloDocente: "Facilitatore di rete: Connette la classe con esperti del settore, enti locali, aziende e organizzazioni territoriali.",
+        risultati: "Consapevolezza civica, imprenditorialità, capacità di passare dall'idea all'azione, prototipazione rapida."
+      },
+      {
+        id: "m6",
+        macroId: 3,
+        nome: "Inquiry-Based Learning (IBSE)",
+        svolgimento: "Basato sulle 5E (Engage, Explore, Explain, Elaborate, Evaluate). Gli studenti affrontano fenomeni naturali o sociali ponendo domande, formulando ipotesi, raccogliendo dati ed evidenze per giungere a spiegazioni formalizzate.",
+        ruoloStudente: "Ricercatore scientifico: Osservatore analitico, raccoglitore ed elaboratore di dati e prove empiriche.",
+        ruoloDocente: "Mentore metodologico: Progetta le esperimentazioni/indagini, garantisce il rigore del metodo scientifico.",
+        risultati: "Alfabetizzazione scientifica e informativa, pensiero logico-deduttivo, argomentazione basata su evidenze (evidence-based)."
+      },
+      {
+        id: "m7",
+        macroId: 3,
+        nome: "WebQuest",
+        svolgimento: "Attività di ricerca guidata in rete: il docente fornisce una struttura definita, ruoli specifici per gli studenti e una selezione di link ed emeroteche digitali sicure da analizzare per svolgere un compito complesso.",
+        ruoloStudente: "Analista di fonti: Esploratore critico di risorse digitali, selezionatore di informazioni attendibili.",
+        ruoloDocente: "Curatore digitale: Mappa le risorse del web, progetta lo scenario di ricerca e la griglia di valutazione delle fonti.",
+        risultati: "Information literacy, contrasto alle fake news, capacità di sintesi ed elaborazione di informazioni da fonti primarie."
+      },
+      {
+        id: "m8",
+        macroId: 4,
+        nome: "Debate (Dibattito Regolamentato)",
+        svolgimento: "Metodologia formale in cui due squadre sostengono e confutano una mozione controversa (pro vs contro), rispettando regole di tempo, ruoli definiti e assenza di attacchi personali.",
+        ruoloStudente: "Debatter / Oratore: Ricercatore di tesi e prove, ascoltatore attivo della controparte, parlatore pubblico.",
+        ruoloDocente: "Giudice / Moderatore: Insegna la struttura delle argomentazioni (Toulmin Model), gestisce i tempi e valuta senza pregiudizi.",
+        risultati: "Public speaking, confutazione logica, rispetto delle opinioni altrui, empatia (sostenere anche posizioni non condivise)."
+      },
+      {
+        id: "m9",
+        macroId: 4,
+        nome: "Studio di Caso (Case Study)",
+        svolgimento: "Analisi dettagliata di una situazione reale o simulata (un caso legale, finanziario, etico, storico, aziendale). Gli studenti studiano i dati forniti e prendono decisioni strategiche argomentandole.",
+        ruoloStudente: "Decision-maker: Analista di scenari di complessità, decisore in contesti di incertezza.",
+        ruoloDocente: "Facilitatore di discussione: Presenta il caso, stimola il dibattito collegiale, mette in luce le implicazioni di ogni scelta.",
+        risultati: "Capacità decisionale, applicazione di norme e concetti astratti a contesti reali, valutazione dei rischi."
+      },
+      {
+        id: "m10",
+        macroId: 4,
+        nome: "Role Playing e Simulazione Operativa",
+        svolgimento: "Gli studenti assumono ruoli specifici (es. simulazione dell'ONU - MUN, processo storico, consiglio d'amministrazione) per comprendere prospettive diverse e negoziare soluzioni.",
+        ruoloStudente: "Attore / Negoziatore: Sospende il proprio giudizio, immedesimandosi nei vincoli e negli interessi del ruolo assegnato.",
+        ruoloDocente: "Scenografo e Regista: Pone i vincoli dello scenario, fornisce i dossier di ruolo e conduce la fase di debriefing.",
+        risultati: "Empatia relazionale, negoziazione, risoluzione di conflitti, comprensione di dinamiche sistemiche e geopolitiche."
+      },
+      {
+        id: "m11",
+        macroId: 5,
+        nome: "Flipped Classroom (Classe Capovolta)",
+        svolgimento: "Lo studio concettuale delle basi avviene a casa in autonomia (tramite video-lezioni, letture, podcast); il tempo in aula è dedicato interamente ad attività applicative, laboratoriali e di discussione.",
+        ruoloStudente: "Autonomo nello studio: Responsabile della preparazione antecedente la lezione; attivo nell'applicazione in aula.",
+        ruoloDocente: "Consulente e Facilitatore: Progetta e seleziona le risorse per lo studio a casa; assiste individualmente gli studenti in aula.",
+        risultati: "Ottimizzazione del tempo aula per attività a cognitivo elevato, personalizzazione, autonomia nello studio."
+      },
+      {
+        id: "m12",
+        macroId: 5,
+        nome: "TEAL / Tinkering / Making",
+        svolgimento: "Integrazione di tecnologia, spazi fisici riconfigurabili e apprendimento esperienziale. Gli studenti costruiscono modelli, usano la stampa 3D, la robotica o il coding per esprimere concetti astratti.",
+        ruoloStudente: "Maker / Costruttore: Sperimentatore pratico, costruttore di prototipi, integratore di codice e materia.",
+        ruoloDocente: "Lab Manager / Tutor: Allestisce gli ambienti tecnologici, incoraggia la sperimentazione e la gestione dell'errore.",
+        risultati: "Pensiero computazionale, resilienza all'errore (l'errore come risorsa nel ciclo di design), competenze STEM/STEAM."
+      },
+      {
+        id: "m13",
+        macroId: 6,
+        nome: "Gamification & Game-Based Learning",
+        svolgimento: "Utilizzo di meccaniche di gioco (punti, livelli, sfide, avatar, badge) o di videogiochi/giochi da tavolo didattici per guidare i percorsi di apprendimento e la revisione delle conoscenze.",
+        ruoloStudente: "Giocatore / Esploratore: Motivato dagli obiettivi di gioco, orientato al superamento delle sfide e al miglioramento.",
+        ruoloDocente: "Game Designer: Disegna le regole dell'ecosistema di gioco, calibra la difficoltà per mantenere lo stato di \"flusso\" (flow).",
+        risultati: "Aumento della motivazione intrinseca, apprendimento rapido dagli errori (try again), attenzione e memorizzazione attiva."
+      },
+      {
+        id: "m14",
+        macroId: 6,
+        nome: "Design Thinking & Hackathon",
+        svolgimento: "Processo strutturato in 5 fasi (Empathize, Define, Ideate, Prototype, Test) o maratona di progettazione (Hackathon) per risolvere problemi centrati sull'utente finale in tempi ristretti.",
+        ruoloStudente: "Innovatore / Progettista: Focalizzato sull'utente, generatore di idee non convenzionali, costruttore di prototipi rapidi.",
+        ruoloDocente: "Facilitatore / Mentor: Scandisce le fasi del processo creativo, rimuove i blocchi logici, incoraggia il pensiero divergente.",
+        risultati: "Pensiero divergente, sintesi rapida, empatia verso l'utente finalizzato, orientamento al prototipo."
+      },
+      {
+        id: "m15",
+        macroId: 7,
+        nome: "Service Learning & Outdoor / Scuola Diffusa",
+        svolgimento: "Connessione del curricolo scolastico con un servizio concreto per la comunità locale (es. mappatura accessibilità, tutela beni culturali) condotto in spazi esterni all'aula scolastica (musei, parchi, terzi spazi).",
+        ruoloStudente: "Cittadino attivo / Esploratore: Applica le conoscenze scolastiche all'esterno dell'edificio per risolvere bisogni reali del territorio.",
+        ruoloDocente: "Co-progettista di Comunità: Attiva patti educativi col territorio, guida la riflessione metacognitiva sul senso civico dell'azione.",
+        risultati: "Sviluppo di competenze di cittadinanza attiva, responsabilizzazione etica, legame con la comunità, valorizzazione del territorio."
+      }
+    ];
+
+    const promptsData = [
+      {
+        id: "p1",
+        macroId: 1,
+        titolo: "Prompt 1: Progettazione Lezione Jigsaw (Cooperative Learning)",
+        ruoloIA: "Esperto in metodologie di apprendimento cooperativo per le scuole superiori.",
+        task: "Progetta una lezione di [inserire materia, es. Storia] di 2 ore sull'argomento \"[inserire argomento, es. Le cause della Prima Guerra Mondiale]\" utilizzando la metodologia Cooperative Learning Jigsaw.",
+        dettagli: `1. Divisione dell'argomento in 4 sotto-temi specifici per i "Gruppi di Esperti".
+2. Istruzioni operative da consegnare al "Gruppo Base" e ai "Gruppi di Esperti".
+3. Tempistica precisa per ogni fase (Fase casa/intro, Fase esperti, Fase ricomposizione, Fase restituzione).
+4. Griglia di autovalutazione del lavoro svolto in gruppo.`
+      },
+      {
+        id: "p2",
+        macroId: 1,
+        titolo: "Prompt 2: Sessione di Peer Instruction con Quesiti Concettuali",
+        ruoloIA: "Docente esperto nella metodologia Peer Instruction (metodo Mazur).",
+        task: "Crea un piano lezione di 60 minuti per [inserire materia, es. Fisica/Matematica/Filosofia] sul tema \"[inserire tema]\".",
+        dettagli: `1. Scrivi 3 Conceptest (domande a scelta multipla con un distruttore convincente basato sulle misconcezioni più comuni degli studenti su questo tema).
+2. Per ciascun Conceptest, scrivi il flusso operativo della lezione: Voto individuale ➔ Discussione in diade (Peer Tutoring) ➔ Rivotazione ➔ Spiegazione del docente.
+3. Scrivi un breve script delle risposte o suggerimenti che il studente-tutor deve dare al compagno durante il confronto.`
+      },
+      {
+        id: "p3",
+        macroId: 2,
+        titolo: "Prompt 3: Generatore di Scenari \"Ill-Structured\" per Problem-Based Learning (PBL)",
+        ruoloIA: "Instructional designer specializzato in Problem-Based Learning.",
+        task: "Crea un problema \"ill-structured\" (complesso, aperto, senza un'unica soluzione predefinita) da proporre a una classe di [inserire anno e indirizzo, es. 4° anno Istituto Tecnico Economico] per la disciplina [inserire materia]. Traccia del Problema: Il problema deve riguardare un contesto di vita reale o professionale legato a \"[inserire tema, es. La sostenibilità finanziaria di un'azienda locale in crisi]\".",
+        dettagli: `1. La lettera/dossier di scenario iniziale con cui presentare la situazione agli studenti.
+2. L'elenco delle "Domande Guida" che gli studenti dovranno porsi.
+3. Le risorse/documenti minimi da integrare (simulati).
+4. Il formato della proposta di soluzione richiesta alla classe.`
+      },
+      {
+        id: "p4",
+        macroId: 2,
+        titolo: "Prompt 4: Progettazione UDA Project-Based Learning (PjBL) con Deliverable Digitale",
+        ruoloIA: "Progettista didattico per competenze.",
+        task: "Progetta un'Unità di Apprendimento (UDA) basata sul Project-Based Learning interdisciplinare tra [Materia A] e [Materia B] per una classe di [inserire anno scolastico]. Oggetto del Progetto: Realizzazione di [inserire artefatto, es. Un podcast di 5 puntate o una campagna social su un tema storico/scientifico].",
+        dettagli: `1. Il Driving Question (domanda guida motivante).
+2. La scansione temporale in 4 settimane con la Milestone finale di ogni settimana.
+3. I ruoli all'interno delle équipe di progetto.
+4. Una rubrica analitica di valutazione di prodotto (qualità dell'artefatto) e di processo (collaborazione, rispetto delle scadenze).`
+      },
+      {
+        id: "p5",
+        macroId: 2,
+        titolo: "Prompt 5: Challenge-Based Learning (CBL) legato all'Agenda 2030",
+        ruoloIA: "Esperto in educazione civica e didattica per sfide (Challenge-Based Learning).",
+        task: "Sviluppa un percorso CBL della durata di 10 ore incentrato sull'Obiettivo dell'Agenda 2030 numero [inserire n° Obiettivo, es. Goal 11: Città e Comunità Sostenibili].",
+        dettagli: `1. Big Idea & Essential Question: La grande idea di partenza e la domanda essenziale.
+2. The Challenge: La formulazione della sfida pratica che la classe deve risolvere all'interno del proprio edificio scolastico o quartiere.
+3. Guiding Activities & Resources: Le attività d'indagine necessarie prima dell'azione.
+4. Solution & Action: Come far validare e testare sul campo la soluzione degli studenti dagli attori locali/scolastici.`
+      },
+      {
+        id: "p6",
+        macroId: 3,
+        titolo: "Prompt 6: Percorso Investigativo IBSE (5E Model)",
+        ruoloIA: "Formatore di didattica delle scienze/umanistica basata sull'Inquiry-Based Learning.",
+        task: "Progetta una sequenza didattica basata sul modello delle 5E (Engage, Explore, Explain, Elaborate, Evaluate) sul tema \"[inserire tema, es. La fotosintesi e la respirazione cellular / Il concetto di democrazia nell'antica Atene]\".",
+        dettagli: `Descrivi dettagliatamente cosa fa il docente e cosa fa lo studente per ciascuna delle 5 fasi:
+- Engage: Attività stimolo o provocazione concettuale.
+- Explore: Esperimento, simulazione o analisi diretta di fonti.
+- Explain: Formalizzazione dei concetti emersi.
+- Elaborate: Applicazione delle conoscenze in un contesto nuovo.
+- Evaluate: Valutazione formativa e autovalutazione.`
+      },
+      {
+        id: "p7",
+        macroId: 3,
+        titolo: "Prompt 7: Strutturazione di una WebQuest di Ricerca Critica",
+        ruoloIA: "Specialista in media ed education e WebQuest.",
+        task: "Crea il testo completo per una WebQuest destinata a studenti del triennio della scuola secondaria di secondo grado. Argomento: \"[inserire tema di ricerca, es. La disinformazione scientifica sui cambiamenti climatici]\".",
+        dettagli: `Genera le 6 sezioni trasparenti:
+1. Introduzione: Scenario d'impatto.
+2. Compito (Task): Cosa dovranno produrre gli studenti.
+3. Processo: Passaggi dettagliati con divisione in ruoli (es. il Giornalista, il Data Scientist, lo Storico, il Fact-checker).
+4. Risorse: Tipologia di link ed archivi da consultare (con suggerimenti sui criteri di validazione).
+5. Valutazione: Rubrica analitica di qualità della ricerca.
+6. Conclusione: Domanda di riflessione metacognitiva.`
+      },
+      {
+        id: "p8",
+        macroId: 4,
+        titolo: "Prompt 8: Strutturazione di una Lezione sul Debate Regolamentato",
+        ruoloIA: "Coach esperto di Debate competitivo e regolamentato (modello World Schools Debate).",
+        task: "Organizza una sessione completa di Debate in classe (2 ore) per la disciplina di [inserire materia]. Mozione (THBT / Questa Assemblea ritiene che): \"[inserire la tesi controversa, es. 'Questa Assemblea ritiene che l'uso degli smartphone vada vietato del tutto negli ambienti scolastici']\".",
+        dettagli: `1. La ripartizione dei tempi di parola per i 3 oratori PRO e i 3 oratori CONTRO e i minuti per le repliche.
+2. Scheda di preparazione del modello ARES (Asserzione, Ragionamento, Evidenza, Link al tema) per aiutarli a costruire le argomentazioni.
+3. Regole per i POI (Points of Information) da rivolgere alla squadra avversaria.
+4. Griglia di valutazione per i giudici-studenti (argomentazione, confutazione, stile espositivo).`
+      },
+      {
+        id: "p9",
+        macroId: 4,
+        titolo: "Prompt 9: Creazione di uno Studio di Caso per il Decision-Making",
+        ruoloIA: "Docente esperto nella metodologia dello Studio di Caso (Case Study).",
+        task: "Scrivi un Studio di Caso reale/verosimile adatto a una classe di [inserire indirizzo scolastico, es. Liceo delle Scienze Umane / Istituto Tecnico Tecnologico]. Ambito del Caso: [inserire ambito, es. Un dilemma etico o giuridico relativo alla privacy e ai Big Data].",
+        dettagli: `1. Il testo del "Caso" (circa 300-400 parole) ricco di dati e con interessi in conflitto tra i soggetti coinvolti.
+2. Le 4 domande analitiche da sottoporre agli studenti per guidare il lavoro individuale.
+3. La guida per la discussione in assemblea di classe (scenari di decisione A, B, C e relative conseguenze).`
+      },
+      {
+        id: "p10",
+        macroId: 4,
+        titolo: "Prompt 10: Simulazione e Role Playing su Scenario Storico o Geopolitico",
+        ruoloIA: "Esperto di metodologie simulative e Role Playing.",
+        task: "Progetta una simulazione di Role Playing di 2 ore riproducendo \"[inserire contesto, es. La Conferenza di Parigi del 1919 / Un vertice d'emergenza della Commissione Europea]\".",
+        dettagli: `1. Dossier del Contesto: Quadro generale dei vincoli.
+2. Schedes Ruolo (almeno 4 personaggi/delegazioni diverse): Per ogni ruolo specifica gli obiettivi segreti, i punti non negoziabili e le alleanze possibili.
+3. Fasi di lavoro: Apertura, trattativa bilaterale, stesura del trattato/risoluzione finale.
+4. Debriefing: Domande per analizzare le emozioni e i concetti appresi al termine della simulazione.`
+      },
+      {
+        id: "p11",
+        macroId: 5,
+        titolo: "Prompt 11: Progettazione Flipped Classroom completa (Ante-aula e In-aula)",
+        ruoloIA: "Esperto di Flipped Learning e didattica integrata.",
+        task: "Progetta un modulo Flipped Classroom di 3 sessioni sull'argomento \"[inserire argomento, es. I Promessi Sposi e la peste del '600 / La legge di Ohm e i circuiti in serie]\".",
+        dettagli: `FASE ANTE-AULA (Studio autonomo a casa):
+- Lista di materiali multimediali consigliati (tipologie di video, estratti).
+- Quiz di controllo d'ingresso (3 domande a risposta breve) per verificare che abbiano studiato prima di entrare in classe.
+FASE IN-AULA (Attività complessa):
+- Descrizione dell'attività laboratoriale/applicativa da fare a scuola sfruttando il tempo guadagnato.
+- Modalità con cui il docente fornirà il supporto personalizzato ai ragazzi in difficoltà.
+FASE POST-AULA: Attività di sintesi e consolidamento.`
+      },
+      {
+        id: "p12",
+        macroId: 5,
+        titolo: "Prompt 12: Scheda Attività Tinkering / Making in Spazio TEAL",
+        ruoloIA: "Mentor per laboratori Makerspace scolastici e metodologia Tinkering/TEAL.",
+        task: "Crea la scheda per un'attività laboratoriale basata sul Tinkering o sul Making da svolgere in aula/laboratorio per la materia [inserire materia]. Sfida di Costruzione: \"[inserire sfida, es. Costruire una struttura con materiali di recupero che resista a determinate sollecitazioni / Programmare una scheda Micro:bit per rilevare l'umidità del suolo]\".",
+        dettagli: `1. Materiali a disposizione (vincoli fisici).
+2. Il ciclo di design: Esplora ➔ Progetta ➔ Realizza ➔ Sbaglia/Fallisci ➔ Correggi.
+3. Come il docente deve gestire la "pedagogia dell'errore" durante i fallimenti di prototipazione degli studenti.`
+      },
+      {
+        id: "p13",
+        macroId: 6,
+        titolo: "Prompt 13: Progettazione di un Game-Based Learning / Quiz-Game a Livelli",
+        ruoloIA: "Game designer per la didattica.",
+        task: "Progetta una sessione didattica gamificata per il ripasso attivo di [inserire materia ed argomenti].",
+        dettagli: `1. La narrazione o "Lore" di copertina (es. la classe deve sbloccare una cassaforte o fermare una crisi).
+2. 3 Livelli di sfida a complessità crescente (Livello 1: Reperimento concetti base; Livello 2: Connessioni e confronti; Livello 3: Soluzione del dilemma finale).
+3. Sistema di regole, punteggi, badge e penalità per la correzione degli errori.
+4. Domande ed enigmi specifici pronti per essere somministrati alla classe.`
+      },
+      {
+        id: "p14",
+        macroId: 6,
+        titolo: "Prompt 14: Hackathon Didattico in 5 Fasi (Design Thinking)",
+        ruoloIA: "Facilitatore di Design Thinking e organizzatore di Hackathon didattici.",
+        task: "Sviluppa la guida operativa per un Mini-Hackathon di 4 ore in classe. Sfida: \"[inserire problema, es. Come riprogettare l'esperienza dell'accoglienza dei nuovi studenti nella scuola]\".",
+        dettagli: `Dettaglia le 5 fasi del Design Thinking con tempistiche rigide:
+1. Empatizza: Interviste o questionari all'utente target.
+2. Definisci: Mappa del problema e User Persona.
+3. Idea: Tecnica di Brainstorming rapido (Crazy Eights).
+4. Prototipa: Realizzazione di un prototipo su carta/digitale.
+5. Test & Pitch: Presentazione di 3 minuti (Elevator Pitch) davanti a una giuria.`
+      },
+      {
+        id: "p15",
+        macroId: 7,
+        titolo: "Prompt 15: Progetto Service Learning per l'Educazione Civica",
+        ruoloIA: "Coordinatore pedagogico per il Service Learning.",
+        task: "Progetta un percorso di Service Learning da integrare nel curricolo di Educazione Civica per una classe delle superiori. Bisogno del Territorio: [inserire bisogno, es. La mancanza di digitalizzazione per gli anziani del quartiere / La riqualificazione della memoria storica del territorio].",
+        dettagli: `1. Apprendimento disciplinare necessario (cosa devono imparare a scuola prima del servizio).
+2. Servizio alla comunità (cosa faranno operativamente per gli altri).
+3. Momenti di riflessione guidata (Diario di bordo metacognitivo per riflettere sull'impatto etico dell'esperienza).
+4. Valutazione delle competenze civiche di cittadinanza attiva.`
+      },
+      {
+        id: "p16",
+        macroId: 7,
+        titolo: "Prompt 16: Attività di Outdoor Education / Scuola Diffusa",
+        ruoloIA: "Esperto di didattica d'ambiente e scuola diffusa.",
+        task: "Sviluppa una lezione in modalità Outdoor Education fuori dall'edificio scolastico (es. in un parco, in un centro storico o museo) per la materia [inserire materia].",
+        dettagli: `1. Fase preparatoria in aula (obiettivi e strumenti d'osservazione).
+2. Scheda di ricerca sul campo (griglia di rilevamento dati, compiti fotografici, interviste o campionamento).
+3. Fase di rielaborazione al rientro a scuola.
+4. Griglia d'osservazione del comportamento e dello spirito di osservazione sul campo.`
+      },
+      {
+        id: "p17",
+        macroId: 7,
+        titolo: "Prompt 17: Generatore di Rubrica di Valutazione delle Competenze Trasversali",
+        ruoloIA: "Esperto in valutazione degli apprendimenti e certificazione delle competenze.",
+        task: "Crea una rubrica analitica di valutazione delle competenze trasversali (Soft Skills / Competenze Chiave Europee) adatta a valutare un'attività svolta con metodologie attive nelle scuole superiori. Competenze da valutare: 1. Pensiero Critico e Problem Solving; 2. Collaborazione e Comunicazione; 3. Autonomia e Spirito di Iniziativa.",
+        dettagli: `Per ciascuna competenza individua 4 livelli di padronanza (Iniziale, Base, Intermedio, Avanzato) con descrittori di comportamento osservabile precisi e non ambigui.`
+      },
+      {
+        id: "p18",
+        macroId: 0, // Metaprompt / Super Prompt
+        titolo: "Prompt 18: \"SUPER-PROMPT\" METADIDATTICO PER LA GENERAZIONE COMPLETA DI UDA",
+        ruoloIA: "Master Designer di Unità di Apprendimento (UDA) per la scuola secondaria di secondo grado.",
+        task: "Compila una scheda completa di Unità di Apprendimento (UDA) personalizzata compilando la seguente struttura sulla base delle variabili che ti fornisco qui sotto:\n\n- Materia/e: [inserire materia/e]\n- Classe e Indirizzo: [inserire es. 3° anno Liceo Scientifico / 4° anno Istituto Professionale]\n- Metodologia Principale da applicare: [inserire es. Debate / PBL / Flipped / Jigsaw]\n- Argomento disciplinare: [inserire argomento]\n- Ore complessive a disposizione: [inserire n° ore]",
+        dettagli: `L'IA deve generare:
+1. Titolo dell'UDA e Sintesi del Progetto.
+2. Traguardi di Competenza e Obiettivi specifici di apprendimento (Conoscenze e Abilità).
+3. Scansione dettagliata Lezione per Lezione (Fase d'attacco, Fase centrale operativa, Fase di chiusura/restituzione).
+4. Strumenti didattici, materiali e tecnologie necessarie.
+5. Modalità di personalizzazione/inclusione per alunni con BES/DSA.
+6. Griglia di Valutazione Tripartita: Valutazione delle Conoscenze (prassica), Valutazione del Processo (osservazione), Valutazione del Prodotto finale.`
+      }
+    ];
+
+    // ==========================================
+    // 2. APP STATE MANAGEMENT
+    // ==========================================
+    let state = {
+      currentRoute: "home",
+      searchQuery: "",
+      selectedMacroFilter: null,
+      activePromptForModal: null,
+      modalInputValues: {}
+    };
+
+    // Helper Escaping HTML
+    function escHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+    }
+
+    // Helper Highlighting Text
+    function highlightText(text, query) {
+      if (!query || query.trim() === "") return escHtml(text);
+      const escapedText = escHtml(text);
+      const escapedQuery = escHtml(query.trim());
+      const regex = new RegExp(`(${escapedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi");
+      return escapedText.replace(regex, "<mark>$1</mark>");
+    }
+
+    // Get Macro Group by ID
+    function getMacro(id) {
+      return macroGroups.find(m => m.id === id) || { name: "Generale / Metadidattica", color: "indigo", icon: "fa-star" };
+    }
+
+    // Notification Toast System
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    // Copy to Clipboard (Fallback robusto per iFrame)
+    function copyToClipboard(text, msg = "Copiato negli appunti!") {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(() => fallbackCopy(text, msg));
+        } else {
+          fallbackCopy(text, msg);
+        }
+      } catch (e) {
+        fallbackCopy(text, msg);
+      }
+    }
+
+    function fallbackCopy(text, msg) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(msg);
+      } catch (err) {
+        console.error('Copia fallita', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // Notify Parent iFrame Height
+    function notifyResize() {
+      if (window.parent && window.parent !== window) {
+        const height = document.documentElement.scrollHeight;
+        window.parent.postMessage({ type: 'resize', height: height }, '*');
+      }
+    }
+
+    // Sidebar Mobile Toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobile-overlay');
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    // Search Handler
+    function handleSearch(val) {
+      state.searchQuery = val;
+      if (val.trim() !== "" && state.currentRoute === "home") {
+        navTo("prompts");
+      } else {
+        renderCurrentRoute();
+      }
+    }
+
+    function filterMacro(macroId) {
+      if (state.selectedMacroFilter === macroId) {
+        state.selectedMacroFilter = null;
+      } else {
+        state.selectedMacroFilter = macroId;
+      }
+      renderSidebarMacros();
+      renderCurrentRoute();
+    }
+
+    // Copy all prompts format
+    function copyAllPrompts() {
+      let fullText = "=== LIBRERIA PROMPT AI DIDATTICA ATTIVA ===\n\n";
+      promptsData.forEach(p => {
+        fullText += `--- ${p.titolo} ---\nRUOLO IA: ${p.ruoloIA}\nTASK: ${p.task}\nDETTAGLI:\n${p.dettagli}\n\n`;
+      });
+      copyToClipboard(fullText, "Tutti i 18 Prompt copiati!");
+    }
+
+    // ROUTING & RENDERING
+    function navTo(route) {
+      state.currentRoute = route;
+      window.location.hash = route;
+      
+      // Update sidebar active buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.getAttribute('data-route') === route) {
+          btn.classList.add('bg-indigo-900', 'text-white');
+          btn.classList.remove('text-indigo-200');
+        } else {
+          btn.classList.remove('bg-indigo-900', 'text-white');
+          btn.classList.add('text-indigo-200');
+        }
+      });
+
+      // Close mobile sidebar if open
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar.classList.contains('-translate-x-full')) {
+        toggleSidebar();
+      }
+
+      renderCurrentRoute();
+    }
+
+    function renderCurrentRoute() {
+      const content = document.getElementById('content');
+      const topTitle = document.getElementById('topbar-title');
+      const topSub = document.getElementById('topbar-subtitle');
+
+      content.innerHTML = '';
+      window.scrollTo(0,0);
+
+      switch (state.currentRoute) {
+        case 'home':
+          topTitle.textContent = "Dashboard Overview";
+          topSub.textContent = "Sintesi integrata delle 15 metodologie didattiche e dei 18 Prompt AI operativi";
+          renderHomeView(content);
+          break;
+        case 'metodologie':
+          topTitle.textContent = "Metodologie Didattiche Operative";
+          topSub.textContent = "15 Metodologie per il 2° Ciclo di Istruzione suddivise in 7 Macro-Gruppi";
+          renderMetodologieView(content);
+          break;
+        case 'prompts':
+          topTitle.textContent = "Libreria Prompt AI Pronti all'Uso";
+          topSub.textContent = "18 Prompt ottimizzati per ChatGPT, Claude, Gemini e Copilot";
+          renderPromptsView(content);
+          break;
+        case 'uda-builder':
+          topTitle.textContent = "Generatore Super-Prompt UDA (Prompt 18)";
+          topSub.textContent = "Compila i parametri e genera l'UDA completa personalizzata per la tua classe";
+          renderUdaBuilderView(content);
+          break;
+        default:
+          navTo('home');
+      }
+
+      notifyResize();
+    }
+
+    // ------------------------------------------
+    // VIEW 1: HOME DASHBOARD
+    // ------------------------------------------
+    function renderHomeView(container) {
+      container.innerHTML = `
+        <div class="fade-in space-y-6">
+          <!-- Hero Banner -->
+          <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-950 rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
+            <div class="relative z-10 max-w-3xl">
+              <span class="inline-block bg-indigo-500/30 text-indigo-200 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider mb-3">
+                Scuola Secondaria II Grado
+              </span>
+              <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">
+                Hub Metodologie Attive & Prompt AI
+              </h1>
+              <p class="text-indigo-200 text-sm md:text-base leading-relaxed mb-6">
+                Una risolta guida operativa per la progettazione didattica avanzata. Esplora le 15 metodologie attive o utilizza la libreria di 18 Prompt ottimizzati per l'Intelligenza Artificiale.
+              </p>
+              <div class="flex flex-wrap gap-3">
+                <button onclick="navTo('metodologie')" class="px-4 py-2.5 bg-white text-indigo-900 font-bold text-xs rounded-xl shadow hover:bg-indigo-50 transition">
+                  <i class="fa-solid fa-table-list mr-1.5"></i> Esplora Metodologie
+                </button>
+                <button onclick="navTo('prompts')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow transition">
+                  <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Apri Prompt AI (18)
+                </button>
+              </div>
+            </div>
+            <i class="fa-solid fa-brain absolute -right-6 -bottom-8 text-[180px] text-white/5 pointer-events-none"></i>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <div>
+                <span class="block text-2xl font-black text-slate-800">15</span>
+                <span class="text-xs text-slate-500 font-medium">Metodologie Attive</span>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-robot"></i>
+              </div>
+              <div>
+                <span class="block text-2xl font-black text-slate-800">18</span>
+                <span class="text-xs text-slate-500 font-medium">Prompt AI Pronti</span>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+              <div>
+                <span class="block text-2xl font-black text-slate-800">7</span>
+                <span class="text-xs text-slate-500 font-medium">Macro-Gruppi Tematici</span>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div>
+                <span class="block text-2xl font-black text-slate-800">100%</span>
+                <span class="text-xs text-slate-500 font-medium">Personalizzabili</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Macro-Gruppi Overview Grid -->
+          <div>
+            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center">
+              <i class="fa-solid fa-layer-group text-indigo-600 mr-2"></i> Macro-Gruppi Tematici
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${macroGroups.map(macro => {
+                const metCount = metodologieData.filter(m => m.macroId === macro.id).length;
+                const promptCount = promptsData.filter(p => p.macroId === macro.id).length;
+                return `
+                  <div onclick="filterMacro(${macro.id}); navTo('metodologie');" 
+                    class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition cursor-pointer group">
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition flex items-center justify-center text-lg">
+                        <i class="fa-solid ${macro.icon}"></i>
+                      </div>
+                      <span class="text-[10px] font-bold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">Macro ${macro.id}</span>
+                    </div>
+                    <h4 class="font-bold text-sm text-slate-800 mb-1 group-hover:text-indigo-600 transition">${macro.name}</h4>
+                    <div class="flex items-center space-x-4 text-xs text-slate-500 pt-2 border-t border-slate-100 mt-3">
+                      <span><strong class="text-slate-700">${metCount}</strong> Metodologie</span>
+                      <span>•</span>
+                      <span><strong class="text-slate-700">${promptCount}</strong> Prompt AI</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ------------------------------------------
+    // VIEW 2: METODOLOGIE DIDATTICHE
+    // ------------------------------------------
+    function renderMetodologieView(container) {
+      let filtered = metodologieData;
+
+      if (state.selectedMacroFilter) {
+        filtered = filtered.filter(m => m.macroId === state.selectedMacroFilter);
+      }
+
+      if (state.searchQuery.trim() !== "") {
+        const q = state.searchQuery.toLowerCase();
+        filtered = filtered.filter(m => 
+          m.nome.toLowerCase().includes(q) || 
+          m.svolgimento.toLowerCase().includes(q) ||
+          m.ruoloStudente.toLowerCase().includes(q) ||
+          m.ruoloDocente.toLowerCase().includes(q) ||
+          m.risultati.toLowerCase().includes(q)
+        );
+      }
+
+      container.innerHTML = `
+        <div class="fade-in space-y-6">
+          <!-- Filter Header Bar -->
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-2 items-center">
+              <button onclick="filterMacro(null)" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition ${!state.selectedMacroFilter ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                Tutti i Macro-Gruppi (15)
+              </button>
+              ${macroGroups.map(m => `
+                <button onclick="filterMacro(${m.id})" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition ${state.selectedMacroFilter === m.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                  Macro ${m.id}
+                </button>
+              `).join('')}
+            </div>
+            <div class="text-xs text-slate-500 whitespace-nowrap">
+              Risultati: <strong class="text-slate-800">${filtered.length}</strong> metodologie
+            </div>
+          </div>
+
+          <!-- Cards Accordion List -->
+          <div class="space-y-4">
+            ${filtered.length === 0 ? `
+              <div class="bg-white p-12 text-center rounded-xl border border-slate-200">
+                <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-500 font-medium text-sm">Nessuna metodologia trovata per i criteri cercati.</p>
+              </div>
+            ` : filtered.map(item => {
+              const macro = getMacro(item.macroId);
+              const relatedPrompt = promptsData.find(p => p.macroId === item.macroId);
+              return `
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:border-indigo-300 transition">
+                  <!-- Header Card -->
+                  <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                      <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                        <i class="fa-solid ${macro.icon}"></i>
+                      </span>
+                      <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block">
+                          Macro-Gruppo ${item.macroId}: ${macro.name}
+                        </span>
+                        <h3 class="text-base font-bold text-slate-900 leading-snug">
+                          ${highlightText(item.nome, state.searchQuery)}
+                        </h3>
+                      </div>
+                    </div>
+                    ${relatedPrompt ? `
+                      <button onclick="navTo('prompts'); handleSearch('${item.nome.split(' ')[0]}');" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200 transition flex items-center space-x-1">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Vedi Prompt AI correlato</span>
+                      </button>
+                    ` : ''}
+                  </div>
+
+                  <!-- Content Details Grid -->
+                  <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                    <div class="md:col-span-2 bg-indigo-50/40 p-4 rounded-xl border border-indigo-100">
+                      <span class="font-bold text-indigo-900 uppercase text-[10px] tracking-wider block mb-1">
+                        <i class="fa-solid fa-align-left mr-1"></i> Principi e Svolgimento Operativo
+                      </span>
+                      <p class="text-slate-700 leading-relaxed text-sm">
+                        ${highlightText(item.svolgimento, state.searchQuery)}
+                      </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+                      <span class="font-bold text-slate-800 uppercase text-[10px] tracking-wider block mb-1 text-emerald-700">
+                        <i class="fa-solid fa-user-graduate mr-1"></i> Ruolo dello Studente
+                      </span>
+                      <p class="text-slate-700 leading-relaxed">
+                        ${highlightText(item.ruoloStudente, state.searchQuery)}
+                      </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+                      <span class="font-bold text-slate-800 uppercase text-[10px] tracking-wider block mb-1 text-sky-700">
+                        <i class="fa-solid fa-chalkboard-user mr-1"></i> Ruolo del Docente
+                      </span>
+                      <p class="text-slate-700 leading-relaxed">
+                        ${highlightText(item.ruoloDocente, state.searchQuery)}
+                      </p>
+                    </div>
+
+                    <div class="md:col-span-2 bg-emerald-50/40 p-4 rounded-xl border border-emerald-100">
+                      <span class="font-bold text-emerald-900 uppercase text-[10px] tracking-wider block mb-1">
+                        <i class="fa-solid fa-bullseye mr-1"></i> Risultati di Apprendimento ed Efficacia
+                      </span>
+                      <p class="text-slate-700 leading-relaxed">
+                        ${highlightText(item.risultati, state.searchQuery)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ------------------------------------------
+    // VIEW 3: LIBRERIA PROMPTS AI
+    // ------------------------------------------
+    function renderPromptsView(container) {
+      let filtered = promptsData;
+
+      if (state.selectedMacroFilter !== null) {
+        filtered = filtered.filter(p => p.macroId === state.selectedMacroFilter || p.macroId === 0);
+      }
+
+      if (state.searchQuery.trim() !== "") {
+        const q = state.searchQuery.toLowerCase();
+        filtered = filtered.filter(p => 
+          p.titolo.toLowerCase().includes(q) || 
+          p.ruoloIA.toLowerCase().includes(q) ||
+          p.task.toLowerCase().includes(q) ||
+          p.dettagli.toLowerCase().includes(q)
+        );
+      }
+
+      container.innerHTML = `
+        <div class="fade-in space-y-6">
+          <!-- Filter & Action Header -->
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-2 items-center">
+              <button onclick="filterMacro(null)" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition ${!state.selectedMacroFilter ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                Tutti i Prompt (18)
+              </button>
+              ${macroGroups.map(m => `
+                <button onclick="filterMacro(${m.id})" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition ${state.selectedMacroFilter === m.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                  Macro ${m.id}
+                </button>
+              `).join('')}
+            </div>
+            <button onclick="copyAllPrompts()" class="text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-lg border border-indigo-200 transition flex items-center space-x-1.5 shrink-0">
+              <i class="fa-solid fa-copy"></i>
+              <span>Copia Tutti i Prompt</span>
+            </button>
+          </div>
+
+          <!-- Prompt Cards Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            ${filtered.length === 0 ? `
+              <div class="lg:col-span-2 bg-white p-12 text-center rounded-xl border border-slate-200">
+                <i class="fa-solid fa-robot text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-500 font-medium text-sm">Nessun prompt trovato con i filtri attuali.</p>
+              </div>
+            ` : filtered.map(prompt => {
+              const macro = getMacro(prompt.macroId);
+              const fullPromptText = `RUOLO IA: ${prompt.ruoloIA}\n\nTASK: ${prompt.task}\n\nDETTAGLI RICHIESTI:\n${prompt.dettagli}`;
+              return `
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:border-indigo-300 transition">
+                  <div>
+                    <!-- Header -->
+                    <div class="p-4 border-b border-slate-100 bg-slate-50/60 flex items-start justify-between gap-3">
+                      <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block mb-0.5">
+                          <i class="fa-solid ${macro.icon} mr-1"></i> Macro-Gruppo ${prompt.macroId > 0 ? prompt.macroId : 'Meta'}: ${macro.name}
+                        </span>
+                        <h3 class="text-sm font-bold text-slate-900 leading-snug">
+                          ${highlightText(prompt.titolo, state.searchQuery)}
+                        </h3>
+                      </div>
+                      <button onclick="openCustomizerModal('${prompt.id}')" class="px-2.5 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition whitespace-nowrap flex items-center space-x-1">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Personalizza</span>
+                      </button>
+                    </div>
+
+                    <!-- Body Code Box -->
+                    <div class="p-4 space-y-3">
+                      <!-- Ruolo IA -->
+                      <div class="text-xs">
+                        <strong class="text-slate-700 block text-[10px] uppercase tracking-wider mb-0.5 text-indigo-600">
+                          <i class="fa-solid fa-user-gear mr-1"></i> Ruolo IA:
+                        </strong>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-700 font-mono text-[11px]">
+                          ${highlightText(prompt.ruoloIA, state.searchQuery)}
+                        </div>
+                      </div>
+
+                      <!-- Task -->
+                      <div class="text-xs">
+                        <strong class="text-slate-700 block text-[10px] uppercase tracking-wider mb-0.5 text-indigo-600">
+                          <i class="fa-solid fa-list-check mr-1"></i> Task / Istruzione:
+                        </strong>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-800 font-mono text-[11px] leading-relaxed">
+                          ${highlightText(prompt.task, state.searchQuery)}
+                        </div>
+                      </div>
+
+                      <!-- Dettagli -->
+                      <div class="text-xs">
+                        <strong class="text-slate-700 block text-[10px] uppercase tracking-wider mb-0.5 text-indigo-600">
+                          <i class="fa-solid fa-indent mr-1"></i> Dettagli Richiesti:
+                        </strong>
+                        <div class="bg-slate-900 text-slate-200 p-3 rounded-lg font-mono text-[11px] whitespace-pre-line leading-relaxed max-h-48 overflow-y-auto">
+                          ${highlightText(prompt.dettagli, state.searchQuery)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Footer Copy Action -->
+                  <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-[10px] text-slate-400 font-mono">Pronto per copia & incolla</span>
+                    <button onclick="copyToClipboard(\`${fullPromptText.replace(/`/g, '\\`')}\`, 'Prompt copiato con successo!')" 
+                      class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center space-x-1.5">
+                      <i class="fa-solid fa-copy"></i>
+                      <span>Copia Prompt Grezzo</span>
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ------------------------------------------
+    // VIEW 4: SUPER PROMPT UDA BUILDER (PROMPT 18)
+    // ------------------------------------------
+    function renderUdaBuilderView(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-4xl mx-auto space-y-6">
+          <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <div class="border-b border-slate-100 pb-4">
+              <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                Interactive AI Generator
+              </span>
+              <h2 class="text-xl font-bold text-slate-900 mt-2">
+                Compilatore Super-Prompt per UDA Completa
+              </h2>
+              <p class="text-xs text-slate-500 mt-1">
+                Compila i dati della tua classe e dell'argomento: il sistema genererà il prompt perfetto pronto per ChatGPT/Claude.
+              </p>
+            </div>
+
+            <form id="uda-form" onsubmit="event.preventDefault(); generateUdaPrompt();" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Materia / Discipline *</label>
+                <input type="text" id="uda-materia" required placeholder="es. Storia e Filosofia" class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Classe e Indirizzo *</label>
+                <input type="text" id="uda-classe" required placeholder="es. 4° anno Liceo Scientifico" class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Metodologia Principale *</label>
+                <select id="uda-metodologia" class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:outline-none">
+                  ${metodologieData.map(m => `<option value="${m.nome}">${m.nome}</option>`).join('')}
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Ore Complessive a Disposizione *</label>
+                <input type="text" id="uda-ore" required placeholder="es. 10 ore (5 lezioni da 2h)" class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block font-bold text-slate-700 mb-1">Argomento Disciplinare Specifico *</label>
+                <input type="text" id="uda-argomento" required placeholder="es. La crisi del '29 e il New Deal di Roosevelt" class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div class="md:col-span-2 pt-2">
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span>Genera Prompt UDA Personalizzato</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Output Box -->
+          <div id="uda-output-container" class="hidden bg-slate-900 text-white p-6 rounded-2xl shadow-xl space-y-4 fade-in">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+                <i class="fa-solid fa-check-circle mr-1.5"></i> Prompt UDA Pronto per l'AI
+              </span>
+              <button onclick="copyGeneratedUda()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-copy"></i>
+                <span>Copia negli Appunti</span>
+              </button>
+            </div>
+            <pre id="uda-output-text" class="font-mono text-xs whitespace-pre-wrap leading-relaxed text-slate-200 max-h-96 overflow-y-auto p-2"></pre>
+          </div>
+        </div>
+      `;
+    }
+
+    function generateUdaPrompt() {
+      const mat = document.getElementById('uda-materia').value;
+      const cls = document.getElementById('uda-classe').value;
+      const met = document.getElementById('uda-metodologia').value;
+      const ore = document.getElementById('uda-ore').value;
+      const arg = document.getElementById('uda-argomento').value;
+
+      const p18 = promptsData.find(p => p.id === 'p18');
+
+      const generated = `RUOLO IA: ${p18.ruoloIA}
+
+TASK: Compila una scheda completa di Unità di Apprendimento (UDA) personalizzata compilando la seguente struttura sulla base dei dati forniti:
+
+--- DATI DI INPUT CORSO ---
+- Materia/e: ${mat}
+- Classe e Indirizzo: ${cls}
+- Metodologia Principale da applicare: ${met}
+- Argomento disciplinare: ${arg}
+- Ore complessive a disposizione: ${ore}
+
+--- STRUTTURA ED ESITI RICHIESTI ---
+1. Titolo dell'UDA e Sintesi del Progetto motivante.
+2. Traguardi di Competenza (Competenze chiave europee) e Obiettivi specifici di apprendimento (Conoscenze e Abilità).
+3. Scansione dettagliata Lezione per Lezione (Fase d'attacco, Fase centrale operativa con la metodologia ${met}, Fase di chiusura/restituzione).
+4. Strumenti didattici, materiali e tecnologie necessarie.
+5. Modalità di personalizzazione/inclusione per alunni con BES/DSA.
+6. Griglia di Valutazione Tripartita: Valutazione delle Conoscenze (prassica), Valutazione del Processo (osservazione), Valutazione del Prodotto finale.`;
+
+      document.getElementById('uda-output-text').textContent = generated;
+      document.getElementById('uda-output-container').classList.remove('hidden');
+      document.getElementById('uda-output-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyGeneratedUda() {
+      const text = document.getElementById('uda-output-text').textContent;
+      copyToClipboard(text, "Super-Prompt UDA copiato!");
+    }
+
+    // ------------------------------------------
+    // MODAL PROMPT CUSTOMIZER DYNAMIC
+    // ------------------------------------------
+    function openCustomizerModal(promptId) {
+      const prompt = promptsData.find(p => p.id === promptId);
+      if (!prompt) return;
+
+      state.activePromptForModal = prompt;
+      state.modalInputValues = {};
+
+      const modalTitle = document.getElementById('modal-title');
+      const modalBody = document.getElementById('modal-body');
+
+      modalTitle.textContent = prompt.titolo;
+
+      // Trova tutte le ricorrenze tra parentesi quadre [inserire ...]
+      const fullText = prompt.task + " " + prompt.dettagli;
+      const matches = [...new Set(fullText.match(/\[inserire[^\]]+\]/gi) || [])];
+
+      if (matches.length === 0) {
+        modalBody.innerHTML = `
+          <p class="text-xs text-slate-600 mb-3">Questo prompt non richiede parametri dinamici complessi. Puoi copiarlo direttamente:</p>
+          <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs whitespace-pre-wrap leading-relaxed">
+RUOLO IA: ${escHtml(prompt.ruoloIA)}
+
+TASK: ${escHtml(prompt.task)}
+
+DETTAGLI:
+${escHtml(prompt.dettagli)}
+          </div>
+        `;
+      } else {
+        modalBody.innerHTML = `
+          <p class="text-xs text-slate-500 mb-4">Inserisci i valori nei campi sottostanti per personalizzare automaticamente le variabili nel prompt:</p>
+          <div class="space-y-3">
+            ${matches.map((match, idx) => {
+              const cleanLabel = match.replace(/\[inserire\s*/i, '').replace(']', '');
+              return `
+                <div>
+                  <label class="block font-bold text-xs text-slate-700 mb-1 capitalize">${cleanLabel}</label>
+                  <input type="text" data-placeholder="${escHtml(match)}" oninput="updateModalParam(this)" 
+                    placeholder="Esempio per ${escHtml(cleanLabel)}" 
+                    class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:outline-none">
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="mt-4 pt-4 border-t border-slate-100">
+            <label class="block font-bold text-xs text-slate-700 mb-1">Anteprima Prompt Generato:</label>
+            <div id="modal-preview-text" class="bg-slate-900 text-slate-200 p-3 rounded-lg font-mono text-[11px] whitespace-pre-wrap max-h-40 overflow-y-auto"></div>
+          </div>
+        `;
+        updateModalPreview();
+      }
+
+      document.getElementById('prompt-modal').classList.remove('hidden');
+    }
+
+    function updateModalParam(inputEl) {
+      const ph = inputEl.getAttribute('data-placeholder');
+      state.modalInputValues[ph] = inputEl.value;
+      updateModalPreview();
+    }
+
+    function getModalConfiguredText() {
+      const p = state.activePromptForModal;
+      if (!p) return '';
+
+      let taskText = p.task;
+      let detailsText = p.dettagli;
+
+      Object.keys(state.modalInputValues).forEach(ph => {
+        const val = state.modalInputValues[ph];
+        if (val && val.trim() !== "") {
+          taskText = taskText.replaceAll(ph, val);
+          detailsText = detailsText.replaceAll(ph, val);
+        }
+      });
+
+      return `RUOLO IA: ${p.ruoloIA}\n\nTASK: ${taskText}\n\nDETTAGLI RICHIESTI:\n${detailsText}`;
+    }
+
+    function updateModalPreview() {
+      const prevEl = document.getElementById('modal-preview-text');
+      if (prevEl) {
+        prevEl.textContent = getModalConfiguredText();
+      }
+    }
+
+    function copyConfiguredPrompt() {
+      const text = getModalConfiguredText();
+      copyToClipboard(text, "Prompt personalizzato copiato!");
+      closeModal();
+    }
+
+    function closeModal() {
+      document.getElementById('prompt-modal').classList.add('hidden');
+    }
+
+    // ------------------------------------------
+    // SIDEBAR RENDER HELPER
+    // ------------------------------------------
+    function renderSidebarMacros() {
+      const container = document.getElementById('sidebar-macro-list');
+      container.innerHTML = macroGroups.map(m => `
+        <button onclick="filterMacro(${m.id}); navTo('metodologie');" 
+          class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-between ${state.selectedMacroFilter === m.id ? 'bg-indigo-600 text-white font-bold' : 'text-indigo-300 hover:bg-indigo-900/40 hover:text-white'}">
+          <span class="truncate">M${m.id}. ${m.name}</span>
+          <i class="fa-solid ${m.icon} text-[10px] opacity-70"></i>
+        </button>
+      `).join('');
+    }
+
+    // ==========================================
+    // INITIALIZATION & EVENT LISTENERS
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebarMacros();
+
+      // Read Hash Route
+      const initialHash = window.location.hash.replace('#', '');
+      if (initialHash && ['home', 'metodologie', 'prompts', 'uda-builder'].includes(initialHash)) {
+        navTo(initialHash);
+      } else {
+        navTo('home');
+      }
+
+      // Handle Resize Notification
+      window.addEventListener('resize', notifyResize);
+      notifyResize();
+    });
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && hash !== state.currentRoute) {
+        navTo(hash);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistica, Semantica e Comprensione nell'IA — SPA Didattica Editoriale</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Design Tokens & Accessibility AAA Custom Setup */
+    :root {
+      --ink: #1C1C1C;          /* Text main - Contrast > 15:1 */
+      --cream: #FAF6EE;        /* Light bg warm */
+      --paper: #F2EAD9;        /* Alternate section bg */
+      --primary: #7C1D3F;      /* Primary Editorial Crimson - AAA compliant on light */
+      --primary-dark: #5A1530; /* Primary hover/active */
+      --accent: #8C6212;       /* Editorial Gold/Amber AAA */
+      --surface: #FFFFFF;      /* Card surface */
+      --surface-border: #D8CEBC;
+
+      /* Fixed Semantic Status Tokens (AAA Standard Compliant) */
+      --status-progress: #0047AB; /* Vivid Cobalt - In Progress ⏳ (8.47:1) */
+      --status-warning: #B0004A;  /* Deep Crimson/Magenta - Warning ⚠️ (7.12:1) */
+      --status-success: #005C36;  /* Emerald Green - Completed ✅ (8.12:1) */
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+      background-color: var(--cream);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, .font-serif-display {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    code, pre, .font-mono-custom {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Strict Focus Outline for Accessibility */
+    :focus-visible {
+      outline: 3px solid var(--status-progress) !important;
+      outline-offset: 3px !important;
+    }
+
+    /* Custom Texture overlay */
+    .paper-texture {
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(124, 29, 63, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(140, 98, 18, 0.03) 0%, transparent 40%);
+    }
+
+    /* Motion accessibility override */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Ensure minimum touch target sizes */
+    button, input, select, a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Strict Button State Rules to guarantee AAA contrast on Hover */
+    .btn-filter-active {
+      background-color: var(--primary) !important;
+      color: #FFFFFF !important;
+      border-color: var(--primary) !important;
+    }
+    .btn-filter-active:hover {
+      background-color: var(--primary-dark) !important;
+      color: #FFFFFF !important;
+      border-color: var(--primary-dark) !important;
+    }
+
+    .btn-filter-inactive {
+      background-color: #FFFFFF !important;
+      color: var(--ink) !important;
+      border-color: var(--surface-border) !important;
+    }
+    .btn-filter-inactive:hover {
+      background-color: var(--paper) !important;
+      color: var(--primary) !important;
+      border-color: var(--primary) !important;
+    }
+
+    .btn-option-active {
+      background-color: var(--paper) !important;
+      color: var(--primary) !important;
+      border-color: var(--primary) !important;
+    }
+    .btn-option-inactive {
+      background-color: #FFFFFF !important;
+      color: var(--ink) !important;
+      border-color: var(--surface-border) !important;
+    }
+    .btn-option-inactive:hover {
+      background-color: var(--cream) !important;
+      border-color: var(--accent) !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--cream);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-border);
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col antialiased">
+
+  <!-- A11y Skip Link -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-black">
+    Salta direttamente al contenuto principale
+  </a>
+
+  <!-- Top Progress Bar -->
+  <div class="fixed top-0 left-0 w-full h-1.5 bg-gray-200 z-50" aria-hidden="true">
+    <div id="scroll-progress-bar" class="h-full bg-[#0047AB] w-0 transition-all duration-150"></div>
+  </div>
+
+  <!-- Header Sticky Navigation -->
+  <header class="sticky top-0 z-40 bg-[#FAF6EE]/90 backdrop-blur-md border-b border-[#D8CEBC]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 font-serif-display font-bold text-xl tracking-tight text-[#7C1D3F] hover:underline" aria-label="Home page - Statistica e Semantica nell'IA">
+        <span class="text-2xl" aria-hidden="true">🧠</span>
+        <span>Semantica &amp; IA</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold" aria-label="Navigazione principale">
+        <a href="#falso-dilemma" class="nav-link hover:text-[#7C1D3F] transition-colors py-2 border-b-2 border-transparent" data-section="falso-dilemma">Statistica vs Semantica</a>
+        <a href="#grounding" class="nav-link hover:text-[#7C1D3F] transition-colors py-2 border-b-2 border-transparent" data-section="grounding">Symbol Grounding</a>
+        <a href="#scala-livelli" class="nav-link hover:text-[#7C1D3F] transition-colors py-2 border-b-2 border-transparent" data-section="scala-livelli">I 6 Livelli</a>
+        <a href="#stanza-cinese" class="nav-link hover:text-[#7C1D3F] transition-colors py-2 border-b-2 border-transparent" data-section="stanza-cinese">Stanza Cinese &amp; Causalità</a>
+        <a href="#strumento-valutazione" class="nav-link hover:text-[#7C1D3F] transition-colors py-2 border-b-2 border-transparent" data-section="strumento-valutazione">Analizzatore Claim</a>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-btn" type="button" class="md:hidden flex items-center justify-center p-2 rounded-lg border border-[#D8CEBC] text-[#1C1C1C]" aria-expanded="false" aria-controls="mobile-menu" aria-label="Apri menu di navigazione">
+        <span id="menu-icon" class="text-xl font-bold" aria-hidden="true">☰</span>
+        <span class="sr-only">Menu</span>
+      </button>
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden bg-[#F2EAD9] border-b border-[#D8CEBC] px-4 pt-2 pb-4 space-y-2">
+      <a href="#falso-dilemma" class="mobile-nav-link block px-3 py-2 rounded-md font-medium hover:bg-[#FAF6EE]">Statistica vs Semantica</a>
+      <a href="#grounding" class="mobile-nav-link block px-3 py-2 rounded-md font-medium hover:bg-[#FAF6EE]">Symbol Grounding</a>
+      <a href="#scala-livelli" class="mobile-nav-link block px-3 py-2 rounded-md font-medium hover:bg-[#FAF6EE]">I 6 Livelli di Comprensione</a>
+      <a href="#stanza-cinese" class="mobile-nav-link block px-3 py-2 rounded-md font-medium hover:bg-[#FAF6EE]">Stanza Cinese &amp; Causalità</a>
+      <a href="#strumento-valutazione" class="mobile-nav-link block px-3 py-2 rounded-md font-medium hover:bg-[#FAF6EE]">Analizzatore Claim</a>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="flex-grow">
+
+    <!-- HERO SECTION -->
+    <section class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-[#D8CEBC]">
+      <div class="text-center space-y-6">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F2EAD9] border border-[#D8CEBC] text-sm font-semibold text-[#7C1D3F]">
+          <span aria-hidden="true">📚</span>
+          <span>Saggio Filosofico &amp; Modello Interattivo</span>
+        </div>
+        
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif-display font-bold text-[#1C1C1C] leading-tight">
+          L'IA comprende davvero o fa solo calcoli?
+        </h1>
+        
+        <p class="text-lg sm:text-xl text-[#1C1C1C]/85 max-w-3xl mx-auto font-normal leading-relaxed">
+          Oltre il mito binario <em class="font-serif-display">"IA = statistica / Umano = significato"</em>. Un'esplorazione epistemologica guidata tra rappresentazioni emergenti, ancoraggio al mondo (grounding) ed esperienza soggettiva.
+        </p>
+
+        <!-- Promessa didattica -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl border-l-4 border-[#7C1D3F] shadow-sm max-w-2xl mx-auto text-left space-y-2">
+          <p class="font-bold text-[#7C1D3F] flex items-center gap-2 text-base">
+            <span aria-hidden="true">🎯</span>
+            <span>Promessa del percorso:</span>
+          </p>
+          <p class="text-sm sm:text-base text-[#1C1C1C]">
+            Alla fine di questo percorso saprai distinguere la <strong>comprensione funzionale</strong> dall'<strong>esperienza vissuta</strong>, valutare criticamente qualsiasi affermazione sull'intelligenza artificiale e applicare il modello a 6 livelli ai casi reali.
+          </p>
+        </div>
+
+        <div class="pt-4 flex flex-wrap justify-center gap-4">
+          <a href="#falso-dilemma" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#7C1D3F] text-white font-semibold hover:bg-[#5A1530] transition-colors shadow-md">
+            <span>Inizia l'Analisi</span>
+            <span class="ml-2" aria-hidden="true">↓</span>
+          </a>
+          <a href="#strumento-valutazione" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white border border-[#D8CEBC] text-[#1C1C1C] font-semibold hover:bg-[#F2EAD9] transition-colors">
+            <span>Usa l'Analizzatore Operativo</span>
+            <span class="ml-2" aria-hidden="true">🛠️</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: IL FALSO DILEMMA -->
+    <section id="falso-dilemma" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-[#D8CEBC]">
+      <div class="space-y-8">
+        <div>
+          <span class="text-xs font-mono-custom tracking-widest uppercase text-[#8C6212] font-bold">Modulo 01</span>
+          <h2 class="text-2xl sm:text-4xl font-serif-display font-bold mt-1 text-[#1C1C1C]">
+            1. "Statistico" e "Semantico" non sono opposti
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div class="space-y-4 text-base leading-relaxed">
+            <p>
+              La contrapposizione netta tra <em class="font-semibold">statistica superficiale</em> e <em class="font-semibold">comprensione umana del significato</em> è una prima approssimazione comoda, ma fuorviante se presa alla lettera.
+            </p>
+            <p>
+              Il fatto che un modello linguistico (LLM) utilizzi regolarità statistiche non implica che possieda soltanto associazioni piatte tra parole adiacenti. Durante l'addestramento, il sistema costruisce <strong>rappresentazioni interne dello spazio semantico</strong>.
+            </p>
+            <div class="p-4 bg-[#F2EAD9] rounded-lg border-l-4 border-[#8C6212] text-sm">
+              <strong class="block mb-1 text-[#1C1C1C]">💡 Il meccanismo dell'emersione:</strong>
+              <p>Non dobbiamo pensare a: <em>Statistica OPPURE Significato</em>,<br>ma a: <strong>Statistica → Rappresentazioni interne → Elaborazione semantica.</strong></p>
+            </div>
+          </div>
+
+          <!-- DEMO INTERATTIVA 1: DISAMBIGUAZIONE CONTESTUALE -->
+          <div class="bg-white p-6 rounded-xl border border-[#D8CEBC] shadow-sm space-y-4">
+            <h3 class="font-bold text-lg text-[#7C1D3F] flex items-center gap-2">
+              <span aria-hidden="true">🧪</span>
+              <span>Demo: Disambiguazione Strutturale Live</span>
+            </h3>
+            <p class="text-xs text-[#1C1C1C]/80">
+              Seleziona una frase per osservare come la statistica vettoriale permetta al modello di distinguere significati diversi della stessa parola o cogliere relazioni strutturali invertite:
+            </p>
+
+            <div class="space-y-2" role="group" aria-label="Seleziona frase di prova">
+              <button type="button" class="demo-phrase-btn btn-option-inactive w-full text-left p-3 rounded-lg border flex justify-between items-center text-sm font-medium transition-all" data-case="1">
+                <span>"Giovanni ha lasciato..." (3 contesti)</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-[#0047AB] text-white font-mono-custom">Polisemia</span>
+              </button>
+              <button type="button" class="demo-phrase-btn btn-option-inactive w-full text-left p-3 rounded-lg border flex justify-between items-center text-sm font-medium transition-all" data-case="2">
+                <span>"Cane vs Uomo che morde"</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-[#0047AB] text-white font-mono-custom">Sintassi/Ruoli</span>
+              </button>
+            </div>
+
+            <!-- Panel di Esito Demo 1 -->
+            <div id="demo-output-1" class="p-4 rounded-lg bg-[#FAF6EE] border border-[#D8CEBC] space-y-3" aria-live="polite">
+              <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">Risultato dell'analisi:</p>
+              <p class="text-sm font-medium">Seleziona una delle opzioni sopra per osservare la rappresentazione interna.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: L'APPRENDIMENTO DEL BAMBINO E L'ANCRAGGIO -->
+    <section id="grounding" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-[#D8CEBC]">
+      <div class="space-y-8">
+        <div>
+          <span class="text-xs font-mono-custom tracking-widest uppercase text-[#8C6212] font-bold">Modulo 02</span>
+          <h2 class="text-2xl sm:text-4xl font-serif-display font-bold mt-1 text-[#1C1C1C]">
+            2. Il Problema del Symbol Grounding (Ancoraggio)
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Spiegazione Bambino vs LLM -->
+          <div class="space-y-4 text-base leading-relaxed">
+            <h3 class="font-serif-display font-bold text-xl text-[#7C1D3F]">Anche il cervello umano impara per regolarità</h3>
+            <p>
+              Un bambino non impara la parola <em class="font-semibold">"gatto"</em> da una definizione enciclopedica (<em>"Mammifero felide..."</em>). Impara osservando centinaia di correlazioni ripetute tra vista, tatto, suono e contesto sociale.
+            </p>
+            <p>
+              La differenza cruciale tra l'umano e un LLM puro risiede nell'<strong>ancoraggio al mondo (grounding)</strong>:
+            </p>
+
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-2 bg-white p-3 rounded-lg border border-[#D8CEBC]">
+                <span class="text-lg" aria-hidden="true">👶</span>
+                <div>
+                  <strong>Grounding Umano (Multimodale &amp; Corporeo):</strong><br>
+                  Parola → Vista → Suono → Tatto → Emozione → Azione → Memoria Vissuta.
+                </div>
+              </li>
+              <li class="flex items-start gap-2 bg-white p-3 rounded-lg border border-[#D8CEBC]">
+                <span class="text-lg" aria-hidden="true">🤖</span>
+                <div>
+                  <strong>Grounding del Modello Linguistico (Distribuzionale):</strong><br>
+                  Parola → Relazioni grafemiche e sintattiche con milioni di altre parole.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- DIAGRAMMA SVG NATIVO CON TRIPLA RIDONDANZA -->
+          <div class="bg-white p-6 rounded-xl border border-[#D8CEBC] space-y-4">
+            <h3 class="font-bold text-lg text-[#1C1C1C] flex items-center justify-between">
+              <span>Schema del Grounding Concettuale</span>
+              <span class="text-xs font-normal text-gray-500">(SVG Nativo)</span>
+            </h3>
+
+            <div class="w-full flex justify-center py-2" aria-hidden="true">
+              <svg viewBox="0 0 400 220" class="w-full max-w-md h-auto" role="img" aria-labelledby="svg-title svg-desc">
+                <title id="svg-title">Mappa concettuale comparativa dell'Ancoraggio al Mondo</title>
+                <desc id="svg-desc">Confronto visivo tra la rete linguistica astratta dell'IA e il grounding sensomotorio dell'essere umano con forme, colori e testo distinti.</desc>
+                
+                <!-- Sfondo IA -->
+                <rect x="10" y="10" width="180" height="200" rx="10" fill="#F2EAD9" stroke="#D8CEBC" stroke-width="2"/>
+                <text x="100" y="35" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#7C1D3F">IA (Puro Testo)</text>
+                
+                <!-- Rete simbolica IA (Cerchi + Linee) -->
+                <circle cx="50" cy="80" r="14" fill="#0047AB"/>
+                <text x="50" y="84" text-anchor="middle" font-size="10" fill="#FFF" font-weight="bold">Parola</text>
+                
+                <line x1="64" y1="80" x2="136" y2="80" stroke="#0047AB" stroke-width="2" stroke-dasharray="3,3"/>
+                
+                <circle cx="150" cy="80" r="14" fill="#0047AB"/>
+                <text x="150" y="84" text-anchor="middle" font-size="10" fill="#FFF" font-weight="bold">Testo</text>
+
+                <line x1="50" y1="94" x2="100" y2="150" stroke="#0047AB" stroke-width="2"/>
+                
+                <rect x="75" y="140" width="50" height="25" rx="4" fill="#0047AB"/>
+                <text x="100" y="156" text-anchor="middle" font-size="10" fill="#FFF" font-weight="bold">Regola</text>
+
+                <text x="100" y="190" text-anchor="middle" font-size="11" fill="#1C1C1C" font-weight="600">🔵 Relazioni Simboliche</text>
+
+                <!-- Sfondo Umano -->
+                <rect x="210" y="10" width="180" height="200" rx="10" fill="#FAF6EE" stroke="#D8CEBC" stroke-width="2"/>
+                <text x="300" y="35" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#005C36">Umano (Corporeo)</text>
+
+                <!-- Forma Umano: Rombo e Quadrato -->
+                <polygon points="300,55 320,75 300,95 280,75" fill="#005C36"/>
+                <text x="300" y="78" text-anchor="middle" font-size="9" fill="#FFF" font-weight="bold">Corpo</text>
+
+                <line x1="300" y1="95" x2="260" y2="140" stroke="#005C36" stroke-width="2"/>
+                <line x1="300" y1="95" x2="340" y2="140" stroke="#005C36" stroke-width="2"/>
+
+                <rect x="235" y="140" width="50" height="25" rx="2" fill="#B0004A"/>
+                <text x="260" y="156" text-anchor="middle" font-size="9" fill="#FFF" font-weight="bold">Sensi</text>
+
+                <rect x="315" y="140" width="50" height="25" rx="2" fill="#8C6212"/>
+                <text x="340" y="156" text-anchor="middle" font-size="9" fill="#FFF" font-weight="bold">Emozione</text>
+
+                <text x="300" y="190" text-anchor="middle" font-size="11" fill="#1C1C1C" font-weight="600">🟩 Ancoraggio Vissuto</text>
+              </svg>
+            </div>
+
+            <!-- Tabella Alternativa Accessibile per lo Schema -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left border-collapse">
+                <caption class="sr-only">Confronto accessibile tra Grounding dell'IA e dell'Umano</caption>
+                <thead>
+                  <tr class="border-b border-[#D8CEBC] bg-[#F2EAD9]">
+                    <th scope="col" class="p-2 font-bold">Dimensione</th>
+                    <th scope="col" class="p-2 font-bold">Modello Linguistico (LLM)</th>
+                    <th scope="col" class="p-2 font-bold">Essere Umano</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-[#D8CEBC]">
+                    <th scope="row" class="p-2 font-semibold">Fonte Dati</th>
+                    <td class="p-2">Co-occorrenze testuali e sintassi</td>
+                    <td class="p-2">Percezione sensoriale e azione nel mondo</td>
+                  </tr>
+                  <tr class="border-b border-[#D8CEBC]">
+                    <th scope="row" class="p-2 font-semibold">Stato di Stato</th>
+                    <td class="p-2"><span class="inline-block px-1.5 py-0.5 rounded bg-[#0047AB] text-white font-mono-custom">⏳ 🔷 Relazionale</span></td>
+                    <td class="p-2"><span class="inline-block px-1.5 py-0.5 rounded bg-[#005C36] text-white font-mono-custom">✅ 🟩 Esperienziale</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIMULATORE CASI LIMITE: LA SEDIA -->
+        <div class="bg-white p-6 rounded-xl border border-[#D8CEBC] shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#D8CEBC] pb-3">
+            <h3 class="font-serif-display font-bold text-xl text-[#7C1D3F] flex items-center gap-2">
+              <span aria-hidden="true">🪑</span>
+              <span>Test dei Casi Limite: Il Concetto di "Sedia"</span>
+            </h3>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#FAF6EE] border border-[#D8CEBC] text-[#8C6212]">
+              Dimostrazione di Ragionamento Astratto
+            </span>
+          </div>
+
+          <p class="text-sm">
+            Un'obiezione frequente recita: <em>"L'IA memorizza solo definizioni"</em>. Ma cosa succede quando poniamo casi limite astratti non presenti verbatim nei testi di addestramento? Prova a testare i seguenti scenari:
+          </p>
+
+          <!-- Selettore Casi Limite -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label="Test casi limite sedia">
+            <button type="button" class="chair-case-btn btn-option-inactive text-left p-3 rounded-lg border transition-all" data-case="ceppo">
+              <span class="block font-bold text-sm">🪵 Ceppo di legno</span>
+              <span class="text-xs text-gray-600">Può funzionare da sedia?</span>
+            </button>
+            <button type="button" class="chair-case-btn btn-option-inactive text-left p-3 rounded-lg border transition-all" data-case="senza-schienale">
+              <span class="block font-bold text-sm">🪑 Sedia senza schienale</span>
+              <span class="text-xs text-gray-600">È ancora una sedia?</span>
+            </button>
+            <button type="button" class="chair-case-btn btn-option-inactive text-left p-3 rounded-lg border transition-all" data-case="giocattolo">
+              <span class="block font-bold text-sm">🧸 Sedia per bambola</span>
+              <span class="text-xs text-gray-600">Mantiene la funzione?</span>
+            </button>
+          </div>
+
+          <!-- Output Caso Limite -->
+          <div id="chair-output" class="p-4 rounded-lg bg-[#FAF6EE] border border-[#D8CEBC] space-y-2" aria-live="polite">
+            <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">Risposta funzionale del sistema:</p>
+            <p class="text-sm font-medium">Fai click su uno dei tre casi limite per osservare l'inferenza astratta del modello.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: LA SCALA DEI 6 LIVELLI DI COMPRENSIONE -->
+    <section id="scala-livelli" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-[#D8CEBC]">
+      <div class="space-y-8">
+        <div>
+          <span class="text-xs font-mono-custom tracking-widest uppercase text-[#8C6212] font-bold">Modulo 03</span>
+          <h2 class="text-2xl sm:text-4xl font-serif-display font-bold mt-1 text-[#1C1C1C]">
+            3. La Tassonomia dei 6 Livelli di Comprensione
+          </h2>
+          <p class="text-base text-[#1C1C1C]/80 mt-2">
+            Per evitare confusione concettuale, occorre separare nettamente le capacità computazionali/funzionali dall'esperienza soggettiva.
+          </p>
+        </div>
+
+        <!-- Filtro stato livelli -->
+        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtra livelli di comprensione">
+          <span class="text-xs font-bold mr-2">Filtra per fattibilità nell'IA:</span>
+          <button type="button" class="filter-level-btn btn-filter-active px-3 py-1.5 rounded-full text-xs font-bold border transition-colors" data-filter="all">
+            Tutti i 6 Livelli
+          </button>
+          <button type="button" class="filter-level-btn btn-filter-inactive px-3 py-1.5 rounded-full text-xs font-bold border transition-colors" data-filter="si">
+            ✅ Dimostrato / Alto
+          </button>
+          <button type="button" class="filter-level-btn btn-filter-inactive px-3 py-1.5 rounded-full text-xs font-bold border transition-colors" data-filter="dipende">
+            ⏳ Parziale / Architettura-dipendente
+          </button>
+          <button type="button" class="filter-level-btn btn-filter-inactive px-3 py-1.5 rounded-full text-xs font-bold border transition-colors" data-filter="no">
+            ❓ Non dimostrato / Aperto
+          </button>
+        </div>
+
+        <!-- GRIGLIA FLIP CARDS INTERATTIVE -->
+        <div id="levels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Livello 1 -->
+          <div class="level-card bg-white rounded-xl border border-[#D8CEBC] p-5 space-y-3 flex flex-col justify-between" data-status="si">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-custom font-bold px-2 py-0.5 rounded bg-[#F2EAD9] text-[#7C1D3F]">Livello 1</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-[#005C36] text-white flex items-center gap-1">
+                  <span aria-hidden="true">✅</span>
+                  <span>Completato</span>
+                </span>
+              </div>
+              <h3 class="font-serif-display font-bold text-lg text-[#1C1C1C]">Sintassi</h3>
+              <p class="text-xs text-[#1C1C1C]/80">"Quali sequenze di simboli sono probabili e grammaticalmente corrette?"</p>
+            </div>
+            <div class="pt-3 border-t border-[#D8CEBC] text-xs space-y-1">
+              <strong class="block text-[#005C36]">Possibile negli LLM: ✅ Sì</strong>
+              <p>Padroneggiata a livelli pari o superiori all'uomo nei modelli linguistici moderni.</p>
+            </div>
+          </div>
+
+          <!-- Livello 2 -->
+          <div class="level-card bg-white rounded-xl border border-[#D8CEBC] p-5 space-y-3 flex flex-col justify-between" data-status="si">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-custom font-bold px-2 py-0.5 rounded bg-[#F2EAD9] text-[#7C1D3F]">Livello 2</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-[#005C36] text-white flex items-center gap-1">
+                  <span aria-hidden="true">✅</span>
+                  <span>Completato</span>
+                </span>
+              </div>
+              <h3 class="font-serif-display font-bold text-lg text-[#1C1C1C]">Semantica</h3>
+              <p class="text-xs text-[#1C1C1C]/80">"Che cosa rappresentano i simboli e quali relazioni esistono tra concetti?"</p>
+            </div>
+            <div class="pt-3 border-t border-[#D8CEBC] text-xs space-y-1">
+              <strong class="block text-[#005C36]">Possibile negli LLM: ✅ In grande misura</strong>
+              <p>Rappresentazioni vettoriali ricche, astrazione concettuale e generalizzazione.</p>
+            </div>
+          </div>
+
+          <!-- Livello 3 -->
+          <div class="level-card bg-white rounded-xl border border-[#D8CEBC] p-5 space-y-3 flex flex-col justify-between" data-status="si">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-custom font-bold px-2 py-0.5 rounded bg-[#F2EAD9] text-[#7C1D3F]">Livello 3</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-[#005C36] text-white flex items-center gap-1">
+                  <span aria-hidden="true">✅</span>
+                  <span>Completato</span>
+                </span>
+              </div>
+              <h3 class="font-serif-display font-bold text-lg text-[#1C1C1C]">Pragmatica</h3>
+              <p class="text-xs text-[#1C1C1C]/80">"Che cosa vuole ottenere l'interlocutore in questo specifico contesto?"</p>
+            </div>
+            <div class="pt-3 border-t border-[#D8CEBC] text-xs space-y-1">
+              <strong class="block text-[#005C36]">Possibile negli LLM: ✅ Sì (con limiti)</strong>
+              <p>Comprensione dell'intenzione comunicativa e adattamento al tono della conversazione.</p>
+            </div>
+          </div>
+
+          <!-- Livello 4 -->
+          <div class="level-card bg-white rounded-xl border border-[#D8CEBC] p-5 space-y-3 flex flex-col justify-between" data-status="dipende">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-custom font-bold px-2 py-0.5 rounded bg-[#F2EAD9] text-[#7C1D3F]">Livello 4</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-[#0047AB] text-white flex items-center gap-1">
+                  <span aria-hidden="true">⏳</span>
+                  <span>In corso</span>
+                </span>
+              </div>
+              <h3 class="font-serif-display font-bold text-lg text-[#1C1C1C]">Grounding</h3>
+              <p class="text-xs text-[#1C1C1C]/80">"A quali oggetti, eventi, percezioni ed effetti nel mondo si riferiscono i concetti?"</p>
+            </div>
+            <div class="pt-3 border-t border-[#D8CEBC] text-xs space-y-1">
+              <strong class="block text-[#0047AB]">Possibile negli LLM: ⏳ Dipende dal sistema</strong>
+              <p>Limitato in LLM puri solo testo; esteso in agenti con sensori, robotica e visione.</p>
+            </div>
+          </div>
+
+          <!-- Livello 5 -->
+          <div class="level-card bg-white rounded-xl border border-[#D8CEBC] p-5 space-y-3 flex flex-col justify-between" data-status="no">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-custom font-bold px-2 py-0.5 rounded bg-[#F2EAD9] text-[#7C1D3F]">Livello 5</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-[#B0004A] text-white flex items-center gap-1">
+                  <span aria-hidden="true">⚠️</span>
+                  <span>Aperto</span>
+                </span>
+              </div>
+              <h3 class="font-serif-display font-bold text-lg text-[#1C1C1C]">Esperienza Vissuta</h3>
+              <p class="text-xs text-[#1C1C1C]/80">"Che cosa significa vivere personalmente quella sensazione o valore morale?"</p>
+            </div>
+            <div class="pt-3 border-t border-[#D8CEBC] text-xs space-y-1">
+              <strong class="block text-[#B0004A]">Possibile negli LLM: ❓ Non dimostrato</strong>
+              <p>Simulazione descrittiva eccellente, ma priva di vissuto fenomenologico interno.</p>
+            </div>
+          </div>
+
+          <!-- Livello 6 -->
+          <div class="level-card bg-white rounded-xl border border-[#D8CEBC] p-5 space-y-3 flex flex-col justify-between" data-status="no">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-custom font-bold px-2 py-0.5 rounded bg-[#F2EAD9] text-[#7C1D3F]">Livello 6</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-[#B0004A] text-white flex items-center gap-1">
+                  <span aria-hidden="true">⚠️</span>
+                  <span>Aperto</span>
+                </span>
+              </div>
+              <h3 class="font-serif-display font-bold text-lg text-[#1C1C1C]">Coscienza Soggettiva</h3>
+              <p class="text-xs text-[#1C1C1C]/80">"Esiste un soggetto ('io') che fa esperienza conscia dell'elaborazione?"</p>
+            </div>
+            <div class="pt-3 border-t border-[#D8CEBC] text-xs space-y-1">
+              <strong class="block text-[#B0004A]">Possibile negli LLM: ❓ Non dimostrato</strong>
+              <p>Assente prova scientifica. Le prime 4 capacità non implicano la quinta o la sesta.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: STANZA CINESE E MODELLI DEL MONDO -->
+    <section id="stanza-cinese" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-b border-[#D8CEBC]">
+      <div class="space-y-8">
+        <div>
+          <span class="text-xs font-mono-custom tracking-widest uppercase text-[#8C6212] font-bold">Modulo 04</span>
+          <h2 class="text-2xl sm:text-4xl font-serif-display font-bold mt-1 text-[#1C1C1C]">
+            4. La Stanza Cinese &amp; La Previsione Causale
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div class="space-y-4 text-base leading-relaxed">
+            <h3 class="font-serif-display font-bold text-xl text-[#7C1D3F]">La critica di John Searle</h3>
+            <p>
+              Nel celebre esperimento mentale della <strong>Chinese Room</strong>, una persona che non conosce il cinese manipola ideogrammi seguendo un manuale di regole. Dall'esterno sembra capire il cinese, ma dentro sta solo applicando istruzioni formali.
+            </p>
+            <p>
+              <strong>La replica sistemica:</strong> La persona nella stanza da sola non comprende il cinese, ma la comprensione è una <em>proprietà emergente dell'intero sistema</em> (persona + regole + memoria + contesti).
+            </p>
+          </div>
+
+          <!-- SIMULATORE PREVISIONE CAUSALE: IL BICCHIERE -->
+          <div class="bg-white p-6 rounded-xl border border-[#D8CEBC] shadow-sm space-y-4">
+            <h3 class="font-bold text-lg text-[#1C1C1C] flex items-center gap-2">
+              <span aria-hidden="true">🥛</span>
+              <span>La Previsione Richiede un Modello del Mondo</span>
+            </h3>
+            <p class="text-xs text-[#1C1C1C]/80">
+              Predire la parola successiva non è "autocompletamento banale". Cambia la posizione del bicchiere e osserva la fisica causale simulata dal modello:
+            </p>
+
+            <!-- Toggle Posizione Bicchiere -->
+            <div class="space-y-3">
+              <label for="glass-position-select" class="block font-bold text-sm text-[#1C1C1C]">
+                Posizione del bicchiere sul tavolo:
+              </label>
+              <select id="glass-position-select" class="w-full p-3 rounded-lg border border-[#D8CEBC] bg-[#FAF6EE] text-sm font-semibold focus:ring-2 focus:ring-[#0047AB]">
+                <option value="bordo">Bordo del tavolo ("Maria lasciò il bicchiere sul bordo...")</option>
+                <option value="centro">Centro del tavolo ("Maria lasciò il bicchiere al centro...")</option>
+              </select>
+            </div>
+
+            <!-- Output Simulazione Causale -->
+            <div id="glass-simulation-output" class="p-4 rounded-lg bg-[#FAF6EE] border border-[#D8CEBC] space-y-2" aria-live="polite">
+              <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">Completamento con probabilità causale:</p>
+              <p class="text-sm font-serif-display italic text-[#7C1D3F]">
+                "...Quando il gatto saltò sul tavolo, il bicchiere <span class="font-bold underline decoration-[#B0004A]">cadde</span>."
+              </p>
+              <p class="text-xs text-gray-700">
+                <strong>Spiegazione fisica:</strong> Alta probabilità di caduta per instabilità spaziale vicina al bordo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: STRUMENTO OPERATIVO — ANALIZZATORE DI CLAIM -->
+    <section id="strumento-valutazione" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div class="bg-white p-6 sm:p-10 rounded-2xl border-2 border-[#7C1D3F] shadow-lg space-y-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F2EAD9] text-xs font-bold text-[#7C1D3F]">
+            <span aria-hidden="true">🛠️</span>
+            <span>Strumento Operativo Interattivo</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-serif-display font-bold text-[#1C1C1C]">
+            Analizzatore Critico di Affermazioni sull'IA
+          </h2>
+          <p class="text-sm sm:text-base text-[#1C1C1C]/80">
+            Seleziona una frase comune oppure inserisci un'affermazione per applicare la scomposizione epistemologica sui 6 livelli.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label for="preset-claims" class="block font-bold text-sm text-[#1C1C1C] mb-1">
+              Scegli un'affermazione tipo o scrivi la tua:
+            </label>
+            <select id="preset-claims" class="w-full p-3 rounded-lg border border-[#D8CEBC] bg-[#FAF6EE] text-sm font-medium">
+              <option value="custom">-- Scrivi una frase personalizzata sotto --</option>
+              <option value="claim1">"L'IA è solo un pappagallo statistico che ripete parole senza capire nulla."</option>
+              <option value="claim2">"L'IA comprende le emozioni umane perché sa scrivere poesie sulla tristezza."</option>
+              <option value="claim3">"L'IA non avendo un corpo non potrà mai possedere alcun tipo di significato."</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="custom-claim-input" class="block font-bold text-sm text-[#1C1C1C] mb-1">
+              Testo dell'affermazione da analizzare:
+            </label>
+            <textarea id="custom-claim-input" rows="3" class="w-full p-3 rounded-lg border border-[#D8CEBC] bg-white text-sm font-medium focus:ring-2 focus:ring-[#7C1D3F]" placeholder="Es: L'IA ragiona in modo identico al cervello umano..."></textarea>
+          </div>
+
+          <button type="button" id="generate-analysis-btn" class="w-full sm:w-auto px-6 py-3 rounded-lg bg-[#7C1D3F] text-white font-bold hover:bg-[#5A1530] transition-colors flex items-center justify-center gap-2">
+            <span aria-hidden="true">⚙️</span>
+            <span>Genera Report Epistemologico</span>
+          </button>
+        </div>
+
+        <!-- OUTPUT REPORT COPIABILE -->
+        <div id="analysis-report-container" class="hidden space-y-4 pt-4 border-t border-[#D8CEBC]">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-base text-[#7C1D3F] flex items-center gap-2">
+              <span aria-hidden="true">📄</span>
+              <span>Report Analitico Generato:</span>
+            </h3>
+            <button type="button" id="copy-report-btn" class="px-3 py-1.5 rounded bg-[#FAF6EE] border border-[#D8CEBC] hover:bg-[#F2EAD9] text-xs font-bold text-[#1C1C1C] flex items-center gap-1">
+              <span aria-hidden="true">📋</span>
+              <span id="copy-btn-text">Copia Report negli Appunti</span>
+            </button>
+          </div>
+
+          <div id="analysis-report-text" class="p-4 rounded-lg bg-[#FAF6EE] border border-[#D8CEBC] font-mono-custom text-xs sm:text-sm whitespace-pre-wrap leading-relaxed text-[#1C1C1C]" aria-live="polite">
+            <!-- Il contenuto verrà iniettato da JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: SINTESI FILOSOFICA RIFORMULATA -->
+    <section class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-[#D8CEBC]">
+      <div class="bg-[#F2EAD9] p-6 sm:p-8 rounded-xl border border-[#D8CEBC] space-y-6">
+        <h2 class="text-2xl font-serif-display font-bold text-[#7C1D3F] flex items-center gap-2">
+          <span aria-hidden="true">📌</span>
+          <span>La Conclusione Prudente e Rigorosa</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-4 bg-white rounded-lg border-l-4 border-[#B0004A] space-y-2">
+            <span class="inline-block px-2 py-0.5 rounded bg-[#B0004A] text-white text-xs font-bold">❌ Formulazione Fuorviante</span>
+            <p class="text-sm font-serif-display italic">
+              "L'IA usa la statistica, quindi si limita ad associazioni superficiali e non comprende mai il significato."
+            </p>
+          </div>
+
+          <div class="p-4 bg-white rounded-lg border-l-4 border-[#005C36] space-y-2">
+            <span class="inline-block px-2 py-0.5 rounded bg-[#005C36] text-white text-xs font-bold">✅ Formulazione Corretta</span>
+            <p class="text-sm font-serif-display font-bold text-[#1C1C1C]">
+              "L'IA utilizza l'apprendimento statistico per costruire rappresentazioni interne che catturano aspetti complessi del significato; resta aperta la questione di quanto tali rappresentazioni costituiscano comprensione in senso pieno, in assenza di grounding corporeo ed esperienza vissuta."
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#1C1C1C] text-white py-12 px-4 sm:px-6 lg:px-8 mt-12">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
+      <div class="space-y-1 text-center md:text-left">
+        <p class="font-serif-display font-bold text-lg text-[#F2EAD9]">Statistica, Semantica e Comprensione nell'IA</p>
+        <p class="text-gray-400 text-xs">Applicazione Didattica Editoriale Monofile — Conforme WCAG 2.1 Livello AAA</p>
+      </div>
+      <div class="text-center md:text-right text-xs text-gray-400 space-y-1">
+        <p>Progettato per l'esplorazione filosofica ed epistemologica delle scienze cognitive.</p>
+        <p>Accessibilità verificata: Tripla ridondanza (Colore + Forma + Icona + Testo).</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container (ARIA Live) -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 pointer-events-none" aria-live="polite"></div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      // 1. SCROLL PROGRESS BAR
+      const progressBar = document.getElementById("scroll-progress-bar");
+      window.addEventListener("scroll", () => {
+        const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        if (totalHeight > 0) {
+          const progress = (window.scrollY / totalHeight) * 100;
+          progressBar.style.width = `${progress}%`;
+        }
+      });
+
+      // 2. MOBILE MENU TOGGLE
+      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const menuIcon = document.getElementById("menu-icon");
+
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener("click", () => {
+          const isExpanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+          mobileMenuBtn.setAttribute("aria-expanded", !isExpanded);
+          mobileMenu.classList.toggle("hidden");
+          menuIcon.textContent = isExpanded ? "☰" : "✕";
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll(".mobile-nav-link").forEach(link => {
+          link.addEventListener("click", () => {
+            mobileMenu.classList.add("hidden");
+            mobileMenuBtn.setAttribute("aria-expanded", "false");
+            menuIcon.textContent = "☰";
+          });
+        });
+      }
+
+      // 3. SCROLL SPY & ARIA-CURRENT
+      const sections = document.querySelectorAll("section[id]");
+      const navLinks = document.querySelectorAll(".nav-link");
+
+      const observerOptions = {
+        root: null,
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute("id");
+            navLinks.forEach(link => {
+              if (link.getAttribute("data-section") === id) {
+                link.classList.add("text-[#7C1D3F]", "border-[#7C1D3F]");
+                link.setAttribute("aria-current", "page");
+              } else {
+                link.classList.remove("text-[#7C1D3F]", "border-[#7C1D3F]");
+                link.removeAttribute("aria-current");
+              }
+            });
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach(section => observer.observe(section));
+
+      // 4. DEMO INTERATTIVA 1: DISAMBIGUAZIONE CONTESTUALE
+      const demoBtns = document.querySelectorAll(".demo-phrase-btn");
+      const demoOutput1 = document.getElementById("demo-output-1");
+
+      const demoCases = {
+        "1": {
+          title: "Polisemia della parola 'lasciato':",
+          details: [
+            "1. 'Giovanni ha lasciato il bicchiere sul tavolo' → Azione fisica / Spaziale.",
+            "2. 'Giovanni ha lasciato la città' → Trasferimento / Geografico.",
+            "3. 'Giovanni ha lasciato Maria' → Relazione sentimentale / Sociale."
+          ],
+          explanation: "Il modello non si limita a cercare 'lasciato', ma attiva cluster di vettori semantici nettamente distinti in base al complemento."
+        },
+        "2": {
+          title: "Ruoli sintattici e inversione causale:",
+          details: [
+            "• 'Il cane ha morso l'uomo' → Evento ad alta frequenza statistica.",
+            "• 'L'uomo ha morso il cane' → Evento insolito e inaspettato."
+          ],
+          explanation: "Sebbene le tre parole chiave siano identiche, il modello riconosce la diversa struttura di agente/paziente e genera una rappresentazione concettuale opposta."
+        }
+      };
+
+      demoBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const caseId = btn.getAttribute("data-case");
+          const data = demoCases[caseId];
+
+          if (data && demoOutput1) {
+            demoBtns.forEach(b => {
+              b.classList.remove("btn-option-active");
+              b.classList.add("btn-option-inactive");
+            });
+            btn.classList.remove("btn-option-inactive");
+            btn.classList.add("btn-option-active");
+
+            demoOutput1.innerHTML = `
+              <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">${data.title}</p>
+              <ul class="text-xs space-y-1 font-mono-custom text-[#1C1C1C]">
+                ${data.details.map(d => `<li>${d}</li>`).join('')}
+              </ul>
+              <p class="text-xs text-[#1C1C1C]/90 pt-1 border-t border-[#D8CEBC]">
+                <strong>Analisi:</strong> ${data.explanation}
+              </p>
+            `;
+            showToast("Dimostrazione aggiornata", "success");
+          }
+        });
+      });
+
+      // 5. SIMULATORE CASI LIMITE CHAIR
+      const chairBtns = document.querySelectorAll(".chair-case-btn");
+      const chairOutput = document.getElementById("chair-output");
+
+      const chairCases = {
+        "ceppo": "Un ceppo di legno non ha la forma di una sedia tradizionale, ma se l'intenzione è sostenere una persona seduta, il modello lo classifica come 'oggetto con funzione provvisoria di seduta'. Sta applicando il concetto astratto di funzione, non la semplice forma.",
+        "senza-schienale": "Una sedia senza schienale viene riconosciuta come uno sgabello o una variante della categoria generale delle sedute. Il sistema comprende che la presenza dello schienale non è una condizione strettamente necessaria per la funzione primaria.",
+        "giocattolo": "Una sedia per bambola condivide la struttura formale ma cambia la scala e il destinatario dell'azione. Il sistema distingue la 'sedia reale' dalla 'rappresentazione in miniatura', dimostrando ragionamento relazionale."
+      };
+
+      chairBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-case");
+          if (chairOutput && chairCases[key]) {
+            chairBtns.forEach(b => {
+              b.classList.remove("btn-option-active");
+              b.classList.add("btn-option-inactive");
+            });
+            btn.classList.remove("btn-option-inactive");
+            btn.classList.add("btn-option-active");
+
+            chairOutput.innerHTML = `
+              <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">Inferenza concettuale del modello:</p>
+              <p class="text-xs sm:text-sm text-[#1C1C1C]">${chairCases[key]}</p>
+            `;
+            showToast("Caso limite analizzato", "progress");
+          }
+        });
+      });
+
+      // 6. FILTRI PER I 6 LIVELLI
+      const filterBtns = document.querySelectorAll(".filter-level-btn");
+      const levelCards = document.querySelectorAll(".level-card");
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const filter = btn.getAttribute("data-filter");
+          
+          filterBtns.forEach(b => {
+            b.classList.remove("btn-filter-active");
+            b.classList.add("btn-filter-inactive");
+          });
+          btn.classList.remove("btn-filter-inactive");
+          btn.classList.add("btn-filter-active");
+
+          levelCards.forEach(card => {
+            const cardStatus = card.getAttribute("data-status");
+            if (filter === "all" || filter === cardStatus) {
+              card.classList.remove("hidden");
+            } else {
+              card.classList.add("hidden");
+            }
+          });
+          showToast(`Filtro applicato: ${btn.textContent.trim()}`, "progress");
+        });
+      });
+
+      // 7. SIMULAZIONE PREVISIONE CAUSALE BICCHIERE
+      const glassSelect = document.getElementById("glass-position-select");
+      const glassOutput = document.getElementById("glass-simulation-output");
+
+      if (glassSelect && glassOutput) {
+        glassSelect.addEventListener("change", (e) => {
+          const val = e.target.value;
+          if (val === "bordo") {
+            glassOutput.innerHTML = `
+              <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">Completamento con probabilità causale:</p>
+              <p class="text-sm font-serif-display italic text-[#7C1D3F]">
+                "...Quando il gatto saltò sul tavolo, il bicchiere <span class="font-bold underline decoration-[#B0004A]">cadde</span>."
+              </p>
+              <p class="text-xs text-gray-700">
+                <strong>Spiegazione fisica:</strong> Alta probabilità di caduta per instabilità spaziale vicina al bordo.
+              </p>
+            `;
+          } else {
+            glassOutput.innerHTML = `
+              <p class="text-xs font-mono-custom font-bold uppercase text-[#8C6212]">Completamento con probabilità causale:</p>
+              <p class="text-sm font-serif-display italic text-[#005C36]">
+                "...Quando il gatto saltò sul tavolo, il bicchiere <span class="font-bold underline decoration-[#005C36]">oscillò ma non cadde</span> / <span class="font-bold">rimase fermo</span>."
+              </p>
+              <p class="text-xs text-gray-700">
+                <strong>Spiegazione fisica:</strong> La posizione centrale riduce drasticamente la probabilità di caduta nello spazio causale simulato.
+              </p>
+            `;
+          }
+          showToast("Simulazione causale aggiornata", "success");
+        });
+      }
+
+      // 8. STRUMENTO OPERATIVO: GENERATORE DI REPORT EPISTEMOLOGICO
+      const presetSelect = document.getElementById("preset-claims");
+      const customInput = document.getElementById("custom-claim-input");
+      const generateBtn = document.getElementById("generate-analysis-btn");
+      const reportContainer = document.getElementById("analysis-report-container");
+      const reportText = document.getElementById("analysis-report-text");
+      const copyBtn = document.getElementById("copy-report-btn");
+      const copyBtnText = document.getElementById("copy-btn-text");
+
+      const presetTexts = {
+        "claim1": "L'IA è solo un pappagallo statistico che ripete parole senza capire nulla.",
+        "claim2": "L'IA comprende le emozioni umane perché sa scrivere poesie sulla tristezza.",
+        "claim3": "L'IA non avendo un corpo non potrà mai possedere alcun tipo di significato."
+      };
+
+      if (presetSelect && customInput) {
+        presetSelect.addEventListener("change", (e) => {
+          const val = e.target.value;
+          if (presetTexts[val]) {
+            customInput.value = presetTexts[val];
+          }
+        });
+      }
+
+      if (generateBtn && reportText && reportContainer) {
+        generateBtn.addEventListener("click", () => {
+          const textToAnalyze = customInput.value.trim();
+          if (!textToAnalyze) {
+            showToast("⚠️ Attenzione: inserisci prima un'affermazione da analizzare.", "warning");
+            return;
+          }
+
+          const report = `=====================================================
+REPORT DI ANALISI EPISTEMOLOGICA SULL'IA
+=====================================================
+AFFERMAZIONE ANALIZZATA:
+"${textToAnalyze}"
+
+SCOMPOSIZIONE SUI 6 LIVELLI DI COMPRENSIONE:
+-----------------------------------------------------
+[1] SINTASSI (Grammatica & Struttura):
+    -> Verificata: Il sistema gestisce perfettamente i vincoli grammaticali.
+
+[2] SEMANTICA (Rappresentazione dei concetti):
+    -> Presente: L'IA costruisce spazi vettoriali astratti e relazioni concettuali.
+    -> Nota: Non si tratta di semplice memoria meccanica di coppie isolati.
+
+[3] PRAGMATICA (Contesto & Intenzione):
+    -> Funzionale: Il sistema adatta il messaggio al contesto comunicativo richiesto.
+
+[4] GROUNDING (Ancoraggio al Mondo):
+    -> Parziale / Distinto: Ancoraggio distribuito-linguistico (non sensomotorio).
+
+[5] ESPERIENZA VISSUTA (Qualia / Fenomenologia):
+    -> Assente / Non dimostrata: Nessuna prova di vissuto emotivo soggettivo.
+
+[6] COSCIENZA SOGGETTIVA (Qualità dell'Io):
+    -> Assente / Non dimostrata: La prestazione funzionale non implica coscienza.
+
+VALUTAZIONE CRITICA FINALE:
+L'affermazione soffre di riduzionismo o confusione tra livello funzionale (1-3)
+ed esperienza soggettiva (5-6). È più corretto descrivere il sistema come
+dotato di rappresentazione semantica funzionale, priva di grounding sensomotorio.
+=====================================================`;
+
+          reportText.textContent = report;
+          reportContainer.classList.remove("hidden");
+          showToast("✅ Report analitico generato!", "success");
+        });
+      }
+
+      // COPIA REPORT NEGLI APPUNTI
+      if (copyBtn && reportText) {
+        copyBtn.addEventListener("click", () => {
+          const text = reportText.textContent;
+          navigator.clipboard.writeText(text).then(() => {
+            copyBtnText.textContent = "✅ Copiato negli Appunti!";
+            showToast("Report copiato con successo", "success");
+            setTimeout(() => {
+              copyBtnText.textContent = "Copia Report negli Appunti";
+            }, 3000);
+          }).catch(() => {
+            showToast("Errore durante la copia", "warning");
+          });
+        });
+      }
+
+      // 9. TOAST SYSTEM CON TRIPLA RIDONDANZA
+      function showToast(message, type = "progress") {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+
+        // Visual styles map (Tripla ridondanza: Colore + Icona + Forma + Testo)
+        const toastTypes = {
+          "success": {
+            bg: "bg-[#005C36]",
+            text: "text-white",
+            icon: "✅",
+            shape: "Quadrato",
+            label: "Completato"
+          },
+          "warning": {
+            bg: "bg-[#B0004A]",
+            text: "text-white",
+            icon: "⚠️",
+            shape: "Rombo",
+            label: "Attenzione"
+          },
+          "progress": {
+            bg: "bg-[#0047AB]",
+            text: "text-white",
+            icon: "⏳",
+            shape: "Cerchio",
+            label: "In corso"
+          }
+        };
+
+        const config = toastTypes[type] || toastTypes["progress"];
+
+        const toast = document.createElement("div");
+        toast.className = `flex items-center gap-2 p-3 px-4 rounded-lg shadow-lg text-xs font-semibold ${config.bg} ${config.text} transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+        toast.setAttribute("role", "status");
+        toast.innerHTML = `
+          <span aria-hidden="true">${config.icon}</span>
+          <span>${config.label}: ${message}</span>
+        `;
+
+        container.innerHTML = ""; // Un solo toast attivo
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.remove("translate-y-2", "opacity-0");
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.add("opacity-0", "translate-y-2");
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      }
+
+    });
+  </script>
+</body>
+</html>

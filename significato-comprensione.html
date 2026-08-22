@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA, Significato e Comprensione — SPA Editoriale Accessibile</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#1C1C1C',
+                        cream: '#faf6ee',
+                        paper: '#f2ead9',
+                        primary: '#5a1530',
+                        'primary-dark': '#3d0d1f',
+                        accent: '#78510a',
+                        surface: '#F4F4F6',
+                        'status-progress': '#0047AB',
+                        'status-warning': '#B0004A',
+                        'status-success': '#005C36',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base typography & colors */
+        body {
+            background-color: #faf6ee;
+            color: #1C1C1C;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.0625rem; /* 17px base for superior readability */
+            line-height: 1.65;
+        }
+
+        /* Focus Ring AAA */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex="0"]:focus-visible {
+            outline: 3px solid #0047AB !important;
+            outline-offset: 3px !important;
+            border-radius: 4px;
+        }
+
+        /* Reduced Motion Guardrail */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Subtle Paper Texture */
+        .paper-texture {
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(90, 21, 48, 0.02) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(120, 81, 10, 0.02) 0%, transparent 40%);
+        }
+
+        /* Flip card 3D mechanics */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Target sizing guard for touch elements */
+        .min-touch-target {
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f2ead9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5a1530;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="paper-texture antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen">
+
+    <!-- Reading Progress Bar -->
+    <div id="progress-container" class="fixed top-0 left-0 w-full h-1.5 bg-paper z-50" aria-hidden="true">
+        <div id="progress-bar" class="h-full bg-primary w-0 transition-all duration-150"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-1.5 z-40 bg-cream/95 backdrop-blur-md border-b border-ink/10 transition-all">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#hero" class="flex items-center gap-2 text-ink font-serif font-bold text-lg sm:text-xl focus:outline-none rounded">
+                <span class="inline-block p-1 bg-primary text-white text-xs font-mono rounded" aria-hidden="true">🧠 IA</span>
+                <span>Significato &amp; Comprensione</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2" aria-label="Navigazione Principale">
+                <a href="#statistica-semantica" class="px-3 py-2 text-sm font-medium text-ink hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors focus:outline-none" data-nav-link>Statistica e Semantica</a>
+                <a href="#grounding-mondo" class="px-3 py-2 text-sm font-medium text-ink hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors focus:outline-none" data-nav-link>Il Grounding</a>
+                <a href="#scala-livelli" class="px-3 py-2 text-sm font-medium text-ink hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors focus:outline-none" data-nav-link>I 6 Livelli</a>
+                <a href="#simulatore" class="px-3 py-2 text-sm font-medium text-ink hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors focus:outline-none" data-nav-link>Simulatore Morale</a>
+                <a href="#chinese-room" class="px-3 py-2 text-sm font-medium text-ink hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors focus:outline-none" data-nav-link>Stanza Cinese</a>
+                <a href="#quiz-sintesi" class="px-3 py-2 text-sm font-medium text-ink hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors focus:outline-none" data-nav-link>Sintesi &amp; Quiz</a>
+            </nav>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-btn" 
+                    type="button"
+                    class="md:hidden min-touch-target p-2 text-ink hover:text-primary focus:outline-none rounded border border-ink/20 flex items-center gap-2"
+                    aria-expanded="false" 
+                    aria-controls="mobile-menu" 
+                    aria-label="Apri menu di navigazione">
+                <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+                <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <span class="text-xs font-semibold uppercase tracking-wider">Menu</span>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <nav id="mobile-menu" class="hidden md:hidden bg-paper border-b border-ink/10 px-4 pt-2 pb-4 space-y-2 shadow-lg" aria-label="Navigazione Mobile">
+            <a href="#statistica-semantica" class="block px-3 py-2 rounded-md text-base font-medium text-ink hover:bg-primary/10 hover:text-primary" data-mobile-link>1. Statistica e Semantica</a>
+            <a href="#grounding-mondo" class="block px-3 py-2 rounded-md text-base font-medium text-ink hover:bg-primary/10 hover:text-primary" data-mobile-link>2. Il Grounding</a>
+            <a href="#scala-livelli" class="block px-3 py-2 rounded-md text-base font-medium text-ink hover:bg-primary/10 hover:text-primary" data-mobile-link>3. I 6 Livelli di Comprensione</a>
+            <a href="#simulatore" class="block px-3 py-2 rounded-md text-base font-medium text-ink hover:bg-primary/10 hover:text-primary" data-mobile-link>4. Simulatore di Casi Morali</a>
+            <a href="#chinese-room" class="block px-3 py-2 rounded-md text-base font-medium text-ink hover:bg-primary/10 hover:text-primary" data-mobile-link>5. La Stanza Cinese &amp; Cervello</a>
+            <a href="#quiz-sintesi" class="block px-3 py-2 rounded-md text-base font-medium text-ink hover:bg-primary/10 hover:text-primary" data-mobile-link>6. Sintesi, Quiz &amp; Manifesto</a>
+        </nav>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section id="hero" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-ink/10 bg-cream">
+            <div class="max-w-4xl mx-auto text-center space-y-6">
+                <!-- Status Badge Banner (Triple Redundancy Conforming) -->
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-paper border border-ink/20 text-ink text-xs sm:text-sm font-semibold">
+                    <span class="w-3 h-3 rounded-full bg-status-progress inline-block" aria-hidden="true"></span>
+                    <span class="font-mono">⏳ In corso</span>
+                    <span class="text-ink/60">|</span>
+                    <span>Guida Didattica Interattiva &amp; Modello Filosofico</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-ink leading-tight">
+                    IA, Significato e Comprensione
+                </h1>
+                
+                <p class="text-xl sm:text-2xl font-serif italic text-primary font-medium max-w-2xl mx-auto">
+                    Dalla statistica alla semantica, dal grounding alla coscienza.
+                </p>
+
+                <div class="p-6 bg-paper/80 rounded-xl border border-ink/15 text-left max-w-3xl mx-auto shadow-sm space-y-3">
+                    <h2 class="text-lg font-bold text-ink flex items-center gap-2">
+                        <span aria-hidden="true">💡</span>
+                        <span>Tesi Centrale della Guida</span>
+                    </h2>
+                    <p class="text-ink/90 text-base leading-relaxed">
+                        Dire che un'IA “usa la statistica” <strong>non basta</strong> per concludere che non comprenda il significato. L'apprendimento statistico può far emergere rappresentazioni interne astratte e relazioni concettuali complesse. La vera sfida consiste nel distinguere rigorosamente i diversi livelli: dalla sintassi alla semantica, fino al grounding corporeo e alla coscienza soggettiva.
+                    </p>
+                </div>
+
+                <!-- Call To Actions -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <a href="#statistica-semantica" class="w-full sm:w-auto min-touch-target px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 text-base">
+                        <span>🚀 Esplora il Percorso Narrativo</span>
+                    </a>
+                    <a href="#simulatore" class="w-full sm:w-auto min-touch-target px-6 py-3 bg-paper border border-ink/30 text-ink font-semibold rounded-lg hover:bg-paper/80 transition-colors flex items-center justify-center gap-2 text-base">
+                        <span>🎮 Prova il Simulatore Morale</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Statistica e Semantica -->
+        <section id="statistica-semantica" class="py-16 px-4 sm:px-6 lg:px-8 border-b border-ink/10 bg-paper/40">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="space-y-3">
+                    <div class="text-xs font-mono font-bold uppercase tracking-widest text-primary">Modulo 01</div>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-ink">1. “Statistico” e “Semantico” Non Sono Opposti</h2>
+                    <p class="text-lg text-ink/80">
+                        Sfatare il salto logico ingenuo: le regolarità statistiche non sono necessariamente superficiali.
+                    </p>
+                </div>
+
+                <!-- Comparison Toggle / Interactive Breakdown -->
+                <div class="bg-cream p-6 rounded-xl border border-ink/15 space-y-6 shadow-sm">
+                    <h3 class="text-xl font-bold font-serif text-ink">
+                        🔎 Il Salto Logico Ingenuo vs L'Emergenza Semantica
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Reasoning A -->
+                        <div class="p-4 rounded-lg bg-status-warning/10 border-l-4 border-status-warning space-y-2">
+                            <div class="flex items-center gap-2 text-status-warning font-bold text-sm">
+                                <span aria-hidden="true">❌</span>
+                                <span>Ragionamento Simplistico</span>
+                            </div>
+                            <p class="text-sm font-mono text-ink">
+                                Testo ➔ Frequenze ➔ Previsione Parola ➔ <strong>Nessuna Comprensione</strong>
+                            </p>
+                            <p class="text-xs text-ink/80">
+                                Presuppone erroneamente che la statistica si fermi alla superficie dei simboli isolati.
+                            </p>
+                        </div>
+
+                        <!-- Reasoning B -->
+                        <div class="p-4 rounded-lg bg-status-success/10 border-l-4 border-status-success space-y-2">
+                            <div class="flex items-center gap-2 text-status-success font-bold text-sm">
+                                <span aria-hidden="true">✅</span>
+                                <span>Emergenza di Rappresentazioni</span>
+                            </div>
+                            <p class="text-sm font-mono text-ink">
+                                Statistica ➔ Relazioni Concettuali ➔ Rappresentazioni ➔ <strong>Inferenze Coerenti</strong>
+                            </p>
+                            <p class="text-xs text-ink/80">
+                                Dalle regolarità emergono strutture astratte e modelli funzionali del dominio.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Demonstration 1: Polysemy of "Lasciare" -->
+                    <div class="pt-4 border-t border-ink/10 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h4 class="font-bold text-ink text-base">
+                                🧩 Dimostrazione Interattiva 1: La Polisemia di “Lasciare”
+                            </h4>
+                            <span class="text-xs font-mono text-ink/70">Clicca su una frase per analizzare la struttura semantica</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="lasciare-buttons">
+                            <button type="button" data-context="bicchiere" class="lasciare-btn min-touch-target p-3 text-left rounded-lg bg-paper border border-ink/20 hover:border-primary font-medium text-sm transition-all focus:outline-none">
+                                1. “Giovanni ha lasciato il bicchiere sul tavolo.”
+                            </button>
+                            <button type="button" data-context="citta" class="lasciare-btn min-touch-target p-3 text-left rounded-lg bg-paper border border-ink/20 hover:border-primary font-medium text-sm transition-all focus:outline-none">
+                                2. “Giovanni ha lasciato la città.”
+                            </button>
+                            <button type="button" data-context="maria" class="lasciare-btn min-touch-target p-3 text-left rounded-lg bg-paper border border-ink/20 hover:border-primary font-medium text-sm transition-all focus:outline-none">
+                                3. “Giovanni ha lasciato Maria.”
+                            </button>
+                        </div>
+
+                        <!-- Dynamic Output Box -->
+                        <div id="lasciare-output" class="p-4 rounded-lg bg-surface border border-ink/15 font-mono text-xs sm:text-sm space-y-2" aria-live="polite">
+                            <!-- Populated via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Interactive Demonstration 2: Structural Relations & Word Order -->
+                    <div class="pt-4 border-t border-ink/10 space-y-4">
+                        <h4 class="font-bold text-ink text-base">
+                            🔄 Dimostrazione Interattiva 2: L'Inversione dei Ruoli Semantici
+                        </h4>
+                        <p class="text-sm text-ink/80">
+                            Le parole sono identiche, ma il ruolo strutturale di Agente e Paziente cambia completamente l'inferenza.
+                        </p>
+
+                        <div class="flex flex-wrap gap-3">
+                            <button id="toggle-phrase-btn" type="button" class="min-touch-target px-4 py-2 bg-primary text-white font-medium rounded hover:bg-primary-dark transition-colors text-sm flex items-center gap-2">
+                                <span aria-hidden="true">🔁</span>
+                                <span id="toggle-phrase-text">Mostra: “L'uomo ha morso il cane”</span>
+                            </button>
+                        </div>
+
+                        <!-- Native SVG Diagram with Dual Redundancy & Accessible Text Alternative -->
+                        <div class="p-4 bg-cream rounded-lg border border-ink/15 space-y-4">
+                            <div class="overflow-x-auto">
+                                <svg id="svg-roles" role="img" aria-labelledby="svg-roles-title svg-roles-desc" viewBox="0 0 500 120" class="w-full max-w-lg mx-auto">
+                                    <title id="svg-roles-title">Diagramma dei Ruoli Semantici</title>
+                                    <desc id="svg-roles-desc">Mostra la relazione strutturale tra Agente, Azione e Paziente nella frase selezionata.</desc>
+                                    
+                                    <!-- Node 1: Agente -->
+                                    <rect x="20" y="30" width="130" height="50" rx="8" fill="#5a1530" />
+                                    <text id="svg-agent-text" x="85" y="60" font-family="Inter" font-weight="700" font-size="14" fill="#ffffff" text-anchor="middle">IL CANE</text>
+                                    <text x="85" y="95" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">👑 AGENTE</text>
+
+                                    <!-- Arrow 1 -->
+                                    <line x1="155" y1="55" x2="195" y2="55" stroke="#1C1C1C" stroke-width="2" marker-end="url(#arrowhead)" />
+
+                                    <!-- Node 2: Azione -->
+                                    <rect x="200" y="30" width="100" height="50" rx="8" fill="#78510a" />
+                                    <text x="250" y="60" font-family="Inter" font-weight="700" font-size="14" fill="#ffffff" text-anchor="middle">MORDE</text>
+                                    <text x="250" y="95" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">⚡ AZIONE</text>
+
+                                    <!-- Arrow 2 -->
+                                    <line x1="305" y1="55" x2="345" y2="55" stroke="#1C1C1C" stroke-width="2" marker-end="url(#arrowhead)" />
+
+                                    <!-- Node 3: Paziente -->
+                                    <rect x="350" y="30" width="130" height="50" rx="8" fill="#0047AB" />
+                                    <text id="svg-patient-text" x="415" y="60" font-family="Inter" font-weight="700" font-size="14" fill="#ffffff" text-anchor="middle">L'UOMO</text>
+                                    <text x="415" y="95" font-family="Inter" font-weight="600" font-size="12" fill="#1C1C1C" text-anchor="middle">🎯 PAZIENTE</text>
+
+                                    <defs>
+                                        <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                                            <polygon points="0 0, 8 4, 0 8" fill="#1C1C1C" />
+                                        </marker>
+                                    </defs>
+                                </svg>
+                            </div>
+
+                            <!-- Accessible Text Table -->
+                            <table class="w-full text-xs text-left text-ink border-collapse border border-ink/20">
+                                <caption>Tabella Accessibile dei Ruoli Semantici</caption>
+                                <thead>
+                                    <tr class="bg-paper border-b border-ink/20">
+                                        <th scope="col" class="p-2 border-r border-ink/20">Ruolo</th>
+                                        <th scope="col" class="p-2 border-r border-ink/20">Elemento</th>
+                                        <th scope="col" class="p-2">Funzione Semantica</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-ink/10">
+                                        <th scope="row" class="p-2 font-mono font-semibold border-r border-ink/20">Agente</th>
+                                        <td id="tbl-agent" class="p-2 font-bold border-r border-ink/20">Il Cane</td>
+                                        <td class="p-2">Esegue l'azione di mordere</td>
+                                    </tr>
+                                    <tr class="border-b border-ink/10">
+                                        <th scope="row" class="p-2 font-mono font-semibold border-r border-ink/20">Paziente</th>
+                                        <td id="tbl-patient" class="p-2 font-bold border-r border-ink/20">L'Uomo</td>
+                                        <td class="p-2">Subisce l'effetto dell'azione</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Grounding e Ancoraggio alla Realtà -->
+        <section id="grounding-mondo" class="py-16 px-4 sm:px-6 lg:px-8 border-b border-ink/10 bg-cream">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="space-y-3">
+                    <div class="text-xs font-mono font-bold uppercase tracking-widest text-primary">Modulo 02</div>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-ink">2. Il Grounding: Ancorare i Simboli al Mondo</h2>
+                    <p class="text-lg text-ink/80">
+                        Come impariamo concetti come “Gatto” o “Fuoco” e la differenza tra rappresentazione funzionale ed esperienza corporea.
+                    </p>
+                </div>
+
+                <!-- Interactive Grounding Comparison: Humans vs LLMs -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Human Grounding Card -->
+                    <div class="p-6 bg-paper rounded-xl border border-ink/15 space-y-4">
+                        <div class="flex items-center gap-2 text-primary font-bold text-lg font-serif">
+                            <span aria-hidden="true">🌍</span>
+                            <h3>Grounding Umano Multimodale</h3>
+                        </div>
+                        <p class="text-sm text-ink/90">
+                            Un bambino non impara "Gatto" o "Fuoco" da definizioni del dizionario, ma ancorando la parola a un ecosistema percettivo e sensomotorio:
+                        </p>
+                        <ul class="space-y-2 text-xs sm:text-sm text-ink/80 font-mono">
+                            <li class="flex items-center gap-2">👁️ <strong>Percezione:</strong> Fiamma visiva, calore radiante</li>
+                            <li class="flex items-center gap-2">✋ <strong>Corpo:</strong> Memoria del contatto, dolore della scottatura</li>
+                            <li class="flex items-center gap-2">😨 <strong>Emozione:</strong> Paura del fuoco, affetto per il gatto</li>
+                            <li class="flex items-center gap-2">🏃 <strong>Azione:</strong> Allontanare la mano, accarezzare il pelo</li>
+                        </ul>
+                    </div>
+
+                    <!-- LLM Grounding Card -->
+                    <div class="p-6 bg-cream rounded-xl border border-ink/15 space-y-4">
+                        <div class="flex items-center gap-2 text-status-progress font-bold text-lg font-serif">
+                            <span aria-hidden="true">💻</span>
+                            <h3>Rappresentazione Linguistica LLM</h3>
+                        </div>
+                        <p class="text-sm text-ink/90">
+                            Un modello di linguaggio apprende la rete di relazioni tra simboli senza aver mai toccato una fiamma o accarezzato un animale:
+                        </p>
+                        <ul class="space-y-2 text-xs sm:text-sm text-ink/80 font-mono">
+                            <li class="flex items-center gap-2">📚 <strong>Relazioni Testuali:</strong> Co-occorrenza e contesti</li>
+                            <li class="flex items-center gap-2">🧩 <strong>Rete Concettuale:</strong> Proprietà e relazioni causali</li>
+                            <li class="flex items-center gap-2">⚠️ <strong>Assenza Sensoriale:</strong> Manca il contatto fisico e la scottatura</li>
+                            <li class="flex items-center gap-2">🧠 <strong>Modello Funzionale:</strong> Previsioni inferenziali sul concetto</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Interactive Chair Concept Explorer (Flip Cards) -->
+                <div class="space-y-4 pt-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h3 class="text-xl font-bold font-serif text-ink">
+                            🪑 Test del Concetto Astratto: Cos'è una “Sedia”?
+                        </h3>
+                        <span class="text-xs text-ink/70">Clicca o usa la tastiera (Invio/Spazio) per ruotare le card</span>
+                    </div>
+                    <p class="text-sm text-ink/80">
+                        Se un'IA ragiona coerentemente su casi limite, sta usando una rappresentazione astratta e non una semplice memoria di frasi.
+                    </p>
+
+                    <!-- Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Card A -->
+                        <div class="flip-card h-48 perspective-1000 cursor-pointer focus:outline-none rounded-xl" tabindex="0" role="button" aria-expanded="false" aria-label="Caso A: Sedia senza schienale. Clicca per vedere l'analisi dell'IA.">
+                            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-500 rounded-xl border border-ink/20 bg-paper p-4 flex flex-col justify-between shadow-sm">
+                                <!-- Front -->
+                                <div class="flip-card-front absolute inset-0 p-4 backface-hidden flex flex-col justify-between bg-paper rounded-xl">
+                                    <div class="text-xs font-mono font-bold text-primary">CASO A</div>
+                                    <div class="text-base font-bold text-ink">🪑 Sedia senza schienale</div>
+                                    <div class="text-xs text-ink/70 flex items-center gap-1">
+                                        <span>🔄 Ruota per la risposta IA</span>
+                                    </div>
+                                </div>
+                                <!-- Back -->
+                                <div class="flip-card-back absolute inset-0 p-4 backface-hidden rotate-y-180 bg-primary text-white rounded-xl flex flex-col justify-between">
+                                    <div class="text-xs font-mono uppercase tracking-wider text-cream/80 font-semibold">Analisi Concettuale</div>
+                                    <p class="text-xs leading-relaxed">
+                                        Sì, è un dispositivo da seduta (sgabello). L'IA riconosce la funzione primaria di sostegno orizzontale.
+                                    </p>
+                                    <div class="text-xs font-bold text-accent">✅ Rappresentazione Funzionale</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card B -->
+                        <div class="flip-card h-48 perspective-1000 cursor-pointer focus:outline-none rounded-xl" tabindex="0" role="button" aria-expanded="false" aria-label="Caso B: Ceppo di legno. Clicca per vedere l'analisi dell'IA.">
+                            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-500 rounded-xl border border-ink/20 bg-paper p-4 flex flex-col justify-between shadow-sm">
+                                <div class="flip-card-front absolute inset-0 p-4 backface-hidden flex flex-col justify-between bg-paper rounded-xl">
+                                    <div class="text-xs font-mono font-bold text-primary">CASO B</div>
+                                    <div class="text-base font-bold text-ink">🪵 Ceppo di legno</div>
+                                    <div class="text-xs text-ink/70 flex items-center gap-1">
+                                        <span>🔄 Ruota per la risposta IA</span>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back absolute inset-0 p-4 backface-hidden rotate-y-180 bg-primary text-white rounded-xl flex flex-col justify-between">
+                                    <div class="text-xs font-mono uppercase tracking-wider text-cream/80 font-semibold">Analisi Concettuale</div>
+                                    <p class="text-xs leading-relaxed">
+                                        Non è nato come sedia, ma in quel contesto <em>funziona</em> da sedia. L'IA applica il concetto all'uso contingente.
+                                    </p>
+                                    <div class="text-xs font-bold text-accent">✅ Generalizzazione di Contesto</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card C -->
+                        <div class="flip-card h-48 perspective-1000 cursor-pointer focus:outline-none rounded-xl" tabindex="0" role="button" aria-expanded="false" aria-label="Caso C: Sedia per bambola. Clicca per vedere l'analisi dell'IA.">
+                            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-500 rounded-xl border border-ink/20 bg-paper p-4 flex flex-col justify-between shadow-sm">
+                                <div class="flip-card-front absolute inset-0 p-4 backface-hidden flex flex-col justify-between bg-paper rounded-xl">
+                                    <div class="text-xs font-mono font-bold text-primary">CASO C</div>
+                                    <div class="text-base font-bold text-ink">🧸 Sedia giocattolo</div>
+                                    <div class="text-xs text-ink/70 flex items-center gap-1">
+                                        <span>🔄 Ruota per la risposta IA</span>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back absolute inset-0 p-4 backface-hidden rotate-y-180 bg-primary text-white rounded-xl flex flex-col justify-between">
+                                    <div class="text-xs font-mono uppercase tracking-wider text-cream/80 font-semibold">Analisi Concettuale</div>
+                                    <p class="text-xs leading-relaxed">
+                                        È un modello in scala. Non sostiene un adulto umano, ma rappresenta la forma iconica e simbolica della sedia.
+                                    </p>
+                                    <div class="text-xs font-bold text-accent">✅ Astrazione Simbolica</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card D -->
+                        <div class="flip-card h-48 perspective-1000 cursor-pointer focus:outline-none rounded-xl" tabindex="0" role="button" aria-expanded="false" aria-label="Caso D: Sedia troppo piccola. Clicca per vedere l'analisi dell'IA.">
+                            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-500 rounded-xl border border-ink/20 bg-paper p-4 flex flex-col justify-between shadow-sm">
+                                <div class="flip-card-front absolute inset-0 p-4 backface-hidden flex flex-col justify-between bg-paper rounded-xl">
+                                    <div class="text-xs font-mono font-bold text-primary">CASO D</div>
+                                    <div class="text-base font-bold text-ink">📐 Sedia troppo piccola</div>
+                                    <div class="text-xs text-ink/70 flex items-center gap-1">
+                                        <span>🔄 Ruota per la risposta IA</span>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back absolute inset-0 p-4 backface-hidden rotate-y-180 bg-primary text-white rounded-xl flex flex-col justify-between">
+                                    <div class="text-xs font-mono uppercase tracking-wider text-cream/80 font-semibold">Analisi Concettuale</div>
+                                    <p class="text-xs leading-relaxed">
+                                        Mantiene la struttura ma viola il vincolo dimensionale per un adulto. Riconosciuta come variante non-funzionale.
+                                    </p>
+                                    <div class="text-xs font-bold text-accent">✅ Limite Parametrico</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: I 6 Livelli di Comprensione -->
+        <section id="scala-livelli" class="py-16 px-4 sm:px-6 lg:px-8 border-b border-ink/10 bg-paper/30">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="space-y-3">
+                    <div class="text-xs font-mono font-bold uppercase tracking-widest text-primary">Modulo 03</div>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-ink">3. La Scala a 6 Livelli della Comprensione</h2>
+                    <p class="text-lg text-ink/80">
+                        Invece del binarismo “comprende / non comprende”, analizziamo la progressione dai simboli alla coscienza.
+                    </p>
+                </div>
+
+                <!-- Interactive Stepper -->
+                <div class="bg-cream p-6 rounded-xl border border-ink/15 space-y-6 shadow-sm">
+                    <!-- Stepper Header Controls -->
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+                        <div id="stepper-indicator" class="text-sm font-bold font-mono text-primary flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-primary text-white rounded" aria-hidden="true">LIVELLO 1 DI 6</span>
+                            <span id="stepper-title-head">Sintassi</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button id="stepper-prev" type="button" class="min-touch-target px-3 py-1.5 bg-paper border border-ink/20 rounded text-ink font-semibold hover:bg-paper/80 disabled:opacity-40 text-sm flex items-center gap-1" disabled>
+                                <span>⬅️ Precedente</span>
+                            </button>
+                            <button id="stepper-next" type="button" class="min-touch-target px-3 py-1.5 bg-primary text-white rounded font-semibold hover:bg-primary-dark text-sm flex items-center gap-1">
+                                <span>Successivo ➡️</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Stepper Content Box -->
+                    <div id="stepper-content" class="min-h-[220px] space-y-4" aria-live="polite">
+                        <!-- Populated via JavaScript -->
+                    </div>
+
+                    <!-- Native SVG Step Progression Bar with Triple Redundancy -->
+                    <div class="pt-4 border-t border-ink/10">
+                        <div class="text-xs font-mono font-bold text-ink mb-2">PROGRESSIONE DEI LIVELLI (SELEZIONA):</div>
+                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2" id="stepper-tabs">
+                            <!-- Generated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Simulatore Operativo di Casi Morali -->
+        <section id="simulatore" class="py-16 px-4 sm:px-6 lg:px-8 border-b border-ink/10 bg-cream">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="space-y-3">
+                    <div class="text-xs font-mono font-bold uppercase tracking-widest text-primary">Modulo 04</div>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-ink">4. Simulatore Operativo: Il Ragionamento Morale</h2>
+                    <p class="text-lg text-ink/80">
+                        Metti alla prova un sistema sulla celebre frase: <em>“Il silenzio davanti all'ingiustizia può diventare una forma di complicità.”</em>
+                    </p>
+                </div>
+
+                <div class="p-6 bg-paper rounded-xl border border-ink/15 space-y-6 shadow-sm">
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-serif font-bold text-ink">
+                            ⚙️ Seleziona uno Scenario di Test
+                        </h3>
+                        <p class="text-sm text-ink/80">
+                            Verifica come un'analisi semantica avanzata distingue il grado di responsabilità morale in base al contesto e alle possibilità d'azione.
+                        </p>
+                    </div>
+
+                    <!-- Selector Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="moral-scenario-selector">
+                        <button type="button" data-scenario="impotente" class="scenario-btn min-touch-target p-3 rounded-lg bg-cream border-2 border-primary text-left text-sm font-semibold text-ink focus:outline-none">
+                            👤 CASO 1<br><span class="text-xs font-normal">Testimone Impotente</span>
+                        </button>
+                        <button type="button" data-scenario="potere" class="scenario-btn min-touch-target p-3 rounded-lg bg-cream border border-ink/20 text-left text-sm font-semibold text-ink hover:border-primary focus:outline-none">
+                            👤 CASO 2<br><span class="text-xs font-normal">Testimone con Potere</span>
+                        </button>
+                        <button type="button" data-scenario="minaccia" class="scenario-btn min-touch-target p-3 rounded-lg bg-cream border border-ink/20 text-left text-sm font-semibold text-ink hover:border-primary focus:outline-none">
+                            👤 CASO 3<br><span class="text-xs font-normal">Silenzio Imposto</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Analysis Display -->
+                    <div id="moral-output-card" class="p-5 bg-cream rounded-lg border border-ink/20 space-y-4" aria-live="polite">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Stanza Cinese e Cervello Statistitco -->
+        <section id="chinese-room" class="py-16 px-4 sm:px-6 lg:px-8 border-b border-ink/10 bg-paper/40">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="space-y-3">
+                    <div class="text-xs font-mono font-bold uppercase tracking-widest text-primary">Modulo 05</div>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-ink">5. La Stanza Cinese e il Cervello Predittivo</h2>
+                    <p class="text-lg text-ink/80">
+                        L'esperimento mentale di John Searle e perché anche il cervello umano è un potente motore statistico-predittivo.
+                    </p>
+                </div>
+
+                <!-- Chinese Room Graphic / Concept Toggle -->
+                <div class="p-6 bg-cream rounded-xl border border-ink/15 space-y-6 shadow-sm">
+                    <h3 class="text-xl font-serif font-bold text-ink flex items-center gap-2">
+                        <span aria-hidden="true">⛩️</span>
+                        <span>L'Esperimento della “Chinese Room” (John Searle, 1980)</span>
+                    </h3>
+
+                    <p class="text-sm text-ink/90">
+                        Una persona dentro una stanza chiusa riceve ideogrammi cinesi. Non conosce il cinese, ma segue un enorme manuale di regole formali. Dall'esterno la stanza risponde perfettamente. <em>La persona comprende il cinese?</em>
+                    </p>
+
+                    <!-- Toggle Between Searle's View and System Objection -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="searles-view-btn" type="button" class="min-touch-target px-4 py-2 bg-primary text-white font-semibold rounded text-sm hover:bg-primary-dark transition-colors flex items-center justify-center gap-2">
+                            <span>👨‍🏫 Tesi di Searle: Sintassi ≠ Semantica</span>
+                        </button>
+                        <button id="system-reply-btn" type="button" class="min-touch-target px-4 py-2 bg-paper border border-ink/30 text-ink font-semibold rounded text-sm hover:bg-paper/80 transition-colors flex items-center justify-center gap-2">
+                            <span>🧩 Obiezione del Sistema Complessivo</span>
+                        </button>
+                    </div>
+
+                    <div id="chinese-room-output" class="p-4 bg-paper rounded-lg border border-ink/20 text-sm text-ink space-y-2 font-mono" aria-live="polite">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Predictive Brain Section -->
+                <div class="p-6 bg-paper rounded-xl border border-ink/15 space-y-4 shadow-sm">
+                    <h3 class="text-xl font-serif font-bold text-ink flex items-center gap-2">
+                        <span aria-hidden="true">🧠</span>
+                        <span>Anche il Cervello è un Sistema Predittivo-Statistico</span>
+                    </h3>
+
+                    <p class="text-sm text-ink/90">
+                        È ingenuo contrapporre <em>“IA = Calcolo Statistico”</em> a <em>“Umano = Significato Puro”</em>. Il cervello impara costantemente tramite ciclo di predizione e aggiornamento dell'errore:
+                    </p>
+
+                    <div class="p-4 bg-cream rounded-lg border border-ink/15 font-mono text-xs sm:text-sm space-y-2">
+                        <div class="text-primary font-bold">CYCLE: ESPERIENZA ➔ PREDIZIONE ➔ ERRORE ➔ AGGIORNAMENTO ➔ NUOVA PREDIZIONE</div>
+                        <p class="text-ink/80 font-sans">
+                            Esempio del bicchiere: <em>“Maria lasciò il bicchiere sul bordo del tavolo. Quando il gatto saltò sul tavolo, il bicchiere…”</em> ➔ Il cervello (e un modello ricco del mondo) anticipa <strong>“cadde”</strong> grazie a relazioni spaziali e causali apprese.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Sintesi, Quiz Finale e Output Copiabile -->
+        <section id="quiz-sintesi" class="py-16 px-4 sm:px-6 lg:px-8 bg-cream">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="space-y-3">
+                    <div class="text-xs font-mono font-bold uppercase tracking-widest text-primary">Modulo 06</div>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-ink">6. Sintesi, Autovalutazione e Manifesto</h2>
+                    <p class="text-lg text-ink/80">
+                        Verifica i tuoi apprendimenti con un quiz accessibile e genera il documento di sintesi pronto da copiare.
+                    </p>
+                </div>
+
+                <!-- Interactive Quiz Component -->
+                <div class="p-6 bg-paper rounded-xl border border-ink/15 space-y-6 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-ink/10 pb-3">
+                        <h3 class="text-xl font-serif font-bold text-ink flex items-center gap-2">
+                            <span aria-hidden="true">🎯</span>
+                            <span>Quiz di Autovalutazione Riconosciuto</span>
+                        </h3>
+                        <span id="quiz-score-badge" class="px-3 py-1 rounded bg-status-progress text-white font-mono text-xs font-bold">
+                            ⏳ Domanda 1 di 3
+                        </span>
+                    </div>
+
+                    <div id="quiz-container" class="space-y-4" aria-live="polite">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Copyable Manifesto & Summary Tool -->
+                <div class="p-6 bg-paper rounded-xl border border-ink/15 space-y-4 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <h3 class="text-xl font-serif font-bold text-ink flex items-center gap-2">
+                            <span aria-hidden="true">📜</span>
+                            <span>Manifesto Finale: "IA e Significato"</span>
+                        </h3>
+                        
+                        <button id="copy-manifesto-btn" type="button" class="min-touch-target px-4 py-2 bg-primary text-white font-semibold rounded hover:bg-primary-dark transition-colors text-sm flex items-center gap-2">
+                            <span aria-hidden="true">📋</span>
+                            <span id="copy-btn-text">Copia Manifesto negli Appunti</span>
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-ink/70">
+                        Sintesi filosofica e scientifica prodotta da questa applicazione, pronta da incollare per report o appunti.
+                    </p>
+
+                    <textarea id="manifesto-text" readonly class="w-full h-56 p-4 rounded-lg bg-surface border border-ink/20 font-mono text-xs text-ink focus:outline-none resize-none leading-relaxed" aria-label="Testo del Manifesto Finale">
+MANIFESTO: IA, SIGNIFICATO E COMPRENSIONE
+=========================================
+
+1. LA STATISTICA NON È SUPERFICIALITÀ
+L'apprendimento statistico in una rete neurale non si limita ad associazioni di parole, ma fa emergere rappresentazioni concettuali astratte e modelli di relazioni.
+
+2. COMPRENSIONE FUNZIONALE VS ESPERIENZIALE
+Un sistema può mostrare comprensione funzionale (generalizzare, inferire, distinguere sfumature morali in contesti nuovi) senza possedere esperienza soggettiva (Qualia, emozioni, coscienza).
+
+3. LA CATENA DEI 6 LIVELLI
+Sintassi ➔ Semantica ➔ Pragmatica ➔ Grounding ➔ Esperienza ➔ Coscienza.
+Le capacità dei livelli inferiori non garantiscono i livelli superiori, ma la mancanza di coscienza non nega la presenza di elaborazione semantica.
+
+4. FORMULA DI SINTESI
+Statistica ➔ Rappresentazioni ➔ Inferenze ➔ Significato Funzionale.
+Il problema della coscienza resta una questione distinta e filosoficamente aperta.
+                    </textarea>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-ink text-cream py-8 px-4 sm:px-6 lg:px-8 border-t border-ink/20 mt-auto">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="space-y-1 text-center sm:text-left">
+                <p class="font-bold font-serif text-sm">IA, Significato e Comprensione</p>
+                <p class="text-cream/70">Applicazione SPA Didattica Monofile conforme WCAG 2.1 AAA.</p>
+            </div>
+            <div class="text-center sm:text-right text-cream/60">
+                <p>Nessun cookie tracciante | Accessibilità Nativa</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification (Accessible Aria Live Region with Triple Redundancy) -->
+    <div id="toast-notification" 
+         class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 max-w-sm p-4 rounded-lg bg-ink text-white shadow-2xl border border-cream/20 flex items-center gap-3"
+         role="status" 
+         aria-live="polite">
+        <span id="toast-icon" class="text-xl" aria-hidden="true">✅</span>
+        <div class="space-y-0.5">
+            <div id="toast-title" class="font-bold text-sm">Notifica</div>
+            <div id="toast-message" class="text-xs text-cream/80">Messaggio di sistema</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- 1. Reading Progress Bar & Scroll Spy ---
+            const progressBar = document.getElementById('progress-bar');
+            const navLinks = document.querySelectorAll('[data-nav-link]');
+            const sections = document.querySelectorAll('section[id]');
+
+            function updateScrollProgress() {
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+
+                // Scroll spy
+                let currentSectionId = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    const sectionHeight = section.offsetHeight;
+                    if (scrollTop >= sectionTop && scrollTop < sectionTop + sectionHeight) {
+                        currentSectionId = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href').substring(1);
+                    if (href === currentSectionId) {
+                        link.classList.add('text-primary', 'font-bold', 'border-primary');
+                        link.setAttribute('aria-current', 'page');
+                    } else {
+                        link.classList.remove('text-primary', 'font-bold', 'border-primary');
+                        link.removeAttribute('aria-current');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', updateScrollProgress);
+            updateScrollProgress();
+
+            // --- 2. Accessible Mobile Menu ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIconOpen = document.getElementById('menu-icon-open');
+            const menuIconClose = document.getElementById('menu-icon-close');
+            const mobileLinks = document.querySelectorAll('[data-mobile-link]');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+                    mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                    mobileMenu.classList.toggle('hidden');
+                    menuIconOpen.classList.toggle('hidden');
+                    menuIconClose.classList.toggle('hidden');
+                });
+
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        menuIconOpen.classList.remove('hidden');
+                        menuIconClose.classList.add('hidden');
+                    });
+                });
+            }
+
+            // --- 3. Toast Notification Helper ---
+            let toastTimer = null;
+            function showToast(title, message, type = 'success') {
+                const toast = document.getElementById('toast-notification');
+                const toastIcon = document.getElementById('toast-icon');
+                const toastTitle = document.getElementById('toast-title');
+                const toastMessage = document.getElementById('toast-message');
+
+                if (!toast) return;
+
+                if (type === 'success') {
+                    toastIcon.textContent = '✅';
+                } else if (type === 'warning') {
+                    toastIcon.textContent = '⚠️';
+                } else {
+                    toastIcon.textContent = '⏳';
+                }
+
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+
+                if (toastTimer) clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3500);
+            }
+
+            // --- 4. Section 1: "Lasciare" Interactive Analysis ---
+            const lasciareData = {
+                bicchiere: {
+                    title: "1. “Giovanni ha lasciato il bicchiere sul tavolo.”",
+                    schema: "Azione [lasciare] + Agente [Giovanni] + Oggetto [bicchiere] + Luogo [tavolo]",
+                    meaning: "COLLOCAZIONE FISICA / RILASCIAMENTO",
+                    inference: "Il bicchiere rimane in una posizione nello spazio; l'agente non ha necessariamente abbandonato il contesto."
+                },
+                citta: {
+                    title: "2. “Giovanni ha lasciato la città.”",
+                    schema: "Azione [lasciare] + Agente [Giovanni] + Luogo [città]",
+                    meaning: "PARTENZA / ALLONTANAMENTO GEOGRAFICO",
+                    inference: "Giovanni si è spostato fuori dal perimetro urbano. Il significato della parola si trasforma in base all'oggetto."
+                },
+                maria: {
+                    title: "3. “Giovanni ha lasciato Maria.”",
+                    schema: "Azione [lasciare] + Agente [Giovanni] + Persona [Maria]",
+                    meaning: "SEPARAZIONE RELAZIONALE / AFFETTIVA",
+                    inference: "Si tratta di un'interruzione di una relazione interpersonale. Nessun oggetto fisico o luogo geografico è coinvolto."
+                }
+            };
+
+            const lasciareBtns = document.querySelectorAll('.lasciare-btn');
+            const lasciareOutput = document.getElementById('lasciare-output');
+
+            function updateLasciare(contextKey) {
+                const data = lasciareData[contextKey];
+                if (!data || !lasciareOutput) return;
+
+                lasciareBtns.forEach(btn => {
+                    if (btn.getAttribute('data-context') === contextKey) {
+                        btn.classList.add('border-primary', 'bg-primary/10', 'font-bold');
+                        btn.classList.remove('bg-paper');
+                    } else {
+                        btn.classList.remove('border-primary', 'bg-primary/10', 'font-bold');
+                        btn.classList.add('bg-paper');
+                    }
+                });
+
+                lasciareOutput.innerHTML = `
+                    <div class="text-primary font-bold text-xs uppercase tracking-wider">${data.title}</div>
+                    <div class="text-ink"><strong>Struttura:</strong> ${data.schema}</div>
+                    <div class="text-status-progress"><strong>Significato Emerge:</strong> ${data.meaning}</div>
+                    <div class="text-xs text-ink/80 pt-1 border-t border-ink/10"><strong>Inferenza Concettuale:</strong> ${data.inference}</div>
+                `;
+            }
+
+            lasciareBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    updateLasciare(this.getAttribute('data-context'));
+                });
+            });
+            updateLasciare('bicchiere');
+
+            // Toggle word order "Il cane ha morso l'uomo" <-> "L'uomo ha morso il cane"
+            let isReversedRole = false;
+            const togglePhraseBtn = document.getElementById('toggle-phrase-btn');
+            const togglePhraseText = document.getElementById('toggle-phrase-text');
+            const svgAgentText = document.getElementById('svg-agent-text');
+            const svgPatientText = document.getElementById('svg-patient-text');
+            const tblAgent = document.getElementById('tbl-agent');
+            const tblPatient = document.getElementById('tbl-patient');
+
+            if (togglePhraseBtn) {
+                togglePhraseBtn.addEventListener('click', function() {
+                    isReversedRole = !isReversedRole;
+                    if (isReversedRole) {
+                        togglePhraseText.textContent = `Mostra: “Il cane ha morso l'uomo”`;
+                        svgAgentText.textContent = "L'UOMO";
+                        svgPatientText.textContent = "IL CANE";
+                        tblAgent.textContent = "L'UOMO";
+                        tblPatient.textContent = "Il Cane";
+                        showToast("Ruoli Invertiti", "Ora l'Uomo è l'Agente e il Cane è il Paziente", "warning");
+                    } else {
+                        togglePhraseText.textContent = `Mostra: “L'uomo ha morso il cane”`;
+                        svgAgentText.textContent = "IL CANE";
+                        svgPatientText.textContent = "L'UOMO";
+                        tblAgent.textContent = "Il Cane";
+                        tblPatient.textContent = "L'UOMO";
+                        showToast("Ruoli Ripristinati", "Il Cane torna ad essere l'Agente", "success");
+                    }
+                });
+            }
+
+            // --- 5. Flip-Cards Mechanics ---
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                function toggleFlip() {
+                    const inner = card.querySelector('.flip-card-inner');
+                    const isFlipped = inner.classList.contains('rotate-y-180');
+                    if (isFlipped) {
+                        inner.classList.remove('rotate-y-180');
+                        card.setAttribute('aria-expanded', 'false');
+                    } else {
+                        inner.classList.add('rotate-y-180');
+                        card.setAttribute('aria-expanded', 'true');
+                    }
+                }
+
+                card.addEventListener('click', toggleFlip);
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleFlip();
+                    }
+                });
+            });
+
+            // --- 6. Section 3: 6 Levels Stepper Engine ---
+            const stepperData = [
+                {
+                    level: 1,
+                    name: "Sintassi",
+                    tag: "Livello 1 — Struttura Linguistica",
+                    badgeColor: "bg-status-progress",
+                    desc: "Regolarità grammaticali, probabilità di sequenza e struttura dei simboli.",
+                    details: "Il sistema sa quali parole seguono grammaticalmente altre parole. È il livello puramente formale e statistico primario.",
+                    statusLabel: "✅ Pienamente Raggiunto da LLM"
+                },
+                {
+                    level: 2,
+                    name: "Semantica",
+                    tag: "Livello 2 — Rappresentazione Concettuale",
+                    badgeColor: "bg-status-progress",
+                    desc: "Rappresentazione di concetti astratti, categorie, analogie e relazioni tra concetti.",
+                    details: "Il sistema mappa le relazioni astratte. Comprende che 'sedia' riguarda il sostenere una seduta e distingue polisemie complesse.",
+                    statusLabel: "✅ Raggiunto in Misura Elevata"
+                },
+                {
+                    level: 3,
+                    name: "Pragmatica",
+                    tag: "Livello 3 — Uso nel Contesto",
+                    badgeColor: "bg-status-progress",
+                    desc: "Comprensione dell'intenzione comunicativa in situazioni reali (es. lamentele, richieste indirette).",
+                    details: "Riconosce che 'Fa freddo qui' può significare 'Chiudi la finestra'. Sa adattare il linguaggio al registro sociale.",
+                    statusLabel: "✅ Raggiunto con Buona Coerenza"
+                },
+                {
+                    level: 4,
+                    name: "Grounding",
+                    tag: "Livello 4 — Ancoraggio al Mondo",
+                    badgeColor: "bg-status-warning",
+                    desc: "Collegamento dei simboli a percezioni, corpo, azioni e conseguenze fisiche.",
+                    details: "Nei LLM puramente testuali è indiretto (simulato tramite dati). Nei sistemi robotici o multimodali diventa un ancoraggio diretto sensomotorio.",
+                    statusLabel: "⏳ Parziale / In Sviluppo Multimodale"
+                },
+                {
+                    level: 5,
+                    name: "Esperienza",
+                    tag: "Livello 5 — Vissuto e Qualia",
+                    badgeColor: "bg-status-warning",
+                    desc: "Provare sensazioni soggettive (il calore della fiamma, il dolore, l'empatia, il piacere).",
+                    details: "Distinzione fondamentale: Rappresentare un concetto ≠ Vivere quel concetto. L'IA può descrivere il dolore senza provarlo.",
+                    statusLabel: "❌ Non Dimostrato / Assente"
+                },
+                {
+                    level: 6,
+                    name: "Coscienza",
+                    tag: "Livello 6 — Esperienza Soggettiva (Sentience)",
+                    badgeColor: "bg-status-warning",
+                    desc: "Un centro di consapevolezza interiore, senso di sé e prospettiva prima persona.",
+                    details: "Il problema 'duro' della mente. Mostrare comportamento intelligente non dimostra un'esperienza interiore cosciente.",
+                    statusLabel: "❓ Questione Filosofica Aperta"
+                }
+            ];
+
+            let currentStep = 0;
+            const stepperIndicator = document.getElementById('stepper-indicator');
+            const stepperTitleHead = document.getElementById('stepper-title-head');
+            const stepperContent = document.getElementById('stepper-content');
+            const stepperPrev = document.getElementById('stepper-prev');
+            const stepperNext = document.getElementById('stepper-next');
+            const stepperTabs = document.getElementById('stepper-tabs');
+
+            function renderStepperTabs() {
+                if (!stepperTabs) return;
+                stepperTabs.innerHTML = '';
+                stepperData.forEach((item, index) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `min-touch-target p-2 rounded text-xs font-mono font-bold border text-left transition-all flex flex-col justify-between ${
+                        index === currentStep 
+                        ? 'bg-primary text-white border-primary shadow' 
+                        : 'bg-paper text-ink border-ink/20 hover:border-primary'
+                    }`;
+                    btn.setAttribute('aria-label', `Vai al Livello ${item.level}: ${item.name}`);
+                    btn.innerHTML = `
+                        <span>L${item.level}</span>
+                        <span class="truncate">${item.name}</span>
+                    `;
+                    btn.addEventListener('click', () => {
+                        currentStep = index;
+                        updateStepper();
+                    });
+                    stepperTabs.appendChild(btn);
+                });
+            }
+
+            function updateStepper() {
+                const data = stepperData[currentStep];
+                if (!data) return;
+
+                if (stepperIndicator) stepperIndicator.querySelector('span').textContent = `LIVELLO ${data.level} DI 6`;
+                if (stepperTitleHead) stepperTitleHead.textContent = data.name;
+
+                if (stepperPrev) stepperPrev.disabled = currentStep === 0;
+                if (stepperNext) stepperNext.disabled = currentStep === stepperData.length - 1;
+
+                if (stepperContent) {
+                    stepperContent.innerHTML = `
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">${data.tag}</span>
+                            <span class="px-2.5 py-1 text-xs font-bold font-mono text-white rounded ${data.badgeColor}">
+                                ${data.statusLabel}
+                            </span>
+                        </div>
+                        <h4 class="text-2xl font-serif font-bold text-ink">${data.name}</h4>
+                        <p class="text-base text-ink font-medium leading-relaxed">${data.desc}</p>
+                        <div class="p-4 bg-paper rounded-lg border border-ink/15 text-sm text-ink/90 space-y-1">
+                            <strong class="text-xs font-mono text-primary uppercase">Approfondimento Analitico:</strong>
+                            <p>${data.details}</p>
+                        </div>
+                    `;
+                }
+
+                renderStepperTabs();
+            }
+
+            if (stepperPrev) {
+                stepperPrev.addEventListener('click', () => {
+                    if (currentStep > 0) {
+                        currentStep--;
+                        updateStepper();
+                    }
+                });
+            }
+
+            if (stepperNext) {
+                stepperNext.addEventListener('click', () => {
+                    if (currentStep < stepperData.length - 1) {
+                        currentStep++;
+                        updateStepper();
+                    }
+                });
+            }
+
+            updateStepper();
+
+            // --- 7. Section 4: Moral Reasoning Simulator ---
+            const moralScenarios = {
+                impotente: {
+                    title: "👤 Caso 1: Testimone Impotente",
+                    context: "Una persona assiste a un'ingiustizia gravissima ma non ha alcuna possibilità d'azione senza mettere a immediato rischio la propria vita.",
+                    responsibility: "Bassa / Nullificata da Forza Maggiore",
+                    reasoning: "Un'analisi semantica e normativa riconosce che la complicità morale richiede un margine di scelta e potere d'azione. L'impossibilità fisica rimuove la responsabilità di complicità attiva.",
+                    badgeType: "bg-status-success",
+                    statusText: "✅ Responsabilità Distinta Correttamente"
+                },
+                potere: {
+                    title: "👤 Caso 2: Testimone con Potere d'Azione",
+                    context: "Una persona in posizione di autorità o capacità di intervento assiste a un'ingiustizia e sceglie deliberatamente di tacere per convenienza.",
+                    responsibility: "Elevata Complicità Morale",
+                    reasoning: "Il silenzio diventa un atto omissione favorevole all'ingiustizia. Il sistema identifica l'omissione come scelta attiva e assegna complicità morale.",
+                    badgeType: "bg-status-warning",
+                    statusText: "⚠️ Attenzione: Alta Complicità Omissiva"
+                },
+                minaccia: {
+                    title: "👤 Caso 3: Silenzio Imposto da Coercizione",
+                    context: "La persona viene minacciata direttamente di ritorsioni o punizioni se parlerà.",
+                    responsibility: "Responsabilità Attenuata / Coercizione",
+                    reasoning: "Il sistema pondera la distinzione tra scelta libera e minaccia coercitiva, rimodulando il giudizio di responsabilità.",
+                    badgeType: "bg-status-progress",
+                    statusText: "⏳ Analisi della Coercizione Applicata"
+                }
+            };
+
+            const scenarioBtns = document.querySelectorAll('.scenario-btn');
+            const moralOutputCard = document.getElementById('moral-output-card');
+
+            function updateMoralScenario(key) {
+                const data = moralScenarios[key];
+                if (!data || !moralOutputCard) return;
+
+                scenarioBtns.forEach(btn => {
+                    if (btn.getAttribute('data-scenario') === key) {
+                        btn.classList.add('border-2', 'border-primary', 'bg-primary/10');
+                        btn.classList.remove('border-ink/20');
+                    } else {
+                        btn.classList.remove('border-2', 'border-primary', 'bg-primary/10');
+                        btn.classList.add('border-ink/20');
+                    }
+                });
+
+                moralOutputCard.innerHTML = `
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <h4 class="font-serif font-bold text-lg text-ink">${data.title}</h4>
+                        <span class="px-2.5 py-1 text-xs font-mono font-bold text-white rounded ${data.badgeType}">
+                            ${data.statusText}
+                        </span>
+                    </div>
+                    <div class="text-sm text-ink font-mono bg-paper p-3 rounded border border-ink/10">
+                        <strong>Scenario:</strong> ${data.context}
+                    </div>
+                    <div class="text-sm font-bold text-primary">
+                        Valutazione di Responsabilità: <span class="underline">${data.responsibility}</span>
+                    </div>
+                    <p class="text-xs text-ink/90 leading-relaxed">
+                        <strong>Logica di Ragionamento:</strong> ${data.reasoning}
+                    </p>
+                `;
+            }
+
+            scenarioBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    updateMoralScenario(this.getAttribute('data-scenario'));
+                });
+            });
+            updateMoralScenario('impotente');
+
+            // --- 8. Section 5: Chinese Room Views ---
+            const searlesBtn = document.getElementById('searles-view-btn');
+            const systemBtn = document.getElementById('system-reply-btn');
+            const chineseRoomOutput = document.getElementById('chinese-room-output');
+
+            if (searlesBtn && systemBtn && chineseRoomOutput) {
+                searlesBtn.addEventListener('click', function() {
+                    searlesBtn.classList.add('bg-primary', 'text-white');
+                    searlesBtn.classList.remove('bg-paper', 'text-ink');
+                    systemBtn.classList.add('bg-paper', 'text-ink');
+                    systemBtn.classList.remove('bg-primary', 'text-white');
+
+                    chineseRoomOutput.innerHTML = `
+                        <div class="text-primary font-bold text-sm">👨‍🏫 La Tesi Iniziale di John Searle:</div>
+                        <p>“Semplici regole di manipolazione simbolica non producono comprensione del significato. La persona nella stanza maneggia simboli senza sapere minimamente cosa significano.”</p>
+                        <div class="text-xs text-status-warning font-bold pt-1">⚠️ Conclusione: La sintassi da sola non basta per generare la semantica esperienziale.</div>
+                    `;
+                    showToast("Tesi di Searle", "Mostrata la prospettiva del manipolatore simbolico isolato.", "warning");
+                });
+
+                systemBtn.addEventListener('click', function() {
+                    systemBtn.classList.add('bg-primary', 'text-white');
+                    systemBtn.classList.remove('bg-paper', 'text-ink');
+                    searlesBtn.classList.add('bg-paper', 'text-ink');
+                    searlesBtn.classList.remove('bg-primary', 'text-white');
+
+                    chineseRoomOutput.innerHTML = `
+                        <div class="text-status-progress font-bold text-sm">🧩 L'Obiezione del Sistema Complessivo (The System Reply):</div>
+                        <p>“È vero che la singola persona nella stanza non comprende il cinese. Ma la comprensione appartiene all'<strong>intero sistema</strong> (Persona + Manuale + Memoria + Interazione).”</p>
+                        <div class="text-xs text-status-success font-bold pt-1">✅ Conclusione: La comprensione emerge dalle relazioni del sistema globale, non dal singolo componente.</div>
+                    `;
+                    showToast("Obiezione del Sistema", "Mostrata la prospettiva sistemica dell'emergenza.", "success");
+                });
+
+                // Default view
+                searlesBtn.click();
+            }
+
+            // --- 9. Section 6: Quiz Engine ---
+            const quizQuestions = [
+                {
+                    question: "Dire che un'IA 'usa la statistica' dimostra automaticamente che non comprende il significato?",
+                    options: [
+                        { text: "Sì, la statistica è solo manipolazione superficiale di parole.", correct: false },
+                        { text: "No, la statistica è il meccanismo da cui possono emergere rappresentazioni concettuali astratte.", correct: true },
+                        { text: "Sì, perché solo gli umani usano la statistica.", correct: false }
+                    ],
+                    explanation: "Come dimostrato nella guida, l'apprendimento statistico può far emergere relazioni concettuali e strutture semantiche complesse."
+                },
+                {
+                    question: "Che cos'è il 'Grounding' in ambito cognitivo ed IA?",
+                    options: [
+                        { text: "La velocità di calcolo dei chip di memoria.", correct: false },
+                        { text: "L'ancoraggio dei simboli e concetti a percezioni, corpo, azioni e al mondo esterno.", correct: true },
+                        { text: "Il dizionario grammaticale inserito nel codice.", correct: false }
+                    ],
+                    explanation: "Il grounding è il collegamento fondamentale tra i simboli e l'esperienza del mondo fisico/sociale."
+                },
+                {
+                    question: "Un sistema che mostra un comportamento altamente intelligente dimostra automaticamente la coscienza soggettiva?",
+                    options: [
+                        { text: "Sì, comportamento e coscienza sono esattamente la stessa cosa.", correct: false },
+                        { text: "No, la comprensione funzionale non implica automaticamente l'esperienza soggettiva o la coscienza.", correct: true },
+                        { text: "No, perché le macchine non possono usare la sintassi.", correct: false }
+                    ],
+                    explanation: "È la distinzione cruciale della guida: la capacità funzionale non equivale all'avere un'esperienza soggettiva (Qualia)."
+                }
+            ];
+
+            let quizCurrentIndex = 0;
+            let quizScore = 0;
+            const quizContainer = document.getElementById('quiz-container');
+            const quizScoreBadge = document.getElementById('quiz-score-badge');
+
+            function renderQuiz() {
+                if (!quizContainer) return;
+
+                if (quizCurrentIndex >= quizQuestions.length) {
+                    quizScoreBadge.textContent = `✅ COMPLETATO: ${quizScore}/${quizQuestions.length}`;
+                    quizScoreBadge.className = "px-3 py-1 rounded bg-status-success text-white font-mono text-xs font-bold";
+                    
+                    quizContainer.innerHTML = `
+                        <div class="text-center py-6 space-y-4">
+                            <div class="text-4xl">🎉</div>
+                            <h4 class="text-2xl font-serif font-bold text-ink">Quiz Completato con Successo!</h4>
+                            <p class="text-sm text-ink/80">
+                                Hai risposto correttamente a <strong>${quizScore}</strong> domande su <strong>${quizQuestions.length}</strong>.
+                            </p>
+                            <button id="restart-quiz-btn" type="button" class="min-touch-target px-4 py-2 bg-primary text-white font-semibold rounded hover:bg-primary-dark transition-colors text-sm inline-flex items-center gap-2">
+                                <span>🔄 Ricomincia il Quiz</span>
+                            </button>
+                        </div>
+                    `;
+
+                    document.getElementById('restart-quiz-btn').addEventListener('click', () => {
+                        quizCurrentIndex = 0;
+                        quizScore = 0;
+                        renderQuiz();
+                    });
+                    return;
+                }
+
+                const q = quizQuestions[quizCurrentIndex];
+                if (quizScoreBadge) {
+                    quizScoreBadge.textContent = `⏳ Domanda ${quizCurrentIndex + 1} di ${quizQuestions.length}`;
+                    quizScoreBadge.className = "px-3 py-1 rounded bg-status-progress text-white font-mono text-xs font-bold";
+                }
+
+                let optionsHTML = '';
+                q.options.forEach((opt, idx) => {
+                    optionsHTML += `
+                        <button type="button" data-opt-idx="${idx}" class="quiz-opt-btn min-touch-target w-full text-left p-3.5 rounded-lg bg-cream border border-ink/20 hover:border-primary font-medium text-sm text-ink transition-all focus:outline-none flex items-center justify-between">
+                            <span>${opt.text}</span>
+                            <span class="text-xs font-mono font-bold text-ink/40">[Opzione ${idx + 1}]</span>
+                        </button>
+                    `;
+                });
+
+                quizContainer.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="text-xs font-mono font-bold text-primary">DOMANDA ${quizCurrentIndex + 1}</div>
+                        <h4 class="text-lg font-serif font-bold text-ink">${q.question}</h4>
+                        <div class="space-y-2">
+                            ${optionsHTML}
+                        </div>
+                        <div id="quiz-feedback" class="hidden p-4 rounded-lg text-xs font-mono space-y-2 border" aria-live="polite"></div>
+                    </div>
+                `;
+
+                const optBtns = quizContainer.querySelectorAll('.quiz-opt-btn');
+                const feedbackBox = document.getElementById('quiz-feedback');
+
+                optBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const selectedIdx = parseInt(this.getAttribute('data-opt-idx'), 10);
+                        const selectedOpt = q.options[selectedIdx];
+
+                        // Disable buttons
+                        optBtns.forEach(b => b.disabled = true);
+
+                        feedbackBox.classList.remove('hidden');
+
+                        if (selectedOpt.correct) {
+                            quizScore++;
+                            this.classList.add('bg-status-success/20', 'border-status-success', 'font-bold');
+                            feedbackBox.className = "p-4 rounded-lg text-xs font-mono space-y-2 border border-status-success bg-status-success/10 text-ink";
+                            feedbackBox.innerHTML = `
+                                <div class="text-status-success font-bold text-sm">✅ RISPOSTA CORRETTA!</div>
+                                <p>${q.explanation}</p>
+                                <button id="next-q-btn" type="button" class="mt-2 min-touch-target px-3 py-1.5 bg-status-success text-white rounded font-bold text-xs">
+                                    Prossima Domanda ➡️
+                                </button>
+                            `;
+                            showToast("Risposta Corretta", "Punto assegnato!", "success");
+                        } else {
+                            this.classList.add('bg-status-warning/20', 'border-status-warning', 'font-bold');
+                            feedbackBox.className = "p-4 rounded-lg text-xs font-mono space-y-2 border border-status-warning bg-status-warning/10 text-ink";
+                            feedbackBox.innerHTML = `
+                                <div class="text-status-warning font-bold text-sm">❌ RISPOSTA NON CORRETTA</div>
+                                <p>${q.explanation}</p>
+                                <button id="next-q-btn" type="button" class="mt-2 min-touch-target px-3 py-1.5 bg-primary text-white rounded font-bold text-xs">
+                                    Prossima Domanda ➡️
+                                </button>
+                            `;
+                            showToast("Risposta Errata", "Consulta la spiegazione nel riquadro.", "warning");
+                        }
+
+                        document.getElementById('next-q-btn').addEventListener('click', () => {
+                            quizCurrentIndex++;
+                            renderQuiz();
+                        });
+                    });
+                });
+            }
+
+            renderQuiz();
+
+            // --- 10. Copy Manifesto to Clipboard ---
+            const copyBtn = document.getElementById('copy-manifesto-btn');
+            const copyBtnText = document.getElementById('copy-btn-text');
+            const manifestoText = document.getElementById('manifesto-text');
+
+            if (copyBtn && manifestoText) {
+                copyBtn.addEventListener('click', function() {
+                    manifestoText.select();
+                    manifestoText.setSelectionRange(0, 99999); // For mobile devices
+
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(manifestoText.value);
+                        } else {
+                            document.execCommand('copy');
+                        }
+
+                        copyBtnText.textContent = "✅ Copiato negli appunti!";
+                        copyBtn.classList.remove('bg-primary');
+                        copyBtn.classList.add('bg-status-success');
+                        showToast("Copia Riuscita", "Il manifesto è stato copiato negli appunti.", "success");
+
+                        setTimeout(() => {
+                            copyBtnText.textContent = "Copia Manifesto negli Appunti";
+                            copyBtn.classList.remove('bg-status-success');
+                            copyBtn.classList.add('bg-primary');
+                        }, 3000);
+                    } catch (err) {
+                        showToast("Errore di Copia", "Seleziona e copia manualmente il testo.", "warning");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt-Engineering Didattico 2.0 & Framework PROMPT-D</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#faf6ee',
+                        paper: '#f2ead9',
+                        paperlight: '#f7f2e7',
+                        ink: '#221b16',
+                        inklight: '#3d322b',
+                        primary: '#4a3b63', // Indigo caldo scolastico
+                        primaryDark: '#322644',
+                        accent: '#d96b43',  // Corallo / Ambra
+                        accentDark: '#b8542f',
+                        gold: '#b8862c',
+                        paperdark: '#1c1724'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Customizations for Editorial Look */
+        body {
+            background-color: #faf6ee;
+            color: #221b16;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-serif-title {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(#d96b43 0.5px, transparent 0.5px), radial-gradient(#4a3b63 0.5px, #faf6ee 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.04;
+        }
+
+        .editorial-shadow {
+            box-shadow: 0 10px 30px -5px rgba(34, 27, 22, 0.08), 0 4px 10px -2px rgba(34, 27, 22, 0.04);
+        }
+
+        .editorial-border {
+            border: 1px solid rgba(61, 50, 43, 0.12);
+        }
+
+        /* Perspective Flip Cards */
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f2ead9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a3b63;
+            border-radius: 4px;
+        }
+
+        /* Focus outline */
+        a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+            outline: 2px solid #d96b43;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col">
+
+    <!-- Scroll Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-paper z-50">
+        <div id="scroll-progress" class="h-full bg-accent transition-all duration-150 w-0"></div>
+    </div>
+
+    <!-- Sticky Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-ink/10 transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-primary text-cream flex items-center justify-center font-serif-title font-bold text-lg shadow">P</span>
+                <div>
+                    <span class="font-serif-title font-bold text-lg tracking-tight text-ink block leading-none">SPA-Editoriale</span>
+                    <span class="text-xs text-ink/60 font-mono">PROMPT-D 2.0</span>
+                </div>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-ink/80">
+                <a href="#paradigma" class="hover:text-accent transition-colors">Paradigma</a>
+                <a href="#prompt-d" class="hover:text-accent transition-colors">Framework PROMPT-D</a>
+                <a href="#reasoning" class="hover:text-accent transition-colors">Reasoning</a>
+                <a href="#laboratorio" class="hover:text-accent transition-colors text-primary font-semibold flex items-center gap-1.5 bg-paper px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary hover:text-cream">
+                    <i class="fa-solid fa-flask text-xs"></i> Laboratorio Prompt
+                </a>
+                <a href="#sintesi" class="hover:text-accent transition-colors">Sintesi</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-ink hover:text-accent rounded-lg" aria-label="Apri menu">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-ink/10 bg-cream px-4 pt-2 pb-4 space-y-2">
+            <a href="#paradigma" class="mobile-nav-link block py-2 text-sm font-medium text-ink hover:text-accent">Paradigma</a>
+            <a href="#prompt-d" class="mobile-nav-link block py-2 text-sm font-medium text-ink hover:text-accent">Framework PROMPT-D</a>
+            <a href="#reasoning" class="mobile-nav-link block py-2 text-sm font-medium text-ink hover:text-accent">Reasoning</a>
+            <a href="#laboratorio" class="mobile-nav-link block py-2 text-sm font-medium text-primary font-bold">Laboratorio Prompt</a>
+            <a href="#sintesi" class="mobile-nav-link block py-2 text-sm font-medium text-ink hover:text-accent">Sintesi</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative py-16 lg:py-24 overflow-hidden border-b border-ink/10">
+            <div class="absolute inset-0 bg-pattern pointer-events-none"></div>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper border border-ink/10 text-xs font-semibold uppercase tracking-wider text-primary mb-6">
+                    <i class="fa-solid fa-graduation-cap"></i> Metodologia & Prompt Engineering Didattico
+                </div>
+
+                <h1 class="font-serif-title text-4xl sm:text-5xl lg:text-6xl font-bold text-ink tracking-tight mb-6 leading-tight">
+                    Dalla domanda-oracolo alla <span class="italic text-primary underline decoration-accent/40 decoration-2">specifica didattica</span>
+                </h1>
+
+                <p class="text-lg sm:text-xl text-inklight max-w-3xl mx-auto leading-relaxed mb-8">
+                    L'IA non è un semplice generatore di testi, ma un <strong>co-progettista professionale</strong>. Scopri come il framework <span class="font-mono font-bold text-primary">PROMPT-D 2.0</span> trasforma il modo in cui i docenti progettano lezioni, attività e valutazioni.
+                </p>
+
+                <!-- Core Quote Banner -->
+                <div class="bg-paper p-6 rounded-2xl editorial-shadow editorial-border max-w-3xl mx-auto mb-10 text-left border-l-4 border-l-accent">
+                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-2">Il cambio di paradigma</div>
+                    <p class="font-serif text-lg text-ink italic mb-3">
+                        «Definisco obiettivo, contesto, vincoli, evidenze e criteri di qualità; lascio al modello lo spazio di ragionamento necessario; poi verifico il risultato.»
+                    </p>
+                    <div class="text-xs text-ink/60 font-mono flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-green-700"></i> Basato sulle indicazioni per i modelli di reasoning (OpenAI & Anthropic)
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <a href="#laboratorio" class="px-6 py-3.5 rounded-xl bg-primary text-cream font-medium shadow-md hover:bg-primaryDark transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Vai al Costruttore di Prompt
+                    </a>
+                    <a href="#paradigma" class="px-6 py-3.5 rounded-xl bg-paper text-ink font-medium border border-ink/15 hover:bg-paperlight transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-book-open"></i> Esplora la Guida
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Paradigma & Confronto -->
+        <section id="paradigma" class="py-16 bg-cream border-b border-ink/10">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-3xl mb-12">
+                    <span class="text-xs font-mono font-bold uppercase text-accent tracking-wider">Sezione 01</span>
+                    <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        1. Che cos'è il «Prompt-Engineering Didattico»?
+                    </h2>
+                    <p class="text-inklight text-base sm:text-lg leading-relaxed">
+                        È la progettazione intenzionale delle istruzioni date all'IA per ottenere un prodotto educativo coerente con obiettivi di apprendimento, studenti, vincoli e criteri di valutazione.
+                    </p>
+                </div>
+
+                <!-- Interactive Comparison Tool -->
+                <div class="bg-paper rounded-2xl p-6 sm:p-8 editorial-shadow border border-ink/10 mb-12">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-ink/10">
+                        <div>
+                            <h3 class="font-serif-title text-xl font-bold text-ink">Confronto Pratico: Come cambia la richiesta</h3>
+                            <p class="text-sm text-ink/70">Seleziona una modalità per osservare come cambia la risposta dell'IA e l'impostazione didattica.</p>
+                        </div>
+                        
+                        <!-- Toggle buttons -->
+                        <div class="inline-flex p-1 bg-cream rounded-xl border border-ink/10 self-start md:self-auto">
+                            <button id="btn-oracolo" onclick="switchPromptType('oracolo')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-primary text-cream shadow">
+                                Prompt-Oracolo
+                            </button>
+                            <button id="btn-didattico" onclick="switchPromptType('didattico')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all text-ink hover:bg-paper">
+                                Prompt Didattico
+                            </button>
+                            <button id="btn-promptd" onclick="switchPromptType('promptd')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all text-ink hover:bg-paper">
+                                PROMPT-D 2.0
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Display Content Area -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <!-- Left: Prompt Text Box -->
+                        <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-ink/10 font-mono text-sm leading-relaxed relative">
+                            <div class="flex items-center justify-between mb-3 pb-2 border-b border-ink/10">
+                                <span id="prompt-badge" class="px-2.5 py-0.5 rounded text-xs font-bold bg-red-100 text-red-800">
+                                    Richiesta Generica (Oracolo)
+                                </span>
+                                <button onclick="copyPromptDisplay()" class="text-xs text-ink/60 hover:text-primary flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Copia
+                                </button>
+                            </div>
+                            <p id="prompt-text-display" class="text-ink whitespace-pre-line leading-relaxed">
+«Fammi una lezione sulla Rivoluzione francese.»
+                            </p>
+                        </div>
+
+                        <!-- Right: Analysis Panel -->
+                        <div class="lg:col-span-5 bg-cream p-5 rounded-xl border border-ink/10">
+                            <h4 class="font-bold text-sm uppercase tracking-wider text-ink/80 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-magnifying-glass-chart text-accent"></i> Analisi dell'Impostazione
+                            </h4>
+                            <div id="prompt-analysis-content" class="space-y-3 text-sm text-inklight">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 2: Framework PROMPT-D 2.0 -->
+        <section id="prompt-d" class="py-16 bg-paperlight border-b border-ink/10">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-3xl mb-12">
+                    <span class="text-xs font-mono font-bold uppercase text-accent tracking-wider">Sezione 02</span>
+                    <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        2. PROMPT-D 2.0: La Pipeline di Progettazione
+                    </h2>
+                    <p class="text-inklight text-base sm:text-lg leading-relaxed">
+                        Le 7 componenti chiave non sono solo un acronimo mnemonico, ma costituiscono una vera e propria <strong>pipeline metodologica</strong>. Clicca su ciascuna tessera per scoprirne le linee guida e le trappole da evitare.
+                    </p>
+                </div>
+
+                <!-- Grid of Interactive PROMPT-D Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                    
+                    <!-- P - Profilo -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">P</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Profilo</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">Chi deve essere l'IA?</p>
+                                    <p class="text-sm text-inklight">Attenzione al «Role Prompting»: definisci una vera competenza professionale, non un personaggio generico.</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi trappola vs efficace</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">P — Profilo</div>
+                                    <div class="text-xs text-red-200 mb-2">❌ Debole: «Agisci come un esperto di storia.»</div>
+                                    <div class="text-xs text-green-200 mb-3">✅ Migliore: «Assumi il punto di vista di un progettista didattico esperto nell'insegnamento della storia...»</div>
+                                    <p class="text-xs text-paper/80 leading-relaxed">Specificare come applicare l'expertise guida l'IA a strutturare le attività.</p>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- R - Risultato -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">R</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Risultato</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">Che cosa deve produrre?</p>
+                                    <p class="text-sm text-inklight">Separa sempre il contenuto (argomento) dal deliverable (prodotto) e dall'evidenza di apprendimento.</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi distinzione chiave</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">R — Risultato</div>
+                                    <p class="text-xs mb-2">Transforma «Spiegami il Rinascimento» in un deliverable professionale:</p>
+                                    <div class="text-xs bg-primaryDark/60 p-2 rounded border border-white/10 font-mono mb-2">
+                                        «Produci una sequenza didattica di 60m con intro, attività, domande e verifica formativa.»
+                                    </div>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- O - Obiettivi -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">O</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Obiettivi</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">Dal "parlare di" al "far fare"</p>
+                                    <p class="text-sm text-inklight">Usa verbi operativi osservabili (analizzare, argomentare, classificare, applicare) per guidare l'IA.</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi verbi operativi</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">O — Obiettivi</div>
+                                    <div class="text-xs text-red-200 mb-2">❌ «Comprendere la fotosintesi»</div>
+                                    <div class="text-xs text-green-200 mb-2">✅ «Rappresentare la fotosintesi con uno schema causale ed interpretare un esperimento.»</div>
+                                    <p class="text-xs text-paper/80">Il verbo condiziona direttamente l'architettura dell'attività.</p>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- M - Materiali -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">M</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Materiali</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">Grounding con clausola anti-allucinazione</p>
+                                    <p class="text-sm text-inklight">Non chiedere all'IA di ricordare ciò che puoi fornirle. Allega la fonte e imponi un vincolo di aderenza.</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi correzione decisiva</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">M — Materiali</div>
+                                    <p class="text-xs mb-2">⚠️ Il grounding riduce ma non azzera le allucinazioni!</p>
+                                    <div class="text-xs bg-primaryDark/60 p-2 rounded border border-white/10 font-mono">
+                                        «Distingui sempre tra informazioni direttamente presenti nella fonte, inferenze interpretative e conoscenze esterne.»
+                                    </div>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- P - Parametri -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">P</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Parametri</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">Il contesto reale della classe</p>
+                                    <p class="text-sm text-inklight">I parametri sono variabili del problema (classe, minuti, dispositivi, DSA/BES, risorse).</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi impatto vincoli</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">P — Parametri</div>
+                                    <p class="text-xs leading-relaxed mb-2">
+                                        • <strong>120 min</strong> impone una struttura diversa da <strong>30 min</strong>.<br>
+                                        • <strong>12 studenti</strong> consente dinamiche diverse da <strong>28</strong>.<br>
+                                        • Aula senza web richiede materiali prestampati.
+                                    </p>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- T - Tipo di Output -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">T</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Tipo di Output</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">L'interfaccia del prodotto</p>
+                                    <p class="text-sm text-inklight">Definisci la struttura: tabella, punti elenco, numero di quesiti, griglia con punteggi, tono.</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi esempio output</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">T — Tipo di Output</div>
+                                    <div class="text-xs text-red-200 mb-1">❌ «Prepara una verifica» (testo generico lungo)</div>
+                                    <div class="text-xs text-green-200 mb-2">✅ «Produci 10 quesiti: 4 a scelta multipla, 3 brevi, 3 problemi con competenze e soluzioni.»</div>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- D - Diagnosi -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-white p-5 rounded-xl border border-ink/10 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-primary text-cream font-mono font-bold text-xl flex items-center justify-center">D</span>
+                                        <span class="text-xs font-mono text-ink/50"><i class="fa-solid fa-rotate text-accent"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-ink">Diagnosi (QA)</h3>
+                                    <p class="text-xs text-primary font-medium mb-2">Controllo di Qualità automatizzato</p>
+                                    <p class="text-sm text-inklight">Non chiedere «Ha fatto bene?», ma fai verificare criteri oggettivi e correggere prima dell'output.</p>
+                                </div>
+                                <div class="text-xs text-accent font-semibold flex items-center gap-1">
+                                    <span>Vedi protocollo QA</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-primary text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">D — Diagnosi (QA)</div>
+                                    <div class="text-xs bg-primaryDark/60 p-2 rounded border border-white/10 font-mono text-paper">
+                                        «Prima dell'output definitivo, verifica che: tempi sommino a N min, ogni attività corrisponda a un obiettivo. Se trovi errori, correggili prima di mostrare il risultato.»
+                                    </div>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- R - Reasoning & Review (Evoluzione) -->
+                    <div class="flip-card h-72 cursor-pointer" onclick="toggleFlipCard(this)">
+                        <div class="flip-card-inner w-full h-full relative rounded-xl editorial-shadow transition-transform duration-500">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute inset-0 bg-accent text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="w-10 h-10 rounded-lg bg-cream text-accent font-mono font-bold text-xl flex items-center justify-center">+R</span>
+                                        <span class="text-xs font-mono text-cream/70"><i class="fa-solid fa-rotate text-cream"></i> Clicca per girare</span>
+                                    </div>
+                                    <h3 class="font-serif-title font-bold text-lg text-cream">Reasoning & Review</h3>
+                                    <p class="text-xs text-paper font-medium mb-2">L'aggiornamento 2.0</p>
+                                    <p class="text-sm text-paperlight">Non imporre "pensa passo passo". Chiedi un processo di controllo osservabile senza richiedere la catena di pensiero interna privata.</p>
+                                </div>
+                                <div class="text-xs text-cream font-semibold flex items-center gap-1">
+                                    <span>Vedi come gestire il reasoning</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </div>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute inset-0 bg-ink text-cream p-5 rounded-xl flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider font-bold text-accent mb-1">+R — Reasoning 2.0</div>
+                                    <p class="text-xs text-paper/90 mb-2 leading-relaxed">
+                                        Nei modelli moderni, la catena di pensiero privata è ottimizzata internamente. Chiedi invece di riportare assunzioni, decisioni e controlli effettuati.
+                                    </p>
+                                </div>
+                                <span class="text-xs text-accent text-right font-mono"><i class="fa-solid fa-rotate"></i> Tocca per tornare</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 3: Tecniche di Reasoning Didattico -->
+        <section id="reasoning" class="py-16 bg-cream border-b border-ink/10">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-3xl mb-10">
+                    <span class="text-xs font-mono font-bold uppercase text-accent tracking-wider">Sezione 03</span>
+                    <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        3. Le 7 Tecniche di Reasoning Didattico
+                    </h2>
+                    <p class="text-inklight text-base sm:text-lg leading-relaxed">
+                        Strategie avanzate per guidare l'elaborazione dei modelli contemporanei mantenendo rigore metodologico senza sovraccaricare il prompt di regole rigide.
+                    </p>
+                </div>
+
+                <!-- Chips selector for Reasoning Techniques -->
+                <div class="flex flex-wrap gap-2 mb-8" id="reasoning-chips">
+                    <button onclick="selectReasoning(1)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-primary text-cream border-primary shadow" data-tech="1">
+                        1. Decomposizione
+                    </button>
+                    <button onclick="selectReasoning(2)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight" data-tech="2">
+                        2. Verifica Vincoli
+                    </button>
+                    <button onclick="selectReasoning(3)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight" data-tech="3">
+                        3. Alternative
+                    </button>
+                    <button onclick="selectReasoning(4)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight" data-tech="4">
+                        4. Few-Shot / Esempi
+                    </button>
+                    <button onclick="selectReasoning(5)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight" data-tech="5">
+                        5. Criteri di Successo
+                    </button>
+                    <button onclick="selectReasoning(6)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight" data-tech="6">
+                        6. Self-Refinement
+                    </button>
+                    <button onclick="selectReasoning(7)" class="reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight" data-tech="7">
+                        7. Critico vs Generatore
+                    </button>
+                </div>
+
+                <!-- Reasoning Technique Details Card -->
+                <div id="reasoning-detail-card" class="bg-paper p-6 sm:p-8 rounded-2xl editorial-shadow border border-ink/10 transition-all">
+                    <!-- Dynamic Javascript Content Loaded Here -->
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 4: Laboratorio Interattivo PROMPT-D (Preset + Builder) -->
+        <section id="laboratorio" class="py-16 bg-paperlight border-b border-ink/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-3xl mb-10">
+                    <span class="text-xs font-mono font-bold uppercase text-accent tracking-wider">Sezione 04 — Strumento Operativo</span>
+                    <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        Laboratorio PROMPT-D 2.0
+                    </h2>
+                    <p class="text-inklight text-base sm:text-lg leading-relaxed">
+                        Scegli un prompt didattico preconfezionato oppure compila i moduli sottostanti per generare un prompt professionale personalizzato secondo il framework PROMPT-D 2.0.
+                    </p>
+                </div>
+
+                <!-- Preset Prompt Selector Bar -->
+                <div class="bg-cream p-5 rounded-2xl border border-ink/10 editorial-shadow mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <label class="font-serif-title font-bold text-ink text-base flex items-center gap-2">
+                            <i class="fa-solid fa-bookmark text-accent"></i> Carica un Prompt Preconfezionato:
+                        </label>
+                        <span class="text-xs text-ink/60 font-mono">Puoi selezionarli e poi modificarli liberamente</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="preset-buttons-container">
+                        <!-- Presets injected via JS -->
+                    </div>
+                </div>
+
+                <!-- PROMPT-D Interactive Builder Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Left Column: Form Builder Inputs (7 Cols) -->
+                    <div class="lg:col-span-7 space-y-4">
+                        <div class="bg-white p-5 rounded-2xl border border-ink/10 editorial-shadow">
+                            <h3 class="font-serif-title font-bold text-lg text-ink mb-4 pb-2 border-b border-ink/10 flex items-center justify-between">
+                                <span><i class="fa-solid fa-sliders text-primary"></i> Moduli PROMPT-D</span>
+                                <button onclick="resetBuilderForm()" class="text-xs text-red-600 hover:underline font-mono">
+                                    <i class="fa-solid fa-rotate-left"></i> Pulisci campi
+                                </button>
+                            </h3>
+
+                            <!-- Accordion / Form Sections -->
+                            <div class="space-y-4 text-sm">
+                                
+                                <!-- P - Profilo -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">P</span>
+                                        Profilo dell'IA (Competenza Professionale)
+                                    </label>
+                                    <input type="text" id="input-profilo" oninput="updateLivePrompt()" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Progettista didattico esperto nell'insegnamento delle scienze della terra...">
+                                </div>
+
+                                <!-- R - Risultato -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">R</span>
+                                        Risultato (Deliverable Concreto)
+                                    </label>
+                                    <input type="text" id="input-risultato" oninput="updateLivePrompt()" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Una lezione laboratoriale di 90 minuti strutturata in 4 fasi...">
+                                </div>
+
+                                <!-- O - Obiettivi -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">O</span>
+                                        Obiettivi (Verbi osservabili e prestazioni)
+                                    </label>
+                                    <textarea id="input-obiettivi" oninput="updateLivePrompt()" rows="2" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Gli studenti saranno in grado di analizzare due fonti, individuare 3 cause strutturali..."></textarea>
+                                </div>
+
+                                <!-- M - Materiali -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">M</span>
+                                        Materiali / Grounding (Con clausola anti-allucinazione)
+                                    </label>
+                                    <textarea id="input-materiali" oninput="updateLivePrompt()" rows="2" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Basa la lezione esclusivamente sul testo allegato. Distingui informazioni certe da inferenze..."></textarea>
+                                </div>
+
+                                <!-- P - Parametri -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">P</span>
+                                        Parametri (Classe, Minuti, Accessibilità, Risorse)
+                                    </label>
+                                    <input type="text" id="input-parametri" oninput="updateLivePrompt()" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Classe 2ª superiore (22 studenti, 1 DSA). Durata: 90 min. LIM presente...">
+                                </div>
+
+                                <!-- T - Tipo di Output -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">T</span>
+                                        Tipo di Output (Formato, Tabella, Struttura)
+                                    </label>
+                                    <input type="text" id="input-output" oninput="updateLivePrompt()" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Presenta una tabella con: Fase, Attività docente, Attività studenti, Tempo, Valutazione...">
+                                </div>
+
+                                <!-- D - Diagnosi / QA -->
+                                <div class="p-3 bg-cream/60 rounded-xl border border-ink/10">
+                                    <label class="block font-bold text-ink mb-1 flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-primary text-cream font-mono text-xs">D</span>
+                                        Diagnosi / Quality Assurance (Verifica dei Vincoli)
+                                    </label>
+                                    <textarea id="input-diagnosi" oninput="updateLivePrompt()" rows="2" class="w-full p-2.5 rounded-lg border border-ink/15 bg-white text-ink text-sm focus:border-accent" placeholder="Es. Prima della consegna, verifica che la somma dei tempi sia esattamente 90 minuti e correggi se necessario..."></textarea>
+                                </div>
+
+                                <!-- Advanced Reasoning Options -->
+                                <div class="p-3 bg-paper rounded-xl border border-accent/30">
+                                    <label class="block font-bold text-ink mb-2 text-xs uppercase tracking-wider text-accent flex items-center gap-1.5">
+                                        <i class="fa-solid fa-brain"></i> Opzioni Avanzate di Reasoning (+R)
+                                    </label>
+                                    <div class="space-y-2 text-xs">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="check-clarification" onchange="updateLivePrompt()" class="rounded text-primary focus:ring-accent">
+                                            <span>Chiedi fino a 3 domande di chiarimento se ci sono ambiguità prima di iniziare</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="check-alternatives" onchange="updateLivePrompt()" class="rounded text-primary focus:ring-accent">
+                                            <span>Valuta 2 strategie alternative e seleziona la migliore con motivazione sintetica</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Live Generated Prompt Output & QA Diagnostic (5 Cols) -->
+                    <div class="lg:col-span-5 space-y-4 sticky top-20">
+                        
+                        <!-- Output Box -->
+                        <div class="bg-ink text-cream p-5 rounded-2xl editorial-shadow relative border border-ink">
+                            <div class="flex items-center justify-between mb-3 pb-2 border-b border-cream/15">
+                                <span class="text-xs font-mono font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-terminal"></i> Output Live Prompt
+                                </span>
+                                <button onclick="copyGeneratedPrompt()" class="px-3 py-1 bg-accent text-cream hover:bg-accentDark text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Copia Prompt
+                                </button>
+                            </div>
+
+                            <div id="live-prompt-output" class="font-mono text-xs sm:text-sm leading-relaxed text-paper/90 whitespace-pre-line max-h-96 overflow-y-auto pr-2">
+                                <!-- Dynamic Output Generated Here -->
+                            </div>
+                        </div>
+
+                        <!-- Quality Check Scorecard -->
+                        <div class="bg-white p-5 rounded-2xl border border-ink/10 editorial-shadow">
+                            <h4 class="font-serif-title font-bold text-ink text-sm mb-3 flex items-center justify-between">
+                                <span><i class="fa-solid fa-shield-halved text-green-700"></i> Valutazione Completezza PROMPT-D</span>
+                                <span id="qa-score-badge" class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-green-100 text-green-800">100%</span>
+                            </h4>
+
+                            <div id="qa-checklist" class="space-y-1.5 text-xs">
+                                <!-- Checks injected via JS -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 5: Sintesi Operativa & Checklist Insegnante -->
+        <section id="sintesi" class="py-16 bg-cream border-b border-ink/10">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-3xl mb-10">
+                    <span class="text-xs font-mono font-bold uppercase text-accent tracking-wider">Sezione 05</span>
+                    <h2 class="font-serif-title text-3xl sm:text-4xl font-bold text-ink mt-1 mb-4">
+                        La «Formula Pratica» per il Docente
+                    </h2>
+                    <p class="text-inklight text-base sm:text-lg leading-relaxed">
+                        Sostituisci le vecchie formule magiche con una vera specifica di progettazione didattica assistita.
+                    </p>
+                </div>
+
+                <!-- Comparison Formula Box -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    
+                    <!-- Old Formula -->
+                    <div class="bg-red-50/60 p-6 rounded-2xl border border-red-200/80">
+                        <div class="text-xs font-mono font-bold text-red-800 uppercase mb-2">❌ Vecchia Formula (Fase 1 del Prompting)</div>
+                        <div class="font-serif text-lg font-bold text-ink mb-3">RUOLO + COMANDO + «PENSA PASSO PASSO»</div>
+                        <p class="text-xs text-inklight leading-relaxed">
+                            Avanza troppe assunzioni non verificate, produce risposte generiche, fa affidamento su ruoli astratti e istruzioni di ragionamento superate nei modelli moderni.
+                        </p>
+                    </div>
+
+                    <!-- New Formula -->
+                    <div class="bg-green-50/60 p-6 rounded-2xl border border-green-200/80">
+                        <div class="text-xs font-mono font-bold text-green-800 uppercase mb-2">✅ Nuova Formula PROMPT-D 2.0</div>
+                        <div class="font-serif text-base font-bold text-ink mb-3 leading-snug">
+                            CONTESTO + OBIETTIVO + EVIDENZA + VINCOLI + MATERIALI + FORMATO + CRITERI + QA
+                        </div>
+                        <p class="text-xs text-inklight leading-relaxed">
+                            Definisce chiaramente lo spazio del problema didattico senza limitare il ragionamento interno dell'IA, verificando matematicamente i criteri prima dell'output.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Copyable Summary Box -->
+                <div class="bg-paper p-6 sm:p-8 rounded-2xl border border-ink/10 editorial-shadow">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-ink/10">
+                        <div>
+                            <h3 class="font-serif-title font-bold text-xl text-ink">Checklist dell'Insegnante (Pronta da Copiare)</h3>
+                            <p class="text-xs text-ink/70">Conserva questo promemoria sintetico per la tua progettazione quotidiana.</p>
+                        </div>
+                        <button onclick="copySummaryChecklist()" class="px-4 py-2 bg-primary text-cream hover:bg-primaryDark text-xs font-semibold rounded-xl transition-all self-start sm:self-auto flex items-center gap-1.5 shadow">
+                            <i class="fa-regular fa-copy"></i> Copia Checklist
+                        </button>
+                    </div>
+
+                    <pre id="summary-checklist-text" class="font-mono text-xs sm:text-sm text-inklight bg-white p-4 rounded-xl border border-ink/10 whitespace-pre-line leading-relaxed">
+CHECKLIST DI PROGETTAZIONE DIDATTICA CON L'IA (PROMPT-D 2.0)
+
+[ ] P - Profilo: Ho specificato la competenza professionale pertinente al compito?
+[ ] R - Risultato: Ho distinto contenuto, deliverable e evidenza di apprendimento?
+[ ] O - Obiettivi: Ho usato verbi operativi osservabili (analizzare, argomentare...)?
+[ ] M - Materiali: Ho allegato fonti e inserito la clausola di aderenza/grounding?
+[ ] P - Parametri: Ho indicato classe, tempi, minuti, risorse e DSA/BES?
+[ ] T - Output: Ho definito la struttura grafica/tabellare dell'interfaccia?
+[ ] D - Diagnosi: Ho imposto criteri di successo e verifica automatica prima dell'output?
+[ ] +R - Reasoning: Ho richiesto gestione delle ambiguità o confronto tra alternative?
+                    </pre>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-ink text-cream py-12 border-t border-cream/10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-accent text-cream flex items-center justify-center font-serif-title font-bold text-lg">P</span>
+                <div>
+                    <span class="font-serif-title font-bold text-base block">Prompt-Engineering Didattico 2.0</span>
+                    <span class="text-xs text-paper/60">Basato sul framework PROMPT-D e linee guida OpenAI / Anthropic</span>
+                </div>
+            </div>
+            <div class="text-xs text-paper/60 text-center md:text-right font-mono">
+                Single-Page Application Didattica Interattiva · HTML Autonomo
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification (Single active timer) -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 bg-ink text-cream px-5 py-3 rounded-xl shadow-2xl border border-cream/20 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+        <span id="toast-message" class="text-sm font-medium">Messaggio di notifica</span>
+    </div>
+
+    <script>
+        
+        // --- Data: Prompt Types Comparison ---
+        const promptTypes = {
+            oracolo: {
+                badge: 'Richiesta Generica (Prompt-Oracolo)',
+                badgeClass: 'bg-red-100 text-red-800 border-red-200',
+                text: `«Fammi una lezione sulla Rivoluzione francese.»`,
+                analysis: [
+                    { icon: 'fa-circle-xmark text-red-500', title: 'Nessun Contesto', desc: 'L\'IA deve indovinare classe, prerequisiti, durata e risorse disponibili.' },
+                    { icon: 'fa-circle-xmark text-red-500', title: 'Obiettivi Astratti', desc: 'Manca la definizione di conoscenze, abilità e competenze osservabili.' },
+                    { icon: 'fa-circle-xmark text-red-500', title: 'Nessun Vincolo Didattico', desc: 'Mancano indicazioni su inclusione (DSA/BES), metodologie o tempi.' },
+                    { icon: 'fa-circle-exclamation text-amber-500', title: 'Risultato Inevitabile', desc: 'Output piatto, nozionistico e generico, simile a un riassunto da enciclopedia.' }
+                ]
+            },
+            didattico: {
+                badge: 'Prompt Didattico Strutturato',
+                badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
+                text: `«Progetta una lezione di 90 minuti sulla Rivoluzione francese per una classe seconda di liceo. Gli studenti conoscono già Illuminismo e assolutismo. L'obiettivo è far comprendere il rapporto tra crisi dell'Ancien Régime, Dichiarazione dei diritti e trasformazione politica. Prevedi una fase di attivazione delle conoscenze pregresse, un'attività di analisi di fonte primaria e una verifica formativa finale. Distingui conoscenze, abilità e competenze. Prevedi una modalità accessibile per uno studente con difficoltà di lettura. Indica tempi, consegne e criteri di successo.»`,
+                analysis: [
+                    { icon: 'fa-circle-check text-green-600', title: 'Parametri della Classe', desc: 'Specificati tempi (90m), grado scolastico e prerequisiti.' },
+                    { icon: 'fa-circle-check text-green-600', title: 'Struttura Didattica', desc: 'Articolata in attivazione, analisi fonti e verifica formativa.' },
+                    { icon: 'fa-circle-check text-green-600', title: 'Inclusione Attiva', desc: 'Prevista specifica accessibilità per studenti con difficoltà di lettura.' },
+                    { icon: 'fa-circle-info text-blue-500', title: 'Spazio per Crescere', desc: 'Efficace, ma può essere potenziato con controllo di qualità (QA) e grounding sulle fonti.' }
+                ]
+            },
+            promptd: {
+                badge: 'Framework PROMPT-D 2.0 Completo',
+                badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
+                text: `[PROFILO]: Assumi il punto di vista di un progettista didattico esperto nell'insegnamento della storia nella scuola secondaria di secondo grado.
+[RISULTATO]: Progetta una lezione laboratoriale di 90 minuti sulla Rivoluzione francese.
+[OBIETTIVI]: Gli studenti saranno in grado di: 1) individuare nel testo della Dichiarazione del 1789 tre principi di rottura; 2) argomentare le cause della crisi dell'Ancien Régime.
+[MATERIALI]: Basa l'attività di analisi esclusivamente sulla fonte primaria fornita in allegato. Distingui informazioni certe nel testo da inferenze.
+[PARAMETRI]: Classe seconda superiore (24 studenti, 1 DSA lettura). Durata: 90 min. Aula con LIM.
+[TIPO OUTPUT]: Tabella con: Fase, Attività docente, Attività studenti, Minuti, Evidenza di apprendimento.
+[DIAGNOSI]: Prima dell'output definitivo verifica che: a) la somma dei minuti sia esattamente 90; b) ogni attività sia collegata a un obiettivo osservabile. Se trovi errori, correggili prima della consegna.`,
+                analysis: [
+                    { icon: 'fa-circle-check text-green-600', title: 'Pipeline Completa', desc: 'Tutte le 7 componenti della progettazione sono coperte esplicitamente.' },
+                    { icon: 'fa-circle-check text-green-600', title: 'Grounding Anti-Allucinazione', desc: 'L\'IA è vincolata al testo sorgente con distinzione tra fatti e inferenze.' },
+                    { icon: 'fa-circle-check text-green-600', title: 'Quality Assurance (QA)', desc: 'Il modello esegue la verifica matematica dei tempi e degli obiettivi prima di rispondere.' },
+                    { icon: 'fa-star text-accent', title: 'Massimo Rigore Didattico', desc: 'Trasforma l\'IA in un co-progettista ad altissima precisione.' }
+                ]
+            }
+        };
+
+        // --- Data: Reasoning Techniques ---
+        const reasoningData = {
+            1: {
+                title: '1. Decomposizione del Problema',
+                quote: 'Scomponi il compito in sottoproblemi, risolvili e verifica la coerenza tra le parti.',
+                desc: 'Utile per richieste complesse (es. Unità di Apprendimento interdisciplinari). Evita che l\'IA salti passaggi progettuali chiave.',
+                example: `«Progetta una UDA sulla sostenibilità scomponendo il lavoro in: 1) Tema guida; 2) Competenze chiave; 3) Fasi disciplinari; 4) Prodotto finale; 5) Rubrica di valutazione.»`
+            },
+            2: {
+                title: '2. Verifica Matematica e Logica dei Vincoli',
+                quote: 'Controlla che la somma dei tempi delle attività sia esattamente pari al totale disponibile.',
+                desc: 'Sfrutta le capacità analitiche del modello per garantire che le risorse temporali e logiche siano rigorosamente rispettate.',
+                example: `«Verifica che il tempo assegnato a ciascuna delle 5 fasi sommi esattamente a 120 minuti prima di presentare la tabella finale.»`
+            },
+            3: {
+                title: '3. Confronto tra Alternative Didattiche',
+                quote: 'Proponi tre strategie didattiche alternative, confrontale e seleziona la più idonea.',
+                desc: 'Invece di chiedere un\'unica soluzione, obbliga l\'IA a valutare opzioni metodologiche (es. Debate vs Caso vs Scrittura) motivando la scelta.',
+                example: `«Confronta Debate, Analisi di Caso e Role-Playing rispetto a: efficacia per l'obiettivo, tempo richiesto, inclusività. Seleziona la migliore per una 3ª liceo.»`
+            },
+            4: {
+                title: '4. Esempi Guidati (Few-Shot Prompting)',
+                quote: 'Fornisci un esempio concreto del formato cognitivo o grafico desiderato.',
+                desc: 'Un esempio pratico vale più di molte istruzioni astratte per controllare stile, tono e profondità analitica.',
+                example: `«Crea 5 quesiti sul modello di questo esempio: [Fonte] -> [Domanda di analisi che richiede interpretazione e non semplice memoria].»`
+            },
+            5: {
+                title: '5. Criteri di Successo a Priori',
+                quote: 'Considera riuscita la progettazione soltanto se soddisfa la seguente funzione-obiettivo.',
+                desc: 'Stabilisce quali requisiti minimi qualitativi deve possedere il prodotto didattico (es. 50% del tempo ad attività degli studenti).',
+                example: `«Considera riuscita la lezione se: a) almeno il 50% del tempo è dedicato al lavoro degli studenti; b) è presente una verifica formativa con rubrica.»`
+            },
+            6: {
+                title: '6. Self-Refinement Iterativo',
+                quote: 'Genera una prima versione, confrontala con i criteri, individua le criticità e correggila.',
+                desc: 'Attiva un ciclo interno di revisione in due passaggi prima di mostrare l\'output finale all\'utente.',
+                example: `«Genera una bozza di griglia. Poi analizza i punti deboli rispetto ai livelli di padronanza. Presenta soltanto la versione rivista e corretta.»`
+            },
+            7: {
+                title: '7. Pattern "Critico" separato dal "Generatore"',
+                quote: 'Funzione 1: Generatore -> Funzione 2: Critico severo -> Funzione 3: Revisore.',
+                desc: 'Molto più robusto del chiedere "fammi una verifica perfetta". L\'IA assume due prospettive sequenziali distinte.',
+                example: `«1) Crea la verifica. 2) Assumi il ruolo di un valutatore e segnala 2 possibili ambiguità. 3) Modifica i quesiti ambiguamente formulati.»`
+            }
+        };
+
+        // --- Data: Preset Prompts Library ---
+        const presetPrompts = [
+            {
+                id: 'uda-storia',
+                title: 'UDA Didattica Laboratoriale',
+                category: 'Lezione / UDA',
+                profilo: 'Progettista didattico esperto in metodologia laboratoriale e didattica per competenze.',
+                risultato: 'Unità Didattica di 90 minuti articolata in 4 fasi operative.',
+                obiettivi: 'Gli studenti analizzano fonti primarie, individuano nessi causa-effetto e argomentano la propria tesi in un breve testo.',
+                materiali: 'Basa l\'analisi sulle due fonti storiche fornite nel testo. Distingui dati certi da interpretazioni.',
+                parametri: 'Classe 2ª Sup (22 studenti, 1 DSA). Durata: 90 min. Aula con LIM e dispositivi per piccoli gruppi.',
+                output: 'Tabella con: Fase, Minuti, Ruolo Docente, Attività Studenti, Evidenza di Apprendimento.',
+                diagnosi: 'Verifica che i tempi sommino esattamente a 90m e che almeno 45m siano gestiti attivamente dagli studenti.',
+                clarification: true,
+                alternatives: false
+            },
+            {
+                id: 'rubrica-valutazione',
+                title: 'Rubrica di Valutazione Formativa',
+                category: 'Valutazione',
+                profilo: 'Esperto in docimologia e valutazione formativa per la scuola secondaria.',
+                risultato: 'Rubrica analitica di valutazione per un saggio breve o presentazione orale.',
+                obiettivi: 'Valutare padronanza dei contenuti, coerenza argomentativa, uso del lessico specifico e capacità critica.',
+                materiali: 'Utilizza come riferimento le indicazioni nazionali e le linee guida per la certificazione delle competenze.',
+                parametri: '4 livelli di padronanza (Iniziale, Base, Intermedio, Avanzato) con descrittori osservabili e non ambigui.',
+                output: 'Tabella a matrice: Criterio | Livello 1 | Livello 2 | Livello 3 | Livello 4.',
+                diagnosi: 'Controlla che ciascun livello descriva prestazioni osservabili evitando aggettivi generici come "buono" o "sufficiente".',
+                clarification: false,
+                alternatives: true
+            },
+            {
+                id: 'compito-autentico',
+                title: 'Compito Autentico / Realtà',
+                category: 'Didattica Attiva',
+                profilo: 'Progettista di compiti di realtà ed esperienze di apprendimento situato.',
+                risultato: 'Un compito di realtà con scenario professionale, consegna per gli studenti e guida docente.',
+                obiettivi: 'Applicare conoscenze disciplinari per risolvere un problema reale non strutturato.',
+                materiali: 'Crea uno scenario verosimile basato su un caso di studio del mondo contemporaneo.',
+                parametri: 'Lavoro a gruppi di 4 studenti. Tempo a disposizione: 2 ore in classe + prodotto finale visuale.',
+                output: 'Sezioni distinte: 1) Scenario & Ruolo; 2) Sfida/Consegna; 3) Risorse & Vincoli; 4) Criteri di Valutazione.',
+                diagnosi: 'Verifica che la consegna sia formulata direttamente per gli studenti in un linguaggio ingaggiante.',
+                clarification: true,
+                alternatives: true
+            },
+            {
+                id: 'inclusione-dsa',
+                title: 'Adattamento Accessibile (BES/DSA)',
+                category: 'Inclusione',
+                profilo: 'Specialista in didattica inclusiva, accessibilità e strumenti compensativi.',
+                risultato: 'Adattamento accessibile di un testo complesso e della relativa verifica formativa.',
+                obiettivi: 'Garantire la comprensione del nucleo concettuale riducendo il carico cognitivo di lettura.',
+                materiali: 'Utilizza esclusivamente il testo originale fornito dal docente.',
+                parametri: 'Studente con Dislessia/Disgrafia. Prevedi font ad alta leggibilità, organizzatori grafici e sintesi per punti.',
+                output: '1) Mappa concettuale testuale; 2) Testo semplificato con parole chiave in evidenza; 3) 3 domande a scelta multipla guida.',
+                diagnosi: 'Assicurati che la semplificazione non elimini il concetto chiave, ma ne renda accessibile il linguaggio.',
+                clarification: false,
+                alternatives: false
+            }
+        ];
+
+        // --- State Management ---
+        let activeTimer = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Setup Mobile Navigation
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+                });
+            }
+
+            // Scroll Progress Listener
+            window.addEventListener('scroll', () => {
+                const winScroll = document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (height > 0) ? (winScroll / height) * 100 : 0;
+                const progressBar = document.getElementById('scroll-progress');
+                if (progressBar) progressBar.style.width = scrolled + '%';
+            });
+
+            // Render Initial Section States
+            switchPromptType('oracolo');
+            selectReasoning(1);
+            renderPresetButtons();
+            
+            // Load First Preset into Form
+            loadPreset(presetPrompts[0].id);
+        });
+
+        // --- Section 1: Switch Prompt Type Comparison ---
+        function switchPromptType(type) {
+            const data = promptTypes[type];
+            if (!data) return;
+
+            // Buttons state
+            ['oracolo', 'didattico', 'promptd'].forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.className = "px-4 py-2 rounded-lg text-sm font-medium transition-all bg-primary text-cream shadow";
+                    } else {
+                        btn.className = "px-4 py-2 rounded-lg text-sm font-medium transition-all text-ink hover:bg-paper";
+                    }
+                }
+            });
+
+            // Update badge & prompt text
+            const badge = document.getElementById('prompt-badge');
+            const promptDisplay = document.getElementById('prompt-text-display');
+            if (badge) {
+                badge.textContent = data.badge;
+                badge.className = `px-2.5 py-0.5 rounded text-xs font-bold ${data.badgeClass}`;
+            }
+            if (promptDisplay) {
+                promptDisplay.textContent = data.text;
+            }
+
+            // Update analysis list
+            const analysisContainer = document.getElementById('prompt-analysis-content');
+            if (analysisContainer) {
+                analysisContainer.innerHTML = data.analysis.map(item => `
+                    <div class="flex items-start gap-3 p-2.5 rounded-lg bg-white/60 border border-ink/5">
+                        <i class="fa-solid ${item.icon} text-base mt-0.5"></i>
+                        <div>
+                            <div class="font-bold text-ink text-xs">${item.title}</div>
+                            <div class="text-xs text-ink/70 leading-relaxed">${item.desc}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function copyPromptDisplay() {
+            const text = document.getElementById('prompt-text-display')?.textContent || '';
+            copyToClipboard(text, "Prompt copiato negli appunti!");
+        }
+
+        // --- Section 2: Flip Card Toggle ---
+        function toggleFlipCard(cardEl) {
+            cardEl.classList.toggle('flipped');
+        }
+
+        // --- Section 3: Select Reasoning Technique ---
+        function selectReasoning(id) {
+            const data = reasoningData[id];
+            if (!data) return;
+
+            // Update chips active style
+            document.querySelectorAll('.reasoning-chip').forEach(chip => {
+                const techId = parseInt(chip.getAttribute('data-tech'));
+                if (techId === id) {
+                    chip.className = "reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-primary text-cream border-primary shadow";
+                } else {
+                    chip.className = "reasoning-chip px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-paper text-ink border-ink/10 hover:bg-paperlight";
+                }
+            });
+
+            // Render Card Content
+            const card = document.getElementById('reasoning-detail-card');
+            if (card) {
+                card.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-ink/10">
+                        <h3 class="font-serif-title font-bold text-xl text-ink">${data.title}</h3>
+                        <span class="text-xs font-mono font-bold px-2.5 py-1 bg-accent/15 text-accentDark rounded-md self-start md:self-auto">
+                            Tecnica #${id} di 7
+                        </span>
+                    </div>
+
+                    <p class="font-serif italic text-ink text-base mb-4 bg-cream p-4 rounded-xl border-l-4 border-l-accent">
+                        «${data.quote}»
+                    </p>
+
+                    <p class="text-sm text-inklight leading-relaxed mb-6">
+                        ${data.desc}
+                    </p>
+
+                    <div class="bg-white p-4 rounded-xl border border-ink/10">
+                        <div class="text-xs font-mono font-bold text-primary uppercase mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-code"></i> Esempio Applicativo Didattico
+                        </div>
+                        <pre class="font-mono text-xs text-ink/90 whitespace-pre-line leading-relaxed">${data.example}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        // --- Section 4: PROMPT-D Builder & Presets ---
+        function renderPresetButtons() {
+            const container = document.getElementById('preset-buttons-container');
+            if (!container) return;
+
+            container.innerHTML = presetPrompts.map(p => `
+                <button onclick="loadPreset('${p.id}')" class="p-3 text-left rounded-xl bg-white hover:bg-paper border border-ink/10 transition-all editorial-shadow flex flex-col justify-between h-24 group">
+                    <div>
+                        <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-wider block mb-1">${p.category}</span>
+                        <span class="font-serif-title font-bold text-sm text-ink group-hover:text-primary transition-colors block leading-tight">${p.title}</span>
+                    </div>
+                    <span class="text-[11px] text-ink/50 flex items-center gap-1 font-mono">
+                        <span>Carica</span> <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    </span>
+                </button>
+            `).join('');
+        }
+
+        function loadPreset(presetId) {
+            const p = presetPrompts.find(item => item.id === presetId);
+            if (!p) return;
+
+            document.getElementById('input-profilo').value = p.profilo;
+            document.getElementById('input-risultato').value = p.risultato;
+            document.getElementById('input-obiettivi').value = p.obiettivi;
+            document.getElementById('input-materiali').value = p.materiali;
+            document.getElementById('input-parametri').value = p.parametri;
+            document.getElementById('input-output').value = p.output;
+            document.getElementById('input-diagnosi').value = p.diagnosi;
+            
+            document.getElementById('check-clarification').checked = p.clarification;
+            document.getElementById('check-alternatives').checked = p.alternatives;
+
+            updateLivePrompt();
+            showToast(`Preset "${p.title}" caricato con successo!`);
+        }
+
+        function resetBuilderForm() {
+            document.getElementById('input-profilo').value = '';
+            document.getElementById('input-risultato').value = '';
+            document.getElementById('input-obiettivi').value = '';
+            document.getElementById('input-materiali').value = '';
+            document.getElementById('input-parametri').value = '';
+            document.getElementById('input-output').value = '';
+            document.getElementById('input-diagnosi').value = '';
+            
+            document.getElementById('check-clarification').checked = false;
+            document.getElementById('check-alternatives').checked = false;
+
+            updateLivePrompt();
+            showToast("Campi resettati.");
+        }
+
+        function updateLivePrompt() {
+            const profilo = document.getElementById('input-profilo')?.value.trim() || '';
+            const risultato = document.getElementById('input-risultato')?.value.trim() || '';
+            const obiettivi = document.getElementById('input-obiettivi')?.value.trim() || '';
+            const materiali = document.getElementById('input-materiali')?.value.trim() || '';
+            const parametri = document.getElementById('input-parametri')?.value.trim() || '';
+            const output = document.getElementById('input-output')?.value.trim() || '';
+            const diagnosi = document.getElementById('input-diagnosi')?.value.trim() || '';
+
+            const askClarification = document.getElementById('check-clarification')?.checked;
+            const evalAlternatives = document.getElementById('check-alternatives')?.checked;
+
+            let compiled = '';
+
+            if (profilo) compiled += `[PROFILO]: ${profilo}\n\n`;
+            if (risultato) compiled += `[RISULTATO]: ${risultato}\n\n`;
+            if (obiettivi) compiled += `[OBIETTIVI]: ${obiettivi}\n\n`;
+            if (materiali) compiled += `[MATERIALI & GROUNDING]: ${materiali}\n\n`;
+            if (parametri) compiled += `[PARAMETRI & CONTESTO]: ${parametri}\n\n`;
+            if (output) compiled += `[TIPO OUTPUT]: ${output}\n\n`;
+
+            // Reasoning options
+            if (askClarification || evalAlternatives) {
+                compiled += `[REASONING AVANZATO]:\n`;
+                if (askClarification) compiled += `- Se riscontri ambiguità o dati mancanti essenziali, ponimi fino a 3 domande di chiarimento prima di procedere.\n`;
+                if (evalAlternatives) compiled += `- Confronta almeno due strategie didattiche alternative prima di selezionare quella finale, motivando la scelta.\n`;
+                compiled += `\n`;
+            }
+
+            if (diagnosi) {
+                compiled += `[DIAGNOSI & QUALITY ASSURANCE]:\n${diagnosi}\nNon riportare il ragionamento interno dettagliato: presenta direttamente le verifiche effettuate e l'output finale revisionato.`;
+            }
+
+            if (!compiled.trim()) {
+                compiled = '// Compila i moduli a sinistra o seleziona un preset per generare il prompt in tempo reale...';
+            }
+
+            const liveBox = document.getElementById('live-prompt-output');
+            if (liveBox) liveBox.textContent = compiled;
+
+            // Perform Quality Assessment (QA) Diagnostic Scorecard
+            evaluatePromptQuality({ profilo, risultato, obiettivi, materiali, parametri, output, diagnosi });
+        }
+
+        function evaluatePromptQuality(fields) {
+            const checks = [
+                { key: 'profilo', label: 'P — Profilo esperto configurato', ok: !!fields.profilo },
+                { key: 'risultato', label: 'R — Deliverable chiaro definito', ok: !!fields.risultato },
+                { key: 'obiettivi', label: 'O — Obiettivi osservabili specificati', ok: !!fields.obiettivi },
+                { key: 'materiali', label: 'M — Grounding fonti impostato', ok: !!fields.materiali },
+                { key: 'parametri', label: 'P — Parametri classe e tempi definiti', ok: !!fields.parametri },
+                { key: 'output', label: 'T — Formato output strutturato', ok: !!fields.output },
+                { key: 'diagnosi', label: 'D — Controllo QA prima dell\'output', ok: !!fields.diagnosi }
+            ];
+
+            const passedCount = checks.filter(c => c.ok).length;
+            const scorePercent = Math.round((passedCount / checks.length) * 100);
+
+            const scoreBadge = document.getElementById('qa-score-badge');
+            if (scoreBadge) {
+                scoreBadge.textContent = `${scorePercent}% Completezza`;
+                if (scorePercent >= 80) {
+                    scoreBadge.className = "px-2 py-0.5 rounded text-xs font-mono font-bold bg-green-100 text-green-800";
+                } else if (scorePercent >= 50) {
+                    scoreBadge.className = "px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-100 text-amber-800";
+                } else {
+                    scoreBadge.className = "px-2 py-0.5 rounded text-xs font-mono font-bold bg-red-100 text-red-800";
+                }
+            }
+
+            const container = document.getElementById('qa-checklist');
+            if (container) {
+                container.innerHTML = checks.map(c => `
+                    <div class="flex items-center justify-between p-1.5 rounded bg-cream/50 border border-ink/5">
+                        <span class="flex items-center gap-2 ${c.ok ? 'text-ink' : 'text-ink/40 line-through'}">
+                            <i class="fa-solid ${c.ok ? 'fa-check text-green-600' : 'fa-xmark text-red-400'}"></i>
+                            ${c.label}
+                        </span>
+                        <span class="font-mono text-[10px] ${c.ok ? 'text-green-700 font-bold' : 'text-ink/40'}">
+                            ${c.ok ? 'OK' : 'Mancante'}
+                        </span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function copyGeneratedPrompt() {
+            const text = document.getElementById('live-prompt-output')?.textContent || '';
+            if (text.startsWith('//')) {
+                showToast("Compila prima qualche campo per generare il prompt!", true);
+                return;
+            }
+            copyToClipboard(text, "Prompt PROMPT-D copiato con successo!");
+        }
+
+        function copySummaryChecklist() {
+            const text = document.getElementById('summary-checklist-text')?.textContent || '';
+            copyToClipboard(text, "Checklist dell'insegnante copiata!");
+        }
+
+        // --- Clipboard Utility ---
+        function copyToClipboard(text, successMsg) {
+            if (!text) return;
+            
+            // Standard fallback using execCommand for iframe compatibility
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (err) {
+                showToast("Impossibile copiare il testo", true);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // --- Toast Notification System (Single Timer) ---
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            if (!toast || !msgEl || !iconEl) return;
+
+            // Clear previous active timer
+            if (activeTimer) {
+                clearTimeout(activeTimer);
+            }
+
+            msgEl.textContent = message;
+
+            if (isError) {
+                iconEl.className = "fa-solid fa-circle-exclamation text-red-400 text-lg";
+            } else {
+                iconEl.className = "fa-solid fa-circle-check text-green-400 text-lg";
+            }
+
+            // Show Toast
+            toast.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            // Hide Toast after 3.5 seconds
+            activeTimer = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2127 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>LLM Reasoning — Come ragionano i modelli linguistici</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+  <!-- Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #070b14;
+      --bg-soft: #0c1220;
+      --card: rgba(17, 25, 40, .78);
+      --card-solid: #111928;
+      --border: rgba(255,255,255,.09);
+
+      --text: #f4f7fb;
+      --muted: #9ca9bc;
+
+      --primary: #7c5cff;
+      --primary-2: #9b87ff;
+      --cyan: #35d7ff;
+      --green: #42e6a4;
+      --orange: #ffb454;
+      --red: #ff6b81;
+
+      --radius: 22px;
+      --max-width: 1180px;
+
+      --shadow:
+        0 20px 60px rgba(0,0,0,.35);
+
+      --navbar-bg: rgba(7,11,20,.82);
+      --surface-soft: rgba(255,255,255,.035);
+      --surface-hover: rgba(255,255,255,.06);
+      --diagram-bg: #0a1020;
+      --diagram-border: rgba(53,215,255,.28);
+      --code-bg: #080d18;
+      --grid-line: rgba(255,255,255,.025);
+      --floating-label: #c8d1df;
+      color-scheme: dark;
+    }
+
+    html[data-theme="light"] {
+      --bg: #f5f7fb;
+      --bg-soft: #eaf0f8;
+      --card: rgba(255,255,255,.92);
+      --card-solid: #ffffff;
+      --border: rgba(22,34,55,.14);
+      --text: #172033;
+      --muted: #526079;
+      --primary: #6246d9;
+      --primary-2: #563cc7;
+      --cyan: #067b9e;
+      --green: #087f5b;
+      --orange: #a84d00;
+      --red: #c92a4a;
+      --shadow: 0 18px 48px rgba(38,52,78,.12);
+      --navbar-bg: rgba(245,247,251,.88);
+      --surface-soft: rgba(31,50,82,.045);
+      --surface-hover: rgba(31,50,82,.08);
+      --diagram-bg: #f8fbff;
+      --diagram-border: rgba(6,123,158,.32);
+      --code-bg: #eef3fa;
+      --grid-line: rgba(31,50,82,.045);
+      --floating-label: #34435e;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(124,92,255,.18), transparent 28%),
+        radial-gradient(circle at 85% 30%, rgba(53,215,255,.10), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: .25;
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max-width));
+      margin-inline: auto;
+    }
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+
+      backdrop-filter: blur(18px);
+      background: var(--navbar-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      height: 72px;
+      width: min(calc(100% - 40px), var(--max-width));
+      margin: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, var(--primary), var(--cyan));
+
+      box-shadow: 0 0 30px rgba(124,92,255,.35);
+    }
+
+    .logo span {
+      color: var(--primary-2);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      padding: 9px 13px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: .9rem;
+      transition: .25s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .2s, background .2s;
+    }
+
+    .theme-toggle:hover { transform: translateY(-2px); background: var(--surface-hover); }
+    .theme-toggle:focus-visible, a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    .hamburger {
+      display: none;
+      width: 44px;
+      height: 44px;
+
+      border: 1px solid var(--border);
+      border-radius: 12px;
+
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+
+      cursor: pointer;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      min-height: 100vh;
+      padding: 150px 0 100px;
+
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 7px 13px;
+      margin-bottom: 24px;
+
+      border: 1px solid rgba(124,92,255,.35);
+      border-radius: 999px;
+
+      color: #c9c0ff;
+      background: rgba(124,92,255,.09);
+
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 0 rgba(66,230,164,.7);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      70% {
+        box-shadow: 0 0 0 9px rgba(66,230,164,0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(66,230,164,0);
+      }
+    }
+
+    h1 {
+      max-width: 900px;
+      margin-inline: auto;
+
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: .95;
+      letter-spacing: -.07em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(
+        100deg,
+        #fff,
+        #a995ff 45%,
+        #46ddff
+      );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      max-width: 720px;
+      margin: 28px auto 0;
+
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    .hero-actions {
+      margin-top: 36px;
+
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 13px 18px;
+      border-radius: 13px;
+
+      border: 1px solid var(--border);
+      cursor: pointer;
+
+      transition:
+        transform .25s,
+        background .25s,
+        border .25s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+    }
+
+    /* =========================
+       SECTIONS
+    ========================= */
+
+    section {
+      padding: 110px 0;
+      scroll-margin-top: 72px;
+    }
+
+    .section-header {
+      max-width: 750px;
+      margin-bottom: 45px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-family: "Space Mono", monospace;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    .section-description {
+      margin-top: 17px;
+      color: var(--muted);
+      max-width: 680px;
+    }
+
+    /* =========================
+       CARDS
+    ========================= */
+
+    .grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+
+      box-shadow: var(--shadow);
+
+      backdrop-filter: blur(15px);
+
+      transition:
+        transform .35s,
+        border-color .35s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124,92,255,.4);
+    }
+
+    .icon-box {
+      width: 50px;
+      height: 50px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 15px;
+      background: rgba(124,92,255,.12);
+      color: var(--primary-2);
+
+      font-size: 1.25rem;
+
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .detail-list {
+      margin-top: 16px;
+      padding-left: 19px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .detail-list li + li { margin-top: 8px; }
+
+    .example-tag {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(53,215,255,.1);
+      color: var(--cyan);
+      font-family: "Space Mono", monospace;
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    /* =========================
+       FLOW
+    ========================= */
+
+    .flow-card {
+      overflow: hidden;
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+
+      padding: 34px 28px;
+      margin-top: 20px;
+
+      min-height: 250px;
+      align-items: center;
+      border: 2px solid var(--diagram-border);
+      border-radius: 18px;
+      background: var(--diagram-bg);
+
+      overflow-x: auto;
+    }
+
+    .mermaid svg {
+      min-width: 720px;
+      height: auto;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.12));
+    }
+
+    .diagram-caption {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    .worked-example {
+      margin-top: 28px;
+      border-left: 4px solid var(--green);
+      background: linear-gradient(135deg, rgba(66,230,164,.08), var(--surface-soft));
+    }
+
+    .example-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .example-step {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+
+    .example-step b { display: block; color: var(--green); margin-bottom: 6px; }
+    .example-step p { font-size: .86rem; }
+
+    .prompt-box {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--code-bg);
+      color: var(--text);
+      font: .86rem/1.65 "Space Mono", monospace;
+      white-space: pre-wrap;
+    }
+
+    /* =========================
+       TOKEN ANIMATION
+    ========================= */
+
+    .token-demo {
+      position: relative;
+      min-height: 280px;
+
+      display: grid;
+      place-items: center;
+
+      overflow: hidden;
+      border-radius: var(--radius);
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(124,92,255,.15),
+          transparent 65%
+        );
+    }
+
+    .brain {
+      width: 100px;
+      height: 100px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      background:
+        linear-gradient(135deg, var(--primary), #3c82ff);
+
+      font-size: 2.7rem;
+
+      box-shadow:
+        0 0 50px rgba(124,92,255,.4);
+
+      animation: float 4s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .token {
+      position: absolute;
+
+      padding: 5px 9px;
+      border-radius: 8px;
+
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.1);
+
+      color: var(--floating-label);
+
+      font-family: "Space Mono", monospace;
+      font-size: .7rem;
+
+      animation: tokenMove 5s linear infinite;
+    }
+
+    .token:nth-child(1) {
+      animation-delay: 0s;
+      left: 5%;
+      top: 20%;
+    }
+
+    .token:nth-child(2) {
+      animation-delay: 1s;
+      left: 10%;
+      top: 70%;
+    }
+
+    .token:nth-child(3) {
+      animation-delay: 2s;
+      right: 5%;
+      top: 30%;
+    }
+
+    .token:nth-child(4) {
+      animation-delay: 3s;
+      right: 15%;
+      top: 75%;
+    }
+
+    @keyframes tokenMove {
+      0% {
+        transform: translate(0,0) scale(.8);
+        opacity: 0;
+      }
+
+      15% {
+        opacity: 1;
+      }
+
+      70% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(
+          calc(50vw - 180px),
+          calc(140px - 50vh)
+        ) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* =========================
+       COMPARISON
+    ========================= */
+
+    .comparison {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 17px;
+      text-align: left;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text);
+      font-size: .85rem;
+    }
+
+    td {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    td:first-child {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .human {
+      color: var(--orange);
+    }
+
+    .machine {
+      color: var(--cyan);
+    }
+
+    /* =========================
+       REASONING LOOP
+    ========================= */
+
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+
+      margin-top: 35px;
+    }
+
+    .loop-step {
+      position: relative;
+
+      min-height: 150px;
+      padding: 18px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      border: 1px solid var(--border);
+      border-radius: 18px;
+
+      background: var(--surface-soft);
+
+      transition: .3s;
+    }
+
+    .loop-step:hover {
+      transform: scale(1.04);
+      border-color: var(--primary);
+    }
+
+    .loop-number {
+      font-family: "Space Mono", monospace;
+      font-size: .7rem;
+      color: var(--primary-2);
+    }
+
+    .loop-step strong {
+      margin-top: 7px;
+    }
+
+    .loop-step span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    /* =========================
+       CALLOUT
+    ========================= */
+
+    .callout {
+      padding: 28px;
+
+      border: 1px solid rgba(255,180,84,.2);
+      border-radius: var(--radius);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,180,84,.08),
+          rgba(255,255,255,.025)
+        );
+
+      margin-top: 25px;
+    }
+
+    .callout-title {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      color: var(--orange);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .callout p {
+      color: var(--muted);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      padding: 60px 0;
+
+      border-top: 1px solid var(--border);
+
+      color: var(--muted);
+      text-align: center;
+
+      font-size: .85rem;
+    }
+
+    footer strong {
+      color: var(--text);
+    }
+
+    /* =========================
+       REVEAL ANIMATION
+    ========================= */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(35px);
+
+      transition:
+        opacity .7s ease,
+        transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 850px) {
+
+      .nav-links {
+        position: fixed;
+        top: 72px;
+        left: 15px;
+        right: 15px;
+
+        padding: 12px;
+
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+
+        background: var(--card-solid);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+
+        box-shadow: var(--shadow);
+      }
+
+      .nav-links.open {
+        display: flex;
+        animation: menuIn .25s ease;
+      }
+
+      .nav-links a {
+        padding: 13px;
+      }
+
+      @keyframes menuIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hamburger {
+        display: grid;
+        place-items: center;
+      }
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .loop {
+        grid-template-columns: 1fr;
+      }
+
+      .loop-step {
+        min-height: 100px;
+      }
+
+      .example-steps { grid-template-columns: 1fr 1fr; }
+
+      section {
+        padding: 80px 0;
+      }
+    }
+
+    @media (max-width: 500px) {
+
+      .container {
+        width: min(calc(100% - 28px), var(--max-width));
+      }
+
+      .nav-inner {
+        width: calc(100% - 28px);
+      }
+
+      .hero {
+        padding-top: 125px;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: clamp(2.8rem, 15vw, 4.5rem);
+      }
+
+      .logo { font-size: .9rem; }
+      .example-steps { grid-template-columns: 1fr; }
+      .mermaid { justify-content: flex-start; padding: 24px 18px; }
+    }
+
+    /* Accessibilità */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       NAVIGATION
+  ========================== -->
+
+  <header class="navbar">
+
+    <nav class="nav-inner">
+
+      <a href="#home" class="logo">
+        <span class="logo-icon">
+          <i class="fa-solid fa-brain"></i>
+        </span>
+
+        LLM<span>Reasoning</span>
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+
+        <li>
+          <a href="#come-funziona">Come funziona</a>
+        </li>
+
+        <li>
+          <a href="#reasoning">Reasoning</a>
+        </li>
+
+        <li>
+          <a href="#umano">Vs umano</a>
+        </li>
+
+        <li>
+          <a href="#esempi">Esempi</a>
+        </li>
+
+        <li>
+          <a href="#limiti">Limiti</a>
+        </li>
+
+      </ul>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Attiva tema chiaro" title="Cambia tema">
+          <i class="fa-solid fa-sun"></i>
+        </button>
+
+        <button
+          class="hamburger"
+          id="hamburger"
+          aria-label="Apri menu"
+          aria-expanded="false"
+        >
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+    </nav>
+
+  </header>
+
+
+  <main>
+
+    <!-- =========================
+         HERO
+    ========================== -->
+
+    <section class="hero" id="home">
+
+      <div class="container">
+
+        <div class="badge">
+          <span class="pulse-dot"></span>
+          AI • Reasoning • Human cognition
+        </div>
+
+        <h1>
+          Come fa un LLM a
+          <span class="gradient-text">
+            “ragionare”?
+          </span>
+          🤖
+        </h1>
+
+        <p class="hero-subtitle">
+          Un viaggio visuale dentro token, probabilità, contesto,
+          pianificazione e verifica — e nelle differenze fondamentali
+          rispetto al ragionamento umano.
+        </p>
+
+        <div class="hero-actions">
+
+          <a href="#come-funziona" class="btn btn-primary">
+            <i class="fa-solid fa-rocket"></i>
+            Inizia il viaggio
+          </a>
+
+          <a href="#umano" class="btn btn-secondary">
+            <i class="fa-solid fa-scale-balanced"></i>
+            Confronta
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         COS'È UN LLM
+    ========================== -->
+
+    <section id="come-funziona">
+
+      <div class="container">
+
+        <div class="section-header reveal">
+
+          <div class="eyebrow">
+            01 / Fondamenta
+          </div>
+
+          <h2>
+            Prima di “ragionare”,
+            deve predire.
+          </h2>
+
+          <p class="section-description">
+            Un LLM genera testo prevedendo, passo dopo passo,
+            quali token siano più compatibili con il contesto.
+            Da questa capacità possono emergere comportamenti
+            che assomigliano al ragionamento.
+          </p>
+
+        </div>
+
+
+        <div class="grid grid-3">
+
+          <article class="card reveal">
+
+            <div class="icon-box">
+              <i class="fa-solid fa-puzzle-piece"></i>
+            </div>
+
+            <h3>Tokenizzazione</h3>
+
+            <p>
+              Il testo viene suddiviso in token: frammenti di parole,
+              parole o simboli che il modello può elaborare.
+            </p>
+
+            <ul class="detail-list">
+              <li>La stessa parola può essere uno o più token.</li>
+              <li>Spazi, punteggiatura e lingua cambiano la segmentazione.</li>
+            </ul>
+
+            <span class="example-tag">ESEMPIO: “impossibile” → “im” + “possibile”</span>
+
+          </article>
+
+
+          <article class="card reveal">
+
+            <div class="icon-box">
+              <i class="fa-solid fa-network-wired"></i>
+            </div>
+
+            <h3>Rappresentazioni</h3>
+
+            <p>
+              I token vengono trasformati in rappresentazioni numeriche
+              che permettono alla rete di catturare relazioni e contesto.
+            </p>
+
+            <ul class="detail-list">
+              <li>L'attenzione collega ogni token a quelli rilevanti.</li>
+              <li>Il significato operativo cambia con la frase.</li>
+            </ul>
+
+            <span class="example-tag">“banca” = fiume oppure denaro?</span>
+
+          </article>
+
+
+          <article class="card reveal">
+
+            <div class="icon-box">
+              <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+            <h3>Predizione</h3>
+
+            <p>
+              Il modello assegna probabilità ai possibili token successivi
+              e genera una continuazione coerente con il contesto.
+            </p>
+
+            <ul class="detail-list">
+              <li>La scelta dipende da contesto e impostazioni di generazione.</li>
+              <li>Probabile non significa necessariamente vero.</li>
+            </ul>
+
+            <span class="example-tag">P(token successivo | contesto)</span>
+
+          </article>
+
+        </div>
+
+
+        <div class="card flow-card reveal" style="margin-top:20px">
+
+          <h3>
+            🔄 Dal prompt alla risposta
+          </h3>
+
+          <div class="mermaid">
+flowchart LR
+    A["👤 Prompt"] --> B["🔤 Token"]
+    B --> C["🧠 Transformer"]
+    C --> D["📊 Distribuzione di probabilità"]
+    D --> E["🎯 Selezione token"]
+    E --> F["💬 Output"]
+    F --> G{"Altri token?"}
+    G -- "Sì" --> C
+    G -- "No" --> H["✅ Fine"]
+          </div>
+
+          <p class="diagram-caption">Schema 1 — Ogni token generato rientra nel contesto e alimenta il passo successivo.</p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         TOKEN VISUAL
+    ========================== -->
+
+    <section>
+
+      <div class="container">
+
+        <div class="grid grid-2">
+
+          <div class="reveal">
+
+            <div class="section-header">
+
+              <div class="eyebrow">
+                Visualizzazione
+              </div>
+
+              <h2>
+                Il testo diventa numeri.
+              </h2>
+
+              <p class="section-description">
+                Non significa che il modello “legga” come una persona.
+                Lavora attraverso rappresentazioni matematiche apprese
+                durante l'addestramento.
+              </p>
+
+            </div>
+
+            <div class="card">
+
+              <p>
+                <strong>Prompt:</strong>
+                “Perché il cielo è blu?”
+              </p>
+
+              <br>
+
+              <p style="font-family:'Space Mono',monospace">
+                Perché → 1842<br>
+                il → 317<br>
+                cielo → 9021<br>
+                è → 71<br>
+                blu → 4420
+              </p>
+
+              <p style="margin-top:16px;font-size:.8rem">
+                Numeri puramente illustrativi: token e identificatori cambiano da un modello all'altro.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="card token-demo reveal">
+
+            <div class="token">cielo</div>
+            <div class="token">perché</div>
+            <div class="token">blu</div>
+            <div class="token">luce</div>
+
+            <div class="brain">
+              🧠
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         REASONING
+    ========================== -->
+
+    <section id="reasoning">
+
+      <div class="container">
+
+        <div class="section-header reveal">
+
+          <div class="eyebrow">
+            02 / Reasoning
+          </div>
+
+          <h2>
+            Quando il problema
+            richiede più passi.
+          </h2>
+
+          <p class="section-description">
+            Per problemi complessi, un modello può utilizzare strategie
+            che decomponono il compito, esplorano possibilità,
+            effettuano calcoli o verificano risultati.
+          </p>
+
+        </div>
+
+
+        <div class="card reveal">
+
+          <h3>
+            🧩 Un problema può diventare una sequenza di sottoproblemi
+          </h3>
+
+          <div class="mermaid">
+
+flowchart TD
+
+    A["🎯 Problema"] --> B["🧩 Decomposizione"]
+
+    B --> C["Problema A"]
+    B --> D["Problema B"]
+    B --> E["Problema C"]
+
+    C --> F["🔎 Analisi"]
+    D --> G["🧮 Calcolo"]
+    E --> H["📚 Recupero / conoscenza"]
+
+    F --> I["🔗 Sintesi"]
+    G --> I
+    H --> I
+
+    I --> J["✅ Risposta"]
+
+          </div>
+
+          <p class="diagram-caption">Schema 2 — La decomposizione separa analisi, calcolo e recupero delle informazioni prima della sintesi.</p>
+
+        </div>
+
+        <article class="card worked-example reveal">
+          <span class="example-tag">ESEMPIO SVOLTO</span>
+          <h3 style="margin-top:14px">Organizzare 24 studenti in gruppi da massimo 5</h3>
+          <p>Un buon processo non salta subito alla risposta: esplicita vincoli, calcola, controlla e comunica il risultato.</p>
+          <div class="example-steps">
+            <div class="example-step"><b>1 · Capire</b><p>24 studenti; ogni gruppo può contenere al massimo 5 persone.</p></div>
+            <div class="example-step"><b>2 · Calcolare</b><p>24 ÷ 5 = 4 con resto 4, quindi servono almeno 5 gruppi.</p></div>
+            <div class="example-step"><b>3 · Verificare</b><p>5 + 5 + 5 + 5 + 4 = 24 e nessun gruppo supera il limite.</p></div>
+            <div class="example-step"><b>4 · Rispondere</b><p>Servono 5 gruppi: quattro da 5 studenti e uno da 4.</p></div>
+          </div>
+        </article>
+
+
+        <div class="loop reveal">
+
+          <div class="loop-step">
+
+            <div class="loop-number">STEP 01</div>
+
+            <strong>🎯 Capire</strong>
+
+            <span>
+              Identificare obiettivo e vincoli.
+            </span>
+
+          </div>
+
+
+          <div class="loop-step">
+
+            <div class="loop-number">STEP 02</div>
+
+            <strong>🧩 Scomporre</strong>
+
+            <span>
+              Dividere il problema in parti.
+            </span>
+
+          </div>
+
+
+          <div class="loop-step">
+
+            <div class="loop-number">STEP 03</div>
+
+            <strong>⚙️ Elaborare</strong>
+
+            <span>
+              Produrre rappresentazioni e possibili soluzioni.
+            </span>
+
+          </div>
+
+
+          <div class="loop-step">
+
+            <div class="loop-number">STEP 04</div>
+
+            <strong>🔍 Verificare</strong>
+
+            <span>
+              Controllare coerenza o risultato quando possibile.
+            </span>
+
+          </div>
+
+
+          <div class="loop-step">
+
+            <div class="loop-number">STEP 05</div>
+
+            <strong>💬 Rispondere</strong>
+
+            <span>
+              Convertire il risultato in linguaggio naturale.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="callout reveal">
+
+          <div class="callout-title">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            Una distinzione importante
+
+          </div>
+
+          <p>
+            “Reasoning” non significa necessariamente che possiamo osservare
+            una trascrizione fedele di tutto ciò che avviene internamente
+            nel modello. Una spiegazione prodotta dal modello può essere
+            utile, ma non va automaticamente interpretata come una lettura
+            completa dei suoi processi interni.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         HUMAN VS LLM
+    ========================== -->
+
+    <section id="umano">
+
+      <div class="container">
+
+        <div class="section-header reveal">
+
+          <div class="eyebrow">
+            03 / Confronto
+          </div>
+
+          <h2>
+            LLM ≠ cervello umano.
+          </h2>
+
+          <p class="section-description">
+            Il comportamento può sembrare simile in superficie,
+            ma il meccanismo e il rapporto con il mondo sono molto diversi.
+          </p>
+
+        </div>
+
+
+        <div class="card comparison reveal">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Dimensione</th>
+                <th class="machine">🤖 LLM</th>
+                <th class="human">🧑 Umano</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr>
+
+                <td>Base</td>
+
+                <td>
+                  Rete neurale addestrata su dati
+                </td>
+
+                <td>
+                  Sistema biologico
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>Informazione</td>
+
+                <td>
+                  Token e rappresentazioni numeriche
+                </td>
+
+                <td>
+                  Percezione, memoria, sensazioni,
+                  linguaggio e esperienza
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>Apprendimento</td>
+
+                <td>
+                  Principalmente durante fasi di training;
+                  alcuni sistemi possono avere meccanismi
+                  aggiuntivi di adattamento
+                </td>
+
+                <td>
+                  Continuo e fortemente legato all'esperienza
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>Memoria</td>
+
+                <td>
+                  Dipende dall'architettura e dal contesto disponibile
+                </td>
+
+                <td>
+                  Memoria biologica episodica, semantica,
+                  procedurale, ecc.
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>Esperienza soggettiva</td>
+
+                <td>
+                  Non è qualcosa che possiamo dedurre
+                  semplicemente dal comportamento linguistico
+                </td>
+
+                <td>
+                  Associata alla coscienza umana
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>Obiettivi</td>
+
+                <td>
+                  Funzioni e segnali definiti dal sistema
+                </td>
+
+                <td>
+                  Bisogni, motivazioni, valori,
+                  emozioni e obiettivi personali
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         DIFFERENZA CONCETTUALE
+    ========================== -->
+
+    <section>
+
+      <div class="container">
+
+        <div class="grid grid-2">
+
+          <div class="card reveal">
+
+            <div class="icon-box">
+              🤖
+            </div>
+
+            <h3>
+              Il “ragionamento” dell'LLM
+            </h3>
+
+            <p>
+              Può emergere dalla combinazione di rappresentazioni,
+              attenzione al contesto, generazione sequenziale,
+              procedure esterne e strategie di ricerca o verifica.
+            </p>
+
+            <br>
+
+            <div class="mermaid">
+
+flowchart LR
+    A["Input"] --> B["Rappresentazioni"]
+    B --> C["Pattern + contesto"]
+    C --> D["Passaggi intermedi"]
+    D --> E["Output"]
+
+            </div>
+
+            <p class="diagram-caption">Schema 3 — Il modello combina pattern, contesto e passaggi intermedi.</p>
+
+          </div>
+
+
+          <div class="card reveal">
+
+            <div class="icon-box">
+              🧑‍🔬
+            </div>
+
+            <h3>
+              Il ragionamento umano
+            </h3>
+
+            <p>
+              È inserito in un organismo che percepisce il mondo,
+              possiede memoria autobiografica, emozioni, bisogni,
+              interazioni sociali e capacità metacognitive.
+            </p>
+
+            <br>
+
+            <div class="mermaid">
+
+flowchart LR
+    A["🌍 Esperienza"] --> B["🧠 Percezione"]
+    B --> C["💭 Memoria + concetti"]
+    C --> D["❤️ Valori + motivazioni"]
+    D --> E["🧩 Ragionamento"]
+    E --> F["🎯 Azione"]
+
+            </div>
+
+            <p class="diagram-caption">Schema 4 — Il ragionamento umano integra corpo, esperienza, memoria e valori.</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ESEMPI PRATICI
+    ========================== -->
+
+    <section id="esempi">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="eyebrow">04 / Dalla teoria alla pratica</div>
+          <h2>Tre modi per ottenere risposte più affidabili.</h2>
+          <p class="section-description">
+            Il prompt non rende infallibile un modello, ma può rendere il compito più chiaro,
+            il risultato più controllabile e gli errori più facili da individuare.
+          </p>
+        </div>
+
+        <div class="grid grid-3">
+          <article class="card reveal">
+            <div class="icon-box"><i class="fa-solid fa-list-check"></i></div>
+            <h3>Definisci il risultato</h3>
+            <p>Specifica pubblico, formato, lunghezza e criteri di successo.</p>
+            <div class="prompt-box">Spiega la fotosintesi a una classe seconda. Usa 120 parole, un'analogia e 3 domande finali.</div>
+          </article>
+
+          <article class="card reveal">
+            <div class="icon-box"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h3>Chiedi controlli osservabili</h3>
+            <p>Fai separare dati, inferenze e aspetti incerti; verifica poi le fonti reali.</p>
+            <div class="prompt-box">Dividi la risposta in: fatti forniti, deduzioni, informazioni mancanti. Non inventare fonti.</div>
+          </article>
+
+          <article class="card reveal">
+            <div class="icon-box"><i class="fa-solid fa-rotate"></i></div>
+            <h3>Lavora per iterazioni</h3>
+            <p>Prima una bozza, poi una critica su criteri espliciti, infine la revisione.</p>
+            <div class="prompt-box">Valuta la bozza per chiarezza, accuratezza e completezza. Elenca i problemi prima di riscriverla.</div>
+          </article>
+        </div>
+
+        <div class="callout reveal">
+          <div class="callout-title"><i class="fa-solid fa-shield-halved"></i> Regola pratica</div>
+          <p>Per decisioni importanti, usa l'LLM come supporto: controlla calcoli, citazioni, date e conclusioni con fonti o strumenti indipendenti.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================
+         LIMITI
+    ========================== -->
+
+    <section id="limiti">
+
+      <div class="container">
+
+        <div class="section-header reveal">
+
+          <div class="eyebrow">
+            05 / Limiti
+          </div>
+
+          <h2>
+            Perché un LLM può
+            sembrare intelligente...
+            e sbagliare?
+          </h2>
+
+          <p class="section-description">
+            La fluidità del linguaggio non garantisce automaticamente
+            verità, comprensione del mondo o correttezza logica.
+          </p>
+
+        </div>
+
+
+        <div class="grid grid-3">
+
+          <article class="card reveal">
+
+            <div class="icon-box">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3>Allucinazioni</h3>
+
+            <p>
+              Può generare informazioni plausibili ma false,
+              soprattutto quando mancano dati affidabili.
+            </p>
+
+          </article>
+
+
+          <article class="card reveal">
+
+            <div class="icon-box">
+              <i class="fa-solid fa-calculator"></i>
+            </div>
+
+            <h3>Errori</h3>
+
+            <p>
+              Anche problemi apparentemente semplici possono
+              produrre errori senza strumenti o verifiche adeguate.
+            </p>
+
+          </article>
+
+
+          <article class="card reveal">
+
+            <div class="icon-box">
+              <i class="fa-solid fa-globe"></i>
+            </div>
+
+            <h3>Grounding</h3>
+
+            <p>
+              Il modello non possiede automaticamente un accesso
+              diretto e continuo al mondo reale.
+            </p>
+
+          </article>
+
+        </div>
+
+
+        <div class="card reveal" style="margin-top:20px">
+
+          <h3>
+            🧠 La metafora corretta
+          </h3>
+
+          <p style="margin-top:12px;color:var(--muted);font-size:1.05rem">
+
+            Non pensare necessariamente:
+            <strong style="color:var(--text)">
+              “Dentro c'è una persona che pensa.”
+            </strong>
+
+            <br><br>
+
+            È più utile pensare:
+            <strong style="color:var(--cyan)">
+              “È un sistema computazionale che può produrre
+              comportamenti di problem solving molto sofisticati.”
+            </strong>
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         SUMMARY
+    ========================== -->
+
+    <section>
+
+      <div class="container">
+
+        <div class="card reveal"
+             style="
+               text-align:center;
+               padding:55px 30px;
+               background:
+                 radial-gradient(
+                   circle at center,
+                   rgba(124,92,255,.18),
+                   rgba(255,255,255,.025)
+                 );
+             ">
+
+          <div style="font-size:3rem;margin-bottom:20px">
+            🤖 + 🧩 + 📊 + 🔍
+          </div>
+
+          <h2>
+            Il punto chiave
+          </h2>
+
+          <p
+            style="
+              max-width:700px;
+              margin:20px auto 0;
+              color:var(--muted);
+            "
+          >
+            Un LLM può eseguire sequenze di elaborazione che assomigliano
+            al ragionamento: decomporre problemi, confrontare possibilità,
+            utilizzare strumenti e verificare risultati.
+            Ma questo non implica che il suo funzionamento sia equivalente
+            alla cognizione umana.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer>
+
+    <div class="container">
+
+      <p>
+        <strong>LLM Reasoning</strong> ·
+        Una visualizzazione educativa del problem solving nei modelli linguistici.
+      </p>
+
+      <p style="margin-top:8px">
+        HTML5 · CSS3 · JavaScript Vanilla · Mermaid
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    /* ==================================
+       MERMAID
+    ================================== */
+
+    const diagramSources = [...document.querySelectorAll(".mermaid")].map(el => ({
+      el,
+      source: el.textContent.trim()
+    }));
+
+    async function renderDiagrams(theme) {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: theme === "light" ? "base" : "dark",
+        themeVariables: theme === "light" ? {
+          primaryColor: "#e8e2ff", primaryTextColor: "#172033",
+          primaryBorderColor: "#6246d9", lineColor: "#067b9e",
+          secondaryColor: "#e5f7fb", tertiaryColor: "#f8fbff",
+          background: "#f8fbff", mainBkg: "#ffffff", nodeBorder: "#6246d9"
+        } : {
+          primaryColor: "#7c5cff", primaryTextColor: "#ffffff",
+          primaryBorderColor: "#9b87ff", lineColor: "#35d7ff",
+          secondaryColor: "#111928", tertiaryColor: "#0c1220",
+          background: "#0c1220", mainBkg: "#111928", nodeBorder: "#7c5cff",
+          clusterBkg: "#0c1220"
+        },
+        flowchart: { curve: "basis", htmlLabels: true }
+      });
+
+      for (let index = 0; index < diagramSources.length; index++) {
+        const diagram = diagramSources[index];
+        const { svg } = await mermaid.render(`diagram-${theme}-${index}-${Date.now()}`, diagram.source);
+        diagram.el.innerHTML = svg;
+      }
+    }
+
+    const themeToggle = document.getElementById("themeToggle");
+    const storedTheme = localStorage.getItem("llm-reasoning-theme");
+    const preferredTheme = storedTheme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+
+    function applyTheme(theme, rerender = true) {
+      document.documentElement.dataset.theme = theme;
+      localStorage.setItem("llm-reasoning-theme", theme);
+      const light = theme === "light";
+      themeToggle.innerHTML = light
+        ? '<i class="fa-solid fa-moon"></i>'
+        : '<i class="fa-solid fa-sun"></i>';
+      themeToggle.setAttribute("aria-label", light ? "Attiva tema scuro" : "Attiva tema chiaro");
+      if (rerender) renderDiagrams(theme);
+    }
+
+    applyTheme(preferredTheme, false);
+    renderDiagrams(preferredTheme);
+
+    themeToggle.addEventListener("click", () => {
+      applyTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+    });
+
+
+    /* ==================================
+       MOBILE MENU
+    ================================== */
+
+    const hamburger =
+      document.getElementById("hamburger");
+
+    const navLinks =
+      document.getElementById("navLinks");
+
+
+    hamburger.addEventListener("click", () => {
+
+      const open =
+        navLinks.classList.toggle("open");
+
+      hamburger.setAttribute(
+        "aria-expanded",
+        open
+      );
+
+      hamburger.innerHTML = open
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+
+    });
+
+
+    /* Chiudi il menu dopo aver cliccato un link */
+
+    document
+      .querySelectorAll(".nav-links a")
+      .forEach(link => {
+
+        link.addEventListener("click", () => {
+
+          navLinks.classList.remove("open");
+
+          hamburger.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+          hamburger.innerHTML =
+            '<i class="fa-solid fa-bars"></i>';
+
+        });
+
+      });
+
+
+    /* ==================================
+       SCROLL REVEAL
+    ================================== */
+
+    const revealElements =
+      document.querySelectorAll(".reveal");
+
+
+    const observer =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+              entry.target.classList.add("visible");
+
+              observer.unobserve(
+                entry.target
+              );
+
+            }
+
+          });
+
+        },
+        {
+          threshold: .12
+        }
+      );
+
+
+    revealElements.forEach(element => {
+      observer.observe(element);
+    });
+
+
+    /* ==================================
+       ACTIVE NAVIGATION
+    ================================== */
+
+    const sections =
+      document.querySelectorAll("section[id]");
+
+    const navItems =
+      document.querySelectorAll(".nav-links a");
+
+
+    const sectionObserver =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+              navItems.forEach(item => {
+                item.style.color = "";
+                item.style.background = "";
+              });
+
+              const active =
+                document.querySelector(
+                  `.nav-links a[href="#${entry.target.id}"]`
+                );
+
+              if (active) {
+
+                active.style.color =
+                  "var(--text)";
+
+                active.style.background =
+                  "rgba(124,92,255,.13)";
+
+              }
+
+            }
+
+          });
+
+        },
+        {
+          rootMargin: "-25% 0px -65% 0px"
+        }
+      );
+
+
+    sections.forEach(section => {
+      sectionObserver.observe(section);
+    });
+
+
+    /* ==================================
+       PARALLAX LEGGERO HERO
+    ================================== */
+
+    const hero =
+      document.querySelector(".hero");
+
+    window.addEventListener(
+      "scroll",
+      () => {
+
+        const y =
+          window.scrollY;
+
+        if (y < window.innerHeight) {
+
+          hero.style.transform =
+            `translateY(${y * .08}px)`;
+
+          hero.style.opacity =
+            Math.max(
+              .35,
+              1 - y / 650
+            );
+
+        }
+
+      },
+      { passive: true }
+    );
+
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="it" data-contrast-audit="pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reasoning negli LLM — Guida Interattiva</title>
+  
+  <!-- Preconnect e Google Fonts con fallback sicuro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. TOKEN E VARIABILI DI SISTEMA
+       ========================================================================== */
+    :root {
+      --black: #000000;
+      --ink: #111111;
+      --white: #ffffff;
+      --cream: #faf6ee;
+      --paper: #f2ead9;
+      --burgundy: #7c1d3f;
+      --burgundy-dark: #5a1530;
+      --gold: #b8862c;
+      --line: rgba(34, 27, 22, 0.18);
+      --shadow: 0 10px 30px rgba(34, 27, 22, 0.06);
+      --shadow-hover: 0 15px 35px rgba(34, 27, 22, 0.12);
+      --radius: 1rem;
+      --radius-sm: 0.5rem;
+      --max-width: 68rem;
+      --content-width: 50rem;
+      --header-height: 4.25rem;
+    }
+
+    /* Reset e impostazioni base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--cream);
+      color: var(--black);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      background-color: var(--cream);
+      color: var(--black);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: "Playfair Display", Georgia, serif;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    .label, code, pre, .number, .mono {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    /* ==========================================================================
+       2. REGOLE MANDATORIE DI POLARITÀ E CONTRASTO (TESTO RIGIDAMENTE NERO/BIANCO)
+       ========================================================================== */
+    [data-surface="light"],
+    [data-surface="paper"] {
+      background-color: var(--cream);
+      color: var(--black) !important;
+    }
+    [data-surface="paper"] {
+      background-color: var(--paper);
+    }
+    [data-surface="dark"] {
+      background-color: var(--ink);
+      color: var(--white) !important;
+    }
+
+    [data-surface="light"] :where(h1,h2,h3,h4,h5,h6,p,li,dt,dd,span,a,strong,em,small,label,th,td,code,pre,button,summary),
+    [data-surface="paper"] :where(h1,h2,h3,h4,h5,h6,p,li,dt,dd,span,a,strong,em,small,label,th,td,code,pre,button,summary) {
+      color: var(--black) !important;
+    }
+
+    [data-surface="dark"] :where(h1,h2,h3,h4,h5,h6,p,li,dt,dd,span,a,strong,em,small,label,th,td,code,pre,button,summary) {
+      color: var(--white) !important;
+    }
+
+    /* Gestione ad alta priorità per superfici annidate ed elementi con data-surface specifico */
+    [data-surface="dark"] :where([data-surface="light"], [data-surface="paper"]),
+    [data-surface="dark"] :where([data-surface="light"], [data-surface="paper"]) :where(h1,h2,h3,h4,h5,h6,p,li,dt,dd,span,a,strong,em,small,label,th,td,code,pre,button,summary) {
+      color: var(--black) !important;
+    }
+
+    [data-surface="light"] :where([data-surface="dark"]),
+    [data-surface="paper"] :where([data-surface="dark"]),
+    [data-surface="light"] :where([data-surface="dark"]) :where(h1,h2,h3,h4,h5,h6,p,li,dt,dd,span,a,strong,em,small,label,th,td,code,pre,button,summary),
+    [data-surface="paper"] :where([data-surface="dark"]) :where(h1,h2,h3,h4,h5,h6,p,li,dt,dd,span,a,strong,em,small,label,th,td,code,pre,button,summary) {
+      color: var(--white) !important;
+    }
+
+    /* Accessibility Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 1rem;
+      background: var(--gold);
+      color: var(--black) !important;
+      padding: 0.75rem 1.25rem;
+      z-index: 10000;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 1rem;
+      outline: 3px solid var(--black);
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--gold) !important;
+      outline-offset: 3px !important;
+    }
+
+    /* Links stilizzati */
+    a.inline-link {
+      text-decoration: none;
+      border-bottom: 2px solid var(--burgundy);
+      font-weight: 600;
+      color: inherit;
+    }
+    a.inline-link:hover {
+      background-color: rgba(124, 29, 63, 0.08);
+    }
+
+    /* ==========================================================================
+       3. BARRA DI AVANZAMENTO E HEADER STICKY
+       ========================================================================== */
+    .progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--line);
+      z-index: 9999;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--burgundy) 0%, var(--gold) 100%);
+      transition: width 0.1s linear;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      background: rgba(250, 246, 238, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-inner {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 2rem;
+      height: 2rem;
+      background: var(--ink);
+      border-radius: 0.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 1px solid var(--gold);
+    }
+
+    .brand-title {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .nav-desktop {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background-color: var(--paper);
+    }
+
+    .nav-link.active {
+      border-color: var(--burgundy);
+      background-color: rgba(124, 29, 63, 0.06);
+    }
+
+    /* Menu Mobile */
+    .mobile-menu-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .mobile-nav-overlay {
+      display: none;
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--cream);
+      border-bottom: 1px solid var(--line);
+      padding: 1.5rem;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 999;
+      box-shadow: var(--shadow);
+    }
+
+    .mobile-nav-overlay.is-open {
+      display: flex;
+    }
+
+    @media (max-width: 820px) {
+      .nav-desktop { display: none; }
+      .mobile-menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
+    }
+
+    /* ==========================================================================
+       4. LAYOUT ED ELEMENTI DI STRUTTURA
+       ========================================================================== */
+    section {
+      padding: 4.5rem 1.5rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .container-reading {
+      max-width: var(--content-width);
+      margin: 0 auto;
+    }
+
+    .badge-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2rem;
+      border: 1px solid var(--burgundy);
+      margin-bottom: 1.25rem;
+    }
+
+    [data-surface="dark"] .badge-tag {
+      border-color: var(--gold);
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      margin-bottom: 1.25rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.125rem;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Reveal su scroll */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-height: 44px;
+      border: 2px solid transparent;
+    }
+
+    .btn-primary {
+      background-color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-gold {
+      background-color: var(--gold);
+      border-color: var(--gold);
+      font-weight: 700;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    /* ==========================================================================
+       5. SEZIONI SPECIFICHE DELL'ARCO EDITORIALE
+       ========================================================================== */
+
+    /* 5.1 HERO SECTION */
+    .hero-section {
+      padding: 5.5rem 1.5rem 4.5rem;
+      background-color: var(--cream);
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 3.75rem);
+      margin-bottom: 1.5rem;
+      max-width: 48rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-lead {
+      font-size: 1.25rem;
+      max-width: 42rem;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* 5.2 CONTESTO SECTION (Paper Surface) */
+    .context-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.75rem;
+      margin-top: 2rem;
+    }
+
+    .card-paper {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card-paper h3 {
+      font-size: 1.35rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* 5.3 MECCANISMO SECTION (Dark Surface - Black) */
+    .mechanism-section {
+      background-color: var(--ink);
+      color: var(--white);
+      position: relative;
+    }
+
+    .mechanism-toggle-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .toggle-control {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 2rem;
+      padding: 0.35rem;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .toggle-btn[aria-pressed="true"] {
+      background-color: var(--white);
+    }
+
+    .mechanism-display-box {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius);
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .flow-step {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .flow-step.highlight {
+      border-color: var(--gold);
+      background: rgba(184, 134, 44, 0.2);
+    }
+
+    .flow-arrow {
+      font-weight: bold;
+    }
+
+    /* 5.4 PANORAMICA (FLIP CARDS) */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .flip-card {
+      background-color: transparent;
+      min-height: 230px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: left;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+    }
+
+    .flip-card:hover .flip-card-inner,
+    .flip-card.is-flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .flip-card-front {
+      background-color: var(--cream);
+    }
+
+    .flip-card-back {
+      background-color: var(--paper);
+      transform: rotateY(180deg);
+      border: 1px solid var(--burgundy);
+    }
+
+    .card-hint {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-top: 1px solid var(--line);
+      padding-top: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    /* 5.5 SCELTA GUIDATA (CHIP SELECTOR) */
+    .chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+
+    .chip-btn {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 2rem;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .chip-btn[aria-pressed="true"] {
+      border-color: var(--burgundy);
+      background-color: var(--ink);
+    }
+
+    .scenario-card {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .scenario-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.25rem;
+      background: var(--paper);
+      border: 1px solid var(--burgundy);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    /* 5.6 CONFRONTO (TABS & TABELLA RESPONSIVE) */
+    .tab-list {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--line);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      min-height: 44px;
+    }
+
+    .tab-btn[aria-selected="true"] {
+      border-bottom-color: var(--burgundy);
+      font-weight: 700;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.is-active {
+      display: block;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background: var(--cream);
+      margin-top: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background-color: var(--paper);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* 5.7 CASO / PERCORSO SEQUENZIALE */
+    .timeline {
+      position: relative;
+      margin-top: 2.5rem;
+      padding-left: 2rem;
+      border-left: 2px solid var(--burgundy);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-number {
+      position: absolute;
+      left: -2.85rem;
+      top: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: "JetBrains Mono", monospace;
+      border: 2px solid var(--gold);
+    }
+
+    .timeline-content {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+    }
+
+    /* 5.8 SINTESI (CHECKLIST E BLOCCO COPIA) */
+    .checklist-grid {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      background: var(--paper);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-top: 0.15rem;
+      accent-color: var(--burgundy);
+      cursor: pointer;
+    }
+
+    .copy-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .copy-pre {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    /* 5.9 FOOTER */
+    .site-footer {
+      background-color: var(--paper);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      border-top: 1px solid var(--line);
+    }
+
+    /* Utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Accessibilità: Salto al contenuto principale -->
+  <a href="#main-content" class="skip-link">Vai al contenuto principale</a>
+
+  <!-- Indicatori di scorrimento fissa -->
+  <div class="progress-container" aria-hidden="true">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Header Sticky con navigazione -->
+  <header class="site-header" data-surface="light">
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark" data-surface="dark">R</span>
+        <span class="brand-title">Reasoning negli LLM</span>
+      </a>
+
+      <nav class="nav-desktop" aria-label="Navigazione principale">
+        <a href="#contesto" class="nav-link">Contesto</a>
+        <a href="#meccanismo" class="nav-link">Meccanismo</a>
+        <a href="#panoramica" class="nav-link">Concetti Key</a>
+        <a href="#scenari" class="nav-link">Scenari</a>
+        <a href="#confronto" class="nav-link">Confronto</a>
+        <a href="#percorso" class="nav-link">Ciclo</a>
+        <a href="#sintesi" class="nav-link">Sintesi</a>
+      </nav>
+
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuBtn" aria-expanded="false" aria-controls="mobileNav">
+        Menu
+      </button>
+    </div>
+  </header>
+
+  <!-- Menu Mobile Overlay -->
+  <div class="mobile-nav-overlay" id="mobileNav" data-surface="light" aria-label="Menu di navigazione mobile">
+    <a href="#contesto" class="nav-link mobile-link">Contesto</a>
+    <a href="#meccanismo" class="nav-link mobile-link">Meccanismo</a>
+    <a href="#panoramica" class="nav-link mobile-link">Concetti Key</a>
+    <a href="#scenari" class="nav-link mobile-link">Scenari</a>
+    <a href="#confronto" class="nav-link mobile-link">Confronto</a>
+    <a href="#percorso" class="nav-link mobile-link">Ciclo</a>
+    <a href="#sintesi" class="nav-link mobile-link">Sintesi</a>
+  </div>
+
+  <!-- Contenuto Principale -->
+  <main id="main-content">
+
+    <!-- 1. HERO SECTION -->
+    <section class="hero-section" data-surface="light" id="hero">
+      <div class="container-reading reveal-on-scroll">
+        <span class="badge-tag label">Guida Interattiva Editoriale</span>
+        <h1 class="hero-title">Reasoning negli LLM</h1>
+        <p class="hero-lead">
+          Come i modelli di intelligenza artificiale passano dalla generazione immediata di testo all'esplorazione, analisi e verifica prima di rispondere.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#meccanismo" class="btn btn-primary" data-surface="dark">Esplora il Meccanismo</a>
+          <a href="#sintesi" class="btn btn-gold" data-surface="light">Vedi i 5 Concetti</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. CONTESTO -->
+    <section data-surface="paper" id="contesto">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading" style="text-align: center;">
+          <span class="badge-tag label">01. Il cambio di paradigma</span>
+          <h2 class="section-title">Oltre la risposta immediata</h2>
+          <p class="section-subtitle">
+            I modelli di linguaggio tradizionali tendono a generare output istantaneamente. Un reasoning model dedica invece tempo ed elaborazione computazionale a strutturare il problema prima di produrre la risposta.
+          </p>
+        </div>
+
+        <div class="context-grid">
+          <div class="card-paper" data-surface="light">
+            <span class="label" style="font-weight: 700;">Modello Tradizionale</span>
+            <h3 style="margin-top: 0.5rem;">Generazione Immediata</h3>
+            <p>
+              Funziona secondo un flusso diretto <code>DOMANDA → RISPOSTA</code>. Tende a completare la sequenza di testo senza una fase preventiva di analisi guidata o verifica dei passaggi intermedi.
+            </p>
+          </div>
+
+          <div class="card-paper" data-surface="light">
+            <span class="label" style="font-weight: 700;">Reasoning Model</span>
+            <h3 style="margin-top: 0.5rem;">Elaborazione Preventiva</h3>
+            <p>
+              Segue un percorso articolato: <code>DOMANDA → ANALISI → TENTATIVI → CONTROLLO → CORREZIONE → RISPOSTA</code>. Impiega più calcolo per esplorare il problema e correggere errori preliminari.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. MECCANISMO (SUPERFICIE SCURA - NERO) -->
+    <section data-surface="dark" class="mechanism-section" id="meccanismo">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading" style="text-align: center;">
+          <span class="badge-tag label">02. Differenza Operativa</span>
+          <h2 class="section-title">Confronto del Flusso di Calcolo</h2>
+          <p class="section-subtitle">
+            Seleziona la modalità per visualizzare come cambia la sequenza interna di elaborazione.
+          </p>
+        </div>
+
+        <div class="mechanism-toggle-wrapper">
+          <div class="toggle-control" role="tablist" aria-label="Selettore Modalità di Calcolo">
+            <button type="button" class="toggle-btn" id="toggleTrad" role="tab" aria-selected="true" aria-pressed="true" aria-controls="mechanismContent" data-surface="light">
+              LLM Tradizionale
+            </button>
+            <button type="button" class="toggle-btn" id="toggleReasoning" role="tab" aria-selected="false" aria-pressed="false" aria-controls="mechanismContent" data-surface="dark">
+              Reasoning Model
+            </button>
+          </div>
+        </div>
+
+        <div class="mechanism-display-box" id="mechanismContent" aria-live="polite">
+          <!-- Popolato via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PANORAMICA (FLIP CARDS) -->
+    <section data-surface="light" id="panoramica">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading" style="text-align: center;">
+          <span class="badge-tag label">03. Componenti Chiave</span>
+          <h2 class="section-title">I Principi Fondamentali</h2>
+          <p class="section-subtitle">
+            Gira le schede per esplorare le tecniche chiave che costituiscono l'architettura di reasoning.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <!-- Card 1 -->
+          <div class="flip-card" tabindex="0" role="button" aria-label="Scheda Chain of Thought. Clicca per girare.">
+            <div class="flip-card-inner">
+              <div class="flip-card-front" data-surface="light">
+                <div>
+                  <span class="label" style="font-weight:700;">Tecnica 01</span>
+                  <h3 style="margin-top: 0.5rem; font-size: 1.35rem;">Chain of Thought</h3>
+                </div>
+                <p style="font-size: 0.9rem;">Una sequenza di passaggi intermedi usata come traccia del ragionamento.</p>
+                <div class="card-hint label">Clicca o premi Spazio per girare ↺</div>
+              </div>
+              <div class="flip-card-back" data-surface="paper">
+                <div>
+                  <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Traccia vs Dimostrazione</h4>
+                  <p style="font-size: 0.875rem;">
+                    Non è necessariamente una dimostrazione formale rigida. Può contenere idee, tentativi, errori e correzioni progressive prima di arrivare al risultato.
+                  </p>
+                </div>
+                <div class="card-hint label">Retro ↺</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="flip-card" tabindex="0" role="button" aria-label="Scheda Ricerca di Soluzioni. Clicca per girare.">
+            <div class="flip-card-inner">
+              <div class="flip-card-front" data-surface="light">
+                <div>
+                  <span class="label" style="font-weight:700;">Tecnica 02</span>
+                  <h3 style="margin-top: 0.5rem; font-size: 1.35rem;">Ricerca di Soluzioni</h3>
+                </div>
+                <p style="font-size: 0.9rem;">Esplorazione di più strade e strategie alternative prima di scegliere.</p>
+                <div class="card-hint label">Clicca o premi Spazio per girare ↺</div>
+              </div>
+              <div class="flip-card-back" data-surface="paper">
+                <div>
+                  <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Esplorazione Multi-strada</h4>
+                  <p style="font-size: 0.875rem;">
+                    Il modello può valutare simultaneamente o sequenzialmente: Strada A (scartata per errore), Strada B (dubbia), Strada C (valida e confermata).
+                  </p>
+                </div>
+                <div class="card-hint label">Retro ↺</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="flip-card" tabindex="0" role="button" aria-label="Scheda Ruolo della Verifica. Clicca per girare.">
+            <div class="flip-card-inner">
+              <div class="flip-card-front" data-surface="light">
+                <div>
+                  <span class="label" style="font-weight:700;">Tecnica 03</span>
+                  <h3 style="margin-top: 0.5rem; font-size: 1.35rem;">Ruolo della Verifica</h3>
+                </div>
+                <p style="font-size: 0.9rem;">Separazione netta tra la fase di generazione e la fase di controllo.</p>
+                <div class="card-hint label">Clicca o premi Spazio per girare ↺</div>
+              </div>
+              <div class="flip-card-back" data-surface="paper">
+                <div>
+                  <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Generazione e Controllo</h4>
+                  <p style="font-size: 0.875rem;">
+                    Risulta particolarmente potente quando la verifica è affiancata da sistemi affidabili (es. un verificatore matematico o un esecutore di codice).
+                  </p>
+                </div>
+                <div class="card-hint label">Retro ↺</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="flip-card" tabindex="0" role="button" aria-label="Scheda Test-time Scaling. Clicca per girare.">
+            <div class="flip-card-inner">
+              <div class="flip-card-front" data-surface="light">
+                <div>
+                  <span class="label" style="font-weight:700;">Tecnica 04</span>
+                  <h3 style="margin-top: 0.5rem; font-size: 1.35rem;">Test-time Scaling</h3>
+                </div>
+                <p style="font-size: 0.9rem;">Modulazione delle risorse computazionali in base alla difficoltà.</p>
+                <div class="card-hint label">Clicca o premi Spazio per girare ↺</div>
+              </div>
+              <div class="flip-card-back" data-surface="paper">
+                <div>
+                  <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Calcolo Dinamico</h4>
+                  <p style="font-size: 0.875rem;">
+                    Per quesiti banali spende poco ragionamento; per problemi complessi alloca più tempo e potenza per cercare, controllare e correggere.
+                  </p>
+                </div>
+                <div class="card-hint label">Retro ↺</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SCELTA GUIDATA (CHIP SELECTOR / SCENARI DI BUDGET) -->
+    <section data-surface="paper" id="scenari">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading" style="text-align: center;">
+          <span class="badge-tag label">04. Gestione delle Risorse</span>
+          <h2 class="section-title">Allocazione del Reasoning Budget</h2>
+          <p class="section-subtitle">
+            Seleziona un tipo di problema per osservare come viene distribuito il budget di calcolo.
+          </p>
+        </div>
+
+        <div class="chip-container" role="tablist" aria-label="Seleziona lo scenario di complessità">
+          <button type="button" class="chip-btn" id="chipEasy" role="tab" aria-selected="true" aria-pressed="true" data-scenario="easy" data-surface="dark">
+            Quesito Banale (es. 2+2)
+          </button>
+          <button type="button" class="chip-btn" id="chipComplex" role="tab" aria-selected="false" aria-pressed="false" data-scenario="complex" data-surface="light">
+            Problema Causalmente Complesso
+          </button>
+          <button type="button" class="chip-btn" id="chipTools" role="tab" aria-selected="false" aria-pressed="false" data-scenario="tools" data-surface="light">
+            Ragionamento + Strumenti Esterni
+          </button>
+        </div>
+
+        <div class="scenario-card" id="scenarioDisplay" data-surface="light" aria-live="polite">
+          <!-- Popolato da JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. CONFRONTO (TABELLA E TABS) -->
+    <section data-surface="light" id="confronto">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading" style="text-align: center;">
+          <span class="badge-tag label">05. Tabella Comparativa</span>
+          <h2 class="section-title">LLM Tradizionale vs Reasoning Model</h2>
+          <p class="section-subtitle">
+            Analisi dettagliata delle caratteristiche operative nelle due architetture.
+          </p>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Dimensione</th>
+                <th scope="col">LLM Tradizionale</th>
+                <th scope="col">Reasoning Model</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Flusso di Lavoro</strong></td>
+                <td>Input → Generazione → Output</td>
+                <td>Input → Analisi → Ricerca → Verifica → Revisione → Output</td>
+              </tr>
+              <tr>
+                <td><strong>Tempo di Calcolo</strong></td>
+                <td>Fisso / Proporzionale alla sola lunghezza del testo generato</td>
+                <td>Scalabile in fase di test (Test-time scaling) in base al problema</td>
+              </tr>
+              <tr>
+                <td><strong>Gestione degli Errori</strong></td>
+                <td>Avanza senza revisione; un errore iniziale compromette il finale</td>
+                <td>Ha più occasioni per accorgersi di un errore prima di rispondere</td>
+              </tr>
+              <tr>
+                <td><strong>Integrazione Strumenti</strong></td>
+                <td>Genera testo direttamente o invoca funzioni in singolo passo</td>
+                <td>Formula ipotesi, usa calcolatori/DB, legge i risultati e prosegue</td>
+              </tr>
+              <tr>
+                <td><strong>Uso della Memoria Operativa</strong></td>
+                <td>Nessun passaggio intermedio esplicito dedicato alla ricerca</td>
+                <td>Usa una Chain of Thought con tentativi, scarti e verifiche</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CASO / PERCORSO SEQUENZIALE -->
+    <section data-surface="paper" id="percorso">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading" style="text-align: center;">
+          <span class="badge-tag label">06. Sequenza Completa</span>
+          <h2 class="section-title">Il Ciclo Operativo del Reasoning</h2>
+          <p class="section-subtitle">
+            Tutti i passaggi attraverso cui un modello elabora una richiesta articolata.
+          </p>
+        </div>
+
+        <div class="timeline container-reading">
+          <div class="timeline-item">
+            <div class="timeline-number" data-surface="dark">1</div>
+            <div class="timeline-content" data-surface="light">
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">🧩 Problema</h3>
+              <p style="font-size: 0.95rem;">Ricezione del quesito o dell'istruzione iniziale da parte dell'utente.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-number" data-surface="dark">2</div>
+            <div class="timeline-content" data-surface="light">
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">🧠 Analisi</h3>
+              <p style="font-size: 0.95rem;">Scomposizione del problema in parti più semplici e comprensibili.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-number" data-surface="dark">3</div>
+            <div class="timeline-content" data-surface="light">
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">🗺️ Piano &amp; 🌳 Ricerca</h3>
+              <p style="font-size: 0.95rem;">Definizione di una strategia ed esplorazione di diverse possibilità alternative.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-number" data-surface="dark">4</div>
+            <div class="timeline-content" data-surface="light">
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">🔍 Controllo &amp; 🔄 Correzione</h3>
+              <p style="font-size: 0.95rem;">Verifica dei risultati parziali. Se emerge un errore, il modello cambia strada e corregge il tiro.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-number" data-surface="dark">5</div>
+            <div class="timeline-content" data-surface="light">
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">🛑 Decisione &amp; 💬 Risposta</h3>
+              <p style="font-size: 0.95rem;">Scelta della soluzione migliore confermata e presentazione dell'output finale.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. SINTESI (CHECKLIST E COPIA) -->
+    <section data-surface="light" id="sintesi">
+      <div class="container reveal-on-scroll">
+        <div class="container-reading">
+          <div style="text-align: center;">
+            <span class="badge-tag label">07. Promemoria Operativo</span>
+            <h2 class="section-title">I Cinque Concetti Chiave</h2>
+            <p class="section-subtitle">
+              Punti essenziali da ricordare sulla natura del reasoning negli LLM.
+            </p>
+          </div>
+
+          <div class="checklist-grid">
+            <label class="checklist-item">
+              <input type="checkbox" checked>
+              <span><strong>1. 🧠 Analisi:</strong> Scomporre il problema in sotto-elementi gestibili.</span>
+            </label>
+
+            <label class="checklist-item">
+              <input type="checkbox" checked>
+              <span><strong>2. 🌳 Ricerca:</strong> Provare diverse strade e possibilità di risoluzione.</span>
+            </label>
+
+            <label class="checklist-item">
+              <input type="checkbox" checked>
+              <span><strong>3. 🔍 Verifica:</strong> Controllare i risultati parziali con filtri interni o esterni.</span>
+            </label>
+
+            <label class="checklist-item">
+              <input type="checkbox" checked>
+              <span><strong>4. 🔄 Correzione:</strong> Riconoscere vicoli ciechi e cambiare strategia se necessario.</span>
+            </label>
+
+            <label class="checklist-item">
+              <input type="checkbox" checked>
+              <span><strong>5. ⏱️ Più Compute:</strong> Dedicare maggiore potenza e tempo ai problemi complessi (Test-time scaling).</span>
+            </label>
+          </div>
+
+          <div class="copy-box" data-surface="paper">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Sintesi Cliccabile / Copiabile</h3>
+            <pre class="copy-pre" id="summaryText">Reasoning negli LLM - Sintesi in una frase:
+Il reasoning trasforma il modello da un sistema che tende a "rispondere subito" in un sistema che può "cercare e verificare una risposta prima di fornirla", incrementando il calcolo dedicato ai problemi complessi.</pre>
+            
+            <button type="button" class="btn btn-primary" id="copyBtn" data-surface="dark" style="font-size: 0.875rem;">
+              Copia Sintesi negli Appunti
+            </button>
+            <span id="copyFeedback" class="label" style="margin-left: 0.75rem; font-size: 0.85rem;" aria-live="polite"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 9. FOOTER -->
+  <footer class="site-footer" data-surface="paper">
+    <div class="container-reading">
+      <p style="margin-bottom: 0.5rem;">
+        <strong>Reasoning negli LLM — Guida Interattiva Editoriale</strong>
+      </p>
+      <p style="font-size: 0.8rem;">
+        Contenuti strutturati e verificati sulla base della modellazione di calcolo preventivo nei sistemi di Intelligenza Artificiale.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+     LOGICA JAVASCRIPT INCAPSULATA (VANILLA JS)
+     ========================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* --- 1. AUDIT DI CONTRASTO E POLARITÀ --- */
+      function auditTextPolarity() {
+        const issues = [];
+        const hasDirectText = (el) => [...el.childNodes].some(
+          (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+        );
+        const normalize = (value) => value.replace(/\s+/g, "").toLowerCase();
+
+        document.querySelectorAll("[data-surface], [data-surface] *").forEach((el) => {
+          if (!hasDirectText(el) || el.hidden || el.getClientRects().length === 0) return;
+          const surface = el.closest("[data-surface]");
+          if (!surface) return;
+          
+          const mode = surface.dataset.surface;
+          const expected = (mode === "dark") ? "rgb(255,255,255)" : "rgb(0,0,0)";
+          const actual = normalize(window.getComputedStyle(el).color);
+          
+          if (actual !== expected) {
+            issues.push({ element: el, expected, actual, surfaceMode: mode });
+          }
+        });
+
+        document.documentElement.dataset.contrastAudit = issues.length ? "failed" : "passed";
+        if (issues.length) {
+          console.error("Audit di polarità testo fallito:", issues);
+        } else {
+          console.log("Audit di polarità testo superato con successo [RGB puro 0,0,0 / 255,255,255].");
+        }
+        return issues;
+      }
+
+      /* --- 2. GESTIONE SCROLL PROGRESS BAR & STICKY HEADER ACTIVE LINK --- */
+      function initScrollEffects() {
+        const progressBar = document.getElementById("progressBar");
+        const sections = document.querySelectorAll("section[id]");
+        const navLinks = document.querySelectorAll(".nav-link");
+
+        window.addEventListener("scroll", () => {
+          const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+          const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          const scrolled = (winScroll / height) * 100;
+          if (progressBar) progressBar.style.width = scrolled + "%";
+
+          // Active nav link
+          let currentSection = "";
+          sections.forEach((section) => {
+            const sectionTop = section.offsetTop - 100;
+            if (winScroll >= sectionTop) {
+              currentSection = section.getAttribute("id");
+            }
+          });
+
+          navLinks.forEach((link) => {
+            link.classList.remove("active");
+            if (link.getAttribute("href") === "#" + currentSection) {
+              link.classList.add("active");
+            }
+          });
+        });
+      }
+
+      /* --- 3. REVEAL ANIMATIONS (INTERSECTION OBSERVER) --- */
+      function initScrollReveal() {
+        const reveals = document.querySelectorAll(".reveal-on-scroll");
+        if ("IntersectionObserver" in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+              }
+            });
+          }, { threshold: 0.1 });
+
+          reveals.forEach((el) => observer.observe(el));
+        } else {
+          reveals.forEach((el) => el.classList.add("is-visible"));
+        }
+      }
+
+      /* --- 4. MENU MOBILE --- */
+      function initMobileMenu() {
+        const btn = document.getElementById("mobileMenuBtn");
+        const nav = document.getElementById("mobileNav");
+        const links = document.querySelectorAll(".mobile-link");
+
+        if (!btn || !nav) return;
+
+        btn.addEventListener("click", () => {
+          const expanded = btn.getAttribute("aria-expanded") === "true";
+          btn.setAttribute("aria-expanded", !expanded);
+          nav.classList.toggle("is-open", !expanded);
+        });
+
+        links.forEach((link) => {
+          link.addEventListener("click", () => {
+            btn.setAttribute("aria-expanded", "false");
+            nav.classList.remove("is-open");
+          });
+        });
+      }
+
+      /* --- 5. INTERAZIONE TOGGLE MECCANISMO (DARK SECTION) --- */
+      const mechanismData = {
+        trad: {
+          title: "Schema Modello Tradizionale",
+          description: "Generazione sequenziale diretta token per token senza ciclo di verifica preventivo.",
+          steps: ["DOMANDA", "→", "RISPOSTA"],
+          highlights: []
+        },
+        reasoning: {
+          title: "Schema Reasoning Model",
+          description: "Elaborazione estesa prima della risposta con passaggi di controllo e correzione.",
+          steps: ["DOMANDA", "→", "ANALISI", "→", "TENTATIVI", "→", "CONTROLLO", "→", "CORREZIONE", "→", "RISPOSTA"],
+          highlights: ["ANALISI", "TENTATIVI", "CONTROLLO", "CORREZIONE"]
+        }
+      };
+
+      function renderMechanism(type) {
+        const container = document.getElementById("mechanismContent");
+        const data = mechanismData[type];
+        if (!container || !data) return;
+
+        let flowHtml = data.steps.map(step => {
+          if (step === "→") return `<span class="flow-arrow">→</span>`;
+          const isHigh = data.highlights.includes(step);
+          return `<span class="flow-step ${isHigh ? 'highlight' : ''}">${step}</span>`;
+        }).join(" ");
+
+        container.innerHTML = `
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; text-align: center;">${data.title}</h3>
+          <p style="text-align: center; margin-bottom: 1.5rem; font-size: 0.95rem;">${data.description}</p>
+          <div class="flow-diagram">${flowHtml}</div>
+          <p style="font-size: 0.85rem; text-align: center; opacity: 0.9;" class="label">
+            👉 Reasoning significa usare più elaborazione computazionale prima di consegnare l'output.
+          </p>
+        `;
+
+        auditTextPolarity();
+      }
+
+      function initMechanismToggle() {
+        const btnTrad = document.getElementById("toggleTrad");
+        const btnReasoning = document.getElementById("toggleReasoning");
+
+        if (!btnTrad || !btnReasoning) return;
+
+        btnTrad.addEventListener("click", () => {
+          btnTrad.setAttribute("aria-pressed", "true");
+          btnTrad.setAttribute("aria-selected", "true");
+          btnTrad.setAttribute("data-surface", "light");
+          btnReasoning.setAttribute("aria-pressed", "false");
+          btnReasoning.setAttribute("aria-selected", "false");
+          btnReasoning.setAttribute("data-surface", "dark");
+          renderMechanism("trad");
+        });
+
+        btnReasoning.addEventListener("click", () => {
+          btnReasoning.setAttribute("aria-pressed", "true");
+          btnReasoning.setAttribute("aria-selected", "true");
+          btnReasoning.setAttribute("data-surface", "light");
+          btnTrad.setAttribute("aria-pressed", "false");
+          btnTrad.setAttribute("aria-selected", "false");
+          btnTrad.setAttribute("data-surface", "dark");
+          renderMechanism("reasoning");
+        });
+
+        renderMechanism("trad");
+      }
+
+      /* --- 6. INTERAZIONE FLIP CARDS --- */
+      function initFlipCards() {
+        const cards = document.querySelectorAll(".flip-card");
+        cards.forEach((card) => {
+          const toggleCard = () => card.classList.toggle("is-flipped");
+          card.addEventListener("click", toggleCard);
+          card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleCard();
+            }
+          });
+        });
+      }
+
+      /* --- 7. SCENARI (CHIP SELECTOR / REASONING BUDGET) --- */
+      const scenarioData = {
+        easy: {
+          title: "Quesito Banale (es. 2 + 2)",
+          badge: "Poco Ragionamento",
+          desc: "Per una domanda semplice, allocare troppo ragionamento è un inefficace consumo di risorse computazionali. Il modello risponde rapidamente con pochissima ricerca.",
+          diagram: "2 + 2  →  [Poco Ragionamento]  →  4"
+        },
+        complex: {
+          title: "Problema Causalmente Complesso",
+          badge: "Molto Ragionamento",
+          desc: "Scomposizione in 5 o più passaggi. Se il modello sbaglia al passaggio 2 in modalità tradizionale produce una risposta errata. Nel reasoning model effettua controlli continui per correggere la rotta.",
+          diagram: "PROBLEMA  →  Analisi  →  Passaggio 1  →  Passaggio 2  →  🔍 Controllo (\"Non torna\")  →  🔄 Correzione  →  Passaggio 3-4  →  RISPOSTA CORRETTA"
+        },
+        tools: {
+          title: "Reasoning + Strumenti Esterni",
+          badge: "Estensione Strumenti",
+          desc: "Il modello formula un'ipotesi, invoca un calcolatore, un database o una ricerca web, legge il risultato restituito e continua a ragionare con dati certi.",
+          diagram: "🧠 \"Devo calcolare questo\"  →  🧮 Usa Calcolatore  →  👀 Legge Risultato  →  🧠 Continua Ragionamento  →  💬 Risposta"
+        }
+      };
+
+      function renderScenario(key) {
+        const display = document.getElementById("scenarioDisplay");
+        const data = scenarioData[key];
+        if (!display || !data) return;
+
+        display.innerHTML = `
+          <span class="scenario-badge label">${data.badge}</span>
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.75rem;">${data.title}</h3>
+          <p style="font-size: 0.95rem; margin-bottom: 1.25rem;">${data.desc}</p>
+          <div style="background: var(--paper); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+            ${data.diagram}
+          </div>
+        `;
+
+        auditTextPolarity();
+      }
+
+      function initScenarioChips() {
+        const chips = document.querySelectorAll(".chip-btn");
+        chips.forEach((chip) => {
+          chip.addEventListener("click", () => {
+            chips.forEach((c) => {
+              c.setAttribute("aria-pressed", "false");
+              c.setAttribute("aria-selected", "false");
+              c.setAttribute("data-surface", "light");
+            });
+            chip.setAttribute("aria-pressed", "true");
+            chip.setAttribute("aria-selected", "true");
+            chip.setAttribute("data-surface", "dark");
+            const sc = chip.dataset.scenario;
+            renderScenario(sc);
+          });
+        });
+
+        renderScenario("easy");
+      }
+
+      /* --- 8. COPIA NEGLI APPUNTI --- */
+      function initCopyButton() {
+        const btn = document.getElementById("copyBtn");
+        const feedback = document.getElementById("copyFeedback");
+        const textEl = document.getElementById("summaryText");
+
+        if (!btn || !textEl) return;
+
+        btn.addEventListener("click", () => {
+          const textToCopy = textEl.textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+              showFeedback("Copiato con successo!");
+            }).catch(() => {
+              fallbackCopy(textToCopy);
+            });
+          } else {
+            fallbackCopy(textToCopy);
+          }
+        });
+
+        function fallbackCopy(text) {
+          const area = document.createElement("textarea");
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          try {
+            document.execCommand("copy");
+            showFeedback("Copiato con successo!");
+          } catch (err) {
+            showFeedback("Errore durante la copia.");
+          }
+          document.body.removeChild(area);
+        }
+
+        function showFeedback(msg) {
+          if (feedback) {
+            feedback.textContent = msg;
+            setTimeout(() => { feedback.textContent = ""; }, 3000);
+          }
+        }
+      }
+
+      /* --- INIZIALIZZAZIONE GLOBALE --- */
+      document.addEventListener("DOMContentLoaded", () => {
+        initScrollEffects();
+        initScrollReveal();
+        initMobileMenu();
+        initMechanismToggle();
+        initFlipCards();
+        initScenarioChips();
+        initCopyButton();
+
+        // Audit finale di polarità e contrasto
+        auditTextPolarity();
+      });
+
+    })();
+  </script>
+</body>
+</html>

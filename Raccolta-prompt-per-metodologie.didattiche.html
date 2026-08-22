@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Driven Active Learning — Prompt-D</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--sidebar-w:320px;
+--topbar-h:64px;
+--body-bg:#f8f5f0;
+--sidebar-bg:#eee8f8;
+--sidebar-accent:#c8b8f0;
+--topbar-bg:#fce8f0;
+--card-bg:#fff;
+--card-border:#e0daf8;
+--text:#2d2640;
+--text-light:#6e6580;
+--copied-bg:#c8f0d8;
+--radius:12px;
+--radius-sm:8px;
+--transition:0.15s ease;
+}
+html{font-size:17px}
+html,body{height:100%;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);background:var(--body-bg)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:inherit}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;height:100vh;overflow:hidden;border-right:1px solid var(--sidebar-accent)}
+.sidebar-header{padding:20px 18px 12px;border-bottom:1px solid var(--sidebar-accent)}
+.sidebar-title{font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.sidebar-subtitle{font-size:.88rem;color:var(--text-light);margin-top:4px}
+.sidebar-search{padding:12px 14px 8px}
+.sidebar-search input{width:100%;padding:9px 13px;border:1px solid var(--sidebar-accent);border-radius:999px;font-size:.95rem;outline:none;background:#fff;transition:var(--transition)}
+.sidebar-search input:focus{border-color:#9080d0;box-shadow:0 0 0 2px rgba(144,128,208,.2)}
+.sidebar-cats{flex:1;overflow-y:auto;padding:6px 0 16px}
+.cat-item{margin:2px 8px}
+.cat-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:.95rem;font-weight:700;transition:var(--transition);user-select:none}
+.cat-header:hover{background:rgba(200,184,240,.35)}
+.cat-header.active{background:rgba(200,184,240,.45)}
+.cat-arrow{font-size:.78rem;transition:transform .15s;flex-shrink:0;width:14px;text-align:center}
+.cat-arrow.open{transform:rotate(90deg)}
+.cat-badge{margin-left:auto;background:rgba(200,184,240,.5);color:var(--text-light);font-size:.78rem;padding:2px 8px;border-radius:999px;font-weight:600}
+.cat-prompts{display:none;padding:2px 0 4px 22px}
+.cat-prompts.open{display:block}
+.prompt-item{padding:8px 12px;font-size:.9rem;border-radius:6px;cursor:pointer;transition:var(--transition);border-left:3px solid transparent;margin:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prompt-item:hover{background:rgba(200,184,240,.25)}
+.prompt-item.active{border-left-color:var(--sidebar-accent);background:rgba(200,184,240,.35);font-weight:600}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:var(--topbar-h);min-height:var(--topbar-h);background:var(--topbar-bg);display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid #f0c8d8;gap:12px}
+.topbar-title{font-size:1.08rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-count{font-size:.88rem;color:var(--text-light);white-space:nowrap}
+.topbar-actions{display:flex;gap:8px;flex-shrink:0}
+.btn{padding:8px 16px;border-radius:999px;font-size:.9rem;font-weight:600;transition:var(--transition);display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#9080d0;color:#fff}
+.btn-primary:hover{background:#7868c0}
+.btn-secondary{background:#fff;color:var(--text);border:1px solid var(--card-border)}
+.btn-secondary:hover{background:#f0ecff}
+.btn-copy{background:#7868c0;color:#fff;padding:8px 15px;border-radius:999px;font-size:.9rem;font-weight:600}
+.btn-copy:hover{background:#6858b0}
+.btn-copy.copied{background:#48a868;color:#fff}
+.btn-select{background:#fff;color:var(--text);border:1px solid var(--card-border);padding:8px 15px;border-radius:999px;font-size:.9rem;font-weight:600}
+.btn-select:hover{background:#f0ecff}
+.btn-select.selected{background:#e0daf8;border-color:#9080d0;color:#6050a0}
+.content{flex:1;overflow-y:auto;padding:24px}
+.welcome{max-width:680px;margin:40px auto;text-align:center}
+.welcome-icon{font-size:3.5rem;margin-bottom:16px}
+.welcome h1{font-size:1.85rem;font-weight:800;margin-bottom:8px}
+.welcome p{color:var(--text-light);font-size:1.08rem;line-height:1.6;margin-bottom:28px}
+.stats{display:flex;gap:16px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.stat-box{background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);padding:16px 24px;min-width:120px}
+.stat-num{font-size:1.8rem;font-weight:800;color:#7868c0}
+.stat-label{font-size:.86rem;color:var(--text-light);margin-top:2px}
+.quick-cats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.quick-cat{padding:11px 18px;border-radius:var(--radius);font-size:.94rem;font-weight:600;cursor:pointer;transition:var(--transition);border:2px solid transparent}
+.quick-cat:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.cat-view-header{padding:24px 28px;border-radius:var(--radius);margin-bottom:20px}
+.cat-view-header h2{font-size:1.5rem;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.cat-view-header p{font-size:1rem;opacity:.8;margin-top:6px}
+.prompt-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:var(--transition)}
+.prompt-card.selected{border-color:#9080d0;box-shadow:0 0 0 2px rgba(144,128,208,.25)}
+.prompt-card-header{display:flex;align-items:center;padding:14px 18px;cursor:pointer;gap:12px;transition:var(--transition)}
+.prompt-card-header:hover{background:rgba(240,236,255,.5)}
+.prompt-card-title{flex:1;font-size:1.02rem;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field-count{flex-shrink:0;background:#ede8ff;color:#5d4aa8;border:1px solid #b7aae7;border-radius:999px;padding:3px 9px;font-size:.8rem;font-weight:800;white-space:nowrap}
+.prompt-card-arrow{font-size:.82rem;color:var(--text-light);transition:transform .15s;flex-shrink:0}
+.prompt-card-arrow.open{transform:rotate(90deg)}
+.prompt-card-body{display:none;padding:0 18px 16px;border-top:1px solid #f0ecff}
+.prompt-card-body.open{display:block}
+.prompt-text-area{background:#faf8ff;border:1px solid #e8e4f4;border-radius:var(--radius-sm);padding:16px 18px;margin-top:12px;max-height:420px;overflow-y:auto;font-size:1rem;line-height:1.8;white-space:pre-wrap;word-break:break-word;color:#3a3350}
+.prompt-field{display:inline-block;width:min(100%,var(--field-width,24ch));min-width:12ch;max-width:100%;margin:3px 4px;padding:6px 9px;border:2px solid #a99bdf;border-radius:6px;background:#fff;color:var(--text);font:inherit;font-weight:600;line-height:1.35;vertical-align:baseline;outline:none;transition:var(--transition)}
+.prompt-field::placeholder{color:#756a91;opacity:1;font-weight:500}
+.prompt-field:focus{border-color:#6957b5;box-shadow:0 0 0 3px rgba(105,87,181,.16)}
+.prompt-card-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.prompt-card-hint{font-size:.82rem;color:var(--text-light);margin-left:auto}
+.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:.96rem;color:var(--text-light);margin-bottom:16px;cursor:pointer;padding:6px 0;transition:var(--transition)}
+.detail-back:hover{color:var(--text)}
+.detail-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden}
+.detail-header{padding:24px 28px}
+.detail-header h2{font-size:1.42rem;font-weight:800;margin-top:8px}
+.detail-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.detail-body{padding:24px 28px}
+.detail-text{background:#faf8ff;border:1px solid #e8e4f4;border-radius:var(--radius-sm);padding:20px 24px;font-size:1.06rem;line-height:1.8;white-space:pre-wrap;word-break:break-word;color:#3a3350}
+.detail-actions{display:flex;gap:10px;margin-top:20px;padding:0 28px 24px;flex-wrap:wrap}
+.search-group{margin-bottom:24px}
+.search-group-title{font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid;line-height:1.4}
+.tag-config{background:#fce8f0;color:#9e4060;border-color:#f0c8d8}
+.tag-meta{background:#fff0e8;color:#a06030;border-color:#f0d0b8}
+.tag-redazione{background:#e8f8f0;color:#307050;border-color:#b8e0cc}
+.tag-revisione{background:#fff8e8;color:#907020;border-color:#f0dca0}
+.tag-ricerca{background:#e8eeff;color:#3050a0;border-color:#c0cef8}
+.tag-analisi{background:#f5e8ff;color:#7030a0;border-color:#d8b0f0}
+.tag-comunicazione{background:#e8f8f8;color:#207070;border-color:#a8e0e0}
+.toast{position:fixed;bottom:-70px;left:50%;transform:translateX(-50%);background:#2d2640;color:#fff;padding:12px 24px;border-radius:999px;font-size:.96rem;font-weight:600;z-index:9999;transition:bottom .3s ease;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{bottom:28px}
+mark{background:#fff3a0;color:inherit;border-radius:2px;padding:0 2px}
+.hamburger{display:none;position:fixed;bottom:20px;right:20px;z-index:1001;width:52px;height:52px;border-radius:50%;background:#7868c0;color:#fff;font-size:1.4rem;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.2);border:none;cursor:pointer}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:999}
+.overlay.show{display:block}
+.sidebar-cats::-webkit-scrollbar,.content::-webkit-scrollbar,.prompt-text-area::-webkit-scrollbar{width:6px}
+.sidebar-cats::-webkit-scrollbar-track,.content::-webkit-scrollbar-track,.prompt-text-area::-webkit-scrollbar-track{background:transparent}
+.sidebar-cats::-webkit-scrollbar-thumb,.content::-webkit-scrollbar-thumb,.prompt-text-area::-webkit-scrollbar-thumb{background:var(--sidebar-accent);border-radius:999px}
+.content::-webkit-scrollbar-thumb{background:#e0daf8}
+.prompt-text-area::-webkit-scrollbar-thumb{background:#d8d0f0}
+.no-results{text-align:center;padding:48px 24px;color:var(--text-light)}
+.no-results-icon{font-size:2.5rem;margin-bottom:12px}
+@media(max-width:768px){
+.sidebar{position:fixed;left:-330px;top:0;z-index:1000;transition:left .25s ease;box-shadow:4px 0 20px rgba(0,0,0,.1)}
+.sidebar.open{left:0}
+.hamburger{display:flex}
+.content{padding:16px}
+.topbar{padding:0 16px}
+.welcome{margin:20px auto}
+.stats{gap:10px}
+.stat-box{padding:12px 16px;min-width:90px}
+.cat-view-header{padding:18px 20px}
+.detail-header{padding:18px 20px}
+.detail-body{padding:18px 20px}
+.detail-actions{padding:0 20px 18px}
+.prompt-field{width:100%;margin:5px 0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar"></aside>
+<main class="main">
+<div class="topbar" id="topbar"></div>
+<div class="content" id="content"></div>
+</main>
+</div>
+<button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+<div class="overlay" id="overlay"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== DATA =====================
+// Catalogo didattico PROMPT-D
+const categories = [
+  {
+    "id": "debate",
+    "icon": "💬",
+    "label": "DEBATE (Dibattito Regolato)",
+    "desc": "Il Debate è una metodologia attiva d'avanguardia che sviluppa il pensiero critico, l'argomentazione e l'alfabetizzazione informativa (information literacy). In linea con il Protocollo 4Shifts, questa metodologia stimola l'apprendimento profondo spingendo gli studenti a confrontarsi con compiti a elevata complessità cognitiva e analisi critiche di fonti multiple. Modifica il tradizionale contratto didattico frontale per porre lo studente al centro della costruzione del proprio sapere.",
+    "tag": "config",
+    "color": "#fce8f0",
+    "border": "#f0c8d8",
+    "prompts": [
+      {
+        "id": "debate-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come esperto di instructional design e metodologie attive INDIRE.\n[R - RISULTATO] Progetta la struttura di un percorso didattico completo di Debate per la mia classe.\n[O - OBIETTIVI] Sviluppare il pensiero critico, le capacità di argomentazione e l'alfabetizzazione informativa (information literacy) per valutare l'attendibilità delle fonti e contrastare le fake news.\n[M - MATERIALI] Fai riferimento ai quadri pedagogici INDIRE e ai principi del Protocollo 4Shifts.\n[P - PARAMETRI] \n- Materia: [Inserisci Materia, es. Storia/Filosofia]\n- Classe: [Inserisci Classe, es. Terza Superiore]\n- Tema del dibattito: [Inserisci Tema, es. \"L'uso dei big data viola la privacy individuale o garantisce la sicurezza collettiva?\"]\n[T - TIPO DI OUTPUT] Struttura la risposta nei seguenti punti:\n1. Definizione della mozione del Debate (Claim) e articolazione della tesi a favore (Pro) e contraria (Contro).\n2. Griglia con 3 domande-guida per ciascuna squadra per orientare la ricerca delle fonti basata su criteri di attendibilità e contrasto alle fake news.\n3. Rubrica di valutazione strutturata su quattro livelli di padronanza (Iniziale, Base, Intermedio, Avanzato) per valutare: efficacia argomentativa, rispetto dei tempi di parola e capacità di confutazione logica.\n[D - DIAGNOSI] Concludi con una sezione \"Autovalutazione dell'output\" in cui verifichi se la rubrica copre tutti i descrittori richiesti e se le domande-guida sono bilanciate per entrambe le posizioni."
+      },
+      {
+        "id": "debate-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come un avversario dialettico e un \"amico critico\" esperto di Debate logico ed epistemico.\n[R - RISULTATO] Conduci un dibattito regolato interattivo a turni con me sostenendo la tesi opposta alla mia.\n[O - OBIETTIVI] Allenare la capacità di argomentazione, la confutazione logica e il pensiero critico attraverso un confronto diretto.\n[M - MATERIALI] Basa il dialogo sulle regole del Debate formale e sulle strutture dell'argomentazione logica.\n[P - PARAMETRI]\n- Tema del Debate: [Inserisci Tema]\n- Tesi dello studente: [Scegli Pro o Contro]\n- Tesi dell'IA: Opposta a quella scelta dallo studente\n- Regola di interazione: Mantieni un tono formale, rigoroso ed educativo. Rispondi con un solo intervento alla volta (massimo 150 parole).\n[T - TIPO DI OUTPUT]\n1. Presenta la tua prima argomentazione di apertura (max 150 parole).\n2. Dopo ogni mia risposta, analizza criticamente i miei punti deboli, confuta la mia tesi e rilancia con una nuova domanda stimolo.\n[D - DIAGNOSI] Al termine dei turni di dibattito, inserisci una sezione \"Autovalutazione dell'output\" in cui fornisci una breve scheda di sintesi sui miei punti di forza argomentativi e sulle eventuali fallacie logiche emersi nel dialogo."
+      }
+    ]
+  },
+  {
+    "id": "flipped",
+    "icon": "🔄",
+    "label": "FLIPPED CLASSROOM (Classe Capovolta)",
+    "desc": "La flipped classroom inverte il ciclo tradizionale di insegnamento. Consente agli studenti di acquisire autonomamente le conoscenze di base a casa tramite risorse digitali o video-lezioni appositamente predisposte, liberando il tempo in aula per attività laboratoriali, collaborative o compiti di realtà. Questo approccio ottimizza la gestione del tempo d'aula (meso) e supporta la personalizzazione degli apprendimenti.",
+    "tag": "meta",
+    "color": "#fff0e8",
+    "border": "#f0d0b8",
+    "prompts": [
+      {
+        "id": "flipped-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come esperto di Flipped Classroom e coordinatore di dipartimento.\n[R - RISULTATO] Progetta un'attività capovolta completa divisa in fase preparatoria a casa (Flipped phase) e fase laboratoriale in aula (In-class phase).\n[O - OBIETTIVI] Promuovere l'apprendimento autonomo a casa e ottimizzare la gestione del tempo d'aula per la risoluzione di compiti autentici e la discussione collaborativa.\n[M - MATERIALI] Fai riferimento ai principi di Instructional Design per la Flipped Classroom e all'uso flessibile del tempo d'aula.\n[P - PARAMETRI]\n- Materia: [Inserisci Materia, es. Fisica]\n- Classe: [Inserisci Classe, es. Quarta Liceo Scientifico]\n- Argomento: [Inserisci Argomento, es. Le leggi di Keplero]\n[T - TIPO DI OUTPUT] Struttura la proposta come segue:\n1. Attività a casa (Flipped phase): indica tipologia di materiali (video, testi, simulazioni online) da fornire e scrivi un breve questionario di verifica delle preconoscenze (3 domande a scelta multipla e 1 domanda aperta).\n2. Attività in aula (In-class phase): pianifica una lezione di 90 minuti suddivisa in: 15' di brainstorming sui dubbi emersi a casa, 45' di compito autentico di gruppo, 20' di presentazione/discussione tra pari e 10' di debriefing e autovalutazione metacognitiva.\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" verificando che la scansione temporale in aula sommi esattamente a 90 minuti e che il questionario preliminare sia calibrato sui prerequisiti."
+      },
+      {
+        "id": "flipped-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come un tutor metacognitivo e coach di studio autonomo.\n[R - RISULTATO] Conduci una sessione interattiva di verifica e approfondimento sui materiali studiati a casa.\n[O - OBIETTIVI] Testare la comprensione concettuale, chiarire i dubbi e stimolare l'apprendimento autonomo tramite scaffolding graduale.\n[M - MATERIALI] Basa le domande sui contenuti disciplinari dell'argomento indicato dallo studente.\n[P - PARAMETRI]\n- Materia: [Inserisci Materia]\n- Argomento studiato a casa: [Inserisci Argomento]\n- Dubbio specifico: [Inserisci dubbio specifico o scrivi 'nessuno in particolare']\n- Regola di interazione: Poni una sola domanda alla volta.\n[T - TIPO DI OUTPUT] Poni una domanda alla volta per testare la comprensione concettuale. Se la risposta è corretta, aumenta gradualmente la complessità cognitiva della domanda successiva; se la risposta è errata, non fornire direttamente la soluzione, ma proponi un indizio (scaffolding) per guidarmi a ricavarla autonomamente.\n[D - DIAGNOSI] A fine sessione, genera una sezione \"Autovalutazione dell'output\" con il riepilogo dei concetti padroneggiati e degli aspetti che richiedono ulteriore ripasso."
+      }
+    ]
+  },
+  {
+    "id": "pbl",
+    "icon": "🧩",
+    "label": "PROJECT-BASED LEARNING (PBL) e \"Learning Story\"",
+    "desc": "Il Project-Based Learning (PBL) sposta il nucleo della didattica dall'astrattezza dei contenuti a compiti di realtà complessi e transdisciplinari connessi al mondo reale. L'INDIRE ha formalizzato questo approccio attraverso il format della Learning Story, una sceneggiatura didattica e narrativa student-centered che integra gli obiettivi disciplinari con le dimensioni dello spazio e del tempo di apprendimento.",
+    "tag": "redazione",
+    "color": "#e8f8f0",
+    "border": "#b8e0cc",
+    "prompts": [
+      {
+        "id": "pbl-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come tecnologo della ricerca INDIRE e progettista di Learning Story.\n[R - RISULTATO] Genera una \"Learning Story\" completa e strutturata secondo il format INDIRE per un percorso PBL.\n[O - OBIETTIVI] Sviluppare competenze trasversali e disciplinari attraverso compiti di realtà transdisciplinari orientati alla risoluzione di problemi reali.\n[M - MATERIALI] Fai riferimento al format della Learning Story dell'INDIRE e alle Competenze Chiave Europee per l'apprendimento permanente.\n[P - PARAMETRI]\n- Discipline coinvolte: [Inserisci Discipline, es. Scienze, Tecnologia, Educazione Civica]\n- Tema conduttore: [Inserisci Tema, es. Sviluppo Sostenibile / Agenda 2030]\n- Classe: [Inserisci Classe]\n[T - TIPO DI OUTPUT] Struttura la Learning Story nei seguenti punti:\n1. Titolo dell'attività accattivante.\n2. Tempo e durata totale della realizzazione.\n3. Ambienti della scuola e del territorio utilizzati (es. laboratori, aule flessibili, spazi outdoor).\n4. Obiettivi educativi misurabili (connessi alle competenze chiave europee).\n5. Abstract sintetico del percorso didattico.\n6. Fasi di dispiegamento cronologico dettagliate (preparazione, ricerca, realizzazione collaborativa del prodotto finale, presentazione pubblica alla comunità).\n[D - DIAGNOSI] Aggiungi la sezione \"Autovalutazione dell'output\" verificando l'effettiva integrazione tra le discipline e la pertinenza degli ambienti fisici e digitali scelti rispetto alle fasi previste."
+      },
+      {
+        "id": "pbl-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come un Project Manager e consulente tecnico per team di studenti.\n[R - RISULTATO] Elabora una tabella di marcia e un piano organizzativo per lo svolgimento di un progetto PBL.\n[O - OBIETTIVI] Facilitare l'organizzazione del lavoro di squadra, la suddivisione dei ruoli e la selezione di strumenti digitali per la collaborazione.\n[M - MATERIALI] Fai riferimento alle metodologie operative di project management e lavoro collaborativo.\n[P - PARAMETRI]\n- Target: Gruppo di studenti di scuola secondaria superiore\n- Tema del progetto: [Inserisci Tema]\n- Prodotto finale da realizzare: [Inserisci Prodotto, es. podcast di sensibilizzazione, modello 3D, campagna sociale]\n[T - TIPO DI OUTPUT]\n1. Dividi la tabella di marcia in 4 step cronologici successivi.\n2. Suggerisci la distribuzione dei ruoli all'interno del team (es. ricercatore, designer, comunicatore, coordinatore).\n3. Fornisci consigli su quali strumenti digitali gratuiti utilizzare per collaborare a distanza.\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" controllando che la pianificazione e le tecnologie consigliate siano sostenibili ed adeguate alla fascia d'età degli studenti."
+      }
+    ]
+  },
+  {
+    "id": "cooperative",
+    "icon": "🤝",
+    "label": "COOPERATIVE LEARNING (Apprendimento Cooperativo)",
+    "desc": "L'apprendimento cooperativo supera l'individualismo e l'autoreferenzialità che spesso caratterizzano la forma scolastica tradizionale. Sfrutta il piccolo gruppo eterogeneo come risorsa, basandosi sull'interdipendenza positiva, la responsabilità individuale e di gruppo, lo sviluppo di competenze socio-emotive e l'uso dell'errore come risorsa condivisa per l'apprendimento.",
+    "tag": "revisione",
+    "color": "#fff8e8",
+    "border": "#f0dca0",
+    "prompts": [
+      {
+        "id": "cooperative-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come facilitatore esperto di Cooperative Learning in contesti scolastici complessi.\n[R - RISULTATO] Progetta un'attività di apprendimento cooperativo completa strutturata su piccolo gruppo.\n[O - OBIETTIVI] Promuovere l'interdipendenza positiva di ruolo e di materiale, la responsabilità individuale e lo sviluppo di competenze socio-emotive.\n[M - MATERIALI] Fai riferimento alle strutture tradizionali del Cooperative Learning (es. Jigsaw / Gruppi a Mosaico o Storyboarding / Scrittura Condivisa).\n[P - PARAMETRI]\n- Materia: [Inserisci Materia]\n- Tema della lezione: [Inserisci Tema]\n- Classe: [Inserisci Classe]\n[T - TIPO DI OUTPUT] Articola la risposta nei seguenti punti:\n1. Criteri pedagogici per la formazione di gruppi eterogenei (considerando stili di apprendimento, BES e livelli di competenza).\n2. Struttura del compito cooperativo basato sulla tecnica Jigsaw o sulla Scrittura Condivisa.\n3. Definizione dei ruoli per ciascun membro del gruppo (es. facilitatore, segretario, custode del tempo, relatore) per garantire l'interdipendenza positiva.\n4. Scheda di monitoraggio per l'insegnante e rubrica di autovalutazione di gruppo sulle competenze sociali e relazionali (clima relazionale).\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" confermando che i ruoli assegnati evitino il disimpegno di singoli membri e favoriscano l'inclusione."
+      },
+      {
+        "id": "cooperative-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come un \"coach di team\" e facilitatore del benessere di gruppo.\n[R - RISULTATO] Guida il gruppo di studenti a superare una difficoltà relazionale o organizzativa tramite un approccio maieutico.\n[O - OBIETTIVI] Stimolare la corresponsabilità, la risoluzione cooperativa dei problemi e la gestione positiva dei conflitti di gruppo.\n[M - MATERIALI] Basa l'interazione sulle tecniche di mediazione tra pari e comunicazione assertiva.\n[P - PARAMETRI]\n- Compito di gruppo: [Inserisci Compito]\n- Dinamica/Difficoltà emersa: [Descrivi la difficoltà, es. un membro non collabora, disaccordo sulle decisioni, difficoltà nell'integrare i testi]\n[T - TIPO DI OUTPUT] Senza fornire una soluzione preconfezionata, formula una serie di domande maieutiche che guidino gli studenti a riflettere sulle dinamiche di gruppo, assumersi la corresponsabilità del lavoro e individuare cooperativamente una strategia per superare l'impasse.\n[D - DIAGNOSI] Concludi con la sezione \"Autovalutazione dell'output\" verificando che le domande poste stimolino l'autonomia decisionale dei ragazzi senza prendere le parti di alcun membro."
+      }
+    ]
+  },
+  {
+    "id": "service",
+    "icon": "🌍",
+    "label": "SERVICE LEARNING e VIRTUAL-SERVICE LEARNING",
+    "desc": "Il Service Learning unisce l'acquisizione di competenze curricolari con un servizio reale fornito alla propria comunità territoriale, rispondendo a problemi e bisogni concreti (es. povertà educativa, tutela dell'ambiente). Durante l'emergenza pandemica INDIRE ha validato il modello del Virtual-Service Learning, dimostrando come le attività di servizio e di apprendimento cooperativo possano essere trasposte o potenziate interamente a distanza attraverso piattaforme digitali collaborative.",
+    "tag": "ricerca",
+    "color": "#e8eeff",
+    "border": "#c0cef8",
+    "prompts": [
+      {
+        "id": "service-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come coordinatore INDIRE per il Service Learning e la co-progettazione territoriale.\n[R - RISULTATO] Progetta un percorso di Service Learning / Virtual-Service Learning interdisciplinare e integrato nel curricolo.\n[O - OBIETTIVI] Sviluppare competenze di cittadinanza attiva e contenuti disciplinari rispondendo a un bisogno reale della comunità, in linea con gli obiettivi dell'Agenda 2030.\n[M - MATERIALI] Fai riferimento ai Quadri di Riferimento INDIRE per il Service Learning e alle linee guida dell'Educazione Civica (L. 92/2019).\n[P - PARAMETRI]\n- Materia/e coinvolte: [Inserisci Materie]\n- Bisogno del territorio rilevato: [Inserisci Bisogno, es. supporto digitale agli anziani, riqualificazione di un'area verde locale, sensibilizzazione sulla violenza di genere]\n- Classe: [Inserisci Classe]\n- Modalità: [Scegli: In presenza, Ibrido, Virtual-Service Learning]\n[T - TIPO DI OUTPUT] Struttura la progettazione nelle seguenti fasi:\n1. Indagine del bisogno locale e mappatura delle risorse.\n2. Progettazione dell'azione di servizio in collaborazione con un ente del Terzo Settore/Comune.\n3. Realizzazione del servizio (in presenza o tramite canali digitali).\n4. Valutazione congiunta docenti-studenti-partner del territorio e monitoraggio della riflessione metacognitiva degli studenti in itinere (es. diari di bordo o e-Portfolio).\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" in cui verifichi che l'azione di servizio sia direttamente collegata agli obiettivi di apprendimento disciplinari e non si riduca a mero volontariato spontaneo."
+      },
+      {
+        "id": "service-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come coordinatore di un'associazione no-profit e mentor di cittadinanza attiva.\n[R - RISULTATO] Progetta uno strumento di indagine sul campo per mappare i bisogni specifici della comunità beneficiaria.\n[O - OBIETTIVI] Sviluppare competenze di ricerca sociale, ascolto attivo ed empatia nei confronti dei destinatari dell'azione di servizio.\n[M - MATERIALI] Fai riferimento ai metodi di indagine partecipativa (walk-through interview, questionari di rilevazione dei bisogni).\n[P - PARAMETRI]\n- Bisogno del territorio: [Inserisci Bisogno]\n- Ente/Soggetto partner: [Inserisci Ente/Soggetto partner]\n- Azione/Prodotto previsto: [Inserisci Azione/Prodotto]\n[T - TIPO DI OUTPUT] Struttura la traccia per un'intervista (walk-through interview) o un questionario d'indagine per rilevare le esigenze specifiche dei cittadini beneficiari e identificare le criticità su cui focalizzare l'intervento di impatto.\n[D - DIAGNOSI] Aggiungi la sezione \"Autovalutazione dell'output\" accertando che le domande formulate siano rispettose, accessibili e prive di linguaggi burocratici o discriminatori."
+      }
+    ]
+  },
+  {
+    "id": "rete",
+    "icon": "🔗",
+    "label": "CLASSI IN RETE e DIDATTICA CONDIVISA",
+    "desc": "Il modello delle Classi in Rete (Écoles en réseau), studiato dall'INDIRE a partire dall'esperienza del Québec, permette a scuole e plessi isolati o distanti (es. piccole scuole di isole e aree interne) di superare l'isolamento socioculturale. Attraverso l'uso coordinato di strumenti di videoconferenza sincrona e spazi di scrittura collaborativa asincrona (come il Knowledge Forum), classi distanti collaborano alla pari su indagini, problemi e progetti comuni, costruendo una vera comunità di pratica allargata.",
+    "tag": "analisi",
+    "color": "#f5e8ff",
+    "border": "#d8b0f0",
+    "prompts": [
+      {
+        "id": "rete-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come ricercatore INDIRE esperto del modello delle Classi in Rete e del co-insegnamento delocalizzato.\n[R - RISULTATO] Struttura un piano di lavoro per un gemellaggio didattico condiviso (Jumelage) tra due o più plessi scolastici distanti.\n[O - OBIETTIVI] Abbattere l'isolamento geografico e culturale, sviluppare la co-costruzione di conoscenza e promuovere il co-insegnamento delocalizzato.\n[M - MATERIALI] Fai riferimento al modello delle Piccole Scuole INDIRE e alla piattaforma di scrittura collaborativa Knowledge Forum.\n[P - PARAMETRI]\n- Materia/e: [Inserisci Materia/e]\n- Plessi e Classi collegate: [Inserisci, es. Plesso A Classe Terza e Plesso B Classe Terza/Quarta di scuole differenti]\n- Argomento di indagine comune: [Inserisci, es. I cambiamenti climatici locali]\n[T - TIPO DI OUTPUT] Organizza il piano dettagliando:\n1. Calendario delle attività sincrone in videoconferenza (plenaria di avvio, brainstorming di gruppo delocalizzato, presentazioni finali).\n2. Attività asincrone sul Knowledge Forum (scrittura collaborativa di ipotesi ed esplorazioni tramite scaffold cognitivi).\n3. Definizione dei ruoli dei due docenti co-progettanti in compresenza delocalizzata (Co-insegnamento).\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" assicurandoti che l'articolazione tra fasi sincrone e asincrone sia ben bilanciata e che le tecnologie previste siano accessibili a entrambi i plessi."
+      },
+      {
+        "id": "rete-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come facilitatore del Knowledge Forum ed esperto di co-costruzione delle idee.\n[R - RISULTATO] Aiuta due classi collegate in rete a espandere e ristrutturare una teoria comune stilata sul Knowledge Forum.\n[O - OBIETTIVI] Sviluppare il pensiero scientifico e l'avanzamento della conoscenza comunitaria mediante l'uso di sostegni cognitivi (scaffold).\n[M - MATERIALI] Basa il supporto sugli scaffold di pensiero del Knowledge Forum.\n[P - PARAMETRI]\n- Problema/Argomento comune: [Inserisci Argomento]\n- Teoria/ipotesi iniziale degli studenti: [Inserisci la teoria/ipotesi degli studenti]\n[T - TIPO DI OUTPUT] Fornisci suggerimenti per approfondire la discussione guidando gli studenti a rimodellare la loro teoria attraverso l'uso degli scaffold specifici:\n- 'Ho bisogno di capire meglio' (I need to understand)\n- 'La mia teoria' (My theory)\n- 'Nuova informazione' (New information)\n[D - DIAGNOSI] Concludi con la sezione \"Autovalutazione dell'output\" verificando che le indicazioni stimolino l'indagine autonoma e non sostituiscano il ragionamento degli studenti."
+      }
+    ]
+  },
+  {
+    "id": "pluriclasse",
+    "icon": "👥",
+    "label": "DIDATTICA IN PLURICLASSE (Multigrado) e DIFFERENZIAZIONE",
+    "desc": "La didattica nelle pluriclassi (multigrado) richiede il superamento del modello trasmissivo monodocente e costringe a ripensare l'orario, i metodi e la gestione dello spazio d'aula. L'INDIRE ha formalizzato specifiche strategie multigrado (Practical Tips for Teaching Multigrade), basate sull'autonomia, sull'apprendimento tra pari (cross-age tutoring) e su forme curricolari flessibili, come il curricolo a spirale (One Subject to All Grades) o il lavoro autonomo dei gruppi non assistiti (Non-Taught Groups).",
+    "tag": "comunicazione",
+    "color": "#e8f8f8",
+    "border": "#a8e0e0",
+    "prompts": [
+      {
+        "id": "pluriclasse-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come esperto di didattica multigrado e differenziazione curricolare INDIRE.\n[R - RISULTATO] Progetta un'unità didattica multigrado applicando i modelli di differenziazione e grouping delle piccole scuole.\n[O - OBIETTIVI] Gestire contestualmente contesti di apprendimento con età differenti, promuovendo l'autonomia, l'apprendimento tra pari e lo sviluppo del curricolo a spirale.\n[M - MATERIALI] Fai riferimento alle linee guida INDIRE per le pluriclassi (Practical Tips for Teaching Multigrade).\n[P - PARAMETRI]\n- Gradi/Età presenti in aula: [Inserisci Gradi, es. Classi Prime e Seconde, oppure Prime, Seconde e Terze]\n- Materia: [Inserisci Materia]\n- Tema/Macro-argomento: [Inserisci Tema, es. La struttura della cellula]\n[T - TIPO DI OUTPUT] Struttura la progettazione come segue:\n1. Attività iniziale comune a tutta la classe (Whole-Class Meeting) per introdurre il concetto-sfondo.\n2. Applicazione della strategia One Subject to All Grades per strutturare compiti differenziati a complessità crescente secondo la logica del curricolo a spirale.\n3. Scansione oraria della gestione d'aula ipotizzando l'alternanza tra il sottogruppo assistito dal docente (Teacher-Led Small Group) e il sottogruppo in lavoro autonomo/cooperativo (Non-Taught Groups / Cross-Age tutoring).\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" controllando che il tempo di lavoro autonomo dei Non-Taught Groups sia supportato da consegne chiare che evitino dispersioni o tempi morti."
+      },
+      {
+        "id": "pluriclasse-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come un mentor di tutoring tra pari (peer-tutoring) e compagno critico.\n[R - RISULTATO] Aiuta uno studente del grado superiore a pianificare una sessione di affiancamento (tutoring) per un compagno del grado inferiore.\n[O - OBIETTIVI] Sviluppare competenze di tutorship, formulazione di domande (questioning) e impalcatura cognitiva (scaffolding).\n[M - MATERIALI] Fai riferimento alle tecniche di tutoring tra pari (Cross-Age Tutoring).\n[P - PARAMETRI]\n- Grado dello studente tutor: [Inserisci il tuo Grado/Classe]\n- Grado del compagno affiancato: [Inserisci Grado/Classe del compagno]\n- Argomento di spiegazione: [Inserisci Argomento]\n[T - TIPO DI OUTPUT] Pianifica una sequenza di domande graduali (questioning) e indizi di supporto (scaffolding) che il tutor possa proporre al compagno per guidarlo verso la comprensione autonoma del concetto, evitando di fornire direttamente la risposta o la soluzione.\n[D - DIAGNOSI] Inserisci una sezione \"Autovalutazione dell'output\" verificando che le strategie suggerite rispettino l'autonomia dello studente affiancato e stimolino la metacognizione."
+      }
+    ]
+  },
+  {
+    "id": "spaced",
+    "icon": "⏱️",
+    "label": "SPACED / SLOW LEARNING (Gestione Flessibile del Tempo)",
+    "desc": "La parcellizzazione del tempo scolastico in unità rigide da 50-60 minuti genera sovraccarico cognitivo e frammentazione dei saperi. L'idea d'avanguardia dell'Uso Flessibile del Tempo INDIRE scardina la rigidità della campanella proponendo la compattazione oraria (svolgimento intensivo di alcune discipline concentrate in un solo quadrimestre o blocchi orari integrati) e lo Spaced Learning (alternanza scientifica di brevi input teorici intensivi a intervalli di distrazione).",
+    "tag": "config",
+    "color": "#fce8f0",
+    "border": "#f0c8d8",
+    "prompts": [
+      {
+        "id": "spaced-docente",
+        "title": "Prompt per il Docente — Co-progettazione",
+        "text": "[P - PROFILO] Agisci come esperto INDIRE di flessibilizzazione oraria e progettazione del tempo-scuola.\n[R - RISULTATO] Progetta un modulo orario basato sulla struttura dello Spaced Learning (Apprendimento Intervallato).\n[O - OBIETTIVI] Contrastare il sovraccarico cognitivo, favorire il consolidamento della memoria a lungo termine e ottimizzare l'attenzione d'aula.\n[M - MATERIALI] Fai riferimento all'Uso Flessibile del Tempo INDIRE e alla metodologia neuroscientifica dello Spaced Learning.\n[P - PARAMETRI]\n- Materia/e coinvolte: [Inserisci Materia/e]\n- Classe: [Inserisci Classe]\n- Argomento complesso: [Inserisci Argomento, es. La tettonica a placche / La struttura dell'atomo]\n[T - TIPO DI OUTPUT] Progetta il modulo diviso rigorosamente nelle seguenti fasi temporali:\n1. Input 1 (20'): Presentazione teorica intensiva e focalizzata dei concetti chiave (con mappe concettuali o stimoli visivi).\n2. Intervallo 1 (10'): Attività di distrazione cognitiva (es. attività motoria coordinativa o manipolazione manuale/artistica del tutto disconnessa dall'argomento).\n3. Input 2 (20'): Rielaborazione attiva dei medesimi concetti proposti nel primo input, presentandoli sotto un'altra forma o metodo (es. analisi di un caso o esperimento).\n4. Intervallo 2 (10'): Seconda attività di distrazione distensiva (es. ascolto musicale o rilassamento).\n5. Input 3 (20'): Compito pratico autonomo o in piccoli gruppi per consolidare i concetti appresi (working stage).\n[D - DIAGNOSI] Inserisci la sezione \"Autovalutazione dell'output\" confermando che la somma dei singoli blocchi rispetti la durata complessiva del modulo e che gli intervalli di distrazione siano privi di qualsiasi richiamo ai contenuti di studio."
+      },
+      {
+        "id": "spaced-studente",
+        "title": "Prompt per lo Studente — Didattica Attiva",
+        "text": "[P - PROFILO] Agisci come un assistente di studio e timer di produttività focalizzata (spaced-study helper).\n[R - RISULTATO] Guida uno studente in una sessione di studio individuale intervallato per preparare un argomento denso.\n[O - OBIETTIVI] Prevenire l'affaticamento mentale, migliorare la ritenzione delle informazioni e ottimizzare i tempi di studio autonomo.\n[M - MATERIALI] Basa l'interazione sulle tecniche neuroscientifiche dell'apprendimento intervallato (spaced study).\n[P - PARAMETRI]\n- Argomento di studio: [Inserisci l'argomento]\n- Target: Studente di scuola secondaria superiore\n[T - TIPO DI OUTPUT]\n1. Fornisci una brevissima spiegazione super-focalizzata del primo concetto chiave dell'argomento (massimo 100 parole).\n2. Dopodiché, blocca la spiegazione e proponi una breve pausa attiva o un indovinello logico disconnesso per far riposare il cervello prima di procedere al concetto successivo.\n[D - DIAGNOSI] Aggiungi la sezione \"Autovalutazione dell'output\" verificando che la spiegazione teorica sia mantenuta entro il limite delle 100 parole e che la pausa proposta favorisca un effettivo stacco cognitivo."
+      }
+    ]
+  }
+];
+
+// ===================== STATE =====================
+let currentView = 'welcome';
+let currentCatId = null;
+let currentPromptId = null;
+let openCats = {};
+let selectedPrompts = new Set();
+let searchQuery = '';
+let copiedCount = 0;
+const promptFieldValues = {};
+
+// ===================== UTILS =====================
+function getAllPrompts() {
+  return categories.flatMap(cat =>
+    cat.prompts.map(p => ({...p, catId: cat.id, catLabel: cat.label, catIcon: cat.icon, catTag: cat.tag, catColor: cat.color, catBorder: cat.border}))
+  );
+}
+
+function getPromptById(id) {
+  for (const cat of categories) {
+    const p = cat.prompts.find(pr => pr.id === id);
+    if (p) return {...p, catId: cat.id, catLabel: cat.label, catIcon: cat.icon, catTag: cat.tag, catColor: cat.color, catBorder: cat.border};
+  }
+  return null;
+}
+
+function getCatById(id) {
+  return categories.find(c => c.id === id) || null;
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function highlightText(text, query) {
+  if (!query || !query.trim()) return escHtml(text);
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(' + escaped + ')', 'gi');
+  return escHtml(text).replace(re, '<mark>$1</mark>');
+}
+
+function getPromptFields(promptId) {
+  if (!promptFieldValues[promptId]) promptFieldValues[promptId] = {};
+  return promptFieldValues[promptId];
+}
+
+function updatePromptField(promptId, fieldIndex, value) {
+  getPromptFields(promptId)[fieldIndex] = value;
+}
+
+function getPlaceholderCount(prompt) {
+  return (prompt.text.match(/\[([^\]\n]+)\]/g) || []).length;
+}
+
+function renderEditablePrompt(prompt, query) {
+  let fieldIndex = 0;
+  let lastIndex = 0;
+  let html = '';
+  const fields = getPromptFields(prompt.id);
+  const placeholderPattern = /\[([^\]\n]+)\]/g;
+  let match;
+
+  const renderText = text => query ? highlightText(text, query) : escHtml(text);
+
+  while ((match = placeholderPattern.exec(prompt.text)) !== null) {
+    html += renderText(prompt.text.slice(lastIndex, match.index));
+    const label = match[1].trim();
+    const value = fields[fieldIndex] || '';
+    const width = Math.min(Math.max(label.length + 3, 16), 58);
+    html += '<input class="prompt-field" type="text" aria-label="' + escHtml(label) + '" ' +
+      'placeholder="' + escHtml(label) + '" value="' + escHtml(value) + '" ' +
+      'style="--field-width:' + width + 'ch" ' +
+      'oninput="updatePromptField(\'' + prompt.id + '\',' + fieldIndex + ',this.value)">';
+    fieldIndex++;
+    lastIndex = placeholderPattern.lastIndex;
+  }
+
+  html += renderText(prompt.text.slice(lastIndex));
+  return html;
+}
+
+function getCompiledPrompt(prompt) {
+  let fieldIndex = 0;
+  const fields = getPromptFields(prompt.id);
+  return prompt.text.replace(/\[([^\]\n]+)\]/g, (original) => {
+    const value = (fields[fieldIndex++] || '').trim();
+    return value || original;
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function notifyResize() {
+  try {
+    const h = document.documentElement.scrollHeight;
+    window.parent.postMessage({type: 'resize', height: h}, '*');
+  } catch(e) {}
+}
+
+// ===================== COPY =====================
+function copyText(text, btnId) {
+  const doCopy = (txt) => {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '✅ Copiato!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+    }
+    copiedCount++;
+    showToast('✅ Prompt copiato!');
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => doCopy(text)).catch(() => fallbackCopy(text, btnId, doCopy));
+  } else {
+    fallbackCopy(text, btnId, doCopy);
+  }
+}
+
+function copyPrompt(promptId, btnId) {
+  const prompt = getPromptById(promptId);
+  if (prompt) copyText(getCompiledPrompt(prompt), btnId);
+}
+
+function fallbackCopy(text, btnId, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); cb(text); } catch(e) { showToast('❌ Copia fallita'); }
+  document.body.removeChild(ta);
+}
+
+function copyAll() {
+  let prompts;
+  if (currentView === 'category' && currentCatId) {
+    const cat = getCatById(currentCatId);
+    prompts = cat ? cat.prompts : [];
+  } else if (currentView === 'search') {
+    prompts = getSearchResults();
+  } else {
+    prompts = getAllPrompts();
+  }
+
+  if (selectedPrompts.size > 0) {
+    prompts = prompts.filter(p => selectedPrompts.has(p.id));
+  }
+
+  const text = prompts.map((p, i) =>
+    '═══════════════════════════════════════\n' +
+    (p.catLabel ? p.catLabel + ' — ' : '') + p.title + '\n' +
+    '═══════════════════════════════════════\n\n' +
+    getCompiledPrompt(p) + '\n'
+  ).join('\n\n');
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      copiedCount += prompts.length;
+      showToast('✅ ' + prompts.length + ' prompt copiati!');
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;left:-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); copiedCount += prompts.length; showToast('✅ ' + prompts.length + ' prompt copiati!'); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+}
+
+// ===================== SIDEBAR =====================
+function buildSidebar() {
+  const sb = document.getElementById('sidebar');
+  let html = '<div class="sidebar-header">';
+  html += '<div class="sidebar-title">🎓 Active Learning IA</div>';
+  html += '<div class="sidebar-subtitle">Secondaria superiore — PROMPT-D</div>';
+  html += '</div>';
+  html += '<div class="sidebar-search"><input type="text" id="searchInput" placeholder="🔎 Cerca prompt..." value="' + escHtml(searchQuery) + '"></div>';
+  html += '<div class="sidebar-cats">';
+
+  // Home
+  html += '<div class="cat-item">';
+  html += '<div class="cat-header' + (currentView === 'welcome' ? ' active' : '') + '" onclick="navigateTo(\'welcome\')">';
+  html += '<span>🏠</span><span>Home</span></div></div>';
+
+  categories.forEach(cat => {
+    const isOpen = openCats[cat.id];
+    const isActive = currentView === 'category' && currentCatId === cat.id;
+    html += '<div class="cat-item">';
+    html += '<div class="cat-header' + (isActive ? ' active' : '') + '" onclick="toggleCat(\'' + cat.id + '\')">';
+    html += '<span class="cat-arrow' + (isOpen ? ' open' : '') + '">▶</span>';
+    html += '<span>' + cat.icon + '</span>';
+    html += '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(cat.label) + '</span>';
+    html += '<span class="cat-badge">' + cat.prompts.length + '</span>';
+    html += '</div>';
+    html += '<div class="cat-prompts' + (isOpen ? ' open' : '') + '">';
+    cat.prompts.forEach(p => {
+      const pActive = currentView === 'prompt' && currentPromptId === p.id;
+      html += '<div class="prompt-item' + (pActive ? ' active' : '') + '" style="' + (pActive ? 'border-left-color:' + cat.border : '') + '" onclick="navigateTo(\'prompt\',\'' + p.id + '\')">' + escHtml(p.title) + '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  html += '</div>';
+  sb.innerHTML = html;
+
+  const si = document.getElementById('searchInput');
+  if (si) {
+    si.addEventListener('input', function(e) { onSearch(e.target.value); });
+    if (currentView === 'search') si.focus();
+  }
+}
+
+function toggleCat(id) {
+  if (openCats[id]) {
+    openCats[id] = false;
+  } else {
+    openCats[id] = true;
+  }
+  if (currentView !== 'search') {
+    currentView = 'category';
+    currentCatId = id;
+    currentPromptId = null;
+    updateHash();
+  }
+  buildSidebar();
+  renderMain();
+}
+
+// ===================== NAVIGATION =====================
+function navigateTo(type, id) {
+  if (type === 'welcome') {
+    currentView = 'welcome';
+    currentCatId = null;
+    currentPromptId = null;
+    searchQuery = '';
+  } else if (type === 'category') {
+    currentView = 'category';
+    currentCatId = id;
+    currentPromptId = null;
+    openCats[id] = true;
+  } else if (type === 'prompt') {
+    const p = getPromptById(id);
+    if (!p) return;
+    currentView = 'prompt';
+    currentPromptId = id;
+    currentCatId = p.catId;
+    openCats[p.catId] = true;
+  }
+
+  updateHash();
+  buildSidebar();
+  renderMain();
+  closeMobile();
+}
+
+function updateHash() {
+  let h = '#';
+  if (currentView === 'welcome') h = '#home';
+  else if (currentView === 'category') h = '#cat/' + currentCatId;
+  else if (currentView === 'prompt') h = '#p/' + currentPromptId;
+  else if (currentView === 'search') h = '#search/' + encodeURIComponent(searchQuery);
+  try { history.replaceState(null, '', h); } catch(e) {}
+}
+
+function readHash() {
+  let h = location.hash || '';
+  h = h.split('?')[0]; // sanitize
+  if (h.startsWith('#cat/')) {
+    const id = h.slice(5);
+    if (getCatById(id)) { navigateTo('category', id); return; }
+  } else if (h.startsWith('#p/')) {
+    const id = h.slice(3);
+    if (getPromptById(id)) { navigateTo('prompt', id); return; }
+  } else if (h.startsWith('#search/')) {
+    const q = decodeURIComponent(h.slice(8));
+    searchQuery = q;
+    currentView = 'search';
+    buildSidebar();
+    renderMain();
+    return;
+  }
+  navigateTo('welcome');
+}
+
+// ===================== SEARCH =====================
+function onSearch(val) {
+  searchQuery = val;
+  if (val.trim()) {
+    currentView = 'search';
+    currentPromptId = null;
+  } else {
+    currentView = currentCatId ? 'category' : 'welcome';
+  }
+  updateHash();
+  renderMain();
+}
+
+function getSearchResults() {
+  const q = searchQuery.trim().toLowerCase();
+  if (!q) return [];
+  return getAllPrompts().filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    p.text.toLowerCase().includes(q) ||
+    p.catLabel.toLowerCase().includes(q)
+  );
+}
+
+// ===================== RENDER =====================
+function renderMain() {
+  const content = document.getElementById('content');
+  const topbar = document.getElementById('topbar');
+
+  if (currentView === 'welcome') {
+    renderTopbar('🏠 Home', '');
+    content.innerHTML = renderWelcome();
+  } else if (currentView === 'search') {
+    const results = getSearchResults();
+    renderTopbar('🔎 Ricerca: "' + escHtml(searchQuery) + '"', results.length + ' risultati');
+    content.innerHTML = renderSearchResults(results);
+  } else if (currentView === 'category') {
+    const cat = getCatById(currentCatId);
+    if (cat) {
+      renderTopbar(cat.icon + ' ' + escHtml(cat.label), cat.prompts.length + ' prompt');
+      content.innerHTML = renderCategoryView(cat);
+    }
+  } else if (currentView === 'prompt') {
+    const p = getPromptById(currentPromptId);
+    if (p) {
+      renderTopbar('📄 ' + escHtml(p.title), '');
+      content.innerHTML = renderPromptDetail(p);
+    }
+  }
+
+  content.scrollTop = 0;
+  notifyResize();
+}
+
+function renderTopbar(title, count) {
+  const topbar = document.getElementById('topbar');
+  const selCount = selectedPrompts.size;
+  let html = '<div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1">';
+  html += '<div class="topbar-title">' + title + '</div>';
+  if (count) html += '<div class="topbar-count">' + count + '</div>';
+  html += '</div>';
+  html += '<div class="topbar-actions">';
+  if (selCount > 0) {
+    html += '<span style="font-size:.88rem;color:var(--text-light)">' + selCount + ' sel.</span>';
+  }
+  if (currentView !== 'welcome') {
+    html += '<button class="btn btn-primary" onclick="copyAll()">📋 Copia tutti</button>';
+  }
+  html += '</div>';
+  topbar.innerHTML = html;
+}
+
+function renderWelcome() {
+  const total = getAllPrompts().length;
+  let html = '<div class="welcome">';
+  html += '<div class="welcome-icon">🎓</div>';
+  html += '<h1>AI-Driven Active Learning</h1>';
+  html += '<p>Raccolta estesa di prompt PROMPT-D per integrare l\'Intelligenza Artificiale Generativa nelle metodologie didattiche attive della scuola secondaria superiore.</p>';
+  html += '<div class="stats">';
+  html += '<div class="stat-box"><div class="stat-num">' + total + '</div><div class="stat-label">Prompt totali</div></div>';
+  html += '<div class="stat-box"><div class="stat-num">' + categories.length + '</div><div class="stat-label">Categorie</div></div>';
+  html += '<div class="stat-box"><div class="stat-num">' + copiedCount + '</div><div class="stat-label">Copiati</div></div>';
+  html += '</div>';
+  html += '<div class="quick-cats">';
+  categories.forEach(cat => {
+    html += '<div class="quick-cat" style="background:' + cat.color + ';border-color:' + cat.border + '" onclick="navigateTo(\'category\',\'' + cat.id + '\')">';
+    html += cat.icon + ' ' + escHtml(cat.label);
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function renderCategoryView(cat) {
+  let html = '<div class="cat-view-header" style="background:' + cat.color + ';border:1px solid ' + cat.border + '">';
+  html += '<h2>' + cat.icon + ' ' + escHtml(cat.label) + '</h2>';
+  html += '<p>' + escHtml(cat.desc) + '</p>';
+  html += '</div>';
+  cat.prompts.forEach(p => {
+    html += renderPromptCard(p, cat);
+  });
+  return html;
+}
+
+function renderPromptCard(p, cat) {
+  const existingCard = document.querySelector('[data-card-id="' + p.id + '"]');
+  const fieldCount = getPlaceholderCount(p);
+  const isOpen = existingCard ? existingCard.querySelector('.prompt-card-body.open') !== null : fieldCount > 0;
+  const isSelected = selectedPrompts.has(p.id);
+  const cardId = 'card-' + p.id;
+  const copyBtnId = 'copy-' + p.id;
+  const selBtnId = 'sel-' + p.id;
+
+  let html = '<div class="prompt-card' + (isSelected ? ' selected' : '') + '" data-card-id="' + p.id + '">';
+  html += '<div class="prompt-card-header" onclick="toggleCard(\'' + p.id + '\')">';
+  html += '<span class="prompt-card-title">' + escHtml(p.title) + '</span>';
+  if (fieldCount) html += '<span class="field-count">' + fieldCount + (fieldCount === 1 ? ' campo' : ' campi') + '</span>';
+  html += '<span class="tag tag-' + cat.tag + '">' + escHtml(cat.label) + '</span>';
+  html += '<span class="prompt-card-arrow' + (isOpen ? ' open' : '') + '" id="arrow-' + p.id + '">▶</span>';
+  html += '</div>';
+  html += '<div class="prompt-card-body' + (isOpen ? ' open' : '') + '" id="body-' + p.id + '">';
+  html += '<div class="prompt-text-area">' + renderEditablePrompt(p) + '</div>';
+  html += '<div class="prompt-card-actions">';
+  html += '<button class="btn-copy" id="' + copyBtnId + '" onclick="copyPrompt(\'' + p.id + '\',\'' + copyBtnId + '\')">📋 Copia</button>';
+  html += '<button class="btn-select' + (isSelected ? ' selected' : '') + '" id="' + selBtnId + '" onclick="toggleSelect(\'' + p.id + '\')">☑ ' + (isSelected ? 'Selezionato' : 'Seleziona') + '</button>';
+  html += '<button class="btn-secondary" onclick="navigateTo(\'prompt\',\'' + p.id + '\')">🔍 Espandi</button>';
+  html += '<span class="prompt-card-hint">Click header per espandere</span>';
+  html += '</div></div></div>';
+  return html;
+}
+
+function renderSearchResults(results) {
+  if (!results.length) {
+    return '<div class="no-results"><div class="no-results-icon">🔎</div><p>Nessun risultato per "' + escHtml(searchQuery) + '"</p></div>';
+  }
+
+  const grouped = {};
+  results.forEach(p => {
+    if (!grouped[p.catId]) grouped[p.catId] = {cat: getCatById(p.catId), prompts: []};
+    grouped[p.catId].prompts.push(p);
+  });
+
+  let html = '';
+  Object.values(grouped).forEach(g => {
+    html += '<div class="search-group">';
+    html += '<div class="search-group-title"><span class="tag tag-' + g.cat.tag + '">' + g.cat.icon + ' ' + escHtml(g.cat.label) + '</span> <span style="color:var(--text-light);font-size:.9rem">(' + g.prompts.length + ')</span></div>';
+    g.prompts.forEach(p => {
+      html += renderSearchCard(p, g.cat);
+    });
+    html += '</div>';
+  });
+  return html;
+}
+
+function renderSearchCard(p, cat) {
+  const isSelected = selectedPrompts.has(p.id);
+  const existingCard = document.querySelector('[data-card-id="' + p.id + '"]');
+  const fieldCount = getPlaceholderCount(p);
+  const isOpen = existingCard ? existingCard.querySelector('.prompt-card-body.open') !== null : fieldCount > 0;
+  const copyBtnId = 'copy-' + p.id;
+  const selBtnId = 'sel-' + p.id;
+  const q = searchQuery;
+
+  let html = '<div class="prompt-card' + (isSelected ? ' selected' : '') + '" data-card-id="' + p.id + '">';
+  html += '<div class="prompt-card-header" onclick="toggleCard(\'' + p.id + '\')">';
+  html += '<span class="prompt-card-title">' + highlightText(p.title, q) + '</span>';
+  if (fieldCount) html += '<span class="field-count">' + fieldCount + (fieldCount === 1 ? ' campo' : ' campi') + '</span>';
+  html += '<span class="tag tag-' + cat.tag + '">' + escHtml(cat.label) + '</span>';
+  html += '<span class="prompt-card-arrow' + (isOpen ? ' open' : '') + '" id="arrow-' + p.id + '">▶</span>';
+  html += '</div>';
+  html += '<div class="prompt-card-body' + (isOpen ? ' open' : '') + '" id="body-' + p.id + '">';
+  html += '<div class="prompt-text-area">' + renderEditablePrompt(p, q) + '</div>';
+  html += '<div class="prompt-card-actions">';
+  html += '<button class="btn-copy" id="' + copyBtnId + '" onclick="copyPrompt(\'' + p.id + '\',\'' + copyBtnId + '\')">📋 Copia</button>';
+  html += '<button class="btn-select' + (isSelected ? ' selected' : '') + '" id="' + selBtnId + '" onclick="toggleSelect(\'' + p.id + '\')">☑ ' + (isSelected ? 'Selezionato' : 'Seleziona') + '</button>';
+  html += '<button class="btn-secondary" onclick="navigateTo(\'prompt\',\'' + p.id + '\')">🔍 Espandi</button>';
+  html += '</div></div></div>';
+  return html;
+}
+
+function renderPromptDetail(p) {
+  const cat = getCatById(p.catId);
+  const copyBtnId = 'copy-detail-' + p.id;
+  const selBtnId = 'sel-detail-' + p.id;
+  const isSelected = selectedPrompts.has(p.id);
+
+  let html = '<div class="detail-back" onclick="navigateTo(\'category\',\'' + p.catId + '\')">← Torna a ' + escHtml(cat.label) + '</div>';
+  html += '<div class="detail-card">';
+  html += '<div class="detail-header" style="background:' + cat.color + ';border-bottom:2px solid ' + cat.border + '">';
+  html += '<div class="detail-meta">';
+  html += '<span class="tag tag-' + cat.tag + '">' + cat.icon + ' ' + escHtml(cat.label) + '</span>';
+  html += '<span style="font-size:.82rem;color:var(--text-light)">' + p.id.toUpperCase() + '</span>';
+  html += '</div>';
+  html += '<h2>' + escHtml(p.title) + '</h2>';
+  html += '</div>';
+  html += '<div class="detail-body">';
+  html += '<div class="detail-text">' + renderEditablePrompt(p) + '</div>';
+  html += '</div>';
+  html += '<div class="detail-actions">';
+  html += '<button class="btn-copy" id="' + copyBtnId + '" onclick="copyPrompt(\'' + p.id + '\',\'' + copyBtnId + '\')">📋 Copia Prompt</button>';
+  html += '<button class="btn-select' + (isSelected ? ' selected' : '') + '" id="' + selBtnId + '" onclick="toggleSelect(\'' + p.id + '\')">☑ ' + (isSelected ? 'Selezionato' : 'Seleziona') + '</button>';
+  html += '</div></div>';
+  return html;
+}
+
+// ===================== INTERACTIONS =====================
+function toggleCard(id) {
+  const body = document.getElementById('body-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open');
+}
+
+function toggleSelect(id) {
+  if (selectedPrompts.has(id)) {
+    selectedPrompts.delete(id);
+  } else {
+    selectedPrompts.add(id);
+  }
+  // Update UI without full re-render to preserve open cards
+  const card = document.querySelector('[data-card-id="' + id + '"]');
+  if (card) {
+    card.classList.toggle('selected', selectedPrompts.has(id));
+    const btn = document.getElementById('sel-' + id) || document.getElementById('sel-detail-' + id);
+    if (btn) {
+      btn.classList.toggle('selected', selectedPrompts.has(id));
+      btn.innerHTML = '☑ ' + (selectedPrompts.has(id) ? 'Selezionato' : 'Seleziona');
+    }
+  }
+  // Update topbar
+  renderTopbar(
+    document.querySelector('.topbar-title')?.innerHTML || '',
+    document.querySelector('.topbar-count')?.textContent || ''
+  );
+}
+
+// ===================== MOBILE =====================
+function openMobile() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeMobile() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ===================== INIT =====================
+document.getElementById('hamburger').addEventListener('click', function() {
+  const sb = document.getElementById('sidebar');
+  if (sb.classList.contains('open')) closeMobile();
+  else openMobile();
+});
+
+document.getElementById('overlay').addEventListener('click', closeMobile);
+
+window.addEventListener('hashchange', function() {
+  readHash();
+});
+
+// Init
+buildSidebar();
+readHash();
+</script>
+</body>
+</html>
