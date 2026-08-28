@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cruscotto Metodologico PROMPT-D</title>
+  <style>
+    /* DESIGN TOKENS (No #000000 allowed) */
+    :root {
+      /* Colori primari */
+      --color-hero: #0E47CB;
+      --color-outline: #1A1A4E;
+      --color-primary: #2F54EB;
+
+      /* Accenti */
+      --color-accent-yellow: #F5A623;
+      --color-accent-teal: #3DD9C5;
+      --color-accent-coral: #E84545;
+
+      /* Sfondi */
+      --color-bg: #FFFFFF;
+      --color-bg-soft: #F4F5F7;
+
+      /* Testo */
+      --color-text: #1A1A2E; /* Sostituto per il nero */
+
+      /* Geometrie e Tratti */
+      --shadow-flat: 4px 4px 0 rgba(26, 26, 78, 0.15); /* Ombra piatta, no blur */
+      --shadow-flat-solid: 4px 4px 0 var(--color-outline);
+      --stroke-width: 2.5px;
+      --radius-base: 12px;
+    }
+
+    /* RESET & BASE */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* LAYOUT APP */
+    .app-layout {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    @media (min-width: 1024px) {
+      .app-layout {
+        flex-direction: row;
+      }
+    }
+
+    /* HEADER & SIDEBAR */
+    .app-sidebar {
+      background: var(--color-bg);
+      border-bottom: var(--stroke-width) solid var(--color-outline);
+      padding: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    @media (min-width: 1024px) {
+      .app-sidebar {
+        width: 280px;
+        border-bottom: none;
+        border-right: var(--stroke-width) solid var(--color-outline);
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+      }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-hero);
+      margin-bottom: 2rem;
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      .nav-menu {
+        flex-direction: column;
+      }
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.75rem 1rem;
+      color: var(--color-text);
+      text-decoration: none;
+      font-weight: 700;
+      border: var(--stroke-width) solid transparent;
+      border-radius: var(--radius-base);
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: var(--color-bg-soft);
+      border-color: var(--color-outline);
+      box-shadow: 2px 2px 0 var(--color-outline);
+      transform: translate(-2px, -2px);
+    }
+
+    .nav-link svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--color-outline);
+      stroke-width: var(--stroke-width);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* MAIN CONTENT */
+    .app-main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* COMPONENTS */
+    .card {
+      background: var(--color-bg-soft);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      box-shadow: var(--shadow-flat);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title .badge {
+      background: var(--color-accent-yellow);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    /* FORMS */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--color-text);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--color-text);
+      background: var(--color-bg);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: calc(var(--radius-base) / 2);
+      box-shadow: 2px 2px 0 rgba(26,26,78,0.1);
+      transition: all 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      box-shadow: 4px 4px 0 var(--color-accent-teal);
+      border-color: var(--color-outline);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: calc(var(--radius-base) / 2);
+      padding: 0.75rem 1.5rem;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-flat-solid);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn:hover, .btn:focus-visible {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--color-outline);
+      outline: none;
+    }
+
+    .btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0 var(--color-outline);
+    }
+
+    .btn-primary { background: var(--color-primary); color: #fff; }
+    .btn-hero { background: var(--color-hero); color: #fff; }
+    .btn-accent-yellow { background: var(--color-accent-yellow); color: var(--color-outline); }
+    .btn-accent-teal { background: var(--color-accent-teal); color: var(--color-outline); }
+    .btn-outline { background: var(--color-bg); color: var(--color-text); }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+    /* BLOOM PYRAMID INTERACTIVE */
+    .bloom-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 2rem 0;
+    }
+    
+    .bloom-level {
+      border: var(--stroke-width) solid var(--color-outline);
+      padding: 0.5rem 1rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      background: var(--color-bg);
+      user-select: none;
+      position: relative;
+    }
+    .bloom-level:hover { transform: scale(1.02); }
+    
+    .bloom-l6 { width: 40%; background: var(--color-accent-coral); color: white; border-radius: 8px 8px 0 0; }
+    .bloom-l5 { width: 55%; background: var(--color-accent-yellow); color: var(--color-outline); }
+    .bloom-l4 { width: 70%; background: var(--color-accent-teal); color: var(--color-outline); }
+    .bloom-l3 { width: 85%; background: var(--color-hero); color: white; }
+    .bloom-l2 { width: 95%; background: var(--color-primary); color: white; }
+    .bloom-l1 { width: 100%; background: var(--color-bg-soft); color: var(--color-text); border-radius: 0 0 8px 8px; }
+
+    .bloom-details {
+      background: var(--color-bg);
+      border: var(--stroke-width) dashed var(--color-outline);
+      padding: 1rem;
+      border-radius: var(--radius-base);
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .verb-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .verb-tag {
+      background: var(--color-bg-soft);
+      border: 2px solid var(--color-outline);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .verb-tag:hover { background: var(--color-accent-teal); }
+
+    /* ALERT BANNERS */
+    .alert {
+      padding: 1rem;
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      box-shadow: var(--shadow-flat);
+    }
+    .alert-warning { background: #FFF3CD; }
+    .alert-error { background: #F8D7DA; }
+    .alert-info { background: #D1ECF1; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(26, 26, 78, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background: var(--color-bg);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 8px 8px 0 var(--color-outline);
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+
+    /* ILLUSTRATION */
+    .hero-illustration {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin: 0 auto 2rem auto;
+      display: block;
+    }
+
+    /* OUTPUT BOX */
+    .output-box {
+      background: #fdfdfd;
+      border: var(--stroke-width) solid var(--color-outline);
+      padding: 1.5rem;
+      border-radius: var(--radius-base);
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 600;
+      white-space: pre-wrap;
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    
+    /* ESEMPI GRID */
+    .esempi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .esempio-card {
+      background: var(--color-bg);
+      border: var(--stroke-width) solid var(--color-outline);
+      border-radius: var(--radius-base);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-flat);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .esempio-materia {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 12px;
+      border: 2px solid var(--color-outline);
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+    /* UTILITIES */
+    .d-none { display: none !important; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mt-2 { margin-top: 1rem; }
+    .text-center { text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- HITL Permanent Banner -->
+  <div style="background: var(--color-hero); color: white; padding: 8px; text-align: center; font-weight: 700; border-bottom: var(--stroke-width) solid var(--color-outline); font-size: 0.9rem;">
+    <svg style="width:16px; height:16px; vertical-align: middle; stroke: white; fill: none; stroke-width: 2px;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    HITL - Human in the Loop: Verifica SEMPRE scientificamente gli output dell'IA prima di portarli in classe.
+  </div>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" style="width:32px; height:32px; stroke: var(--color-hero); stroke-width:2.5; fill:none; stroke-linecap:round; stroke-linejoin:round;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span>PromptEdu</span>
+      </div>
+      <nav class="nav-menu" id="main-nav">
+        <a href="#/" class="nav-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Dashboard</a>
+        <a href="#/wizard" class="nav-link"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> Costruttore PROMPT-D</a>
+        <a href="#/inclusione" class="nav-link"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Inclusione & Valutazione</a>
+        <a href="#/esempi" class="nav-link"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg> Esempi Pronti</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN APP AREA -->
+    <main id="app" class="app-main">
+      <!-- Content injected by JS -->
+    </main>
+  </div>
+
+  <!-- CUSTOM MODAL -->
+  <div class="modal-overlay" id="customModal">
+    <div class="modal-content">
+      <h2 id="modalTitle" style="color: var(--color-hero); margin-bottom: 1rem; display: flex; align-items:center; gap:10px;">
+        <svg style="width:24px; stroke:currentcolor; fill:none; stroke-width:2.5;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Attenzione
+      </h2>
+      <p id="modalMessage" style="margin-bottom: 1.5rem; font-weight: 600;"></p>
+      <button class="btn btn-primary" onclick="closeModal()">Ho capito</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT VANILLA -->
+  <script>
+    // --- APP STATE ---
+    let promptState = {
+      profilo: '', risultato: '', verb: '', evidenza: '', materiali: '', parametri: '', formato: '', diagnosi: false
+    };
+
+    // --- UTILS ---
+    const e = (tag, className, html) => {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (html) el.innerHTML = html;
+      return el;
+    };
+
+    const showModal = (title, message, isError = false) => {
+      document.getElementById('modalTitle').innerHTML = title;
+      document.getElementById('modalTitle').style.color = isError ? 'var(--color-accent-coral)' : 'var(--color-hero)';
+      document.getElementById('modalMessage').innerHTML = message;
+      document.getElementById('customModal').classList.add('active');
+    };
+    const closeModal = () => document.getElementById('customModal').classList.remove('active');
+
+    // --- DATA BLOOM ---
+    const bloomData = {
+      l1: { name: "Ricordare", desc: "Richiamo di fatti e nozioni.", verbs: { "Chimica": ["Elencare", "Nominare"], "AFM": ["Definire", "Elencare"], "Turismo": ["Localizzare", "Elencare"] } },
+      l2: { name: "Capire", desc: "Rielaborazione e comprensione.", verbs: { "Chimica": ["Spiegare", "Riassumere"], "AFM": ["Interpretare", "Descrivere"], "Turismo": ["Spiegare", "Riassumere"] } },
+      l3: { name: "Applicare", desc: "Uso di informazioni in situazioni nuove.", verbs: { "Chimica": ["Bilanciare", "Titolare"], "AFM": ["Redigere", "Calcolare"], "Turismo": ["Preventivare", "Applicare regole"] } },
+      l4: { name: "Analizzare", desc: "Scomporre per capire la struttura.", verbs: { "Chimica": ["Confrontare processi", "Deducere"], "AFM": ["Analizzare bilancio", "Confrontare"], "Turismo": ["Categorizzare", "Analizzare target"] } },
+      l5: { name: "Valutare", desc: "Prendere decisioni e difendere posizioni.", verbs: { "Chimica": ["Verificare sicurezza", "Valutare"], "AFM": ["Giustificare scelta", "Valutare rischio"], "Turismo": ["Stimare impatto", "Valutare"] } },
+      l6: { name: "Creare", desc: "Formare un nuovo prodotto originale.", verbs: { "Chimica": ["Progettare esperimento", "Sintetizzare"], "AFM": ["Creare Business Plan", "Ideare"], "Turismo": ["Progettare itinerario", "Pianificare"] } }
+    };
+
+    // --- DATA ESEMPI (20 Esempi Modificabili) ---
+    const esempiData = [
+      { id: 1, materia: "Chimica", colore: "var(--color-accent-teal)", titolo: "UDA Stechiometria", verb: "Spiegare (L2)",
+        state: { profilo: "Docente teorico di chimica e tecnologie chimiche", risultato: "Progettazione di una UDA transdisciplinare", verb: "Spiegare", evidenza: "Creazione di una presentazione in cui l'alunno spiega il concetto di mole.", materiali: "Legge di Lavoisier e concetto di Mole dal libro di testo cap. 3.", parametri: "2 ore, classe seconda.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 2, materia: "Chimica", colore: "var(--color-accent-teal)", titolo: "Compito Inquinanti", verb: "Valutare (L5)",
+        state: { profilo: "Docente teorico di chimica e tecnologie chimiche", risultato: "Traccia per un compito di realtà aziendale", verb: "Valutare", evidenza: "Analisi dati inquinamento fiume e relazione sulle cause.", materiali: "Decreto Legislativo acque superficiali 2021.", parametri: "Lavoro di gruppo (3 pax), 3 ore.", formato: "", diagnosi: false } },
+      { id: 3, materia: "Chimica", colore: "var(--color-accent-teal)", titolo: "Sintesi Aspirina", verb: "Applicare (L3)",
+        state: { profilo: "Docente teorico di chimica e tecnologie chimiche", risultato: "Scheda guida per attività di laboratorio", verb: "Bilanciare", evidenza: "Calcolo resa percentuale dell'acido acetilsalicilico sintetizzato.", materiali: "Reazione acido salicilico + anidride acetica.", parametri: "120 minuti, lab chimica organica, cappa aspirante obbligatoria.", formato: "Usa codice LaTeX per precisione formale di formule ed equazioni", diagnosi: true } },
+      { id: 4, materia: "Chimica", colore: "var(--color-accent-teal)", titolo: "Griglia Titolazione", verb: "Confrontare (L4)",
+        state: { profilo: "Docente teorico di chimica e tecnologie chimiche", risultato: "Griglia di valutazione analitica", verb: "Confrontare processi", evidenza: "Valutazione dell'accuratezza analitica tramite scarto quadratico medio.", materiali: "Procedure titolazioni acido-base e redox.", parametri: "Rubrica su 4 livelli per studenti triennio.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 5, materia: "ITP", colore: "var(--color-hero)", titolo: "Uso Cappa", verb: "Elencare (L1)",
+        state: { profilo: "Insegnante Tecnico-Pratico (ITP) esperto in sicurezza di laboratorio", risultato: "Scheda guida per attività di laboratorio", verb: "Elencare", evidenza: "Test a risposta multipla su pulsanti cappa e corretta postura.", materiali: "Manuale d'uso cappa chimica modello X100.", parametri: "Lab primo piano, 30 minuti di spiegazione.", formato: "", diagnosi: true } },
+      { id: 6, materia: "ITP", colore: "var(--color-hero)", titolo: "Sversamento Acidi", verb: "Valutare (L5)",
+        state: { profilo: "Insegnante Tecnico-Pratico (ITP) esperto in sicurezza di laboratorio", risultato: "Traccia per un compito di realtà aziendale", verb: "Verificare sicurezza", evidenza: "Simulazione: intervento su sversamento accidentale di HCl al 37%.", materiali: "Scheda di Sicurezza (SDS) Acido Cloridrico e norme sversamento.", parametri: "Simulazione in aula, 60 minuti.", formato: "", diagnosi: true } },
+      { id: 7, materia: "ITP", colore: "var(--color-hero)", titolo: "UDA Manutenzione", verb: "Applicare (L3)",
+        state: { profilo: "Insegnante Tecnico-Pratico (ITP) esperto in sicurezza di laboratorio", risultato: "Progettazione di una UDA transdisciplinare", verb: "Applicare", evidenza: "Smontaggio, pulizia e taratura periodica bilancia analitica.", materiali: "Protocollo ISO manutenzione bilance.", parametri: "Classi terze, attività ciclica settimanale.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 8, materia: "ITP", colore: "var(--color-hero)", titolo: "Griglia Scelta DPI", verb: "Riassumere (L2)",
+        state: { profilo: "Insegnante Tecnico-Pratico (ITP) esperto in sicurezza di laboratorio", risultato: "Griglia di valutazione analitica", verb: "Riassumere", evidenza: "Abbinamento corretto DPI / Pittogramma di pericolo.", materiali: "D.Lgs 81/08 allegato DPI.", parametri: "Valutazione formativa rapida (15 min).", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 9, materia: "AFM", colore: "var(--color-accent-yellow)", titolo: "Partita Doppia", verb: "Applicare (L3)",
+        state: { profilo: "Docente di Economia Aziendale esperto in casi studio", risultato: "Traccia per un compito di realtà aziendale", verb: "Redigere", evidenza: "Compilazione del libro giornale a partire da 5 fatture.", materiali: "Art. 2424 C.C. schema di Stato Patrimoniale.", parametri: "Test individuale, 1 ora, no calcolatrice programmabile.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: true } },
+      { id: 10, materia: "AFM", colore: "var(--color-accent-yellow)", titolo: "Analisi Bilancio Reale", verb: "Analizzare (L4)",
+        state: { profilo: "Docente di Economia Aziendale esperto in casi studio", risultato: "Scheda guida per attività di laboratorio", verb: "Analizzare bilancio", evidenza: "Calcolo del ROE, ROI e ROS dell'azienda assegnata.", materiali: "Bilancio d'esercizio Barilla 2023.", parametri: "Laboratorio informatico, uso di Excel, 2 ore.", formato: "", diagnosi: false } },
+      { id: 11, materia: "AFM", colore: "var(--color-accent-yellow)", titolo: "Business Plan Startup", verb: "Creare (L6)",
+        state: { profilo: "Docente di Economia Aziendale esperto in casi studio", risultato: "Progettazione di una UDA transdisciplinare", verb: "Creare Business Plan", evidenza: "Presentazione pitch deck di 10 slide e documento previsionale.", materiali: "Modello Business Model Canvas.", parametri: "PCTO 40 ore, classi quarte.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: true } },
+      { id: 12, materia: "AFM", colore: "var(--color-accent-yellow)", titolo: "Griglia Piano Marketing", verb: "Valutare (L5)",
+        state: { profilo: "Docente di Economia Aziendale esperto in casi studio", risultato: "Griglia di valutazione analitica", verb: "Giustificare scelta", evidenza: "Difesa orale delle strategie di marketing (4 P).", materiali: "Kotler - Marketing Management concetti base.", parametri: "Interrogazione orale classe quinta.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 13, materia: "Turismo", colore: "var(--color-accent-coral)", titolo: "Itinerario Sostenibile", verb: "Creare (L6)",
+        state: { profilo: "Docente di Discipline Turistiche Aziendali", risultato: "Traccia per un compito di realtà aziendale", verb: "Progettare itinerario", evidenza: "Realizzazione di un pacchetto turistico 3gg in Umbria (Zero Carbon).", materiali: "Obiettivi Agenda 2030 (Goal 11 e 12).", parametri: "Lavoro a coppie, budget fittizio 500€/pax.", formato: "", diagnosi: true } },
+      { id: 14, materia: "Turismo", colore: "var(--color-accent-coral)", titolo: "Preventivo Pacchetto", verb: "Applicare (L3)",
+        state: { profilo: "Docente di Discipline Turistiche Aziendali", risultato: "Scheda guida per attività di laboratorio", verb: "Preventivare", evidenza: "Calcolo mark-up e break-even point del viaggio d'istruzione.", materiali: "Formule calcolo costo primo e costo complessivo.", parametri: "2 ore in lab informatica.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: true } },
+      { id: 15, materia: "Turismo", colore: "var(--color-accent-coral)", titolo: "Analisi Target Clientela", verb: "Analizzare (L4)",
+        state: { profilo: "Docente di Discipline Turistiche Aziendali", risultato: "Progettazione di una UDA transdisciplinare", verb: "Analizzare target", evidenza: "Segmentazione mercato per lancio di un Resort Spa.", materiali: "Dati ISTAT presenze turistiche regionali.", parametri: "Moduli da 10 ore, interdisciplinare con Matematica.", formato: "", diagnosi: false } },
+      { id: 16, materia: "Turismo", colore: "var(--color-accent-coral)", titolo: "Griglia Roleplay Reception", verb: "Valutare (L5)",
+        state: { profilo: "Docente di Discipline Turistiche Aziendali", risultato: "Griglia di valutazione analitica", verb: "Valutare", evidenza: "Gestione di un overbooking in simulazione.", materiali: "Procedure standard di front-office alberghiero.", parametri: "Rubrica a 4 livelli: problem solving, empatia, correttezza formale.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 17, materia: "Lingue ESP", colore: "var(--color-primary)", titolo: "Lettera Commerciale", verb: "Applicare (L3)",
+        state: { profilo: "Docente di lingua straniera ESP", risultato: "Traccia per un compito di realtà aziendale", verb: "Applicare regole", evidenza: "Stesura di un'email formale di reclamo per merce danneggiata.", materiali: "Layout standard 'Block style' email inglese (Salutations, Body, Closing).", parametri: "Test scritto, 45 minuti, uso del dizionario consentito.", formato: "", diagnosi: false } },
+      { id: 18, materia: "Lingue ESP", colore: "var(--color-primary)", titolo: "Glossario Tecnico", verb: "Ricordare (L1)",
+        state: { profilo: "Docente di lingua straniera ESP", risultato: "Scheda guida per attività di laboratorio", verb: "Definire", evidenza: "Creazione di flashcard su 30 termini tecnici microeconomici in L2.", materiali: "Testo 'The Microeconomic Environment'.", parametri: "Attività introduttiva modulo CLIL.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: false } },
+      { id: 19, materia: "Lingue ESP", colore: "var(--color-primary)", titolo: "UDA Certificazione Ling.", verb: "Analizzare (L4)",
+        state: { profilo: "Docente di lingua straniera ESP", risultato: "Progettazione di una UDA transdisciplinare", verb: "Analizzare", evidenza: "Scomposizione di testi Reading livello B2 (FCE).", materiali: "Cambridge B2 First Handbook.", parametri: "Corso pomeridiano 20 ore.", formato: "", diagnosi: false } },
+      { id: 20, materia: "Lingue ESP", colore: "var(--color-primary)", titolo: "Presentazione Estero", verb: "Creare (L6)",
+        state: { profilo: "Docente di lingua straniera ESP", risultato: "Griglia di valutazione analitica", verb: "Progettare", evidenza: "Presentazione orale dell'azienda partner in fiera internazionale simulata.", materiali: "Criteri QCER per il livello B1/B2 (Spoken Production).", parametri: "Rubrica valutativa per esame orale.", formato: "Usa tabelle Markdown strutturate rigorosamente", diagnosi: true } }
+    ];
+
+    // --- ROUTER ---
+    const routes = {
+      '/': renderHome,
+      '/wizard': renderWizard,
+      '/inclusione': renderInclusione,
+      '/esempi': renderEsempi
+    };
+
+    function router() {
+      const path = location.hash.replace('#', '') || '/';
+      const view = routes[path] || renderHome;
+      
+      const app = document.getElementById('app');
+      app.innerHTML = '';
+      app.appendChild(view());
+
+      // Update active nav
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + path) link.classList.add('active');
+      });
+      window.scrollTo(0,0);
+    }
+
+    window.addEventListener('hashchange', router);
+    window.addEventListener('DOMContentLoaded', router);
+
+    // --- VIEWS GENERATORS ---
+
+    function renderHome() {
+      const wrapper = e('div');
+      
+      // Inline SVG Illustration
+      const illustration = `
+        <svg class="hero-illustration" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sfondo -->
+          <rect width="400" height="300" fill="var(--color-bg)" />
+          
+          <!-- Elementi UI decorativi in background -->
+          <rect x="50" y="40" width="120" height="80" rx="10" fill="var(--color-bg-soft)" stroke="var(--color-outline)" stroke-width="3" />
+          <line x1="65" y1="60" x2="140" y2="60" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          <line x1="65" y1="75" x2="110" y2="75" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="150" cy="90" r="12" fill="var(--color-accent-coral)" stroke="var(--color-outline)" stroke-width="3"/>
+          
+          <rect x="230" y="60" width="100" height="120" rx="10" fill="var(--color-accent-yellow)" stroke="var(--color-outline)" stroke-width="3" />
+          
+          <!-- Personaggio Principale (Insegnante) -->
+          <!-- Corpo/Maglia -->
+          <path d="M 140 300 C 140 220, 160 180, 200 180 C 240 180, 260 220, 260 300" fill="var(--color-primary)" stroke="var(--color-outline)" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M 170 185 L 200 210 L 230 185" fill="var(--color-bg)" stroke="var(--color-outline)" stroke-width="3" stroke-linejoin="round"/>
+          
+          <!-- Collo e Viso -->
+          <path d="M 185 180 L 185 160 L 215 160 L 215 180" fill="#D29969" stroke="var(--color-outline)" stroke-width="3"/>
+          <ellipse cx="200" cy="130" rx="35" ry="40" fill="#D29969" stroke="var(--color-outline)" stroke-width="3"/>
+          
+          <!-- Capelli -->
+          <path d="M 160 120 C 160 80, 240 80, 240 120 C 240 100, 160 100, 160 120" fill="var(--color-outline)" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 165 130 C 160 100, 200 90, 235 130 C 245 100, 155 100, 165 130" fill="var(--color-outline)"/>
+          
+          <!-- Volto (Sorriso, Occhi a mandorla) -->
+          <path d="M 185 125 Q 190 120 195 125" fill="none" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 205 125 Q 210 120 215 125" fill="none" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 195 145 Q 200 155 205 145" fill="none" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          
+          <!-- Braccia/Mani che tengono un tablet/documento -->
+          <path d="M 140 230 C 180 230, 180 270, 180 270" fill="none" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 260 230 C 220 230, 220 270, 220 270" fill="none" stroke="var(--color-outline)" stroke-width="3" stroke-linecap="round"/>
+          <rect x="160" y="250" width="80" height="60" rx="5" fill="var(--color-hero)" stroke="var(--color-outline)" stroke-width="3" transform="rotate(-10 200 280)"/>
+        </svg>
+      `;
+
+      wrapper.innerHTML = `
+        <div class="text-center" style="margin-bottom: 2rem;">
+          ${illustration}
+          <h1 style="font-size: 2.5rem; color: var(--color-hero); margin-bottom: 1rem; font-weight: 800;">Costruisci la Didattica, Guidando l'IA</h1>
+          <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto; font-weight: 600;">
+            Non delegare la tua professionalità. Usa questa impalcatura pedagogica per formulare istruzioni (prompt) perfette e sicure per chatbot esterni.
+          </p>
+          <div style="margin-top: 2rem; display: flex; gap: 15px; justify-content: center;">
+            <a href="#/wizard" class="btn btn-primary">Avvia Costruttore PROMPT-D</a>
+            <a href="#/esempi" class="btn btn-accent-yellow">Sfoglia Esempi Pronti</a>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <div class="card">
+            <h3>Architettura PROMPT-D</h3>
+            <p>7 parametri vincolanti per non lasciare nulla al caso, basati sulla Tassonomia di Bloom.</p>
+          </div>
+          <div class="card">
+            <h3>UDL & Differenziazione</h3>
+            <p>Semplifica la sintassi e stratifica i materiali mantenendo intatto il nucleo concettuale.</p>
+          </div>
+          <div class="card">
+            <h3>Guardrail Etici & GDPR</h3>
+            <p>Filtri automatici per impedire l'esportazione di dati sensibili (BES, DSA, Nomi) in cloud esterni.</p>
+          </div>
+        </div>
+      `;
+      return wrapper;
+    }
+
+    function renderWizard() {
+      const wrapper = e('div');
+      
+      wrapper.innerHTML = `
+        <h2 class="mb-2" style="color:var(--color-hero);">Modulo: Architettura Guidata PROMPT-D</h2>
+        <div class="alert alert-info">
+          <strong>Regia Pedagogica:</strong> Compila ogni sezione. L'app assembelerà un prompt rigoroso da copiare nel tuo LLM preferito.
+        </div>
+        
+        <!-- P: PROFILO -->
+        <div class="card">
+          <div class="card-title"><span class="badge">P</span> Profilo Docente</div>
+          <div class="form-group">
+            <label>Chi deve impersonare l'IA?</label>
+            <select class="form-control" id="p-profilo" onchange="updateState('profilo', this.value)">
+              <option value="">Seleziona ruolo...</option>
+              <option value="Docente teorico di chimica e tecnologie chimiche">Docente di Chimica/Tecnologie</option>
+              <option value="Insegnante Tecnico-Pratico (ITP) esperto in sicurezza di laboratorio">ITP Sicurezza Laboratorio</option>
+              <option value="Docente di Economia Aziendale esperto in casi studio">Docente Economia (AFM)</option>
+              <option value="Docente di Discipline Turistiche Aziendali">Docente Discipline Turistiche</option>
+              <option value="Docente di lingua straniera ESP">Docente Lingue ESP (Inglese tecnico)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- R: RISULTATO -->
+        <div class="card">
+          <div class="card-title"><span class="badge">R</span> Risultato Atteso</div>
+          <div class="form-group">
+            <label>Quale documento tecnico vuoi generare?</label>
+            <select class="form-control" id="p-risultato" onchange="updateState('risultato', this.value)">
+              <option value="">Seleziona output...</option>
+              <option value="Progettazione di una UDA transdisciplinare">UDA Transdisciplinare</option>
+              <option value="Traccia per un compito di realtà aziendale">Compito di Realtà Aziendale</option>
+              <option value="Scheda guida per attività di laboratorio">Scheda Laboratorio (Fasi/Sicurezza)</option>
+              <option value="Griglia di valutazione analitica">Griglia di Valutazione</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- O: OBIETTIVI (BLOOM TUTOR) -->
+        <div class="card">
+          <div class="card-title"><span class="badge">O</span> Obiettivi & Backward Design</div>
+          <p class="mb-2" style="font-weight:600;">Seleziona un livello cognitivo dalla Tassonomia di Bloom per sbloccare i verbi d'azione specifici.</p>
+          
+          <div class="bloom-container" id="bloom-pyramid">
+            <div class="bloom-level bloom-l6" onclick="showBloom('l6')">6. Creare</div>
+            <div class="bloom-level bloom-l5" onclick="showBloom('l5')">5. Valutare</div>
+            <div class="bloom-level bloom-l4" onclick="showBloom('l4')">4. Analizzare</div>
+            <div class="bloom-level bloom-l3" onclick="showBloom('l3')">3. Applicare</div>
+            <div class="bloom-level bloom-l2" onclick="showBloom('l2')">2. Capire</div>
+            <div class="bloom-level bloom-l1" onclick="showBloom('l1')">1. Ricordare</div>
+          </div>
+
+          <div id="bloom-details" class="bloom-details">
+            <h4 id="bd-title" style="color:var(--color-hero);">Livello</h4>
+            <p id="bd-desc" class="mb-1" style="font-size:0.9rem;"></p>
+            <label style="font-size:0.9rem;">Verbi suggeriti (clicca per selezionare):</label>
+            <div id="bd-verbs" class="verb-tags"></div>
+            
+            <div class="form-group mt-2">
+              <label>Verbo Scelto:</label>
+              <input type="text" class="form-control" id="p-verb" readonly placeholder="Seleziona un verbo dai tag sopra...">
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label>Prova di Evidenza (Backward Design):</label>
+            <p style="font-size:0.85rem; margin-bottom:5px;">Con quale prova pratica/compito misurerai questo obiettivo?</p>
+            <textarea class="form-control" id="p-evidenza" oninput="updateState('evidenza', this.value)" placeholder="Es: Gli studenti dovranno redigere la partita doppia di 3 fatture emesse..."></textarea>
+          </div>
+        </div>
+
+        <!-- M: MATERIALI -->
+        <div class="card">
+          <div class="card-title"><span class="badge">M</span> Materiali (Ancoraggio)</div>
+          <div class="form-group">
+            <label>Testo di riferimento vincolante:</label>
+            <p style="font-size:0.85rem; margin-bottom:5px;">Incolla qui appunti, articoli del codice, linee guida. Evita "allucinazioni".</p>
+            <textarea class="form-control" id="p-materiali" oninput="updateState('materiali', this.value)"></textarea>
+          </div>
+        </div>
+
+        <!-- P: PARAMETRI -->
+        <div class="card">
+          <div class="card-title"><span class="badge">P</span> Parametri (Contesto)</div>
+          <div class="form-group">
+            <label>Vincoli fisici e didattici (es. 120 minuti, 20 alunni, lab informatica):</label>
+            <textarea class="form-control" id="p-parametri" oninput="updateState('parametri', this.value)"></textarea>
+          </div>
+        </div>
+
+        <!-- T: TIPO OUTPUT -->
+        <div class="card">
+          <div class="card-title"><span class="badge">T</span> Tipo Formato</div>
+          <div class="form-group">
+            <select class="form-control" id="p-formato" onchange="updateState('formato', this.value)">
+              <option value="">Formattazione testuale piana</option>
+              <option value="Usa codice LaTeX per precisione formale di formule ed equazioni">Codice LaTeX (Formule)</option>
+              <option value="Usa tabelle Markdown strutturate rigorosamente">Tabelle Markdown</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- D: DIAGNOSI -->
+        <div class="card">
+          <div class="card-title"><span class="badge">D</span> Diagnosi IA</div>
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <input type="checkbox" id="p-diagnosi" onchange="updateState('diagnosi', this.checked)" style="width:20px; height:20px; accent-color:var(--color-primary);">
+            Imponi all'IA di fare un'autocritica finale su tempi e sicurezza.
+          </label>
+        </div>
+
+        <button class="btn btn-hero" style="width:100%; font-size:1.2rem; padding:1rem;" onclick="generatePrompt()">Genera Prompt Architettato</button>
+        
+        <div id="output-container" class="mt-2 d-none">
+          <h3 class="mb-1">Prompt Generato (Pronto da copiare):</h3>
+          <div class="output-box">
+            <button class="btn btn-accent-yellow copy-btn" onclick="copyPrompt()">Copia</button>
+            <span id="final-prompt-text"></span>
+          </div>
+        </div>
+      `;
+
+      // Precompila form se lo stato è popolato (es: da un esempio caricato)
+      setTimeout(() => {
+        if(promptState.profilo) document.getElementById('p-profilo').value = promptState.profilo;
+        if(promptState.risultato) document.getElementById('p-risultato').value = promptState.risultato;
+        if(promptState.verb) document.getElementById('p-verb').value = promptState.verb;
+        if(promptState.evidenza) document.getElementById('p-evidenza').value = promptState.evidenza;
+        if(promptState.materiali) document.getElementById('p-materiali').value = promptState.materiali;
+        if(promptState.parametri) document.getElementById('p-parametri').value = promptState.parametri;
+        if(promptState.formato) document.getElementById('p-formato').value = promptState.formato;
+        if(promptState.diagnosi) document.getElementById('p-diagnosi').checked = promptState.diagnosi;
+      }, 0);
+
+      return wrapper;
+    }
+
+    // Wizard Logic
+    function updateState(key, value) { promptState[key] = value; }
+    
+    function showBloom(levelId) {
+      const data = bloomData[levelId];
+      const details = document.getElementById('bloom-details');
+      details.style.display = 'block';
+      document.getElementById('bd-title').innerText = `Livello ${levelId.replace('l','')} - ${data.name}`;
+      document.getElementById('bd-desc').innerText = data.desc;
+      
+      let html = '';
+      for (const [subject, verbs] of Object.entries(data.verbs)) {
+        html += `<strong style="width:100%; font-size:0.8rem; margin-top:5px;">${subject}:</strong>`;
+        verbs.forEach(v => {
+          html += `<span class="verb-tag" onclick="selectVerb('${v}')">${v}</span>`;
+        });
+      }
+      document.getElementById('bd-verbs').innerHTML = html;
+    }
+
+    function selectVerb(verb) {
+      document.getElementById('p-verb').value = verb;
+      promptState.verb = verb;
+    }
+
+    // GDPR check logic
+    const containsSensitiveData = (text) => {
+      const sensitiveRegex = /\b(Mario|Giulia|Rossi|Bianchi|dislessia|BES|DSA|certificazione|104|sostegno)\b/gi;
+      return sensitiveRegex.test(text);
+    };
+
+    function generatePrompt() {
+      // Validazione base
+      if (!promptState.profilo || !promptState.risultato || !promptState.verb) {
+        showModal("Campi Incompleti", "Seleziona almeno Profilo, Risultato e un Verbo Obiettivo per generare una struttura sensata.", true);
+        return;
+      }
+
+      // Check GDPR nel parametro
+      if (containsSensitiveData(promptState.parametri) || containsSensitiveData(promptState.evidenza)) {
+        showModal(
+          "Filtro GDPR: Dati Sensibili Rilevati", 
+          "Hai inserito termini potenzialmente sensibili (es. BES, DSA, o nomi propri). <b>È severamente vietato immettere dati personali di studenti in LLM cloud esterni.</b><br><br>Modifica il testo usando astrazioni (es. 'alunno con necessità di sintassi semplificata e font leggibile' invece di 'Mario con DSA').",
+          true
+        );
+        return;
+      }
+
+      let prompt = `Agisci come un ${promptState.profilo}.\n\n`;
+      prompt += `Il tuo compito è produrre il seguente documento: ${promptState.risultato}.\n\n`;
+      prompt += `[OBIETTIVO COGNITIVO]: Il verbo d'azione principale dell'attività deve essere "${promptState.verb}".\n`;
+      if(promptState.evidenza) prompt += `[PROVA DI EVIDENZA]: Assicurati che l'attività culminerà in questa dimostrazione da parte degli studenti: "${promptState.evidenza}". Struttura il lavoro a ritroso (Backward Design) per garantire questo risultato.\n\n`;
+      if(promptState.materiali) prompt += `[ANCORAGGIO MATERIALI]: Basati ESCLUSIVAMENTE sui seguenti materiali normativi/testuali. Non inventare dati o procedure: """${promptState.materiali}"""\n\n`;
+      if(promptState.parametri) prompt += `[VINCOLI DI CONTESTO]: L'attività deve essere progettata rispettando rigorosamente queste condizioni (tempo, numero studenti, accessibilità): ${promptState.parametri}.\n\n`;
+      if(promptState.formato) prompt += `[FORMATTAZIONE]: ${promptState.formato}.\n\n`;
+      if(promptState.diagnosi) prompt += `[DIAGNOSI OBBLIGATORIA]: Alla fine del tuo output, aggiungi una sezione intitolata 'Autocritica'. In essa, verifica passo-passo se i tempi sommati delle attività coincidono con il tempo totale a disposizione e se le norme di sicurezza di base (se in laboratorio) sono state rispettate nella traccia.`;
+
+      document.getElementById('final-prompt-text').innerText = prompt;
+      document.getElementById('output-container').classList.remove('d-none');
+      
+      // Scroll to output
+      document.getElementById('output-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyPrompt() {
+      const text = document.getElementById('final-prompt-text').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showModal("Copiato!", "Il prompt è stato copiato negli appunti.<br><br><b>Ricorda:</b> Valuta criticamente la risposta dell'IA prima di usarla a scuola (HITL).");
+      });
+    }
+
+    // --- OTHER VIEWS ---
+    function renderInclusione() {
+      const wrapper = e('div');
+      wrapper.innerHTML = `
+        <h2 class="mb-2" style="color:var(--color-hero);">Modulo UDL & Valutazione</h2>
+        <div class="card">
+          <h3>Motore di Differenziazione (3 Livelli)</h3>
+          <p class="mb-2">Genera un prompt per differenziare un testo tecnico.</p>
+          <textarea class="form-control mb-1" placeholder="Incolla il testo tecnico originale..."></textarea>
+          <button class="btn btn-primary" onclick="alertSim('Generazione Prompt UDL: Agisci come esperto UDL. Riscrivi il testo in 3 varianti: 1. Base (frasi brevi, elenchi). 2. Standard. 3. Avanzato (sfida cognitiva maggiore). Mantieni i concetti chiave inalterati.')">Genera Prompt Differenziazione</button>
+        </div>
+        <div class="card">
+          <h3>Costruttore Rubriche Analitiche</h3>
+          <p class="mb-2">Imponi all'IA di usare comportamenti osservabili.</p>
+          <input type="text" class="form-control mb-1" placeholder="Competenza da valutare (es. Esposizione orale in lingua)">
+          <button class="btn btn-accent-teal" onclick="alertSim('Generazione Prompt Rubrica: Crea una rubrica valutativa su 4 livelli. NON usare aggettivi soggettivi (buono, scarso). Usa descrittori comportamentali osservabili (es. Guarda l\\'interlocutore il 90% del tempo).')">Genera Prompt Rubrica</button>
+        </div>
+      `;
+      return wrapper;
+    }
+
+    function renderEsempi() {
+      const wrapper = e('div');
+      wrapper.innerHTML = `
+        <h2 class="mb-2" style="color:var(--color-hero);">Esempi Pronti (Templates)</h2>
+        <p class="mb-2">Seleziona un esempio preimpostato. Verrà caricato nel Costruttore (Wizard) dove potrai personalizzarlo prima di generare il prompt.</p>
+        <div class="esempi-grid" id="esempi-grid-container"></div>
+      `;
+      
+      const grid = wrapper.querySelector('#esempi-grid-container');
+      
+      esempiData.forEach(es => {
+        const card = e('div', 'esempio-card');
+        // Usa colore specifico della materia come bordo superiore
+        card.style.borderTop = `6px solid ${es.colore}`;
+        
+        card.innerHTML = `
+          <div>
+            <span class="esempio-materia" style="color:var(--color-outline); background-color:${es.colore}20; border-color:${es.colore};">${es.materia}</span>
+            <h3 style="margin-bottom:0.5rem; font-size:1.1rem; font-weight:800;">${es.titolo}</h3>
+            <p style="font-size:0.85rem; font-weight:600; margin-bottom:1rem;"><strong>Obiettivo:</strong> ${es.verb}</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="loadExample(${es.id})">Carica e Modifica</button>
+        `;
+        grid.appendChild(card);
+      });
+
+      return wrapper;
+    }
+
+    function loadExample(id) {
+      const esempio = esempiData.find(e => e.id === id);
+      if(esempio) {
+        // Popola lo stato globale del wizard con i dati dell'esempio
+        promptState = { ...esempio.state };
+        // Cambia rotta al wizard (renderWizard si occuperà di iniettare promptState nei campi)
+        location.hash = '#/wizard';
+      }
+    }
+
+    // Helper sostitutivo di alert per simulazioni UI minori
+    function alertSim(msg) {
+      showModal("Prompt Generato (Simulazione)", msg);
+    }
+  </script>
+</body>
+</html>
